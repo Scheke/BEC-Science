@@ -1,0 +1,401 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Solar System — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Our Solar System',
+content:`<h2>The Sun and Its Family</h2>
+<p>Our <strong>Solar System</strong> consists of the Sun and everything that orbits it — held together by <strong>gravity</strong>.</p>
+<p>The 8 planets in order from the Sun:</p>
+<ol>
+<li>☿ <strong>Mercury</strong> — smallest, closest</li>
+<li>♀ <strong>Venus</strong> — hottest (thick atmosphere)</li>
+<li>🌍 <strong>Earth</strong> — only known planet with life</li>
+<li>♂ <strong>Mars</strong> — the "Red Planet"</li>
+<li>♃ <strong>Jupiter</strong> — largest planet</li>
+<li>♄ <strong>Saturn</strong> — famous for its rings</li>
+<li>⛢ <strong>Uranus</strong> — rotates on its side</li>
+<li>♆ <strong>Neptune</strong> — coldest, furthest</li>
+</ol>
+<p>Mnemonic: <em>"My Very Energetic Mother Just Serves Us Nachos"</em></p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const planets=[{r:8,d:30,col:'#9e9e9e',n:'Me'},{r:11,d:55,col:'#f4511e',n:'Ve'},{r:13,d:85,col:'#1e88e5',n:'Ea'},{r:10,d:115,col:'#e53935',n:'Ma'},{r:22,d:160,col:'#ef6c00',n:'Ju'},{r:18,d:210,col:'#ffd600',n:'Sa'},{r:14,d:260,col:'#80cbc4',n:'Ur'},{r:12,d:310,col:'#1565c0',n:'Ne'}];
+  let t=0;
+  p.draw=()=>{
+    p.background(20);
+    // stars
+    for(let i=0;i<40;i++){p.fill(255,255,255,120);p.noStroke();p.ellipse((i*73)%420,(i*53)%280,2,2);}
+    // sun
+    p.fill('#ffd600');p.noStroke();p.ellipse(0,140,60,60);
+    // orbits and planets
+    planets.forEach((pl,i)=>{
+      if(pl.d<420){
+        p.stroke(255,255,255,30);p.strokeWeight(1);p.noFill();p.ellipse(0,140,pl.d*2,(pl.d*2)*0.3);
+        const speed=0.005/(i+1)*3;
+        const angle=t*speed;
+        const x=pl.d*Math.cos(angle),y=pl.d*0.3*Math.sin(angle)+140;
+        if(x>-420&&x<420){p.fill(pl.col);p.noStroke();p.ellipse(x,y,pl.r*2,pl.r*2);p.fill(255);p.textSize(8);p.text(pl.n,x,y);}
+      }
+    });
+    t++;
+  };
+}},
+{title:'Day, Night and the Year',
+content:`<h2>Earth's Rotations and Revolutions</h2>
+<p><strong>Day and Night</strong> are caused by Earth <strong>rotating on its axis</strong> once every 24 hours.</p>
+<ul>
+<li>The side facing the Sun = DAY</li>
+<li>The side facing away = NIGHT</li>
+</ul>
+<p><strong>A Year</strong> is caused by Earth <strong>revolving (orbiting) around the Sun</strong> once in 365.25 days.</p>
+<p>Earth's axis is tilted at <strong>23.5°</strong> — this tilt causes the SEASONS as different hemispheres tilt toward or away from the Sun at different times of year.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(20);
+    // sun
+    p.fill('#ffd600');p.noStroke();p.ellipse(70,135,60,60);
+    // Earth orbit
+    p.stroke(255,255,255,40);p.strokeWeight(1);p.noFill();p.ellipse(210,135,280,180);
+    // Earth position
+    const ea=t*0.01;
+    const ex=210+140*Math.cos(ea),ey=135+90*Math.sin(ea);
+    // shadow
+    p.fill(0,0,50);p.noStroke();p.arc(ex,ey,36,36,p.HALF_PI,p.HALF_PI+p.PI);
+    p.fill('#1e88e5');p.arc(ex,ey,36,36,p.HALF_PI+p.PI,p.HALF_PI);
+    // axis tilt
+    p.stroke(255,100,100);p.strokeWeight(2);
+    const tilt=0.4;
+    p.line(ex-10*Math.sin(tilt)+10*Math.cos(tilt),ey-18*Math.cos(tilt)-10*Math.sin(tilt),ex+10*Math.sin(tilt)-10*Math.cos(tilt),ey+18*Math.cos(tilt)+10*Math.sin(tilt));
+    p.fill(255);p.noStroke();p.textSize(10);p.text('Day',ex+8,ey);p.fill(150);p.text('Night',ex-8,ey);
+    p.fill(255);p.textSize(11);p.text('Earth rotates (24h) = day/night',210,260);
+    p.fill('#ffd600');p.textSize(10);p.text('Sun',70,165);
+    t++;
+  };
+}},
+{title:'Eclipses',
+content:`<h2>Solar and Lunar Eclipses</h2>
+<p><strong>Solar Eclipse</strong> — Moon is between Earth and Sun:</p>
+<ul>
+<li>Moon's shadow falls on Earth</li>
+<li>Sun appears blocked (totally or partially)</li>
+<li>Can only happen during a <em>new moon</em></li>
+<li>Only visible from a small area of Earth</li>
+</ul>
+<p><strong>Lunar Eclipse</strong> — Earth is between Sun and Moon:</p>
+<ul>
+<li>Earth's shadow falls on the Moon</li>
+<li>Moon appears dark or reddish</li>
+<li>Can only happen during a <em>full moon</em></li>
+<li>Visible from anywhere on the night side of Earth</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,showSolar=true;
+  p.draw=()=>{
+    p.background(20);
+    if(Math.floor(t/120)%2===0){
+      // solar eclipse
+      p.fill('#ffd600');p.noStroke();p.ellipse(60,135,70,70);p.fill(255);p.textSize(9);p.text('Sun',60,180);
+      p.fill('#bdbdbd');p.ellipse(210,135,36,36);p.fill(255);p.textSize(8);p.text('Moon',210,162);
+      p.fill('#1e88e5');p.ellipse(360,135,50,50);p.fill(255);p.textSize(9);p.text('Earth',360,175);
+      // shadow
+      p.fill(0,0,0,100);p.noStroke();p.triangle(228,120,228,150,380,130);
+      p.fill(255);p.textSize(12);p.text('SOLAR ECLIPSE',210,235);p.textSize(10);p.text('Moon blocks sunlight from Earth',210,252);
+    } else {
+      // lunar eclipse
+      p.fill('#ffd600');p.noStroke();p.ellipse(60,135,70,70);p.fill(255);p.textSize(9);p.text('Sun',60,180);
+      p.fill('#1e88e5');p.ellipse(210,135,50,50);p.fill(255);p.textSize(9);p.text('Earth',210,175);
+      p.fill('#bdbdbd');p.ellipse(360,135,36,36);p.fill(255);p.textSize(8);p.text('Moon',360,162);
+      // shadow
+      p.fill(0,0,0,120);p.noStroke();p.triangle(235,115,235,155,385,140);
+      p.fill(255);p.textSize(12);p.text('LUNAR ECLIPSE',210,235);p.textSize(10);p.text('Earth blocks sunlight from Moon',210,252);
+    }
+    t++;
+  };
+}},
+{title:'The Moon',
+content:`<h2>Earth's Natural Satellite</h2>
+<p>The <strong>Moon</strong> is Earth's only natural satellite. It orbits Earth every <strong>~29.5 days</strong> (one lunar month).</p>
+<p><strong>Why do we always see the same side of the Moon?</strong><br>The Moon takes the same time to ROTATE on its axis as it does to ORBIT Earth. This is called <em>tidal locking</em>.</p>
+<p><strong>Moon phases</strong> occur because we see different portions of the lit side as the Moon orbits Earth:</p>
+<ul>
+<li>🌑 New Moon → 🌒 Waxing Crescent → 🌓 First Quarter → 🌔 Waxing Gibbous → 🌕 Full Moon → 🌖 Waning Gibbous → 🌗 Last Quarter → 🌘 Waning Crescent → 🌑 New Moon</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(20);
+    // Earth
+    p.fill('#1e88e5');p.noStroke();p.ellipse(210,135,60,60);p.fill(255);p.textSize(10);p.text('Earth',210,135);
+    // Moon orbit
+    p.stroke(255,255,255,40);p.strokeWeight(1);p.noFill();p.ellipse(210,135,220,220);
+    // Moon
+    const ma=t*0.04;
+    const mx=210+110*Math.cos(ma),my=135+110*Math.sin(ma);
+    // Phase — show dark/light sides based on position
+    const phase=((ma%(2*Math.PI))/(2*Math.PI));
+    p.fill('#bdbdbd');p.noStroke();p.ellipse(mx,my,26,26);
+    // dark overlay
+    const litAngle=ma+Math.PI;
+    p.fill(0,0,20,200);p.arc(mx,my,26,26,litAngle,litAngle+Math.PI);
+    p.fill(255);p.textSize(8);p.text('Moon',mx,my+18);
+    const phases='🌑🌒🌓🌔🌕🌖🌗🌘';
+    const pi=Math.floor(phase*8)%8;
+    p.fill(255);p.textSize(26);p.text(phases[pi],210,50);
+    p.textSize(10);p.text('Moon phase',210,78);
+    t++;
+  };
+}},
+{title:'Stars and Galaxies',
+content:`<h2>Beyond Our Solar System</h2>
+<p><strong>Stars</strong> are massive balls of plasma that produce their own light and heat through <em>nuclear fusion</em> in their core.</p>
+<ul>
+<li>Our Sun is a <strong>medium-sized star</strong></li>
+<li>Stars appear as points of light in the night sky</li>
+<li>They are classified by size, colour, and temperature</li>
+</ul>
+<p><strong>Galaxies</strong> are enormous collections of billions of stars, gas, and dust:</p>
+<ul>
+<li>Our galaxy is the <strong>Milky Way</strong> — a spiral galaxy</li>
+<li>Contains ~200-400 billion stars</li>
+<li>About 100,000 light years across</li>
+<li>Nearest star: Proxima Centauri — 4.24 light years away</li>
+</ul>
+<p>A <strong>light year</strong> = distance light travels in 1 year ≈ 9.46 trillion km</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  const stars=Array.from({length:100},()=>({x:Math.random()*420,y:Math.random()*270,r:Math.random()*2+0.5,twinkle:Math.random()*6}));
+  p.draw=()=>{
+    p.background(10);
+    stars.forEach(s=>{
+      const b=150+80*Math.sin(t*0.04+s.twinkle);
+      p.fill(b,b,b);p.noStroke();p.ellipse(s.x,s.y,s.r,s.r);
+    });
+    // spiral galaxy center
+    for(let a=0;a<800;a++){
+      const angle=a*0.08+t*0.005;
+      const r=a*0.15;
+      const x=210+r*Math.cos(angle),y=135+r*0.4*Math.sin(angle);
+      if(x>0&&x<420&&y>0&&y<270){p.fill(255,220,100,80);p.noStroke();p.ellipse(x,y,1.5,1.5);}
+    }
+    p.fill(255);p.textSize(11);p.noStroke();p.text('The Milky Way — our spiral galaxy (~400 billion stars)',210,258);
+    t++;
+  };
+}},
+{title:'The Solar System — Planets in Order',
+content:`<h3>Planets, Orbits &amp; the Asteroid Belt</h3><p>Eight planets orbit the Sun in elliptical paths. The further from the Sun, the longer the orbit. The <strong>asteroid belt</strong> lies between Mars and Jupiter — a ring of rocky debris. Planet sizes and distances are not to scale.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#006064"/></marker></defs>
+  <rect width="420" height="250" fill="#0a0a1a"/>
+  <!-- Sun -->
+  <circle cx="28" cy="125" r="22" fill="#ffd600"/>
+  <text x="28" y="155" text-anchor="middle" fill="#ffd600" font-size="9">Sun</text>
+  <!-- Orbits (ellipses centred on sun, semi-major axis = distance from sun edge) -->
+  <ellipse cx="28" cy="125" rx="45" ry="14" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <ellipse cx="28" cy="125" rx="68" ry="22" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <ellipse cx="28" cy="125" rx="94" ry="30" fill="none" stroke="#4fc3f744" stroke-width="1.5"/>
+  <ellipse cx="28" cy="125" rx="120" ry="38" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <!-- Asteroid belt -->
+  <ellipse cx="28" cy="125" rx="148" ry="47" fill="none" stroke="#9e9e9e" stroke-width="3" stroke-dasharray="2,4"/>
+  <text x="160" y="74" fill="#9e9e9e" font-size="8" text-anchor="middle">Asteroid Belt</text>
+  <ellipse cx="28" cy="125" rx="185" ry="59" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <ellipse cx="28" cy="125" rx="248" ry="79" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <ellipse cx="28" cy="125" rx="316" ry="100" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <ellipse cx="28" cy="125" rx="390" ry="124" fill="none" stroke="#ffffff22" stroke-width="1"/>
+  <!-- Mercury -->
+  <circle cx="73" cy="125" r="4" fill="#9e9e9e"/>
+  <text x="73" y="108" text-anchor="middle" fill="#ccc" font-size="8">Mercury</text>
+  <line x1="73" y1="121" x2="73" y2="112" stroke="#9e9e9e" stroke-width="0.8"/>
+  <!-- Venus -->
+  <circle cx="96" cy="125" r="6" fill="#f4511e"/>
+  <text x="96" y="144" text-anchor="middle" fill="#f4511e" font-size="8">Venus</text>
+  <line x1="96" y1="131" x2="96" y2="138" stroke="#f4511e" stroke-width="0.8"/>
+  <!-- Earth -->
+  <circle cx="122" cy="125" r="7" fill="#1e88e5"/>
+  <circle cx="128" cy="119" r="2.5" fill="#bdbdbd"/>
+  <text x="122" y="107" text-anchor="middle" fill="#1e88e5" font-size="8">Earth+Moon</text>
+  <line x1="122" y1="118" x2="122" y2="111" stroke="#1e88e5" stroke-width="0.8"/>
+  <!-- Mars -->
+  <circle cx="148" cy="125" r="5" fill="#e53935"/>
+  <text x="148" y="143" text-anchor="middle" fill="#e53935" font-size="8">Mars</text>
+  <line x1="148" y1="130" x2="148" y2="137" stroke="#e53935" stroke-width="0.8"/>
+  <!-- Jupiter -->
+  <circle cx="213" cy="125" r="13" fill="#ef6c00"/>
+  <text x="213" y="105" text-anchor="middle" fill="#ef6c00" font-size="8">Jupiter</text>
+  <line x1="213" y1="112" x2="213" y2="107" stroke="#ef6c00" stroke-width="0.8"/>
+  <!-- Saturn -->
+  <ellipse cx="276" cy="125" rx="20" ry="5" fill="none" stroke="#ffd600" stroke-width="2"/>
+  <circle cx="276" cy="125" r="11" fill="#ffd600"/>
+  <ellipse cx="276" cy="125" rx="20" ry="5" fill="none" stroke="#ffd60088" stroke-width="2"/>
+  <text x="276" y="143" text-anchor="middle" fill="#ffd600" font-size="8">Saturn</text>
+  <line x1="276" y1="136" x2="276" y2="140" stroke="#ffd600" stroke-width="0.8"/>
+  <!-- Uranus -->
+  <circle cx="344" cy="125" r="8" fill="#80cbc4"/>
+  <text x="344" y="108" text-anchor="middle" fill="#80cbc4" font-size="8">Uranus</text>
+  <line x1="344" y1="117" x2="344" y2="111" stroke="#80cbc4" stroke-width="0.8"/>
+  <!-- Neptune -->
+  <circle cx="418" cy="125" r="7" fill="#1565c0"/>
+  <text x="400" y="143" text-anchor="middle" fill="#82b1ff" font-size="8">Neptune</text>
+  <!-- Labels: size/distance note -->
+  <text x="210" y="237" text-anchor="middle" fill="#e0f7fa" font-size="9">Planets increase in size &amp; orbital period with distance from Sun</text>
+</svg>`},
+{title:'Day and Night — Earth\'s Rotation',
+content:`<h3>Why Do We Have Day and Night?</h3><p>Earth spins on its <strong>tilted axis</strong> once every <strong>24 hours</strong>. The side facing the Sun experiences <strong>daytime</strong>; the opposite side is in <strong>night</strong>. The Sun does not move — Earth rotates.</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#ffd600"/></marker><marker id="b" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#006064"/></marker></defs>
+  <rect width="420" height="240" fill="#0d1a2a"/>
+  <!-- Sun -->
+  <circle cx="50" cy="120" r="32" fill="#ffd600" opacity="0.95"/>
+  <text x="50" y="163" text-anchor="middle" fill="#ffd600" font-size="11" font-weight="bold">Sun</text>
+  <!-- Sun rays -->
+  <line x1="88" y1="100" x2="160" y2="108" stroke="#ffd600" stroke-width="1.5" opacity="0.6"/>
+  <line x1="88" y1="120" x2="160" y2="120" stroke="#ffd600" stroke-width="1.5" opacity="0.6"/>
+  <line x1="88" y1="140" x2="160" y2="132" stroke="#ffd600" stroke-width="1.5" opacity="0.6"/>
+  <!-- Earth: left half dark, right half lit -->
+  <clipPath id="leftHalf"><rect x="160" y="60" width="60" height="120"/></clipPath>
+  <clipPath id="rightHalf"><rect x="220" y="60" width="60" height="120"/></clipPath>
+  <!-- Full circle base -->
+  <circle cx="220" cy="120" r="60" fill="#1e88e5"/>
+  <!-- Night side (left) -->
+  <path d="M220,60 A60,60 0 0,0 220,180 Z" fill="#0a1a3a"/>
+  <!-- Axis line (tilted) -->
+  <line x1="210" y1="55" x2="230" y2="185" stroke="#ff7043" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="240" y="53" fill="#ff7043" font-size="9">Axis (tilted)</text>
+  <!-- Day label -->
+  <text x="248" y="115" fill="#ffd600" font-size="10" font-weight="bold">DAY</text>
+  <text x="248" y="128" fill="#ffd600" font-size="8">faces Sun</text>
+  <!-- Night label -->
+  <text x="172" y="115" text-anchor="middle" fill="#82b1ff" font-size="10" font-weight="bold">NIGHT</text>
+  <text x="172" y="128" text-anchor="middle" fill="#82b1ff" font-size="8">faces away</text>
+  <!-- Person on day side -->
+  <circle cx="255" cy="96" r="5" fill="#ffd600"/>
+  <line x1="255" y1="101" x2="255" y2="113" stroke="#ffd600" stroke-width="1.5"/>
+  <text x="270" y="101" fill="#ffd600" font-size="8">person</text>
+  <!-- Person on night side -->
+  <circle cx="185" cy="145" r="5" fill="#82b1ff"/>
+  <line x1="185" y1="150" x2="185" y2="162" stroke="#82b1ff" stroke-width="1.5"/>
+  <text x="165" y="165" fill="#82b1ff" font-size="8">asleep</text>
+  <!-- Rotation arrow -->
+  <path d="M220,55 Q285,55 285,120 Q285,185 220,185" fill="none" stroke="#006064" stroke-width="2" marker-end="url(#b)"/>
+  <text x="302" y="123" fill="#e0f7fa" font-size="9">Rotation</text>
+  <text x="302" y="134" fill="#e0f7fa" font-size="9">24 hours</text>
+  <text x="210" y="228" text-anchor="middle" fill="#e0f7fa" font-size="10">Earth spins once every 24 hours — causing day and night</text>
+</svg>`},
+{title:'The Moon\'s Phases',
+content:`<h3>Why Does the Moon Change Shape?</h3><p>The Moon doesn't produce its own light — we see sunlight reflected off it. As the Moon orbits Earth over ~29.5 days, we see different portions of its lit side, creating the <strong>8 phases</strong>.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#ffd600"/></marker></defs>
+  <rect width="420" height="250" fill="#0d1020"/>
+  <!-- Sun arrow from left -->
+  <text x="6" y="128" fill="#ffd600" font-size="9">SUN</text>
+  <line x1="6" y1="133" x2="55" y2="133" stroke="#ffd600" stroke-width="2" marker-end="url(#a)"/>
+  <text x="8" y="143" fill="#ffd600" font-size="8">light</text>
+  <!-- Earth centre -->
+  <circle cx="210" cy="128" r="18" fill="#1e88e5"/>
+  <text x="210" y="132" text-anchor="middle" fill="white" font-size="9">Earth</text>
+  <!-- 8 moon positions around Earth at radius ~85 -->
+  <!-- 0: New Moon (top, sun from left so top is lit from left... but New Moon = facing sun, not visible) -->
+  <!-- Positions: 0=top, 1=top-right, 2=right, 3=bottom-right, 4=bottom, 5=bottom-left, 6=left, 7=top-left -->
+  <!-- New Moon -->
+  <circle cx="210" cy="43" r="12" fill="#1a1a2e"/>
+  <circle cx="210" cy="43" r="12" fill="none" stroke="#555" stroke-width="1"/>
+  <text x="210" y="31" text-anchor="middle" fill="#aaa" font-size="7.5">New Moon</text>
+  <!-- Waxing Crescent -->
+  <circle cx="270" cy="61" r="12" fill="#1a1a2e"/>
+  <path d="M270,49 A12,12 0 0,1 270,73 A6,12 0 0,0 270,49" fill="#e0e0e0"/>
+  <text x="296" y="58" fill="#e0e0e0" font-size="7.5">Waxing</text>
+  <text x="296" y="67" fill="#e0e0e0" font-size="7.5">Crescent</text>
+  <!-- First Quarter -->
+  <circle cx="295" cy="128" r="12" fill="#1a1a2e"/>
+  <path d="M295,116 A12,12 0 0,1 295,140 Z" fill="#e0e0e0"/>
+  <text x="314" y="124" fill="#e0e0e0" font-size="7.5">First</text>
+  <text x="314" y="133" fill="#e0e0e0" font-size="7.5">Quarter</text>
+  <!-- Waxing Gibbous -->
+  <circle cx="270" cy="195" r="12" fill="#e0e0e0"/>
+  <path d="M270,183 A12,12 0 0,0 270,207 A4,12 0 0,1 270,183" fill="#1a1a2e"/>
+  <text x="290" y="193" fill="#e0e0e0" font-size="7.5">Waxing</text>
+  <text x="290" y="202" fill="#e0e0e0" font-size="7.5">Gibbous</text>
+  <!-- Full Moon -->
+  <circle cx="210" cy="213" r="12" fill="#e0e0e0"/>
+  <text x="210" y="232" text-anchor="middle" fill="#e0e0e0" font-size="7.5">Full Moon</text>
+  <!-- Waning Gibbous -->
+  <circle cx="150" cy="195" r="12" fill="#e0e0e0"/>
+  <path d="M150,183 A12,12 0 0,1 150,207 A4,12 0 0,0 150,183" fill="#1a1a2e"/>
+  <text x="95" y="193" fill="#e0e0e0" font-size="7.5">Waning</text>
+  <text x="95" y="202" fill="#e0e0e0" font-size="7.5">Gibbous</text>
+  <!-- Third Quarter -->
+  <circle cx="125" cy="128" r="12" fill="#1a1a2e"/>
+  <path d="M125,116 A12,12 0 0,0 125,140 Z" fill="#e0e0e0"/>
+  <text x="60" y="124" fill="#e0e0e0" font-size="7.5">Third</text>
+  <text x="60" y="133" fill="#e0e0e0" font-size="7.5">Quarter</text>
+  <!-- Waning Crescent -->
+  <circle cx="150" cy="61" r="12" fill="#1a1a2e"/>
+  <path d="M150,49 A12,12 0 0,0 150,73 A6,12 0 0,1 150,49" fill="#e0e0e0"/>
+  <text x="90" y="57" fill="#e0e0e0" font-size="7.5">Waning</text>
+  <text x="90" y="66" fill="#e0e0e0" font-size="7.5">Crescent</text>
+  <!-- Orbit circle -->
+  <circle cx="210" cy="128" r="85" fill="none" stroke="#ffffff18" stroke-width="1" stroke-dasharray="3,4"/>
+</svg>`},
+{title:'Solar and Lunar Eclipses — Diagram',
+content:`<h3>When Shadows Fall</h3><p>Eclipses happen when the Sun, Moon, and Earth line up perfectly. The key difference is <em>which body is in the middle</em>.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#006064"/></marker></defs>
+  <rect width="420" height="250" fill="#0d1020"/>
+  <!-- SOLAR ECLIPSE — top half -->
+  <text x="210" y="16" text-anchor="middle" fill="#e0f7fa" font-size="11" font-weight="bold">SOLAR ECLIPSE</text>
+  <!-- Sun -->
+  <circle cx="48" cy="60" r="28" fill="#ffd600"/>
+  <text x="48" y="96" text-anchor="middle" fill="#ffd600" font-size="9">Sun</text>
+  <!-- Moon -->
+  <circle cx="210" cy="60" r="16" fill="#bdbdbd"/>
+  <text x="210" y="83" text-anchor="middle" fill="#bdbdbd" font-size="9">Moon</text>
+  <!-- Earth -->
+  <circle cx="372" cy="60" r="22" fill="#1e88e5"/>
+  <text x="372" y="89" text-anchor="middle" fill="#1e88e5" font-size="9">Earth</text>
+  <!-- Shadow cone (umbra) -->
+  <polygon points="226,50 226,70 390,55 390,65" fill="#00000055"/>
+  <!-- Label -->
+  <text x="310" y="53" fill="#ffcc02" font-size="8">Moon's shadow</text>
+  <text x="310" y="63" fill="#ffcc02" font-size="8">falls on Earth</text>
+  <!-- Arrows: order -->
+  <text x="130" y="57" text-anchor="middle" fill="#e0f7fa" font-size="9">→ MOON in middle →</text>
+  <!-- Divider -->
+  <line x1="20" y1="120" x2="400" y2="120" stroke="#006064" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- LUNAR ECLIPSE — bottom half -->
+  <text x="210" y="138" text-anchor="middle" fill="#e0f7fa" font-size="11" font-weight="bold">LUNAR ECLIPSE</text>
+  <!-- Sun -->
+  <circle cx="48" cy="186" r="28" fill="#ffd600"/>
+  <text x="48" y="222" text-anchor="middle" fill="#ffd600" font-size="9">Sun</text>
+  <!-- Earth -->
+  <circle cx="210" cy="186" r="22" fill="#1e88e5"/>
+  <text x="210" y="215" text-anchor="middle" fill="#1e88e5" font-size="9">Earth</text>
+  <!-- Moon -->
+  <circle cx="372" cy="186" r="16" fill="#bdbdbd"/>
+  <text x="372" y="209" text-anchor="middle" fill="#bdbdbd" font-size="9">Moon</text>
+  <!-- Shadow cone (umbra) from Earth onto Moon -->
+  <polygon points="232,174 232,198 388,181 388,191" fill="#00000077"/>
+  <!-- Label -->
+  <text x="310" y="176" fill="#ffcc02" font-size="8">Earth's shadow</text>
+  <text x="310" y="186" fill="#ffcc02" font-size="8">covers Moon</text>
+  <!-- Arrows: order -->
+  <text x="130" y="183" text-anchor="middle" fill="#e0f7fa" font-size="9">→ EARTH in middle →</text>
+  <text x="210" y="243" text-anchor="middle" fill="#e0f7fa" font-size="9">Solar: Moon blocks Sun from Earth | Lunar: Earth blocks Sun from Moon</text>
+</svg>`},
+{title:'Mini-Quiz: Planets & Motion',
+mcq:[
+  {q:'What causes day and night on Earth?',opts:['The Sun moving around Earth','The Moon blocking the Sun','Earth rotating on its axis every 24 hours','Earth orbiting the Sun every year'],ans:2,exp:'DAY AND NIGHT are caused by Earth ROTATING on its own axis once every 24 hours. As Earth spins, one side faces the Sun (day) while the other faces away (night). The Sun does NOT move around Earth.'},
+  {q:'Which planet is the largest in our solar system?',opts:['Saturn','Earth','Jupiter','Uranus'],ans:2,exp:'JUPITER is the LARGEST planet — over 1,300 Earths could fit inside it! It is a gas giant made mainly of hydrogen and helium. Jupiter also has more than 90 moons, including Ganymede, the largest moon in the solar system.'},
+]},
+{title:'Mini-Quiz: Moon & Stars',
+mcq:[
+  {q:'A solar eclipse occurs when:',opts:['Earth passes between the Sun and Moon','The Moon passes between Earth and Sun','The Sun moves behind Jupiter','The Moon stops orbiting Earth'],ans:1,exp:'A SOLAR ECLIPSE happens when the MOON passes between Earth and the Sun. The Moon\'s shadow falls on Earth, blocking sunlight. It can only happen during a new moon phase, and is only visible from a small area of Earth.'},
+  {q:'What is a light year?',opts:['The time it takes light to travel in one year','A measure of distance — how far light travels in one year','A type of very bright year','The weight of a beam of light'],ans:1,exp:'A LIGHT YEAR is a MEASURE OF DISTANCE — the distance light travels in one year (about 9.46 trillion km or 9.46 × 10¹⁵ m). It is used to measure the vast distances between stars and galaxies.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#0d47a1',dark:'#002171',light:'#e3f2fd',title:'Solar System & Space'});
+</script></body></html>

@@ -1,0 +1,404 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Chemistry — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#1565c0;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#90caf9;color:#0d47a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #bbdefb}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s}
+    .btn-phys{border-color:#1565c0;color:#1565c0;background:#fff}
+    .btn-phys.on{background:#1565c0;color:#fff}
+    .btn-chem{border-color:#c62828;color:#c62828;background:#fff}
+    .btn-chem.on{background:#c62828;color:#fff}
+    .btn-app{border-color:#6a1b9a;color:#6a1b9a;background:#fff}
+    .btn-app.on{background:#6a1b9a;color:#fff}
+    .btn-prac{border-color:#f9a825;color:#f9a825;background:#fff}
+    .btn-prac.on{background:#f9a825;color:#fff}
+    .print-btn{margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
+    .print-btn:hover{background:#64b5f6}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%201">&#8592; All Topics</a></div>
+<div class="topic-header"><span class="label">JCE · Form 1 Chemistry</span><h1>Introduction to Chemistry</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn btn-app on" id="b0" onclick="setView(0)">🧪 Lab Apparatus</button>
+  <button class="btn btn-phys"   id="b1" onclick="setView(1)">🔄 Physical Changes</button>
+  <button class="btn btn-chem"   id="b2" onclick="setView(2)">🔥 Chemical Changes</button>
+  <button class="btn btn-prac"   id="b3" onclick="setView(3)">🎮 Match Apparatus</button>
+</div>
+<script>
+let view=0;
+function setView(n){view=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n)); if(n===3) resetApparatusMatch();}
+function printNotes(){
+  let html='<html><head><title>Chemistry Intro Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#0d47a1;margin-top:14px}p{margin:4px 0 10px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }</style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>';
+  html+='<h1>Introduction to Chemistry — Study Notes</h1><h2>Lab Apparatus</h2><ul>';
+  APPARATUS.forEach(a=>html+=`<li><strong>${a.name}:</strong> ${a.desc.replace(/\n/g,' ')}</li>`);
+  html+='</ul><h2>Physical vs Chemical Changes</h2><table border="1" style="border-collapse:collapse;width:100%"><tr><th>Physical Change</th><th>Chemical Change</th></tr><tr><td>No new substance formed</td><td>New substance formed</td></tr><tr><td>Usually reversible</td><td>Usually NOT reversible</td></tr></table>';
+  html+='<h2>Elements, Compounds and Mixtures</h2><ul><li><strong>Element:</strong> One type of atom. Cannot be broken down further.</li><li><strong>Compound:</strong> Two+ different elements chemically bonded.</li><li><strong>Mixture:</strong> Two+ substances NOT chemically bonded. Can be separated.</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let amSel=-1, amMatched, amWrong, amShuffled;
+function resetApparatusMatch(){
+  amShuffled=[...APPARATUS].sort(()=>Math.random()-0.5);
+  amSel=-1; amMatched=new Set(); amWrong={l:-1,r:-1,t:0};
+}
+
+const APPARATUS=[
+  {name:'Beaker',desc:'Holds and mixes liquids.\nHas a spout for pouring.',shape:'beaker'},
+  {name:'Conical Flask',desc:'Swirling liquids safely.\nUsed in titrations.',shape:'flask'},
+  {name:'Test Tube',desc:'Small-scale reactions.\nHeated directly.',shape:'testtube'},
+  {name:'Measuring Cylinder',desc:'Measures volume of liquids accurately.\nRead at the meniscus (bottom of curve).',shape:'cylinder'},
+  {name:'Bunsen Burner',desc:'Provides heat source.\nBlue flame (hot) vs yellow flame (cool).',shape:'bunsen'},
+  {name:'Tripod & Gauze',desc:'Supports beaker above flame.\nGauze spreads heat evenly.',shape:'tripod'},
+];
+const PHYSICAL=[
+  {title:'Melting Ice',desc:'Solid → Liquid (H₂O).\nReversible: freeze it back to ice.',col:[100,181,246],icon:'🧊→💧'},
+  {title:'Dissolving Sugar',desc:'Sugar + Water → Solution.\nReversible: evaporate the water.',col:[255,193,7],icon:'🍬💧'},
+  {title:'Boiling Water',desc:'Liquid → Gas (steam).\nReversible: condense steam back.',col:[200,230,255],icon:'💧→💨'},
+  {title:'Stretching Rubber',desc:'Rubber band stretches.\nReturns to original shape.',col:[100,200,100],icon:'↔️'},
+];
+const CHEMICAL=[
+  {title:'Burning Wood',desc:'Wood + O₂ → CO₂ + H₂O + ash.\nNOT reversible.',col:[255,120,30],icon:'🔥'},
+  {title:'Rusting Iron',desc:'4Fe + 3O₂ → 2Fe₂O₃\nRust cannot become iron again.',col:[180,80,30],icon:'🔩'},
+  {title:'Cooking an Egg',desc:'Egg protein denatures permanently.\nCannot "uncook" an egg.',col:[255,200,80],icon:'🍳'},
+  {title:'Vinegar + Baking Soda',desc:'CH₃COOH + NaHCO₃ →\nCO₂ gas produced (bubbles).',col:[150,200,80],icon:'🧴'},
+];
+
+let appSel=0;
+
+new p5(sk=>{
+  const W=880,H=510;
+  let tick=0;
+  const hits=[];
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    tick+=0.04;hits.length=0;
+    if(view===3){ drawApparatusMatch(); return; }
+    sk.background(248,252,248);
+    if(view===0) drawApparatus();
+    else if(view===1) drawChanges(PHYSICAL,false);
+    else drawChanges(CHEMICAL,true);
+    drawInfoPanel();
+  };
+  sk.mouseClicked=()=>{
+    if(view===3){
+      let mx=sk.mouseX,my=sk.mouseY;
+      if(amMatched.size===APPARATUS.length&&mx>300&&mx<580&&my>440&&my<478){ resetApparatusMatch(); return; }
+      APPARATUS.forEach((item,i)=>{ let y=40+i*68; if(mx>20&&mx<250&&my>y&&my<y+60&&!amMatched.has(i)) amSel=i; });
+      if(amSel>=0){
+        amShuffled.forEach((item,i)=>{ let origIdx=APPARATUS.indexOf(item),y=40+i*68;
+          if(mx>260&&mx<860&&my>y&&my<y+60&&!amMatched.has(origIdx)){
+            if(origIdx===amSel){ amMatched.add(amSel); amSel=-1; }
+            else { amWrong={l:amSel,r:i,t:50}; }
+          }
+        });
+      }
+      return;
+    }
+    for(let h of hits) if(sk.mouseX>h.x&&sk.mouseX<h.x+h.w&&sk.mouseY>h.y&&sk.mouseY<h.y+h.h){appSel=h.i;break;}
+  };
+
+  function drawApparatusMatch(){
+    if(amWrong.t>0) amWrong.t--;
+    sk.background(245,248,255);
+    sk.fill(21,101,192); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Match the Apparatus — click a name, then click its correct description',440,22);
+    APPARATUS.forEach((item,i)=>{
+      let y=40+i*68,matched=amMatched.has(i),sel=amSel===i,wrong=amWrong.l===i&&amWrong.t>0;
+      sk.fill(matched?[180,255,180]:sel?[255,235,59]:wrong?[255,180,180]:[235,245,255]);
+      sk.stroke(matched?[0,150,0]:sel?[200,160,0]:wrong?[200,0,0]:[150,180,220]); sk.strokeWeight(matched||sel||wrong?2:1);
+      sk.rect(20,y,230,60,7);
+      sk.noStroke(); sk.fill(30); sk.textSize(12); sk.textStyle(matched||sel?sk.BOLD:sk.NORMAL); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(item.name,34,y+30);
+      if(matched){ sk.fill(0,150,0); sk.textSize(18); sk.textAlign(sk.RIGHT,sk.CENTER); sk.text('✓',242,y+30); }
+    });
+    amShuffled.forEach((item,i)=>{
+      let origIdx=APPARATUS.indexOf(item),y=40+i*68,matched=amMatched.has(origIdx),wrong=amWrong.r===i&&amWrong.t>0;
+      sk.fill(matched?[200,255,200]:wrong?[255,200,200]:[255,255,255]);
+      sk.stroke(matched?[0,150,0]:wrong?[200,0,0]:[200]); sk.strokeWeight(1.5);
+      sk.rect(260,y,600,60,7);
+      sk.noStroke(); sk.fill(matched?[0,100,0]:[40]); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(item.desc.replace(/\n/g,' — '),272,y+30,578,54);
+    });
+    if(amMatched.size===APPARATUS.length){
+      sk.fill(0,0,0,150); sk.noStroke(); sk.rect(260,420,360,80,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All matched! Great work!',440,450); sk.fill(180,240,180); sk.noStroke(); sk.rect(300,472,280,30,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',440,487);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE); sk.textStyle(sk.NORMAL);
+  }
+
+  function drawApparatus(){
+    let cols=3,rows=2,gw=480/cols,gh=240/rows;
+    APPARATUS.forEach((a,i)=>{
+      let c=i%cols,r=Math.floor(i/cols);
+      let x=12+c*gw,y=18+r*gh;
+      let active=appSel===i;
+      sk.fill(active?230:245,active?244:250,active?254:255,200);
+      sk.stroke(active?30:180,active?100:200,active?220:230);sk.strokeWeight(active?2:1);
+      sk.rect(x,y,gw-6,gh-6,8);
+      drawLabItem(sk,a.shape,x+gw/2-3,y+gh/2-10,tick,active);
+      sk.fill(30);sk.textSize(10);sk.textStyle(active?sk.BOLD:sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text(a.name,x+gw/2-3,y+gh-14);sk.textStyle(sk.NORMAL);
+      hits.push({i,x,y,w:gw-6,h:gh-6});
+    });
+    // Safety rules below apparatus
+    let sy=260;
+    sk.fill(255,240,240,200);sk.stroke(200,30,30,100);sk.strokeWeight(1);
+    sk.rect(10,sy,470,235,8);sk.noStroke();
+    sk.fill(180,0,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('⚠ LAB SAFETY RULES:',18,sy+18);sk.textStyle(sk.NORMAL);
+    const safety=['Wear safety goggles and lab coat','Never taste or touch chemicals','Point test tubes away from people when heating',
+      'No running in the laboratory','Wash hands after every experiment','Know the location of the fire extinguisher'];
+    safety.forEach((s,i)=>{
+      sk.fill(200,30,30,200);sk.ellipse(22,sy+36+i*30,8);
+      sk.fill(30);sk.textSize(10.5);sk.text(s,30,sy+40+i*30);
+    });
+  }
+
+  function drawLabItem(sk,shape,x,y,t,active){
+    sk.noStroke();
+    switch(shape){
+      case 'beaker':
+        sk.fill(200,225,255,80);sk.stroke(100,150,220);sk.strokeWeight(2);
+        sk.rect(x-28,y-35,56,70,0,0,8,8);
+        sk.fill(100,181,246,active?160:80);sk.noStroke();sk.rect(x-26,y+5,52,28,0,0,7,7);
+        break;
+      case 'flask':
+        sk.fill(200,225,255,80);sk.stroke(100,150,220);sk.strokeWeight(2);
+        sk.ellipse(x,y+15,56,44);sk.rect(x-8,y-30,16,46);
+        sk.fill(100,181,246,80);sk.noStroke();sk.arc(x,y+15,50,38,0.2,sk.PI-0.2);
+        break;
+      case 'testtube':
+        sk.fill(200,225,255,80);sk.stroke(100,150,220);sk.strokeWeight(2);
+        sk.rect(x-12,y-38,24,60,0,0,12,12);
+        sk.fill(255,140,0,active?160:80);sk.noStroke();sk.rect(x-10,y+5,20,15,0,0,10,10);
+        break;
+      case 'cylinder':
+        sk.fill(200,225,255,80);sk.stroke(100,150,220);sk.strokeWeight(2);
+        sk.rect(x-12,y-38,24,72,2);sk.ellipse(x,y-38,24,8);
+        // graduation marks
+        sk.stroke(100,150,220);sk.strokeWeight(1);
+        for(let i=1;i<=4;i++) sk.line(x+5,y-38+i*16,x+11,y-38+i*16);
+        break;
+      case 'bunsen':
+        sk.fill(120,120,120);sk.noStroke();sk.rect(x-8,y+10,16,25,2);
+        sk.rect(x-14,y+28,28,8,2);sk.rect(x-20,y+34,40,4,2);
+        if(active||Math.sin(t*3)>0){
+          sk.fill(255,150,0,180);sk.ellipse(x,y+8,18,22);
+          sk.fill(255,220,0,120);sk.ellipse(x,y+4,10,14);
+        }
+        break;
+      case 'tripod':
+        sk.stroke(100,100,100);sk.strokeWeight(3);
+        sk.line(x-20,y+25,x,y-10);sk.line(x+20,y+25,x,y-10);sk.line(x,y+28,x,y-10);
+        sk.stroke(150,150,150);sk.strokeWeight(2);sk.line(x-22,y,x+22,y);
+        sk.stroke(180,180,180);sk.strokeWeight(4);sk.line(x-16,y-4,x+16,y-4);
+        break;
+    }
+  }
+
+  function drawChanges(list,isChem){
+    let cols=2;
+    list.forEach((item,i)=>{
+      let c=i%cols,r=Math.floor(i/cols);
+      let x=12+c*235,y=18+r*220;
+      sk.fill(255,255,255,200);sk.stroke(isChem?200:100,isChem?80:150,isChem?30:220);sk.strokeWeight(1.5);
+      sk.rect(x,y,228,214,8);sk.noStroke();
+      // Animated icon
+      sk.textSize(36);sk.textAlign(sk.CENTER);
+      sk.text(item.icon,x+114,y+58);
+      // Reversibility badge
+      sk.fill(isChem?200:0,isChem?30:150,isChem?30:80,200);
+      sk.rect(x+8,y+8,isChem?120:100,22,999);sk.noStroke();
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);
+      sk.text(isChem?'✗ NOT Reversible':'✓ Reversible',x+(isChem?68:58),y+22);sk.textStyle(sk.NORMAL);
+      // Title
+      sk.fill(30);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(item.title,x+114,y+85);sk.textStyle(sk.NORMAL);
+      // Description
+      sk.fill(60);sk.textSize(10);
+      item.desc.split('\n').forEach((l,li)=>sk.text(l,x+114,y+105+li*16));
+      // Particle animation for chemical change
+      if(isChem){
+        for(let p=0;p<6;p++){
+          let a=p/6*sk.TWO_PI+tick*(i+1)*0.5;
+          let pr=28+p*5;
+          let px2=x+114+Math.cos(a)*pr,py2=y+165+Math.sin(a)*pr;
+          sk.fill(item.col[0],item.col[1],item.col[2],160-p*20);sk.noStroke();
+          sk.ellipse(px2,py2,8-p);
+        }
+      } else {
+        // Reversibility arrows
+        sk.stroke(item.col[0],item.col[1],item.col[2]);sk.strokeWeight(1.5);sk.noFill();
+        sk.arc(x+114,y+175,50,20,sk.PI,0);
+        sk.arc(x+114,y+185,50,20,0,sk.PI);
+      }
+    });
+    // Labels
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.noStroke();
+    let ty=436;
+    sk.fill(isChem?200:0,isChem?30:150,isChem?30:80,200);
+    sk.rect(10,ty,460,55,8);sk.noStroke();
+    sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);
+    sk.text(isChem?'Chemical Change:':'Physical Change:',18,ty+18);sk.textStyle(sk.NORMAL);
+    sk.fill(255,255,255,220);sk.textSize(10);
+    sk.text(isChem?'New substance formed. Usually NOT reversible. Signs: gas, light,\ncolour change, heat produced/absorbed, precipitate forms.'
+    :'NO new substance formed. Usually REVERSIBLE.\nOnly the form or state of the substance changes.',18,ty+34);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    sk.fill(255,255,255,240);sk.stroke(30,100,200);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    // Header
+    sk.fill(21,101,192,210);sk.rect(px+8,py+8,pw-16,34,7);sk.noStroke();
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(view===0?'🧪 Lab Apparatus':view===1?'🔄 Physical Changes':'🔥 Chemical Changes',px+pw/2,py+30);
+    sk.textStyle(sk.NORMAL);
+
+    if(view===0&&appSel<APPARATUS.length){
+      let a=APPARATUS[appSel];
+      let sy=py+52;
+      sk.fill(240,248,255,200);sk.stroke(30,100,200,80);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,60,6);sk.noStroke();
+      sk.fill(20,70,180);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(a.name,px+16,sy+18);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);a.desc.split('\n').forEach((l,i)=>sk.text(l,px+16,sy+34+i*15));
+      sy+=70;
+      // All apparatus list
+      sk.fill(50);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('ALL APPARATUS:',px+16,sy+16);sk.textStyle(sk.NORMAL);
+      APPARATUS.forEach((app,i)=>{
+        sk.fill(i===appSel?30:240,i===appSel?100:248,i===appSel?200:255,200);
+        sk.stroke(30,100,200,60);sk.strokeWeight(1);
+        sk.rect(px+10,sy+22+i*54,pw-20,48,5);sk.noStroke();
+        sk.fill(i===appSel?[0,60,160]:[30]);sk.textSize(10.5);sk.textStyle(i===appSel?sk.BOLD:sk.NORMAL);sk.textAlign(sk.LEFT);
+        sk.text(app.name,px+16,sy+38+i*54);sk.textStyle(sk.NORMAL);
+        sk.fill(80);sk.textSize(9);sk.text(app.desc.split('\n')[0],px+16,sy+52+i*54);
+      });
+    } else {
+      // Elements / Compounds / Mixtures
+      let sy=py+52;
+      const concepts=[
+        {t:'Element',col:[220,80,30],def:'One type of atom only.\nCannot be broken down further by chemical means.',ex:'Iron (Fe), Oxygen (O₂), Gold (Au), Carbon (C)'},
+        {t:'Compound',col:[30,120,200],def:'Two or more DIFFERENT elements\nchemically BONDED together.',ex:'Water (H₂O), Salt (NaCl), CO₂, Glucose (C₆H₁₂O₆)'},
+        {t:'Mixture',col:[80,160,40],def:'Two or more substances\nNOT chemically bonded. Can be separated.',ex:'Air, sea water, soil, alloys, blood'},
+      ];
+      concepts.forEach(c=>{
+        let lines=c.def.split('\n');
+        let bh=20+lines.length*15+20;
+        sk.fill(c.col[0],c.col[1],c.col[2],20);sk.stroke(c.col[0],c.col[1],c.col[2],100);sk.strokeWeight(1.2);
+        sk.rect(px+10,sy,pw-20,bh+28,7);sk.noStroke();
+        sk.fill(c.col[0],c.col[1],c.col[2]);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+        sk.text(c.t,px+16,sy+18);sk.textStyle(sk.NORMAL);
+        sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+32+i*15));
+        sk.fill(100);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('e.g. ',px+16,sy+bh+8);
+        sk.textStyle(sk.NORMAL);sk.fill(60);sk.text(c.ex,px+36,sy+bh+8);
+        sy+=bh+38;
+      });
+      // Signs of chemical change
+      sk.fill(255,240,240,200);sk.stroke(200,30,30,80);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,110,6);sk.noStroke();
+      sk.fill(180,0,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('SIGNS OF A CHEMICAL CHANGE:',px+16,sy+14);sk.textStyle(sk.NORMAL);
+      ['Gas produced (bubbles)','Colour change','Light emitted (flame/glow)','Heat produced or absorbed','Precipitate (solid forms in solution)'].forEach((s,i)=>{
+        sk.fill(200,30,30,200);sk.ellipse(px+20,sy+30+i*18,7);
+        sk.fill(30);sk.textSize(10);sk.text(s,px+28,sy+34+i*18);
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+

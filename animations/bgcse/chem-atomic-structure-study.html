@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Atomic Structure — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,15,25]))}
+
+const STEPS=[
+  {
+    title:'Inside the Atom',
+    body:`All matter is made of <strong>atoms</strong>. Each atom has:
+    <ul style="margin:8px 0 0 18px;line-height:2.2">
+      <li><strong>Protons</strong> — positive charge (+1), mass 1 — in the nucleus</li>
+      <li><strong>Neutrons</strong> — no charge (0), mass 1 — in the nucleus</li>
+      <li><strong>Electrons</strong> — negative charge (−1), mass ~0 — in shells around nucleus</li>
+    </ul>
+    An atom is <strong>electrically neutral</strong> — number of protons = number of electrons.
+    <br><br>
+    <strong>Atomic number (Z)</strong> = number of protons<br>
+    <strong>Mass number (A)</strong> = protons + neutrons`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const cx=W/2,cy=H/2;
+      // Nucleus
+      sk.fill(231,76,60,220);sk.noStroke();sk.circle(cx,cy,52);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Nucleus',cx,cy);
+      // Protons/neutrons inside
+      [[8,255,100,100],[6,200,200,200]].forEach(([n,r,g,b],type)=>{
+        for(let i=0;i<n;i++){
+          const ang=i*(sk.TWO_PI/n);
+          const r2=type===0?18:10;
+          const nx=cx+Math.cos(ang)*r2,ny=cy+Math.sin(ang)*r2;
+          // Just colour the nucleus
+        }
+      });
+      sk.fill(255,150,150);sk.textSize(8);sk.textAlign(sk.CENTER);sk.text('p⁺ & n⁰',cx,cy+28);
+      // Electron shells
+      const shells=[2,8,8];
+      const radii=[H*0.18,H*0.3,H*0.42];
+      radii.forEach((r,si)=>{
+        sk.noFill();sk.stroke(255,255,255,25);sk.strokeWeight(1);
+        sk.circle(cx,cy,r*2);
+        const n=shells[si];
+        for(let i=0;i<n;i++){
+          const ang=t*(1-si*0.3)+(i/n)*sk.TWO_PI;
+          const ex=cx+Math.cos(ang)*r,ey=cy+Math.sin(ang)*r;
+          sk.fill(100,180,255,220);sk.noStroke();sk.circle(ex,ey,9);
+        }
+        sk.fill(255,255,255,60);sk.noStroke();sk.textSize(8);sk.textAlign(sk.LEFT);
+        sk.text('Shell '+(si+1)+': '+n,cx+r+5,cy);
+      });
+    }
+  },
+  {
+    title:'Electron Configuration',
+    body:`Electrons fill shells in order, with a maximum in each:
+    <ul style="margin:8px 0 0 18px;line-height:2">
+      <li><strong>Shell 1</strong> — maximum 2 electrons</li>
+      <li><strong>Shell 2</strong> — maximum 8 electrons</li>
+      <li><strong>Shell 3</strong> — maximum 8 electrons (for BGCSE)</li>
+    </ul>
+    Examples:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Sodium (Na, Z=11): <strong>2, 8, 1</strong></li>
+      <li>Chlorine (Cl, Z=17): <strong>2, 8, 7</strong></li>
+      <li>Calcium (Ca, Z=20): <strong>2, 8, 8, 2</strong></li>
+    </ul>
+    The outer shell electrons (<strong>valence electrons</strong>) determine how an element reacts.`,
+    draw:(sk)=>{
+      bg(sk,[10,15,30]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Show Na: 2,8,1
+      const cx=W/2,cy=H/2;
+      const configs=[[2,H*0.14],[8,H*0.26],[1,H*0.38]];
+      sk.noFill();sk.stroke(231,76,60,80);sk.strokeWeight(2);sk.circle(cx,cy,22);// Nucleus
+      sk.fill(231,76,60);sk.noStroke();sk.circle(cx,cy,22);
+      sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Na',cx,cy);
+      configs.forEach(([n,r],si)=>{
+        sk.noFill();sk.stroke(255,255,255,20);sk.strokeWeight(1);sk.circle(cx,cy,r*2);
+        for(let i=0;i<n;i++){
+          const ang=t*(1-si*0.2)+(i/n)*sk.TWO_PI;
+          const ex=cx+Math.cos(ang)*r,ey=cy+Math.sin(ang)*r;
+          const isValence=si===2;
+          sk.fill(isValence?[255,220,50]:[100,180,255]);
+          sk.noStroke();sk.circle(ex,ey,si===2?12:8);
+          if(isValence){
+            sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('1',ex,ey);
+          }
+        }
+      });
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Na: 2, 8, 1',W/2,H*0.86);
+      sk.textStyle(sk.NORMAL);sk.fill(255,255,255,80);sk.textSize(9);
+      sk.text('Valence = 1 (highlighted)',W/2,H*0.93);
+    }
+  },
+  {
+    q:'Sodium Atom — Electron Shell Diagram (Na, Z=11)',
+    content:`<h3>Sodium Atom — Electron Shell Diagram (Na, Z=11)</h3><p>Sodium has atomic number 11, meaning it has 11 protons in its nucleus and 11 electrons arranged in three shells. The nucleus also contains 12 neutrons, giving a mass number of 23.</p><ul><li>Shell 1 holds 2 electrons (maximum for shell 1)</li><li>Shell 2 holds 8 electrons (maximum for shell 2)</li><li>Shell 3 holds 1 valence electron — this single outer electron makes sodium very reactive</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="280" fill="#fff8e1" rx="8"/>
+  <!-- Shell circles -->
+  <circle cx="210" cy="140" r="110" fill="none" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.5"/>
+  <circle cx="210" cy="140" r="72" fill="none" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>
+  <circle cx="210" cy="140" r="36" fill="none" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.7"/>
+  <!-- Nucleus -->
+  <circle cx="210" cy="140" r="22" fill="#e65100"/>
+  <text x="210" y="136" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">11p⁺</text>
+  <text x="210" y="148" text-anchor="middle" fill="#fff" font-size="10">12n⁰</text>
+  <!-- Shell 1: 2 electrons -->
+  <circle cx="210" cy="104" r="8" fill="#1565c0"/>
+  <text x="210" y="107" text-anchor="middle" fill="#fff" font-size="9">e⁻</text>
+  <circle cx="210" cy="176" r="8" fill="#1565c0"/>
+  <text x="210" y="179" text-anchor="middle" fill="#fff" font-size="9">e⁻</text>
+  <!-- Shell 2: 8 electrons -->
+  <circle cx="282" cy="140" r="8" fill="#1565c0"/><circle cx="256" cy="89" r="8" fill="#1565c0"/>
+  <circle cx="210" cy="68" r="8" fill="#1565c0"/><circle cx="164" cy="89" r="8" fill="#1565c0"/>
+  <circle cx="138" cy="140" r="8" fill="#1565c0"/><circle cx="164" cy="191" r="8" fill="#1565c0"/>
+  <circle cx="210" cy="212" r="8" fill="#1565c0"/><circle cx="256" cy="191" r="8" fill="#1565c0"/>
+  <!-- Shell 3: 1 valence electron -->
+  <circle cx="210" cy="30" r="10" fill="#e65100" stroke="#fff" stroke-width="1.5"/>
+  <text x="210" y="34" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">e⁻</text>
+  <!-- Labels -->
+  <text x="330" y="44" fill="#e65100" font-size="11" font-weight="bold">Shell 3 (1e⁻)</text>
+  <line x1="320" y1="40" x2="224" y2="34" stroke="#e65100" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="330" y="100" fill="#333" font-size="11">Shell 2 (8e⁻)</text>
+  <line x1="320" y1="97" x2="287" y2="93" stroke="#e65100" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="330" y="145" fill="#333" font-size="11">Shell 1 (2e⁻)</text>
+  <line x1="320" y1="142" x2="220" y2="140" stroke="#e65100" stroke-width="1" marker-end="url(#arr)"/>
+  <!-- Configuration text -->
+  <rect x="10" y="250" width="400" height="24" rx="4" fill="#e65100" opacity="0.15"/>
+  <text x="210" y="266" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Na (Z=11) Electronic Configuration: 2, 8, 1</text>
+</svg>`
+  },
+  {
+    q:'Isotopes Comparison — Carbon-12, Carbon-13, Carbon-14',
+    content:`<h3>Isotopes of Carbon — ¹²C, ¹³C, ¹⁴C</h3><p>Isotopes are atoms of the same element that have the same number of protons but different numbers of neutrons. All three carbon isotopes have 6 protons (Z=6), but their mass numbers differ because of differing neutron counts.</p><ul><li>¹²C: 6 protons, 6 neutrons — the most abundant isotope (~98.9%), used as the standard for atomic mass</li><li>¹³C: 6 protons, 7 neutrons — stable but rare (~1.1%), used in NMR spectroscopy</li><li>¹⁴C: 6 protons, 8 neutrons — radioactive, used in carbon dating to determine the age of ancient organic materials</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="260" fill="#fff8e1" rx="8"/>
+  <text x="210" y="24" text-anchor="middle" fill="#e65100" font-size="14" font-weight="bold">Isotopes of Carbon (Z = 6)</text>
+  <text x="210" y="42" text-anchor="middle" fill="#333" font-size="11">Same number of protons — different number of neutrons</text>
+  <!-- Carbon-12 -->
+  <rect x="20" y="55" width="115" height="160" rx="8" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="77" y="76" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">¹²C</text>
+  <circle cx="77" cy="120" r="32" fill="#e65100" opacity="0.85"/>
+  <text x="77" y="115" text-anchor="middle" fill="#fff" font-size="11">6p⁺</text>
+  <text x="77" y="129" text-anchor="middle" fill="#fff" font-size="11">6n⁰</text>
+  <text x="77" y="165" text-anchor="middle" fill="#333" font-size="11">A = 12</text>
+  <text x="77" y="200" text-anchor="middle" fill="#1565c0" font-size="10">~98.9% abundant</text>
+  <!-- Carbon-13 -->
+  <rect x="152" y="55" width="115" height="160" rx="8" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="76" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">¹³C</text>
+  <circle cx="210" cy="120" r="32" fill="#e65100" opacity="0.85"/>
+  <text x="210" y="115" text-anchor="middle" fill="#fff" font-size="11">6p⁺</text>
+  <text x="210" y="129" text-anchor="middle" fill="#fff" font-size="11">7n⁰</text>
+  <text x="210" y="165" text-anchor="middle" fill="#333" font-size="11">A = 13</text>
+  <text x="210" y="200" text-anchor="middle" fill="#1565c0" font-size="10">~1.1% abundant</text>
+  <!-- Carbon-14 -->
+  <rect x="285" y="55" width="115" height="160" rx="8" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="342" y="76" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">¹⁴C</text>
+  <circle cx="342" cy="120" r="32" fill="#e65100" opacity="0.85"/>
+  <text x="342" y="115" text-anchor="middle" fill="#fff" font-size="11">6p⁺</text>
+  <text x="342" y="129" text-anchor="middle" fill="#fff" font-size="11">8n⁰</text>
+  <text x="342" y="165" text-anchor="middle" fill="#333" font-size="11">A = 14</text>
+  <text x="342" y="200" text-anchor="middle" fill="#1565c0" font-size="10">Radioactive</text>
+  <!-- Same Z arrow -->
+  <text x="210" y="235" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">All have Z = 6 protons ⟹ all are CARBON</text>
+  <text x="210" y="252" text-anchor="middle" fill="#333" font-size="10">Different A (mass number) = different neutron count</text>
+</svg>`
+  },
+  {
+    q:'History of Atomic Models — Timeline',
+    content:`<h3>Development of the Atomic Model</h3><p>Our understanding of the atom has evolved over two centuries as new experimental evidence challenged existing models. Each scientist built on the work of the previous one, revising the model to fit new data.</p><ul><li>Dalton (1803): solid indivisible sphere — atoms cannot be split</li><li>Thomson (1904): "plum pudding" model — electrons embedded in a positive sphere, discovered after the electron was identified</li><li>Rutherford (1911): nuclear model — gold foil experiment showed most mass is in a tiny dense positive nucleus, with electrons orbiting outside</li><li>Bohr (1913): planetary model — electrons occupy fixed energy levels (shells), explaining atomic line spectra</li></ul>`,
+    visual:`<svg viewBox="0 0 420 290" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="290" fill="#fff8e1" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" fill="#e65100" font-size="14" font-weight="bold">Development of the Atomic Model</text>
+  <!-- Timeline line -->
+  <line x1="40" y1="60" x2="380" y2="60" stroke="#e65100" stroke-width="2.5" marker-end="url(#arr)"/>
+  <!-- Dalton -->
+  <circle cx="70" cy="60" r="7" fill="#e65100"/>
+  <text x="70" y="80" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1803</text>
+  <text x="70" y="94" text-anchor="middle" fill="#333" font-size="9">Dalton</text>
+  <rect x="25" y="105" width="88" height="68" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="69" cy="125" r="12" fill="#e65100" opacity="0.7"/>
+  <text x="69" y="143" text-anchor="middle" fill="#333" font-size="9" font-style="italic">Solid sphere</text>
+  <text x="69" y="155" text-anchor="middle" fill="#333" font-size="9">Indivisible</text>
+  <text x="69" y="167" text-anchor="middle" fill="#333" font-size="9">ball</text>
+  <!-- Thomson -->
+  <circle cx="165" cy="60" r="7" fill="#e65100"/>
+  <text x="165" y="80" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1904</text>
+  <text x="165" y="94" text-anchor="middle" fill="#333" font-size="9">Thomson</text>
+  <rect x="120" y="105" width="88" height="68" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="164" cy="130" r="18" fill="#1565c0" opacity="0.5"/>
+  <circle cx="155" cy="126" r="4" fill="#e65100"/>
+  <circle cx="173" cy="135" r="4" fill="#e65100"/>
+  <circle cx="160" cy="140" r="4" fill="#e65100"/>
+  <text x="164" y="160" text-anchor="middle" fill="#333" font-size="8" font-style="italic">"Plum pudding"</text>
+  <text x="164" y="170" text-anchor="middle" fill="#333" font-size="8">e⁻ in +ve sphere</text>
+  <!-- Rutherford -->
+  <circle cx="260" cy="60" r="7" fill="#e65100"/>
+  <text x="260" y="80" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1911</text>
+  <text x="260" y="94" text-anchor="middle" fill="#333" font-size="9">Rutherford</text>
+  <rect x="215" y="105" width="88" height="68" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="259" cy="130" r="5" fill="#e65100"/>
+  <circle cx="268" cy="118" r="4" fill="#1565c0" opacity="0.8"/>
+  <circle cx="248" cy="138" r="4" fill="#1565c0" opacity="0.8"/>
+  <text x="259" y="158" text-anchor="middle" fill="#333" font-size="8" font-style="italic">Nuclear model</text>
+  <text x="259" y="168" text-anchor="middle" fill="#333" font-size="8">Dense +ve nucleus</text>
+  <!-- Bohr -->
+  <circle cx="350" cy="60" r="7" fill="#e65100"/>
+  <text x="350" y="80" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1913</text>
+  <text x="350" y="94" text-anchor="middle" fill="#333" font-size="9">Bohr</text>
+  <rect x="308" y="105" width="88" height="68" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="352" cy="130" r="7" fill="#e65100"/>
+  <circle cx="352" cy="130" r="18" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="352" cy="112" r="4" fill="#1565c0"/>
+  <circle cx="370" cy="130" r="4" fill="#1565c0"/>
+  <text x="352" y="162" text-anchor="middle" fill="#333" font-size="8" font-style="italic">Planetary model</text>
+  <text x="352" y="172" text-anchor="middle" fill="#333" font-size="8">Electrons in shells</text>
+  <!-- Bottom note -->
+  <text x="210" y="205" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Evidence changed the model over time</text>
+  <rect x="10" y="214" width="400" height="30" rx="4" fill="#e65100" opacity="0.1"/>
+  <text x="210" y="228" text-anchor="middle" fill="#333" font-size="10">Rutherford's gold foil experiment (1909) disproved Thomson's model:</text>
+  <text x="210" y="242" text-anchor="middle" fill="#333" font-size="10">most alpha particles passed through — atom is mostly empty space</text>
+  <text x="210" y="275" text-anchor="middle" fill="#333" font-size="10">Bohr added quantised electron orbits (shells) to explain line spectra</text>
+</svg>`
+  },
+  {
+    q:'Periodic Table Block Structure — s, p, d Blocks',
+    content:`<h3>Periodic Table Block Structure</h3><p>The periodic table is divided into blocks based on which type of orbital the outermost electrons occupy. Understanding blocks helps predict element properties and electronic configurations at a glance.</p><ul><li>s-block (Groups 1 & 2): outermost electrons in s orbitals — includes reactive metals like Na and Ca, and hydrogen and helium</li><li>p-block (Groups 13–18): outermost electrons in p orbitals — includes non-metals, metalloids, and noble gases</li><li>d-block (Groups 3–12, Period 4 onwards): transition metals such as Fe, Cu, and Zn — known for variable oxidation states and coloured compounds</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="255" fill="#fff8e1" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Periodic Table — Block Structure</text>
+  <!-- Period labels -->
+  <text x="14" y="52" fill="#333" font-size="9" font-weight="bold">Per.</text>
+  <text x="14" y="68" fill="#333" font-size="9">1</text>
+  <text x="14" y="84" fill="#333" font-size="9">2</text>
+  <text x="14" y="100" fill="#333" font-size="9">3</text>
+  <text x="14" y="116" fill="#333" font-size="9">4</text>
+  <!-- s-block (Groups 1-2 + H/He) -->
+  <rect x="28" y="55" width="36" height="72" rx="4" fill="#e65100" opacity="0.7"/>
+  <rect x="390" y="55" width="20" height="16" rx="3" fill="#e65100" opacity="0.7"/>
+  <text x="46" y="95" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">s</text>
+  <text x="46" y="108" text-anchor="middle" fill="#fff" font-size="9">Groups</text>
+  <text x="46" y="119" text-anchor="middle" fill="#fff" font-size="9">1 &amp; 2</text>
+  <!-- p-block (Groups 13-18) -->
+  <rect x="296" y="55" width="114" height="72" rx="4" fill="#1565c0" opacity="0.65"/>
+  <text x="353" y="95" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">p</text>
+  <text x="353" y="108" text-anchor="middle" fill="#fff" font-size="9">Groups</text>
+  <text x="353" y="119" text-anchor="middle" fill="#fff" font-size="9">13 – 18</text>
+  <!-- d-block (Groups 3-12, periods 4+) -->
+  <rect x="66" y="103" width="228" height="36" rx="4" fill="#2e7d32" opacity="0.65"/>
+  <text x="180" y="118" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">d  (transition metals)</text>
+  <text x="180" y="130" text-anchor="middle" fill="#fff" font-size="9">Groups 3 – 12 (Period 4 onwards)</text>
+  <!-- Group number labels -->
+  <text x="36" y="50" fill="#e65100" font-size="8" font-weight="bold">1</text>
+  <text x="56" y="50" fill="#e65100" font-size="8" font-weight="bold">2</text>
+  <text x="296" y="50" fill="#1565c0" font-size="8" font-weight="bold">13</text>
+  <text x="318" y="50" fill="#1565c0" font-size="8" font-weight="bold">14</text>
+  <text x="340" y="50" fill="#1565c0" font-size="8" font-weight="bold">15</text>
+  <text x="362" y="50" fill="#1565c0" font-size="8" font-weight="bold">16</text>
+  <text x="384" y="50" fill="#1565c0" font-size="8" font-weight="bold">17</text>
+  <text x="400" y="50" fill="#1565c0" font-size="8" font-weight="bold">18</text>
+  <!-- Period 1 elements H and He -->
+  <rect x="28" y="55" width="18" height="16" rx="2" fill="#e65100"/>
+  <text x="37" y="67" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">H</text>
+  <rect x="390" y="55" width="20" height="16" rx="2" fill="#1565c0" opacity="0.8"/>
+  <text x="400" y="67" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">He</text>
+  <!-- Legend -->
+  <rect x="20" y="155" width="14" height="14" rx="2" fill="#e65100" opacity="0.7"/>
+  <text x="40" y="166" fill="#333" font-size="11">s-block: Group 1 &amp; 2 metals, filling s orbitals</text>
+  <rect x="20" y="176" width="14" height="14" rx="2" fill="#2e7d32" opacity="0.65"/>
+  <text x="40" y="187" fill="#333" font-size="11">d-block: Transition metals (Fe, Cu, Zn…)</text>
+  <rect x="20" y="197" width="14" height="14" rx="2" fill="#1565c0" opacity="0.65"/>
+  <text x="40" y="208" fill="#333" font-size="11">p-block: Non-metals, metalloids, noble gases</text>
+  <rect x="10" y="220" width="400" height="28" rx="5" fill="#e65100" opacity="0.1"/>
+  <text x="210" y="232" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Elements in same GROUP have same valence electron count</text>
+  <text x="210" y="245" text-anchor="middle" fill="#333" font-size="10">Elements in same PERIOD have same number of electron shells</text>
+</svg>`
+  },
+  {
+    q:'Electronic Configuration — First 20 Elements',
+    content:`<h3>Electronic Configurations of the First 20 Elements</h3><p>Electronic configuration describes how electrons are arranged in shells around the nucleus. Electrons fill the innermost shells first and the last number in the configuration always gives the number of valence (outer-shell) electrons.</p><ul><li>Shells fill in order: shell 1 (max 2), shell 2 (max 8), shell 3 (max 8 for BGCSE), shell 4</li><li>The number of valence electrons equals the group number — e.g. Na has 1 valence electron and is in Group 1</li><li>Noble gases (He, Ne, Ar) have full outer shells (2 or 8 electrons) making them very stable and unreactive</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="310" fill="#fff8e1" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Electronic Configuration: First 20 Elements</text>
+  <!-- Table header -->
+  <rect x="8" y="28" width="404" height="18" rx="3" fill="#e65100" opacity="0.85"/>
+  <text x="30" y="41" fill="#fff" font-size="10" font-weight="bold">Element</text>
+  <text x="108" y="41" fill="#fff" font-size="10" font-weight="bold">Z</text>
+  <text x="140" y="41" fill="#fff" font-size="10" font-weight="bold">Shell 1</text>
+  <text x="195" y="41" fill="#fff" font-size="10" font-weight="bold">Shell 2</text>
+  <text x="250" y="41" fill="#fff" font-size="10" font-weight="bold">Shell 3</text>
+  <text x="305" y="41" fill="#fff" font-size="10" font-weight="bold">Shell 4</text>
+  <text x="355" y="41" fill="#fff" font-size="10" font-weight="bold">Config</text>
+  <!-- Data rows -->
+  <text x="30" y="59" fill="#333" font-size="9">H</text><text x="108" y="59" fill="#333" font-size="9">1</text><text x="140" y="59" fill="#e65100" font-size="9" font-weight="bold">1</text><text x="355" y="59" fill="#333" font-size="9">1</text>
+  <text x="30" y="72" fill="#333" font-size="9">He</text><text x="108" y="72" fill="#333" font-size="9">2</text><text x="140" y="72" fill="#e65100" font-size="9" font-weight="bold">2</text><text x="355" y="72" fill="#333" font-size="9">2</text>
+  <rect x="8" y="76" width="404" height="13" fill="#e65100" opacity="0.07"/>
+  <text x="30" y="87" fill="#333" font-size="9">Li</text><text x="108" y="87" fill="#333" font-size="9">3</text><text x="140" y="87" fill="#333" font-size="9">2</text><text x="195" y="87" fill="#e65100" font-size="9" font-weight="bold">1</text><text x="355" y="87" fill="#333" font-size="9">2,1</text>
+  <text x="30" y="100" fill="#333" font-size="9">Be</text><text x="108" y="100" fill="#333" font-size="9">4</text><text x="140" y="100" fill="#333" font-size="9">2</text><text x="195" y="100" fill="#e65100" font-size="9" font-weight="bold">2</text><text x="355" y="100" fill="#333" font-size="9">2,2</text>
+  <text x="30" y="113" fill="#333" font-size="9">B</text><text x="108" y="113" fill="#333" font-size="9">5</text><text x="140" y="113" fill="#333" font-size="9">2</text><text x="195" y="113" fill="#e65100" font-size="9" font-weight="bold">3</text><text x="355" y="113" fill="#333" font-size="9">2,3</text>
+  <rect x="8" y="116" width="404" height="13" fill="#e65100" opacity="0.07"/>
+  <text x="30" y="127" fill="#333" font-size="9">C</text><text x="108" y="127" fill="#333" font-size="9">6</text><text x="140" y="127" fill="#333" font-size="9">2</text><text x="195" y="127" fill="#e65100" font-size="9" font-weight="bold">4</text><text x="355" y="127" fill="#333" font-size="9">2,4</text>
+  <text x="30" y="140" fill="#333" font-size="9">N</text><text x="108" y="140" fill="#333" font-size="9">7</text><text x="140" y="140" fill="#333" font-size="9">2</text><text x="195" y="140" fill="#e65100" font-size="9" font-weight="bold">5</text><text x="355" y="140" fill="#333" font-size="9">2,5</text>
+  <text x="30" y="153" fill="#333" font-size="9">O</text><text x="108" y="153" fill="#333" font-size="9">8</text><text x="140" y="153" fill="#333" font-size="9">2</text><text x="195" y="153" fill="#e65100" font-size="9" font-weight="bold">6</text><text x="355" y="153" fill="#333" font-size="9">2,6</text>
+  <rect x="8" y="156" width="404" height="13" fill="#e65100" opacity="0.07"/>
+  <text x="30" y="167" fill="#333" font-size="9">F</text><text x="108" y="167" fill="#333" font-size="9">9</text><text x="140" y="167" fill="#333" font-size="9">2</text><text x="195" y="167" fill="#e65100" font-size="9" font-weight="bold">7</text><text x="355" y="167" fill="#333" font-size="9">2,7</text>
+  <text x="30" y="180" fill="#333" font-size="9">Ne</text><text x="108" y="180" fill="#333" font-size="9">10</text><text x="140" y="180" fill="#333" font-size="9">2</text><text x="195" y="180" fill="#e65100" font-size="9" font-weight="bold">8</text><text x="355" y="180" fill="#333" font-size="9">2,8</text>
+  <rect x="8" y="183" width="404" height="13" fill="#1565c0" opacity="0.07"/>
+  <text x="30" y="194" fill="#333" font-size="9">Na</text><text x="108" y="194" fill="#333" font-size="9">11</text><text x="140" y="194" fill="#333" font-size="9">2</text><text x="195" y="194" fill="#333" font-size="9">8</text><text x="250" y="194" fill="#e65100" font-size="9" font-weight="bold">1</text><text x="355" y="194" fill="#333" font-size="9">2,8,1</text>
+  <text x="30" y="207" fill="#333" font-size="9">Mg</text><text x="108" y="207" fill="#333" font-size="9">12</text><text x="140" y="207" fill="#333" font-size="9">2</text><text x="195" y="207" fill="#333" font-size="9">8</text><text x="250" y="207" fill="#e65100" font-size="9" font-weight="bold">2</text><text x="355" y="207" fill="#333" font-size="9">2,8,2</text>
+  <rect x="8" y="210" width="404" height="13" fill="#1565c0" opacity="0.07"/>
+  <text x="30" y="221" fill="#333" font-size="9">Al</text><text x="108" y="221" fill="#333" font-size="9">13</text><text x="140" y="221" fill="#333" font-size="9">2</text><text x="195" y="221" fill="#333" font-size="9">8</text><text x="250" y="221" fill="#e65100" font-size="9" font-weight="bold">3</text><text x="355" y="221" fill="#333" font-size="9">2,8,3</text>
+  <text x="30" y="234" fill="#333" font-size="9">Si</text><text x="108" y="234" fill="#333" font-size="9">14</text><text x="140" y="234" fill="#333" font-size="9">2</text><text x="195" y="234" fill="#333" font-size="9">8</text><text x="250" y="234" fill="#e65100" font-size="9" font-weight="bold">4</text><text x="355" y="234" fill="#333" font-size="9">2,8,4</text>
+  <text x="30" y="247" fill="#333" font-size="9">Cl</text><text x="108" y="247" fill="#333" font-size="9">17</text><text x="140" y="247" fill="#333" font-size="9">2</text><text x="195" y="247" fill="#333" font-size="9">8</text><text x="250" y="247" fill="#e65100" font-size="9" font-weight="bold">7</text><text x="355" y="247" fill="#333" font-size="9">2,8,7</text>
+  <rect x="8" y="250" width="404" height="13" fill="#1565c0" opacity="0.07"/>
+  <text x="30" y="261" fill="#333" font-size="9">Ar</text><text x="108" y="261" fill="#333" font-size="9">18</text><text x="140" y="261" fill="#333" font-size="9">2</text><text x="195" y="261" fill="#333" font-size="9">8</text><text x="250" y="261" fill="#e65100" font-size="9" font-weight="bold">8</text><text x="355" y="261" fill="#333" font-size="9">2,8,8</text>
+  <text x="30" y="274" fill="#333" font-size="9">Ca</text><text x="108" y="274" fill="#333" font-size="9">20</text><text x="140" y="274" fill="#333" font-size="9">2</text><text x="195" y="274" fill="#333" font-size="9">8</text><text x="250" y="274" fill="#333" font-size="9">8</text><text x="305" y="274" fill="#e65100" font-size="9" font-weight="bold">2</text><text x="355" y="274" fill="#333" font-size="9">2,8,8,2</text>
+  <rect x="8" y="282" width="404" height="22" rx="4" fill="#e65100" opacity="0.12"/>
+  <text x="210" y="297" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Valence electrons (last number) = Group number</text>
+</svg>`
+  },
+  {
+    title:'Isotopes & Relative Atomic Mass',
+    body:`<strong>Isotopes</strong> are atoms of the same element with the <em>same atomic number</em> but <em>different mass numbers</em> (different numbers of neutrons).
+    <br><br>
+    Example — Carbon isotopes:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>¹²C — 6 protons, 6 neutrons (most common, ~99%)</li>
+      <li>¹³C — 6 protons, 7 neutrons</li>
+      <li>¹⁴C — 6 protons, 8 neutrons (radioactive)</li>
+    </ul>
+    <strong>Relative Atomic Mass (Ar)</strong> = weighted average mass of all isotopes relative to ¹²C.
+    <br><br>
+    Chlorine: Ar = 35.5 because it is ~75% ³⁵Cl and ~25% ³⁷Cl.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const isotopes=[
+        {mass:12,n:6,x:0.18,pct:98.9,c:[52,152,219]},
+        {mass:13,n:7,x:0.5,pct:1.1,c:[155,89,182]},
+        {mass:14,n:8,x:0.82,pct:0.01,c:[231,76,60]},
+      ];
+      isotopes.forEach(iso=>{
+        const x=iso.x*W,y=H*0.5;
+        // Bar height based on abundance
+        const barH=H*0.55*(iso.pct/100);
+        sk.fill(...iso.c,160);sk.noStroke();sk.rect(x-22,y-barH,44,barH,4,4,0,0);
+        // Nucleus
+        sk.fill(...iso.c,220);sk.circle(x,y+25,38);
+        sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(`¹${iso.mass}C`,x,y+20);sk.text(`n=${iso.n}`,x,y+32);
+        // Abundance
+        sk.fill(...iso.c);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(iso.pct+'%',x,y-barH-8);sk.textStyle(sk.NORMAL);
+      });
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Same element (6 protons) — different neutrons = different mass',W/2,H*0.92);
+    }
+  },
+  {
+    title:'🎮 Check — Atomic Structure',
+    body:'Answer these questions about atoms, electrons, and isotopes.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'An atom has 17 protons, 18 neutrons, and 17 electrons. Its mass number is:',opts:['17','18','35','34'],ans:2,exp:'Mass number = protons + neutrons = 17 + 18 = 35.'},
+      {q:'The electron configuration of sodium (Na, atomic number 11) is:',opts:['2, 9','2, 8, 1','3, 8','11, 0'],ans:1,exp:'Sodium has 11 electrons: 2 in shell 1, 8 in shell 2, and 1 in shell 3 → 2,8,1.'},
+      {q:'Isotopes of the same element always have the same:',opts:['Mass number','Number of neutrons','Number of protons','Relative atomic mass'],ans:2,exp:'Isotopes have the SAME number of protons (same atomic number) but DIFFERENT numbers of neutrons. The proton number defines the element.'},
+      {q:'Chlorine has a relative atomic mass of 35.5. This is because:',opts:['Chlorine has 35.5 protons','It is a mixture of ³⁵Cl and ³⁷Cl isotopes','It has 35.5 neutrons','Chlorine is always found in compounds'],ans:1,exp:'Ar = 35.5 is the weighted average of the two main isotopes: ³⁵Cl (~75%) and ³⁷Cl (~25%). (0.75×35)+(0.25×37) = 35.5.'},
+    ]}
+  },
+  {
+    title:'The Periodic Table — Organisation',
+    body:`The periodic table arranges elements by <strong>increasing atomic number</strong>.
+    <br><br>
+    <strong>Periods</strong> (horizontal rows) — elements in the same period have the same number of electron shells.
+    <br><br>
+    <strong>Groups</strong> (vertical columns) — elements in the same group have the same number of <em>valence electrons</em>, so they react similarly.
+    <br><br>
+    Key groups:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Group 1</strong> — Alkali metals (1 valence e⁻): Na, K, Li</li>
+      <li><strong>Group 7</strong> — Halogens (7 valence e⁻): F, Cl, Br</li>
+      <li><strong>Group 0/18</strong> — Noble gases (full outer shell): He, Ne, Ar</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,15,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.02;
+      // Simple periodic table sketch
+      const cw=W*0.046,ch=H*0.11;
+      const highlight={1:[231,76,60],7:[52,152,219],0:[46,204,113]};
+      for(let row=0;row<4;row++){
+        for(let col=0;col<18;col++){
+          const x=col*cw+W*0.02,y=row*ch+H*0.1;
+          // Skip inner transition metals simplified
+          if(row>1&&col>1&&col<12)continue;
+          const grp=col+1;
+          let c=[60,70,90,80];
+          if(grp===1)c=[...highlight[1],120];
+          else if(grp===7)c=[...highlight[7],120];
+          else if(grp===18||grp===0)c=[...highlight[0],120];
+          sk.fill(...c);sk.noStroke();sk.rect(x,y,cw-2,ch-2,2);
+        }
+      }
+      // Labels
+      sk.fill(231,76,60);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('■ Group 1 — Alkali metals',W*0.02,H*0.65);
+      sk.fill(52,152,219);sk.text('■ Group 7 — Halogens',W*0.02,H*0.74);
+      sk.fill(46,204,113);sk.text('■ Group 0 — Noble gases',W*0.02,H*0.83);
+      sk.fill(255,255,255,80);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('→ Atomic number increases left to right across periods',W/2,H*0.93);
+    }
+  },
+  {
+    title:'Periodic Trends',
+    body:`Properties change predictably across periods and down groups:
+    <br><br>
+    <strong>Across a period (left → right):</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Atomic radius decreases (more protons pull electrons closer)</li>
+      <li>Electronegativity increases</li>
+      <li>Ionisation energy generally increases</li>
+    </ul>
+    <strong>Down a group (top → bottom):</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Atomic radius increases (more shells)</li>
+      <li>Reactivity of alkali metals increases</li>
+      <li>Reactivity of halogens decreases</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Atomic radius arrow down (group)
+      sk.stroke(231,76,60,180);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.1,H*0.12,W*0.1,H*0.82);
+      sk.fill(231,76,60,180);sk.noStroke();
+      sk.triangle(W*0.1,H*0.84,W*0.1-7,H*0.76,W*0.1+7,H*0.76);
+      sk.fill(231,76,60);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Atomic radius increases ↓',W*0.1,H*0.9);
+      // Atoms getting bigger down group
+      [0.2,0.38,0.6,0.82].forEach((y,i)=>{
+        const r=10+(i*8);
+        sk.fill(52,152,219,160+(i*20));sk.noStroke();sk.circle(W*0.35,y*H,r*2);
+      });
+      // Electronegativity across period
+      sk.stroke(46,204,113,180);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.5,H*0.5,W*0.92,H*0.5);
+      sk.fill(46,204,113,180);sk.noStroke();
+      sk.triangle(W*0.94,H*0.5,W*0.86,H*0.5-7,W*0.86,H*0.5+7);
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Electronegativity increases →',W*0.72,H*0.42);
+      [0.52,0.62,0.72,0.82,0.92].forEach((x,i)=>{
+        const r=18-(i*3);
+        sk.fill(155,89,182,120+(i*25));sk.noStroke();sk.circle(x*W,H*0.68,r*2);
+      });
+    }
+  },
+  {
+    title:'🎮 Final — Periodic Table & Trends',
+    body:'Test your knowledge of the periodic table and periodic trends.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Elements in the same GROUP of the periodic table have the same:',opts:['Atomic mass','Number of electron shells','Number of valence electrons','Melting point'],ans:2,exp:'Elements in the same group have the same number of valence (outer shell) electrons, which is why they have similar chemical properties.'},
+      {q:'Going DOWN Group 1 (alkali metals), reactivity:',opts:['Decreases','Stays the same','Increases','First increases then decreases'],ans:2,exp:'Reactivity of Group 1 metals INCREASES going down. The outer electron is further from the nucleus (more shielding), so it is lost more easily.'},
+      {q:'Which group contains the noble gases?',opts:['Group 1','Group 7','Group 2','Group 0 / 18'],ans:3,exp:'Noble gases (He, Ne, Ar, Kr...) are in Group 0 or 18. They have full outer shells and are very unreactive.'},
+      {q:'Across a period from left to right, atomic radius:',opts:['Increases','Stays the same','Decreases','First decreases then increases'],ans:2,exp:'Atomic radius DECREASES across a period. More protons pull the electrons closer to the nucleus, reducing the atomic size.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#e65100',dark:'#ac1900',light:'#fff3e0',
+  title:'Atomic Structure — Atoms, Electrons & Periodic Table',
+});
+</script></body></html>

@@ -1,0 +1,352 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nervous System — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#4527a0;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#b39ddb;color:#311b92;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #d1c4e9}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #4527a0;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#4527a0;transition:all .15s}
+    .btn.on{background:#4527a0;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Nervous System &amp; Hormones</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🧠 Neuron Structure</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">⚡ Reflex Arc</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🔗 Synapse</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🧬 Hormones</button>
+  <button class="btn" id="b-prac" onclick="setNervePractice(!nerveMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nervous System</h2><ul><li><b>Neuron</b>: Nerve cell. Dendrites receive signals; axon carries signal away from cell body.</li><li><b>Myelin sheath</b>: Insulates axon; speeds up nerve impulse conduction.</li><li><b>Synapse</b>: Gap between neurons. Neurotransmitters (e.g., acetylcholine) carry signal across.</li><li><b>Reflex arc</b>: Receptor → Sensory neuron → Relay neuron → Motor neuron → Effector.</li><li><b>Hormones vs nervous system</b>: Nervous is faster but short-lived; hormones are slower but longer-lasting.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let nerveMcq=false;
+const NERVE_MCQ=[
+  {q:'What is the function of the myelin sheath?',opts:['Speeds up nerve impulse conduction','Produces neurotransmitters','Connects neurons at a synapse','Detects stimuli'],c:0,tip:'Myelin insulates the axon, greatly increasing impulse speed.'},
+  {q:'What is the correct order of a reflex arc?',opts:['Receptor → Sensory → Relay → Motor → Effector','Motor → Relay → Sensory → Receptor → Effector','Receptor → Motor → Brain → Sensory → Effector','Effector → Motor → Relay → Sensory → Receptor'],c:0,tip:'Reflex arcs always go: Receptor → Sensory → Relay → Motor → Effector.'},
+  {q:'Which part of a neuron carries the impulse AWAY from the cell body?',opts:['Axon','Dendrite','Myelin','Synapse'],c:0,tip:'The axon conducts impulses away from the cell body.'},
+  {q:'What is a synapse?',opts:['A gap between two neurons','A type of muscle cell','The cell body of a neuron','A receptor in the skin'],c:0,tip:'Synapses are gaps across which neurotransmitters diffuse.'},
+  {q:'Which neurotransmitter is released at the neuromuscular junction?',opts:['Acetylcholine','Dopamine','Serotonin','Adrenaline'],c:0,tip:'Acetylcholine is the neurotransmitter at synapses with muscles.'},
+  {q:'Which system sends signals faster: nervous or hormonal?',opts:['Nervous system','Hormonal (endocrine) system','Both equally fast','Neither transmits signals'],c:0,tip:'Nervous impulses travel in milliseconds; hormones travel via blood (slower).'},
+  {q:'What type of neuron connects sensory to motor neurons?',opts:['Relay (interneuron)','Effector neuron','Receptor neuron','Myelinated neuron'],c:0,tip:'Relay neurons in the spinal cord connect sensory to motor neurons.'}
+];
+let nerveMcqIdx=0,nerveMcqSel=-1,nerveMcqScore=0,nerveMcqDone=false,nerveMcqFeedback=null;
+function setNervePractice(on){nerveMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){nerveMcqIdx=0;nerveMcqSel=-1;nerveMcqScore=0;nerveMcqDone=false;nerveMcqFeedback=null;}}
+function drawNerveMCQ(s){s.background(252,252,240);if(nerveMcqDone){s.fill(69,39,160);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+nerveMcqScore+'/'+NERVE_MCQ.length,440,215);let msg=nerveMcqScore===NERVE_MCQ.length?'Perfect! You know the Nervous System!':nerveMcqScore>=5?'Great job!':'Review neurons, synapses & reflex arcs.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=NERVE_MCQ[nerveMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(nerveMcqIdx/NERVE_MCQ.length),10,5);s.fill(69,39,160);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(nerveMcqIdx+1)+' of '+NERVE_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=nerveMcqSel===i,correct=nerveMcqFeedback!==null&&i===q.c,wrong=nerveMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(nerveMcqFeedback){s.fill(nerveMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(nerveMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function nerveMcqClick(mx,my){if(nerveMcqDone){if(mx>310&&mx<570&&my>290&&my<334){nerveMcqIdx=0;nerveMcqSel=-1;nerveMcqScore=0;nerveMcqDone=false;nerveMcqFeedback=null;}return;}if(nerveMcqFeedback!==null){nerveMcqIdx++;nerveMcqSel=-1;nerveMcqFeedback=null;if(nerveMcqIdx>=NERVE_MCQ.length)nerveMcqDone=true;return;}NERVE_MCQ[nerveMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){nerveMcqSel=i;nerveMcqFeedback=i===NERVE_MCQ[nerveMcqIdx].c?'correct':'wrong';if(i===NERVE_MCQ[nerveMcqIdx].c)nerveMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let impulseT=0,synapseT=0;
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    if(nerveMcq){ drawNerveMCQ(sk); return; }
+    tick+=0.04;impulseT=(impulseT+0.012)%1;synapseT=(synapseT+0.015)%1;
+    sk.background(248,252,248);
+    if(tab===0) drawNeuron();
+    else if(tab===1) drawReflexArc();
+    else if(tab===2) drawSynapse();
+    else drawHormones();
+    drawInfoPanel();
+  };
+
+  function drawNeuron(){
+    let ny=240;
+    // Dendrites (input end)
+    sk.stroke(80,40,160);sk.strokeWeight(2);
+    for(let i=0;i<5;i++){
+      let a=-0.8+i*0.4;
+      sk.line(60,ny,60+Math.cos(a)*55,ny+Math.sin(a)*55);
+      sk.line(60+Math.cos(a)*55,ny+Math.sin(a)*55,60+Math.cos(a+0.3)*85,ny+Math.sin(a+0.3)*85);
+    }
+    lbl2('Dendrites\n(receive signals)',18,ny-50,'left',[80,40,160]);
+    // Cell body
+    sk.fill(200,180,255,200);sk.stroke(80,40,160);sk.strokeWeight(2.5);sk.ellipse(65,ny,60,60);
+    sk.fill(120,80,200,220);sk.noStroke();sk.ellipse(65,ny,22,22);
+    lbl2('Cell Body\n(nucleus inside)',14,ny+44,'left',[80,40,160]);
+    // Axon
+    let axonLen=250;
+    sk.stroke(100,60,200);sk.strokeWeight(5);sk.noFill();
+    sk.line(95,ny,95+axonLen,ny);
+    // Myelin sheath segments
+    sk.noStroke();
+    for(let i=0;i<5;i++){
+      let mx=100+i*48;
+      sk.fill(255,240,200,200);sk.rect(mx,ny-9,32,18,4);
+    }
+    lbl2('Axon (carries impulse →)',175,ny-22,'center',[100,60,200]);
+    lbl2('Myelin sheath\n(insulation)',175,ny+18,'center',[180,140,0]);
+    // Nodes of Ranvier
+    for(let i=0;i<4;i++){
+      let nx2=122+i*48;sk.fill(100,60,200);sk.noStroke();sk.ellipse(nx2,ny,7,7);
+    }
+    lbl2('Nodes of Ranvier',240,ny+32,'center',[80,40,160]);
+    // Impulse animation
+    let ix=100+impulseT*(axonLen-20);
+    sk.fill(255,180,0,220);sk.noStroke();sk.ellipse(ix,ny,16,16);
+    sk.fill(255,220,0,100);sk.ellipse(ix,ny,28,28);
+    // Terminal buttons
+    let tbX=95+axonLen+6;
+    sk.fill(180,140,255,180);sk.stroke(80,40,160);sk.strokeWeight(1.5);
+    for(let i=0;i<4;i++){
+      let ty=ny-30+i*20;
+      sk.line(tbX,ny,tbX+30,ty);
+      sk.ellipse(tbX+34,ty,14,14);
+    }
+    lbl2('Terminal buttons\n(release\nneurotransmitters)',tbX+54,ny-8,'left',[80,40,160]);
+    // Labels
+    sk.fill(100,60,200,180);sk.stroke(80,40,160);sk.strokeWeight(1.5);sk.noFill();
+    sk.rect(38,ny-32,56,64,4);
+    sk.fill(80,40,160);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('SOMA',65,ny+4);sk.textStyle(sk.NORMAL);
+    // Direction label
+    sk.fill(30);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('← INPUT  ·  Signal travels →  ·  OUTPUT →',248,ny+68);sk.textStyle(sk.NORMAL);
+    // Types of neurons
+    let ty2=310;
+    const types=[{n:'Sensory Neuron',c:[30,120,200],d:'Carries impulses FROM receptor TO spinal cord/brain'},
+      {n:'Motor Neuron',c:[200,60,30],d:'Carries impulses FROM brain/spinal cord TO effector'},
+      {n:'Relay Neuron',c:[0,140,80],d:'Connects sensory and motor neurons in CNS'}];
+    types.forEach((t,i)=>{
+      sk.fill(t.c[0],t.c[1],t.c[2],25);sk.stroke(t.c[0],t.c[1],t.c[2],100);sk.strokeWeight(1);
+      sk.rect(14,ty2+i*56,464,50,6);sk.noStroke();
+      sk.fill(t.c[0],t.c[1],t.c[2]);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(t.n+':',20,ty2+i*56+18);sk.textStyle(sk.NORMAL);sk.fill(30);sk.textSize(10.5);sk.text(t.d,20,ty2+i*56+34);
+    });
+  }
+
+  function drawReflexArc(){
+    // Diagram of reflex arc: Receptor → Sensory → Relay → Motor → Effector
+    const nodes=[
+      {label:'Receptor\n(e.g. pain\nreceptor in finger)',x:50,y:240,col:[30,120,200]},
+      {label:'Sensory Neuron',x:145,y:200,col:[30,120,200]},
+      {label:'Spinal Cord\n(Relay Neuron)',x:250,y:190,col:[0,140,80]},
+      {label:'Motor Neuron',x:355,y:200,col:[200,60,30]},
+      {label:'Effector\n(e.g. biceps\nmuscle)',x:450,y:240,col:[200,60,30]},
+    ];
+    // Hot stimulus at bottom
+    sk.fill(255,120,30,200);sk.noStroke();sk.ellipse(50,310,28,28);
+    sk.textSize(20);sk.textAlign(sk.CENTER);sk.text('🔥',50,318);
+    sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('Stimulus',50,342);sk.textStyle(sk.NORMAL);
+
+    // Draw connections
+    nodes.forEach((n,i)=>{
+      if(i<nodes.length-1){
+        let n2=nodes[i+1];
+        sk.stroke(120,60,180,200);sk.strokeWeight(3);
+        sk.line(n.x,n.y,n2.x,n2.y);
+        // Impulse dot
+        let it=(impulseT+i*0.2)%1;
+        let ix=n.x+(n2.x-n.x)*it,iy=n.y+(n2.y-n.y)*it;
+        sk.fill(255,200,0,220);sk.noStroke();sk.ellipse(ix,iy,14);
+      }
+      // Node
+      sk.fill(n.col[0],n.col[1],n.col[2],40);sk.stroke(n.col[0],n.col[1],n.col[2]);sk.strokeWeight(2);
+      sk.rect(n.x-46,n.y-24,92,48,8);sk.noStroke();
+      sk.fill(n.col[0],n.col[1],n.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      n.label.split('\n').forEach((l,li)=>sk.text(l,n.x,n.y+(li-n.label.split('\n').length/2+0.6)*12));
+      sk.textStyle(sk.NORMAL);
+    });
+    // Stimulus line
+    sk.stroke(200,100,30,150);sk.strokeWeight(1.5);sk.setLineDash([4,3]);
+    sk.line(50,296,50,264);sk.setLineDash([]);
+    // Response line
+    sk.stroke(200,60,30,150);sk.strokeWeight(1.5);sk.setLineDash([4,3]);
+    sk.line(450,264,450,296);sk.setLineDash([]);
+    sk.fill(200,60,30);sk.noStroke();sk.ellipse(450,310,24,24);
+    sk.textSize(20);sk.textAlign(sk.CENTER);sk.text('💪',450,318);
+    sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('Response',450,342);sk.textStyle(sk.NORMAL);
+
+    // Reflex pathway box
+    let ry=370;
+    sk.fill(230,230,255,220);sk.stroke(60,30,180);sk.strokeWeight(1.5);
+    sk.rect(14,ry,462,120,8);sk.noStroke();
+    sk.fill(60,30,180);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Reflex Arc (full pathway):',20,ry+16);sk.textStyle(sk.NORMAL);sk.fill(30);sk.textSize(10.5);
+    sk.text('STIMULUS → RECEPTOR → SENSORY NEURON → RELAY NEURON (spinal cord)',20,ry+34);
+    sk.text('→ MOTOR NEURON → EFFECTOR → RESPONSE',20,ry+50);
+    sk.text('',20,ry+62);
+    sk.fill(180,30,30);sk.textSize(9.5);sk.text('⚡ REFLEX is INVOLUNTARY — does NOT involve the brain initially!',20,ry+72);
+    sk.text('Brain is informed AFTER the reflex occurs. This makes reflexes FAST.',20,ry+88);
+    sk.fill(0,100,60);sk.text('Examples: knee jerk, blinking, pulling hand away from heat',20,ry+108);
+  }
+
+  function drawSynapse(){
+    let cx=248,cy=240;
+    // Pre-synaptic neuron
+    sk.fill(200,180,255,180);sk.stroke(80,40,160);sk.strokeWeight(2);
+    sk.rect(12,cy-18,cx-50,36,6);sk.noStroke();
+    sk.fill(80,40,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Pre-synaptic neuron',cx/2-19,cy+4);sk.textStyle(sk.NORMAL);
+    // Pre-synaptic terminal bulb
+    sk.fill(180,150,255,200);sk.stroke(80,40,160);sk.strokeWeight(2);
+    sk.ellipse(cx-28,cy,66,66);
+    // Vesicles
+    for(let i=0;i<8;i++){
+      let a=i*sk.TWO_PI/8;
+      sk.fill(255,200,80,200);sk.noStroke();sk.ellipse(cx-28+Math.cos(a)*18,cy+Math.sin(a)*18,12,12);
+    }
+    lbl2('Synaptic vesicles\n(containing\nneurotransmitter)',cx-28,cy+45,'center',[160,100,0]);
+    // Synaptic cleft
+    sk.fill(220,240,255,100);sk.noStroke();sk.rect(cx-6,cy-38,20,76);
+    sk.fill(0,80,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Synaptic\ncleft',cx+4,cy+52);sk.textStyle(sk.NORMAL);
+    // Post-synaptic neuron
+    sk.fill(180,230,255,180);sk.stroke(30,100,200);sk.strokeWeight(2);
+    sk.rect(cx+14,cy-18,200,36,6);sk.noStroke();
+    sk.fill(30,100,200);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Post-synaptic neuron',cx+114,cy+4);sk.textStyle(sk.NORMAL);
+    // Receptor proteins on post-synaptic
+    for(let i=0;i<6;i++){
+      sk.fill(100,180,255,200);sk.noStroke();sk.rect(cx+14+i*16,cy-24,10,24,3);
+    }
+    lbl2('Receptor sites',cx+80,cy-36,'center',[0,80,180]);
+    // Neurotransmitter molecules traveling across cleft
+    for(let i=0;i<5;i++){
+      let t2=(synapseT+i*0.2)%1;
+      let nx2=cx-8+t2*20,ny2=cy-20+i*10;
+      sk.fill(255,160,30,200);sk.noStroke();sk.ellipse(nx2,ny2,11);
+    }
+    lbl2('Neurotransmitter\nmolecules',cx-18,cy-55,'center',[180,100,0]);
+    // Labels
+    lbl2('Ca²⁺ ions trigger\nvesicle release',cx-28,cy-50,'center',[80,40,160]);
+    // Steps
+    let sy=340;
+    const steps=['1. Impulse reaches pre-synaptic terminal bulb','2. Ca²⁺ ions enter, trigger vesicle fusion with membrane','3. Neurotransmitter released into synaptic cleft','4. Neurotransmitter diffuses across cleft','5. Binds to receptor proteins on post-synaptic membrane','6. New impulse generated in post-synaptic neuron'];
+    sk.fill(248,248,255,220);sk.stroke(80,40,160,80);sk.strokeWeight(1);sk.rect(14,sy,462,155,7);sk.noStroke();
+    sk.fill(60,20,140);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('HOW A SYNAPSE WORKS:',20,sy+14);sk.textStyle(sk.NORMAL);
+    steps.forEach((s,i)=>{
+      sk.fill(80,40,160,200);sk.ellipse(20,sy+30+i*20,8);
+      sk.fill(30);sk.textSize(10);sk.text(s,28,sy+34+i*20);
+    });
+  }
+
+  function drawHormones(){
+    const glands=[
+      {name:'Pituitary\nGland',x:248,y:50,col:[160,0,160],hor:'Growth hormone\nFSH, LH, ADH, TSH'},
+      {name:'Thyroid\nGland',x:248,y:125,col:[0,100,200],hor:'Thyroxine\n(controls metabolic rate)'},
+      {name:'Adrenal\nGlands',x:248,y:200,col:[200,80,0],hor:'Adrenaline\n(fight or flight response)'},
+      {name:'Pancreas',x:248,y:275,col:[0,140,60],hor:'Insulin / Glucagon\n(blood glucose control)'},
+      {name:'Ovaries\n(females)',x:200,y:360,col:[200,0,100],hor:'Oestrogen, Progesterone\n(menstrual cycle, pregnancy)'},
+      {name:'Testes\n(males)',x:296,y:360,col:[0,60,200],hor:'Testosterone\n(male characteristics, sperm)'},
+    ];
+    glands.forEach(g=>{
+      sk.fill(g.col[0],g.col[1],g.col[2],40);sk.stroke(g.col[0],g.col[1],g.col[2]);sk.strokeWeight(1.5);
+      sk.rect(g.x-56,g.y-18,112,36,7);sk.noStroke();
+      sk.fill(g.col[0],g.col[1],g.col[2]);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      g.name.split('\n').forEach((l,li)=>sk.text(l,g.x,g.y+(li-g.name.split('\n').length/2+0.7)*11));
+      sk.textStyle(sk.NORMAL);
+      // Hormone label to right
+      sk.fill(30);sk.textSize(9);sk.textAlign(sk.LEFT);
+      g.hor.split('\n').forEach((l,li)=>sk.text(l,g.x+60,g.y+(li-g.hor.split('\n').length/2+0.7)*12));
+    });
+    // Nervous vs Endocrine comparison
+    let cy=420;
+    sk.fill(245,245,255,200);sk.stroke(100,60,180);sk.strokeWeight(1);
+    sk.rect(14,cy,462,76,7);sk.noStroke();
+    sk.fill(60,20,140);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Nervous System vs Endocrine System',240,cy+14);sk.textStyle(sk.NORMAL);
+    [['Feature','Nervous','Endocrine'],['Speed','Very fast (ms)','Slow (minutes–hours)'],['Message','Electrical impulse','Chemical hormone'],['Duration','Short-lived','Long-lasting']].forEach((r,i)=>{
+      sk.fill(30);sk.textSize(9.5);sk.textStyle(i===0?sk.BOLD:sk.NORMAL);
+      sk.textAlign(sk.CENTER);
+      sk.text(r[0],100,cy+26+i*16);sk.text(r[1],240,cy+26+i*16);sk.text(r[2],370,cy+26+i*16);
+    });sk.textStyle(sk.NORMAL);
+  }
+
+  function lbl2(txt,x,y,align,col){
+    sk.textSize(9.5);sk.textAlign(align==='right'?sk.RIGHT:align==='left'?sk.LEFT:sk.CENTER);
+    let tw=sk.textWidth(txt.split('\n')[0]);
+    let bx=align==='center'?x-tw/2-4:align==='right'?x-tw-4:x-4;
+    sk.fill(255,255,255,200);sk.noStroke();sk.rect(bx,y-12,tw+8,14,3);
+    sk.fill(col[0],col[1],col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);
+    txt.split('\n').forEach((l,i)=>sk.text(l,x,y+i*12));sk.textStyle(sk.NORMAL);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    const cols=[[70,30,160],[70,30,160],[70,30,160],[130,0,160]];let c=cols[tab];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);sk.noStroke();
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Neuron Structure','Reflex Arc','Synapse Transmission','Hormones & Endocrine System'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Types of Neurons',b:'Sensory: receptor → CNS\nMotor: CNS → effector\nRelay: within CNS (spinal cord/brain)'},{t:'Nerve Impulse',b:'Electrical signal along axon.\nMyelin sheath speeds up transmission.\nNodes of Ranvier allow saltatory conduction.'},{t:'Central Nervous System (CNS)',b:'Brain: controls complex behaviour.\nSpinal cord: pathway + reflex centre.'},{t:'Peripheral Nervous System (PNS)',b:'Sensory neurons: carry info to CNS.\nMotor neurons: carry commands from CNS.'}],
+      [{t:'Reflex vs Voluntary',b:'Reflex: fast, involuntary, protective.\nVoluntary: slower, conscious, brain-controlled.'},{t:'Importance of Reflexes',b:'Protects body from injury quickly.\nDoes not need conscious thought.\nBrain is informed AFTER the response.'},{t:'Spinal Cord Role',b:'Acts as relay centre for reflexes.\nAlso carries impulses to and from brain.'},{t:'Examples',b:'Pupil light reflex, knee jerk,\nblink reflex, withdrawal from pain.'}],
+      [{t:'Neurotransmitters',b:'Chemical messengers crossing the synaptic cleft.\nExamples: acetylcholine, dopamine, serotonin.'},{t:'What happens to NTs?',b:'Enzyme breaks down NT after use.\nPrevents continuous stimulation.\nNT can be recycled.'},{t:'Drugs and Synapses',b:'Some drugs mimic NTs (e.g. nicotine).\nOthers block receptors.\nSome prevent NT breakdown.'},{t:'Why a synapse?',b:'Ensures impulse travels ONE DIRECTION.\nAllows integration of signals.\nFlexibility in responses.'}],
+      [{t:'What are Hormones?',b:'Chemical messengers secreted by endocrine glands.\nCarried in blood to target organs.\nSlower but longer-lasting than nerve impulses.'},{t:'Adrenaline (fight/flight)',b:'Increases heart rate, breathing rate.\nIncreases blood glucose.\nDilates pupils, diverts blood to muscles.'},{t:'Thyroxine',b:'Controls METABOLIC RATE.\nNeeds iodine to be produced.\nDeficiency → goitre (enlarged thyroid).'},{t:'Sex Hormones',b:'Oestrogen/progesterone (females): menstrual cycle.\nTestosterone (males): sperm production.\nBoth control secondary sexual characteristics.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(nerveMcq){ nerveMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

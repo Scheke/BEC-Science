@@ -1,0 +1,442 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scientific Processes — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#1565c0;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#90caf9;color:#0d47a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #bbdefb}
+    #controls{display:flex;gap:10px;margin-top:14px;align-items:center}
+    .btn{padding:8px 20px;border:2.5px solid #1565c0;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#1565c0;transition:all .15s}
+    .btn:hover,.btn.on{background:#1565c0;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    #step-lbl{font-size:.88rem;font-weight:600;color:#555;padding:8px 16px;background:#fff;border-radius:24px;border:1.5px solid #e0e0e0}
+    .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .print-btn:hover{background:rgba(255,255,255,.25)}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#primary/Standard%205">&#8592; All Topics</a></div>
+<div class="topic-header"><span class="label">PSLE · Standard 5 Science</span><h1>Scientific Processes</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn" id="btnAnim" onclick="setMode(0)">&#9654; Animation</button>
+  <span id="step-lbl">Step 1 / 6 — Observation</span>
+  <button class="btn" onclick="changeStep(-1)">&#9664; Prev</button>
+  <button class="btn" onclick="changeStep(1)">Next &#9654;</button>
+  <button class="btn practice" id="btnGame" onclick="setMode(1)">&#127918; Practice</button>
+</div>
+<script>
+let step=0, gameMode=0;
+function setMode(m){ gameMode=m; document.getElementById('btnAnim').classList.toggle('on',m===0); document.getElementById('btnGame').classList.toggle('on',m===1); if(m===1) resetMatchGame(); }
+function printNotes(){
+  let h=`<html><head><title>Scientific Processes Notes</title><style>body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;font-size:14px}h1{border-bottom:3px solid #1565c0;color:#1565c0}h2{color:#1976d2;margin:18px 0 4px}h3{font-size:.88rem;font-weight:700;margin:8px 0 3px}p{line-height:1.6;margin:2px 0 8px}@media print{body{margin:15px}}    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }</style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>PSLE Science — Scientific Processes</h1>`;
+  STEPS.forEach((s,i)=>{h+=`<h2>${s.icon} Step ${i+1}: ${s.title}</h2><h3>What to do</h3><p>${s.text.replace(/\n/g,'<br>')}</p><h3>Example</h3><p>${s.ex.replace(/\n/g,'<br>')}</p><h3>Key Concept</h3><p>${s.key}</p>`;});
+  h+=`</body></html>`;const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+const STEPS=[
+  {title:'Observation',col:[74,144,226],icon:'👁',
+   text:'Notice and record what you see in the natural world.\nUse your senses to gather information.',
+   ex:'Sugar dissolves faster in HOT water than in COLD water.',
+   key:'An observation must be factual — what you actually saw, not what you think.'},
+  {title:'Question',col:[39,174,96],icon:'❓',
+   text:'Ask a TESTABLE question based on your observation.\nIt should be specific and answerable by experiment.',
+   ex:'Does water TEMPERATURE affect how fast sugar dissolves?',
+   key:'A good question identifies two variables: what you will change and what you will measure.'},
+  {title:'Hypothesis',col:[220,150,20],icon:'💭',
+   text:'Make a PREDICTION using IF…THEN…BECAUSE format.\nThe hypothesis must be testable.',
+   ex:'IF temperature increases, THEN sugar dissolves faster,\nBECAUSE hot water molecules have more energy.',
+   key:'IF = independent variable | THEN = dependent variable | BECAUSE = scientific reason'},
+  {title:'Experiment',col:[230,90,30],icon:'🧪',
+   text:'Design a FAIR TEST: change ONE variable at a time.\nKeep all other variables constant (controlled).',
+   ex:'Dissolve 5g sugar in 100ml water at 20°C, 40°C, and 60°C.\nRecord time until fully dissolved.',
+   key:'Independent variable: temperature | Dependent: time to dissolve | Controls: sugar mass, water volume'},
+  {title:'Results',col:[120,60,200],icon:'📊',
+   text:'Record your DATA in a table.\nDisplay results as a graph (usually a line graph or bar chart).',
+   ex:'20°C → 35 seconds | 40°C → 18 seconds | 60°C → 8 seconds',
+   key:'Results should show a clear trend or pattern. Include units always.'},
+  {title:'Conclusion',col:[20,140,160],icon:'✅',
+   text:'Explain whether results SUPPORT or REFUTE your hypothesis.\nSuggest improvements and further investigations.',
+   ex:'Temperature DOES affect dissolving rate — hypothesis SUPPORTED.\nFurther: test effect of stirring or particle size.',
+   key:'Refer back to your hypothesis. Explain WHY results occurred using science.'},
+];
+function changeStep(d){
+  step=Math.max(0,Math.min(5,step+d));
+  document.getElementById('step-lbl').textContent='Step '+(step+1)+' / 6 — '+STEPS[step].title;
+}
+new p5(sk=>{
+  const W=880,H=510;
+  let tick=0;
+  let particles=[];
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+
+  sk.draw=()=>{
+    tick+=0.04;
+    if(gameMode===1){ drawMatchGame(); return; }
+    sk.background(248,252,248);
+    drawFlowchart();
+    drawStepAnim();
+    drawInfoPanel();
+  };
+
+  function drawFlowchart(){
+    let fx=18,fw=155,fh=46,gap=10;
+    for(let i=0;i<6;i++){
+      let s=STEPS[i],fy=18+i*(fh+gap);
+      let active=i===step;
+      sk.fill(s.col[0],s.col[1],s.col[2],active?220:60);
+      sk.stroke(s.col[0],s.col[1],s.col[2]); sk.strokeWeight(active?2.5:1.5);
+      sk.rect(fx,fy,fw,fh,8);
+      sk.fill(active?255:s.col[0]); sk.noStroke();
+      sk.textSize(active?11.5:10); sk.textStyle(active?sk.BOLD:sk.NORMAL);
+      sk.textAlign(sk.CENTER);
+      sk.text(s.icon+' '+s.title,fx+fw/2,fy+fh/2+4);
+      sk.textStyle(sk.NORMAL);
+      if(i<5){
+        sk.stroke(180); sk.strokeWeight(1.5); sk.line(fx+fw/2,fy+fh,fx+fw/2,fy+fh+gap);
+        sk.fill(180); sk.noStroke();
+        sk.triangle(fx+fw/2,fy+fh+gap+4,fx+fw/2-5,fy+fh+gap-2,fx+fw/2+5,fy+fh+gap-2);
+      }
+    }
+  }
+
+  function drawStepAnim(){
+    let ax=185,ay=12,aw=300,ah=486;
+    // Panel
+    let s=STEPS[step];
+    sk.fill(s.col[0],s.col[1],s.col[2],18);sk.stroke(s.col[0],s.col[1],s.col[2],80);sk.strokeWeight(1.5);
+    sk.rect(ax,ay,aw,ah,8);sk.noStroke();
+
+    sk.fill(s.col[0],s.col[1],s.col[2]); sk.textSize(14); sk.textStyle(sk.BOLD);
+    sk.textAlign(sk.CENTER); sk.text('Step '+(step+1)+': '+s.title,ax+aw/2,ay+26);
+    sk.textStyle(sk.NORMAL);
+
+    if(step===0||step===1){
+      // Two beakers
+      drawBeaker(sk,ax+50,ay+120,20,tick*0.5,'Hot\n60°C',[255,100,50]);
+      drawBeaker(sk,ax+200,ay+120,20,tick*0.15,'Cold\n20°C',[80,150,220]);
+      sk.fill(30);sk.textSize(11);sk.textAlign(sk.CENTER);
+      sk.text('HOT water → faster dissolving',ax+aw/2,ay+280);
+      sk.text('COLD water → slower dissolving',ax+aw/2,ay+296);
+    } else if(step===2){
+      // Hypothesis card
+      sk.fill(255,248,220);sk.stroke(220,160,0);sk.strokeWeight(2);
+      sk.rect(ax+15,ay+60,aw-30,130,10);sk.noStroke();
+      sk.fill(120,80,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('IF…', ax+25, ay+88);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.textSize(10.5);
+      sk.text('temperature of water increases', ax+25, ay+102);
+      sk.fill(120,80,0);sk.textStyle(sk.BOLD);sk.text('THEN…',ax+25,ay+122);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text('sugar will dissolve faster',ax+25,ay+136);
+      sk.fill(120,80,0);sk.textStyle(sk.BOLD);sk.text('BECAUSE…',ax+25,ay+156);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text('hot molecules have more kinetic energy',ax+25,ay+170);
+      // Variable labels
+      sk.fill(30,100,200,200);sk.rect(ax+15,ay+200,aw-30,70,8);sk.noStroke();
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);
+      sk.text('Independent variable: temperature',ax+25,ay+220);
+      sk.fill(220,240,255);sk.textStyle(sk.NORMAL);
+      sk.text('Dependent variable: time to dissolve',ax+25,ay+238);
+      sk.text('Controlled: sugar mass, water volume',ax+25,ay+256);
+    } else if(step===3){
+      // Experiment setup
+      drawBeaker(sk,ax+70,ay+100,20,tick*0.5,'60°C',[255,100,50]);
+      drawBeaker(sk,ax+185,ay+100,20,tick*0.25,'40°C',[255,160,80]);
+      // Timer
+      sk.fill(255);sk.stroke(80);sk.strokeWeight(1.5);sk.ellipse(ax+aw/2,ay+310,60,60);
+      sk.fill(80);sk.noStroke();
+      let timeDisp=sk.floor(tick*3)%60;
+      sk.textSize(16);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(timeDisp+'s',ax+aw/2,ay+316);
+      sk.fill(30);sk.textSize(10);sk.textStyle(sk.NORMAL);sk.text('Stopwatch',ax+aw/2,ay+344);
+    } else if(step===4){
+      // Bar graph results
+      let gx=ax+25,gy=ay+260,gw=aw-50,gh=150;
+      sk.fill(250);sk.stroke(180);sk.strokeWeight(1);sk.rect(gx,gy-gh,gw,gh);
+      let bars=[{t:'20°C',v:35,c:[80,150,220]},{t:'40°C',v:18,c:[255,160,80]},{t:'60°C',v:8,c:[255,100,50]}];
+      let maxV=40;
+      bars.forEach((b,i)=>{
+        let bx=gx+20+i*(gw/3),bh=b.v/maxV*gh;
+        sk.fill(b.c[0],b.c[1],b.c[2],200);sk.noStroke();
+        sk.rect(bx,gy-bh,gw/3-10,bh);
+        sk.fill(30);sk.textSize(10);sk.textAlign(sk.CENTER);
+        sk.text(b.t,bx+gw/6-5,gy+14);
+        sk.text(b.v+'s',bx+gw/6-5,gy-bh-5);
+      });
+      sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+      sk.text('Time to dissolve (seconds)',gx+gw/2,gy+28);
+      // Data table above
+      sk.fill(240);sk.stroke(180);sk.strokeWeight(1);
+      sk.rect(ax+15,ay+60,aw-30,90,5);
+      sk.fill(60);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Temperature | Time to dissolve',ax+aw/2,ay+80);sk.textStyle(sk.NORMAL);
+      ['20°C    →    35 seconds','40°C    →    18 seconds','60°C    →     8 seconds'].forEach((r,i)=>{
+        sk.fill(i%2===0?250:235);sk.noStroke();sk.rect(ax+16,ay+84+i*18,aw-32,18);
+        sk.fill(30);sk.text(r,ax+aw/2,ay+97+i*18);
+      });
+    } else {
+      // Conclusion
+      let cItems=[
+        {col:[0,150,60],sym:'✓',text:'Temperature INCREASES dissolving rate'},
+        {col:[0,150,60],sym:'✓',text:'Hypothesis is SUPPORTED by results'},
+        {col:[30,100,200],sym:'→',text:'Suggest: test more temperatures'},
+        {col:[30,100,200],sym:'→',text:'Improve: repeat experiment 3 times'},
+        {col:[160,60,0],sym:'⚠',text:'Source of error: timing accuracy'},
+      ];
+      cItems.forEach((c,i)=>{
+        sk.fill(c.col[0],c.col[1],c.col[2],30);sk.noStroke();
+        sk.rect(ax+15,ay+70+i*62,aw-30,54,7);
+        sk.fill(c.col[0],c.col[1],c.col[2]);sk.textSize(16);sk.textStyle(sk.BOLD);
+        sk.textAlign(sk.LEFT);sk.text(c.sym,ax+22,ay+103+i*62);sk.textStyle(sk.NORMAL);
+        sk.fill(30);sk.textSize(10.5);
+        sk.text(c.text,ax+38,ay+103+i*62);
+      });
+    }
+  }
+
+  function drawBeaker(sk,bx,by,dissolveRate,t,label,col){
+    // Beaker
+    sk.fill(200,225,255,80);sk.stroke(130,170,210);sk.strokeWeight(2);
+    sk.rect(bx-35,by,70,110,0,0,8,8);
+    // Water
+    sk.fill(col[0],col[1],col[2],120);sk.noStroke();
+    sk.rect(bx-33,by+2,66,106,0,0,7,7);
+    // Sugar crystals (reduce over time)
+    let crystSize=Math.max(0,25-dissolveRate*t*0.8);
+    if(crystSize>2){
+      sk.fill(255,245,180,220);sk.noStroke();
+      sk.rect(bx-10,by+85,crystSize,crystSize,3);
+    }
+    // Dissolved particles spreading
+    for(let i=0;i<8;i++){
+      let pt=(t*dissolveRate*0.04+i/8)%1;
+      let px=bx-28+Math.sin(pt*sk.TWO_PI+i)*25;
+      let py=by+90-pt*75;
+      let alpha=Math.min(180,pt*300);
+      sk.fill(255,230,100,alpha);sk.ellipse(px,py,5);
+    }
+    // Label
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.text(label,bx,by+125);
+  }
+
+  function drawInfoPanel(){
+    let s=STEPS[step];
+    let px=498,py=8,pw=374,ph=494;
+    sk.fill(255,255,255,240);sk.stroke(s.col[0],s.col[1],s.col[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+
+    // Header
+    sk.fill(s.col[0],s.col[1],s.col[2],200);sk.rect(px+8,py+8,pw-16,34,7);sk.noStroke();
+    sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(s.icon+' '+s.title,px+pw/2,py+31);sk.textStyle(sk.NORMAL);
+
+    let sy=py+52;
+    // Description
+    infoBox(sk,px+10,sy,pw-20,'What to do',s.text,s.col,[240,248,255],[0,60,160]);
+    sy+=s.text.split('\n').length*16+32;
+
+    // Example
+    infoBox(sk,px+10,sy,pw-20,'Example',s.ex,s.col,[240,255,240],[0,100,30]);
+    sy+=s.ex.split('\n').length*16+32;
+
+    // Key concept
+    infoBox(sk,px+10,sy,pw-20,'Key Concept',s.key,s.col,[255,248,220],[120,80,0]);
+    sy+=s.key.split('\n').length*16+32;
+
+    // Scientific method cycle diagram (simple)
+    let cy=sy+30,cr=42;
+    sk.fill(240,248,255,200);sk.stroke(100,150,220);sk.strokeWeight(1.2);
+    sk.ellipse(px+pw/2,cy,cr*2,cr*2);sk.noStroke();
+    sk.fill(0,80,180);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Scientific',px+pw/2,cy-4);sk.text('Method',px+pw/2,cy+8);sk.textStyle(sk.NORMAL);
+    // Mini steps around circle
+    const mini=['Obs.','Q?','Hyp.','Exp.','Res.','Con.'];
+    mini.forEach((m,i)=>{
+      let a=i*sk.TWO_PI/6-sk.PI/2;
+      let mx=px+pw/2+sk.cos(a)*(cr+24),my=cy+sk.sin(a)*(cr+24);
+      sk.fill(STEPS[i].col[0],STEPS[i].col[1],STEPS[i].col[2],i===step?220:100);
+      sk.ellipse(mx,my,i===step?22:16);
+      sk.fill(i===step?255:30);sk.textSize(7.5);sk.text(m,mx,my+2.5);
+    });
+  }
+
+  // ── MATCH GAME ──────────────────────────────────────
+  const EQUIP=[
+    {name:'Ruler',             use:'Measuring LENGTH of objects'},
+    {name:'Thermometer',       use:'Measuring TEMPERATURE'},
+    {name:'Measuring cylinder',use:'Measuring VOLUME of liquid'},
+    {name:'Spring balance',    use:'Measuring WEIGHT or FORCE (N)'},
+    {name:'Beaker',            use:'Holding and heating LIQUIDS'},
+    {name:'Bunsen burner',     use:'HEATING substances safely'},
+  ];
+  let matchSelected, matchMatched, matchScore, matchWrong;
+  function resetMatchGame(){
+    matchSelected=null; matchMatched=new Set(); matchScore=0; matchWrong=null;
+  }
+  resetMatchGame();
+
+  function drawMatchGame(){
+    sk.background(248,252,248);
+    sk.fill(21,101,192); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Match Equipment to Use — click an item on the left, then click its correct use on the right', 440,22);
+    sk.fill(80); sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('Score: '+matchScore+'/'+EQUIP.length, 440,38);
+
+    let shuffledUse=[...EQUIP].sort((a,b)=>a.use.localeCompare(b.use));
+    EQUIP.forEach((e,i)=>{
+      let done=matchMatched.has(e.name);
+      let selLeft=matchSelected===i;
+      let ly=60+i*70;
+      sk.fill(done?[200,255,200]:selLeft?[200,220,255]:[240,248,255]); sk.stroke(done?[0,150,0]:selLeft?[21,101,192]:[180,210,240]); sk.strokeWeight(done?2.5:selLeft?2.5:1.5);
+      sk.rect(30,ly,200,52,8);
+      sk.fill(done?[0,100,0]:30); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text((done?'✓ ':'')+e.name, 130,ly+26);
+    });
+
+    shuffledUse.forEach((e,i)=>{
+      let done=matchMatched.has(e.name);
+      let ry=60+i*70;
+      let wrong=matchWrong&&matchWrong.useIdx===i&&matchWrong.timer>0;
+      sk.fill(done?[200,255,200]:wrong?[255,200,200]:[255,248,240]); sk.stroke(done?[0,150,0]:wrong?[200,0,0]:[240,180,120]); sk.strokeWeight(done?2.5:wrong?2.5:1.5);
+      sk.rect(500,ry,350,52,8);
+      sk.fill(done?[0,100,0]:wrong?[150,0,0]:30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text((done?'✓ ':' ')+e.use, 514,ry+26);
+    });
+
+    if(matchWrong&&matchWrong.timer>0) matchWrong.timer--;
+
+    if(matchScore===EQUIP.length){
+      sk.fill(0,0,0,140); sk.noStroke(); sk.rect(250,180,360,150,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All Matched! Great work!',430,230);
+      sk.fill(200,240,255); sk.textSize(12); sk.textStyle(sk.NORMAL);
+      sk.text('You know all 6 lab instruments!',430,260);
+      sk.fill(200,220,255); sk.rect(350,278,160,36,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',430,296);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mouseClicked=()=>{
+    if(gameMode!==1) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    if(matchScore===EQUIP.length&&mx>350&&mx<510&&my>278&&my<314){ resetMatchGame(); return; }
+    let shuffledUse=[...EQUIP].sort((a,b)=>a.use.localeCompare(b.use));
+    // Click left column
+    EQUIP.forEach((e,i)=>{
+      let ly=60+i*70;
+      if(mx>30&&mx<230&&my>ly&&my<ly+52&&!matchMatched.has(e.name)) matchSelected=i;
+    });
+    // Click right column — try to match
+    if(matchSelected!==null){
+      shuffledUse.forEach((e,i)=>{
+        let ry=60+i*70;
+        if(mx>500&&mx<850&&my>ry&&my<ry+52&&!matchMatched.has(e.name)){
+          if(e.name===EQUIP[matchSelected].name){ matchMatched.add(e.name); matchScore++; matchSelected=null; }
+          else { matchWrong={useIdx:i,timer:30}; }
+        }
+      });
+    }
+  };
+
+  function infoBox(sk,x,y,w,title,body,col,bg,tc){
+    let lines=body.split('\n');
+    let bh=16+lines.length*16+8;
+    sk.fill(bg[0],bg[1],bg[2],200);sk.stroke(col[0],col[1],col[2],80);sk.strokeWeight(1);
+    sk.rect(x,y,w,bh,6);sk.noStroke();
+    sk.fill(tc[0],tc[1],tc[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text(title,x+8,y+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    lines.forEach((l,i)=>sk.text(l,x+8,y+30+i*16));
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+

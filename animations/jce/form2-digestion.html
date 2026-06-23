@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Digestion — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#6a1b9a; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#ce93d8; color:#4a148c; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #e1bee7; }
+    #controls { display:flex; gap:10px; margin-top:14px; align-items:center; }
+    .btn { padding:8px 18px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-prev { border-color:#6a1b9a; color:#6a1b9a; background:#fff; }
+    .btn-prev:hover { background:#6a1b9a; color:#fff; }
+    .btn-play { border-color:#2e7d32; color:#2e7d32; background:#fff; }
+    .btn-play.on { background:#2e7d32; color:#fff; }
+    .btn-next { border-color:#6a1b9a; color:#6a1b9a; background:#fff; }
+    .btn-next:hover { background:#6a1b9a; color:#fff; }
+    #stage-label { font-size:0.88rem; font-weight:600; color:#555; padding:8px 16px; background:#fff; border-radius:24px; border:1.5px solid #e0e0e0; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ce93d8;color:#4a148c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 2 Biology</span>
+  <h1>Human Nutrition &amp; Digestion</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-prev" onclick="prevStage()">&#9664; Previous</button>
+  <button class="btn btn-play on" id="b-play" onclick="togglePlay()">&#9646;&#9646; Pause</button>
+  <span id="stage-label">Stage 1 / 5 — Mouth</span>
+  <button class="btn btn-next" onclick="nextStage()">Next &#9654;</button>
+  <button class="btn btn-prev" id="b-prac2" onclick="setDPractice(!dMcqMode)" style="border-color:#f9a825;color:#f9a825">&#127918; Enzyme Quiz</button>
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Digestion Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#6a1b9a;border-bottom:2px solid #6a1b9a;padding-bottom:8px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#6a1b9a;color:#fff}@media print{body{padding:10px}}</style></head><body><h1>Human Nutrition &amp; Digestion — Study Notes</h1><table><tr><th>Organ</th><th>Process</th><th>Enzyme</th><th>pH</th></tr>';
+  STAGES.forEach(s=>html+=`<tr><td><strong>${s.name}</strong></td><td>${s.process.replace(/\n/g,' ')}</td><td>${s.enzyme}</td><td>${s.phLabel}</td></tr>`);
+  html+='</table><p><strong>Key:</strong> Digestion breaks large food molecules into small ones that can be absorbed into the blood through the small intestine wall (villi).</p></body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let dMcqMode=false;
+const D_MCQ=[
+  {q:'Which enzyme in the MOUTH breaks down starch?',opts:['Salivary amylase','Pepsin','Lipase','Protease'],c:0,tip:'Salivary amylase in saliva begins starch digestion in the mouth.'},
+  {q:'What is the function of PERISTALSIS?',opts:['Move food along the digestive tract by muscle contractions','Produce digestive enzymes','Absorb nutrients into blood','Break down proteins'],c:0,tip:'Peristalsis is rhythmic muscle contractions that push food through the oesophagus and intestines.'},
+  {q:'What is the pH of the STOMACH?',opts:['Approximately 1.5–2 (very acidic)','Approximately 7 (neutral)','Approximately 8 (alkaline)','Approximately 10 (very alkaline)'],c:0,tip:'HCl (hydrochloric acid) makes the stomach very acidic, killing bacteria and activating pepsin.'},
+  {q:'Where does MOST nutrient absorption take place?',opts:['Small intestine (via villi)','Large intestine','Stomach','Mouth'],c:0,tip:'Villi in the small intestine greatly increase surface area for absorption.'},
+  {q:'Which substance is produced by the LIVER and helps digest fats?',opts:['Bile','Amylase','Pepsin','Insulin'],c:0,tip:'Bile is produced in the liver, stored in the gall bladder, and emulsifies fats in the small intestine.'},
+  {q:'Which enzyme breaks down PROTEINS?',opts:['Protease (pepsin)','Amylase','Lipase','Bile'],c:0,tip:'Proteases (like pepsin) break proteins into peptides and amino acids.'},
+  {q:'What is reabsorbed in the LARGE INTESTINE?',opts:['Water and mineral salts','Glucose and amino acids','Vitamins A, D, E, K','All nutrients'],c:0,tip:'The large intestine reabsorbs water, making the remaining material into solid faeces.'},
+  {q:'What does LIPASE break down?',opts:['Fats/lipids into fatty acids and glycerol','Starch into maltose','Proteins into amino acids','Cellulose into glucose'],c:0,tip:'Lipase is produced by the pancreas and breaks down fats in the small intestine.'},
+];
+let dMcqIdx=0,dMcqSel=-1,dMcqScore=0,dMcqDone=false,dMcqFeedback=null;
+function setDPractice(on){ dMcqMode=on; let b=document.getElementById('b-prac2'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){dMcqIdx=0;dMcqSel=-1;dMcqScore=0;dMcqDone=false;dMcqFeedback=null;} }
+function drawDMCQ(s){
+  s.background(250,240,255);
+  if(dMcqDone){
+    s.fill(74,20,140);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Enzyme Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+dMcqScore+'/'+D_MCQ.length,440,210);
+    s.text(dMcqScore>=7?'Excellent! Digestion expert!':dMcqScore>=5?'Good work!':'Review the stages and try again!',440,240);
+    s.fill(150,80,200);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=D_MCQ[dMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(150,80,200);s.rect(30,18,820*(dMcqIdx/D_MCQ.length),10,5);
+  s.fill(74,20,140);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(dMcqIdx+1)+' of '+D_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=dMcqSel===i,correct=dMcqFeedback!==null&&i===q.c,wrong=dMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[250,245,255]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(dMcqFeedback){
+    s.fill(dMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(dMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(200,150,230);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function dMcqClick(mx,my){
+  if(dMcqDone){if(mx>310&&mx<570&&my>265&&my<309){dMcqIdx=0;dMcqSel=-1;dMcqScore=0;dMcqDone=false;dMcqFeedback=null;}return;}
+  let q=D_MCQ[dMcqIdx];
+  if(dMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){dMcqFeedback=null;dMcqSel=-1;dMcqIdx++;if(dMcqIdx>=D_MCQ.length)dMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&dMcqFeedback===null){dMcqSel=i;dMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)dMcqScore++;}});
+}
+let autoPlay = true;
+let stageNum = 0;
+let pathIdxGlobal = 0;
+let progressGlobal = 0;
+
+function togglePlay() {
+  autoPlay = !autoPlay;
+  document.getElementById('b-play').textContent = autoPlay ? '⏸ Pause' : '▶ Play';
+  document.getElementById('b-play').classList.toggle('on', autoPlay);
+}
+function prevStage() { stageNum = Math.max(0, stageNum - 1); gotoStageStart(stageNum); updateLabel(); }
+function nextStage() { stageNum = Math.min(4, stageNum + 1); gotoStageStart(stageNum); updateLabel(); }
+function gotoStageStart(s) { pathIdxGlobal = STAGE_START[s]; progressGlobal = 0; }
+function updateLabel() {
+  const names = ['Mouth','Oesophagus','Stomach','Small Intestine','Large Intestine'];
+  document.getElementById('stage-label').textContent = 'Stage '+(stageNum+1)+' / 5 — '+names[stageNum];
+}
+
+const STAGE_START = [0, 1, 3, 7, 13]; // PATH index where each stage begins
+
+const STAGES = [
+  { name:'Mouth', col:[240,128,128], tcol:[160,30,30], ph:7.0, phLabel:'~7.0 — Neutral', phFrac:0.5,
+    process:'Teeth mechanically break down food.\nSalivary glands release saliva.',
+    enzyme:'Salivary amylase', breaks:'Starch → Maltose (sugar)',
+    time:'~10 seconds',
+    fact:'You produce about 1–2 litres of saliva per day!' },
+  { name:'Oesophagus', col:[186,104,200], tcol:[106,27,154], ph:7.0, phLabel:'~7.0 — Neutral', phFrac:0.5,
+    process:'Peristalsis — rhythmic muscle contractions\npush the food bolus downward.',
+    enzyme:'None (no digestion occurs here)', breaks:'Food moves to stomach',
+    time:'~10 seconds',
+    fact:'Peristalsis would push food down even if you ate upside down!' },
+  { name:'Stomach', col:[255,138,101], tcol:[191,54,12], ph:1.5, phLabel:'~1.5–2 — Very Acidic', phFrac:0.08,
+    process:'HCl from gastric glands kills bacteria.\nMuscular walls churn food into chyme.',
+    enzyme:'Pepsin (activated by HCl)', breaks:'Proteins → Peptides',
+    time:'2–4 hours',
+    fact:'Your stomach lining renews every 3–4 days to resist self-digestion!' },
+  { name:'Small Intestine', col:[100,181,246], tcol:[1,87,155], ph:8.0, phLabel:'~7.5–8.5 — Alkaline', phFrac:0.82,
+    process:'Most digestion and absorption occurs here.\nVilli and microvilli greatly increase surface area.',
+    enzyme:'Amylase, Lipase, Protease (pancreas) + Bile (liver)', breaks:'All nutrients → bloodstream',
+    time:'2–6 hours',
+    fact:'Unrolled, the small intestine is approximately 6.5 metres long!' },
+  { name:'Large Intestine', col:[188,170,164], tcol:[78,52,46], ph:6.0, phLabel:'~5–7 — Slightly Acidic', phFrac:0.38,
+    process:'Water and mineral salts are reabsorbed\ninto the blood. Bacteria produce vitamins.',
+    enzyme:'Gut bacteria (not enzymes)', breaks:'Water → blood; Undigested → faeces',
+    time:'12–24 hours',
+    fact:'About 1.5 litres of water is reabsorbed from here every day!' },
+];
+
+// PATH: food particle waypoints through the digestive system
+const PATH = [
+  {x:190, y:70},   // 0  Mouth
+  {x:190, y:118},  // 1  Oesophagus start
+  {x:190, y:158},  // 2  Oesophagus end
+  {x:175, y:174},  // 3  Stomach top
+  {x:148, y:213},  // 4  Stomach mid
+  {x:163, y:255},  // 5  Stomach bottom
+  {x:182, y:270},  // 6  Stomach exit (duodenum)
+  {x:148, y:292},  // 7  SI loop 1 left
+  {x:228, y:308},  // 8  SI loop 1 right
+  {x:145, y:330},  // 9  SI loop 2 left
+  {x:228, y:350},  // 10 SI loop 2 right
+  {x:145, y:370},  // 11 SI loop 3 left
+  {x:218, y:385},  // 12 SI end
+  {x:258, y:385},  // 13 LI bottom right
+  {x:262, y:308},  // 14 LI right
+  {x:262, y:262},  // 15 LI top right
+  {x:132, y:262},  // 16 LI top left
+  {x:130, y:308},  // 17 LI left
+  {x:130, y:388},  // 18 LI bottom left
+  {x:190, y:418},  // 19 Rectum
+];
+
+new p5(function(sk) {
+  const W = 880, H = 500;
+  let tick = 0;
+  let absorbPts = []; // nutrient absorption dots in SI
+
+  sk.setup = function() {
+    sk.createCanvas(W, H).parent('sketch');
+    sk.textFont('Arial');
+  };
+
+  sk.draw = function() {
+    if(dMcqMode){ drawDMCQ(sk); return; }
+    tick += 0.04;
+
+    // Auto-advance food particle
+    if (autoPlay) {
+      progressGlobal += 0.006;
+      if (progressGlobal >= 1) {
+        progressGlobal = 0;
+        pathIdxGlobal++;
+        if (pathIdxGlobal >= PATH.length - 1) {
+          pathIdxGlobal = 0; // restart
+          stageNum = 0;
+        }
+        // Update stage
+        for (let s = STAGES.length - 1; s >= 0; s--) {
+          if (pathIdxGlobal >= STAGE_START[s]) { stageNum = s; break; }
+        }
+        updateLabel();
+      }
+    }
+
+    // Food position
+    let p1 = PATH[pathIdxGlobal];
+    let p2 = PATH[Math.min(pathIdxGlobal + 1, PATH.length - 1)];
+    let foodX = sk.lerp(p1.x, p2.x, progressGlobal);
+    let foodY = sk.lerp(p1.y, p2.y, progressGlobal);
+
+    sk.background(248, 252, 248);
+    drawBody(stageNum, foodX, foodY);
+    drawInfoPanel(stageNum);
+  };
+
+  // ─── Body diagram ──────────────────────────────────────────────
+  function drawBody(stage, fx, fy) {
+    // Body background silhouette
+    sk.fill(255, 228, 196, 140); sk.noStroke();
+    sk.ellipse(192, 42, 56, 60);          // head
+    sk.rect(178, 68, 28, 26);             // neck
+    sk.rect(118, 92, 148, 330, 12);       // torso
+    sk.rect(118, 415, 64, 70, 8);         // left leg
+    sk.rect(202, 415, 64, 70, 8);         // right leg
+
+    // Mouth
+    drawOrgan(sk.ellipse, [190, 70, 58, 20], 0, stage, [240,128,128]);
+    sk.fill(255,255,255,180); sk.noStroke();
+    for (let t = -2; t <= 2; t++) sk.rect(184+t*8, 62, 6, 7, 2); // teeth
+
+    // Oesophagus
+    drawOrgan(sk.rect, [183, 83, 14, 80], 1, stage, [186,104,200], 4);
+    // Peristalsis waves
+    if (stage === 1) {
+      for (let w = 0; w < 3; w++) {
+        let wy = 83 + (((tick*3 + w*26) % 78));
+        sk.noFill(); sk.stroke(186,104,200, 120); sk.strokeWeight(1.5);
+        sk.ellipse(190, wy, 24, 8); sk.noStroke();
+      }
+    }
+
+    // Stomach
+    sk.push();
+    sk.translate(162, 213);
+    let sGlow = stage === 2 ? 0.6 + sk.sin(tick*2)*0.4 : 0;
+    if (sGlow > 0) { sk.fill(255,138,101, sGlow*50); sk.noStroke(); sk.ellipse(0,0,170,150); }
+    sk.fill(stage===2 ? 255 : 200, stage===2 ? 138 : 160, stage===2 ? 101 : 140);
+    sk.ellipse(0, 0, 110, 98);
+    // Churning lines if active
+    if (stage === 2) {
+      sk.stroke(220,90,50,100); sk.strokeWeight(1.5); sk.noFill();
+      sk.ellipse(sk.sin(tick)*8, sk.cos(tick*1.3)*6, 65, 55);
+      sk.ellipse(-sk.sin(tick*0.8)*10, sk.cos(tick)*5, 38, 32);
+    }
+    sk.noStroke();
+    sk.pop();
+
+    // Liver (context, not active organ)
+    sk.fill(180, 90, 50, stage===2 ? 180 : 100); sk.noStroke();
+    sk.ellipse(238, 180, 72, 52);
+    sk.fill(255,255,255,80); sk.textSize(8); sk.textAlign(sk.CENTER);
+    sk.text('Liver', 238, 183);
+
+    // Small intestine (coiled loops)
+    sk.noStroke();
+    let siActive = stage === 3;
+    let siGlow = siActive ? 0.5 + sk.sin(tick*1.5)*0.5 : 0;
+    if (siGlow > 0) { sk.fill(100,181,246,siGlow*45); sk.ellipse(192, 333, 145, 130); }
+    // Loop segments
+    sk.stroke(siActive ? 100 : 150, siActive ? 181 : 170, siActive ? 246 : 230); sk.strokeWeight(9); sk.noFill();
+    sk.arc(185, 298, 84, 28, 0, sk.PI);
+    sk.arc(185, 318, 84, 28, sk.PI, sk.TWO_PI);
+    sk.arc(185, 338, 84, 28, 0, sk.PI);
+    sk.arc(185, 358, 84, 28, sk.PI, sk.TWO_PI);
+    sk.arc(185, 378, 84, 28, 0, sk.PI);
+    sk.noStroke();
+    // Absorption effect
+    if (siActive) spawnAndDrawAbsorb(fx, fy);
+
+    // Large intestine frame
+    let liActive = stage === 4;
+    let liCol = liActive ? [188,170,164] : [210,195,188];
+    sk.stroke(...liCol); sk.strokeWeight(11); sk.noFill();
+    sk.beginShape();
+    sk.vertex(133, 262); sk.vertex(133, 392); sk.vertex(190, 418); sk.vertex(260, 392);
+    sk.vertex(260, 262); sk.vertex(133, 262);
+    sk.endShape();
+    sk.noStroke();
+
+    // Rectum
+    sk.fill(188,170,164, 200); sk.noStroke();
+    sk.ellipse(190, 418, 30, 18);
+
+    // Draw labels
+    drawLabel('Mouth', 190, 52, sk.CENTER, [160,30,30], stage===0);
+    drawLabel('Oesophagus', 126, 123, sk.RIGHT, [106,27,154], stage===1);
+    drawLabel('Stomach', 100, 215, sk.RIGHT, [191,54,12], stage===2);
+    drawLabel('Liver', 295, 170, sk.LEFT, [120,50,30], false);
+    drawLabel('Small Intestine', 295, 333, sk.LEFT, [1,87,155], stage===3);
+    drawLabel('Large Intestine', 295, 278, sk.LEFT, [78,52,46], stage===4);
+    drawLabel('Rectum', 225, 430, sk.LEFT, [78,52,46], false);
+
+    // Food particle
+    let fc = STAGES[stage].col;
+    sk.noStroke();
+    sk.fill(fc[0], fc[1], fc[2], 50); sk.ellipse(fx, fy, 30);
+    sk.fill(fc[0], fc[1], fc[2], 220); sk.ellipse(fx, fy, 17);
+    sk.fill(255,255,255,130); sk.ellipse(fx-4, fy-4, 5);
+    // Glow pulse
+    let pulse = sk.sin(tick*4)*4;
+    sk.stroke(fc[0],fc[1],fc[2],80); sk.strokeWeight(1.5); sk.noFill();
+    sk.ellipse(fx, fy, 24+pulse); sk.noStroke();
+  }
+
+  function drawOrgan(drawFn, args, organStage, currentStage, col, radius) {
+    let active = organStage === currentStage;
+    if (active) { sk.fill(col[0],col[1],col[2],50); sk.noStroke(); sk.ellipse(args[0],args[1],args[2]+20,args[3]+12); }
+    sk.fill(active ? col[0] : col[0]*0.7, active ? col[1] : col[1]*0.7, active ? col[2] : col[2]*0.7, active?220:140);
+    sk.noStroke();
+    if (radius) sk.rect(args[0],args[1],args[2],args[3],radius);
+    else sk.ellipse(args[0],args[1],args[2],args[3]);
+  }
+
+  function drawLabel(txt, x, y, align, col, active) {
+    sk.textSize(10); sk.textAlign(align);
+    sk.fill(255,255,255, active?220:180);
+    let tw = sk.textWidth(txt);
+    let bx = align===sk.RIGHT ? x-tw-4 : align===sk.CENTER ? x-tw/2-4 : x-4;
+    sk.rect(bx, y-12, tw+8, 15, 3);
+    sk.fill(col[0],col[1],col[2], active?255:160);
+    sk.textStyle(active?sk.BOLD:sk.NORMAL);
+    sk.text(txt, x, y);
+    sk.textStyle(sk.NORMAL);
+  }
+
+  function spawnAndDrawAbsorb(fx, fy) {
+    if (sk.frameCount % 8 === 0) {
+      for (let k = 0; k < 2; k++) {
+        let a = sk.random(sk.TWO_PI);
+        absorbPts.push({ x:fx, y:fy, vx:sk.cos(a)*1.5, vy:sk.sin(a)*1.5, a:220,
+          col: k===0 ? [56,189,248] : [255,160,50] });
+      }
+    }
+    absorbPts = absorbPts.filter(p => p.a > 5);
+    for (let p of absorbPts) {
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.97; p.vy *= 0.97; p.a -= 4;
+      sk.fill(p.col[0],p.col[1],p.col[2],p.a); sk.noStroke();
+      sk.ellipse(p.x, p.y, 7);
+    }
+  }
+
+  // ─── Info panel ────────────────────────────────────────────────
+  function drawInfoPanel(stage) {
+    let s = STAGES[stage];
+    let px = 375, py = 14, pw = 490, ph = 472;
+
+    // Panel background
+    sk.fill(255,255,255,240); sk.stroke(s.col[0],s.col[1],s.col[2]); sk.strokeWeight(2.5);
+    sk.rect(px, py, pw, ph, 10); sk.noStroke();
+
+    // Stage dots
+    for (let i = 0; i < STAGES.length; i++) {
+      let c = STAGES[i].col;
+      sk.fill(c[0],c[1],c[2], i===stage?255:80);
+      sk.ellipse(px + 20 + i*26, py+16, i===stage?14:10);
+    }
+
+    // Organ name
+    let ny = py + 40;
+    sk.fill(s.col[0],s.col[1],s.col[2],30); sk.noStroke();
+    sk.rect(px+10, ny-18, pw-20, 32, 6);
+    sk.fill(s.tcol[0],s.tcol[1],s.tcol[2]);
+    sk.textSize(19); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+    sk.text(s.name, px+18, ny+4);
+    sk.textStyle(sk.NORMAL);
+
+    // pH bar
+    let bx = px+14, bby = ny+28, bw = pw-28, bh = 18;
+    let ctx = sk.drawingContext;
+    let g = ctx.createLinearGradient(bx, 0, bx+bw, 0);
+    g.addColorStop(0,   '#e53935'); // pH 0 (acid)
+    g.addColorStop(0.5, '#43a047'); // pH 7 (neutral)
+    g.addColorStop(1,   '#1e88e5'); // pH 14 (alkali)
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.roundRect(bx, bby, bw, bh, 9); ctx.fill();
+    // pH marker
+    let markerX = bx + bw * s.phFrac;
+    sk.fill(255); sk.noStroke();
+    sk.triangle(markerX, bby-2, markerX-6, bby-12, markerX+6, bby-12);
+    sk.fill(40); sk.textSize(10); sk.textAlign(sk.CENTER);
+    sk.text('pH ' + s.phLabel, markerX, bby-14);
+
+    // pH scale labels
+    sk.fill(255); sk.textSize(9); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+    sk.text('Acid (0)', bx+4, bby+12);
+    sk.textAlign(sk.CENTER); sk.text('Neutral (7)', bx+bw/2, bby+12);
+    sk.textAlign(sk.RIGHT); sk.text('Alkali (14)', bx+bw-4, bby+12);
+    sk.textStyle(sk.NORMAL);
+
+    // Sections
+    let sy = bby + bh + 20;
+
+    infoSection(sk, px+14, sy, pw-28, '⚙ What Happens', s.process, s.col);
+    sy += sectionHeight(s.process) + 14;
+
+    infoSection(sk, px+14, sy, pw-28, '🧪 Enzyme / Substance', s.enzyme + '\n' + s.breaks, s.col);
+    sy += sectionHeight(s.enzyme + '\n' + s.breaks) + 14;
+
+    infoSection(sk, px+14, sy, (pw-28)*0.48, '⏱ Time Taken', s.time, s.col);
+    sy += sectionHeight(s.time) + 14;
+
+    // Fun fact (yellow box)
+    let fh = 16 + factHeight(s.fact);
+    sk.fill(255,253,231); sk.stroke(255,213,79); sk.strokeWeight(1.5);
+    sk.rect(px+14, sy, pw-28, fh+8, 6); sk.noStroke();
+    sk.fill(130,100,0); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('💡 Did you know?', px+22, sy+14); sk.textStyle(sk.NORMAL);
+    wrapText(sk, s.fact, px+22, sy+28, pw-44, 14);
+  }
+
+  sk.mouseClicked=function(){ if(dMcqMode){ dMcqClick(sk.mouseX,sk.mouseY); return; } };
+
+  function infoSection(sk, x, y, w, title, body, col) {
+    let bh = 14 + body.split('\n').length * 15 + 6;
+    sk.fill(col[0],col[1],col[2],18); sk.noStroke();
+    sk.rect(x, y, w, bh, 6);
+    sk.fill(col[0]*0.6,col[1]*0.6,col[2]*0.6); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text(title, x+8, y+13); sk.textStyle(sk.NORMAL);
+    sk.fill(40); sk.textSize(11);
+    body.split('\n').forEach((l,i) => sk.text(l, x+8, y+27+i*15));
+  }
+
+  function sectionHeight(text) {
+    return 14 + text.split('\n').length * 15 + 6;
+  }
+
+  function factHeight(text) {
+    return Math.ceil(text.length / 58) * 15;
+  }
+
+  function wrapText(sk, text, x, y, maxW, lineH) {
+    let words = text.split(' '), line = '';
+    sk.fill(60); sk.textSize(10.5); sk.textAlign(sk.LEFT);
+    for (let w of words) {
+      let test = line + w + ' ';
+      if (sk.textWidth(test) > maxW && line !== '') {
+        sk.text(line.trim(), x, y); line = w + ' '; y += lineH;
+      } else { line = test; }
+    }
+    if (line.trim()) sk.text(line.trim(), x, y);
+  }
+});
+</script>
+</body>
+</html>

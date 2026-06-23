@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Food Chains Quiz</title></head><body>
+<script src="../quiz-engine.js"></script>
+<script>
+initQuiz({
+  title:'Food Chains & Webs — Std 5 Science Quiz',
+  color:'#33691e',dark:'#1b5000',light:'#f1f8e9',
+  mcq:[
+    {q:'In a food chain, the arrow shows:',opts:['Which animal is bigger','The direction of energy flow','Which animal moves faster','Who eats the most'],ans:1,exp:'The ARROW in a food chain shows the direction of ENERGY FLOW — from the organism being eaten to the organism eating it. e.g. Grass → Grasshopper → Frog → Snake.'},
+    {q:'Plants are called producers because they:',opts:['Eat other organisms','Make their own food using sunlight','Produce heat','Produce animals'],ans:1,exp:'PRODUCERS (plants) MAKE their own food through PHOTOSYNTHESIS — using sunlight, water, and CO₂ to make glucose. All food chains start with a producer.'},
+    {q:'A herbivore is an animal that:',opts:['Eats only meat','Eats plants and animals','Eats only plants','Eats fungi only'],ans:2,exp:'HERBIVORES eat ONLY PLANTS. Examples: rabbit, cow, caterpillar, grasshopper. CARNIVORES eat only animals. OMNIVORES eat both.'},
+    {q:'What happens to energy as it flows up a food chain?',opts:['It increases at each level','It stays the same','It decreases at each level','It doubles each time'],ans:2,exp:'Energy DECREASES at each level of a food chain. Most energy (about 90%) is LOST at each stage as heat from respiration, movement, and waste. Only ~10% passes to the next level.'},
+    {q:'Decomposers are important in an ecosystem because they:',opts:['Hunt other animals','Block sunlight','Break down dead matter and return nutrients to soil','Make food for all other organisms'],ans:2,exp:'DECOMPOSERS (bacteria, fungi) BREAK DOWN dead organisms and return NUTRIENTS to the soil. These nutrients are then absorbed by plants — completing the nutrient cycle.'},
+  ],
+  match:[
+    {term:'Producer',def:'Makes its own food by photosynthesis (plant or alga)'},
+    {term:'Primary consumer',def:'Herbivore that eats plants directly'},
+    {term:'Secondary consumer',def:'Animal that eats the primary consumer (usually a carnivore)'},
+    {term:'Predator',def:'Animal that hunts and kills other animals for food'},
+    {term:'Prey',def:'Animal that is hunted and eaten by a predator'},
+    {term:'Decomposer',def:'Breaks down dead organisms and returns nutrients to soil'},
+  ],
+  flashcards:[
+    {q:'What is a food web and why is it more realistic than a food chain?',a:'A FOOD WEB shows ALL the FEEDING RELATIONSHIPS in an ecosystem — many food chains linked together. It is more REALISTIC because most animals eat more than one type of food, and one animal may be eaten by several predators.'},
+    {q:'Explain what happens to a food web if one species is removed.',a:'Removing one species causes a CHAIN REACTION (trophic cascade). e.g. If all frogs are removed: grasshoppers (their prey) INCREASE greatly; snakes (their predator) DECREASE due to less food. The whole ecosystem can become UNBALANCED.'},
+    {q:'What is the difference between a food chain and an energy pyramid?',a:'A FOOD CHAIN shows the order of feeding. An ENERGY/ECOLOGICAL PYRAMID shows the AMOUNT of energy, biomass, or number of organisms at each level (trophic level). The pyramid is widest at the base (producers) and narrows upward.'},
+    {q:'State 3 differences between producers, consumers, and decomposers.',a:'PRODUCERS: make food (photosynthesis), always the base of food chains. CONSUMERS: eat other organisms (primary=herbivore, secondary/tertiary=carnivore). DECOMPOSERS: eat dead organisms; recycle nutrients; bacteria and fungi.'},
+    {q:'Why do food chains usually have only 4-5 levels?',a:'Because energy is LOST (as heat) at each level — only ~10% passes to the next. By level 4 or 5, so little energy remains that it cannot support another level. e.g. 10,000 J at producers → 1,000 J → 100 J → 10 J.'},
+  ],
+  blanks:{
+    passage:'All food chains start with a [_] that makes food by photosynthesis. Animals that eat plants are called [_] consumers. The arrow in a food chain shows the direction of [_] flow. Energy [_] at each level because much is lost as [_]. [_] break down dead organisms and return nutrients to the soil.',
+    answers:['producer','primary','energy','decreases','heat','Decomposers'],
+    wordbank:['producer','primary','energy','decreases','heat','Decomposers','secondary','increases'],
+  },
+  sentences:[
+    {prompt:'Write a food chain with 4 organisms from a grassland ecosystem and label each feeding level.',keywords:['grass','producer','herbivore','carnivore','consumer','arrow'],hint:'Start with a plant. Each arrow shows energy flowing from prey to predator.'},
+    {prompt:'Explain why there are fewer lions than zebras in a savannah ecosystem.',keywords:['energy loss','10%','fewer','top predator','energy pyramid'],hint:'Think about how energy decreases up the food chain. Why does this limit how many top predators can be supported?'},
+    {prompt:'Describe how removing all the decomposers from an ecosystem would affect it.',keywords:['dead matter','nutrients','soil','plants','break down','accumulate'],hint:'What would happen to all the dead organisms and their nutrients?'},
+  ],
+});
+</script></body></html>

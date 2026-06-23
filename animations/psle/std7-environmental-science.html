@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Environmental Science — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#33691e;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#aed581;color:#33691e;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #aed581}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #33691e;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#33691e;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#33691e;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%207">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 7 Science</span>
+  <h1>Environmental Science</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Natural Resources</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Pollution</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Conservation in Botswana</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Recycling</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Eco Choices</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [
+    {t:'Natural Resources', b:['Natural resources: materials found in nature that humans use','Renewable resources: replenish naturally — sunlight, wind, water, soil, plants, animals','Non-renewable resources: take millions of years to form — fossil fuels (coal, oil, gas), minerals','Botswana\'s key resources: diamonds, coal, copper-nickel, water (scarce), wildlife']},
+    {t:'Resource Management', b:['Sustainable use: taking resources no faster than they can renew','Deforestation: cutting trees faster than they regrow → habitat loss, soil erosion, less rainfall','Overgrazing: too many livestock → bare, eroded soil → desertification (big issue in Botswana)','Overfishing: depletes fish stocks below recovery levels']},
+    {t:'Botswana-Specific Issues', b:['Botswana is semi-arid — water is the most critical resource','Okavango Delta: world\'s largest inland delta, UNESCO World Heritage Site','Wildlife: elephants, lions, meerkats depend on protected land','Mining (diamonds): major economic resource, but careful land management needed']},
+    {t:'Sustainable Development', b:['Meeting needs of the present without compromising future generations\' ability to meet their own needs (Brundtland, 1987)','Three pillars: Economic (jobs, growth) + Social (equity, health) + Environmental (nature)','Botswana Vision 2036: aims for sustainable economic diversification beyond diamonds']},
+  ],
+  [
+    {t:'Types of Pollution', b:['Air pollution: smoke, vehicle exhaust, industrial gases (CO₂, SO₂, NOₓ)','Water pollution: sewage, agricultural chemicals, litter, oil spills','Land/soil pollution: rubbish dumps, pesticides, mining waste, plastic litter','Noise pollution: road traffic, industrial machinery, loud music — affects health and wildlife']},
+    {t:'Air Pollution Effects', b:['Greenhouse gases (CO₂, CH₄) trap heat → global warming → climate change','Climate change threatens Botswana with more drought, extreme heat, erratic rainfall','Smog: ground-level ozone + particulates → respiratory disease','Acid rain: SO₂ + NOₓ + water → sulphuric/nitric acid → damages forests and buildings']},
+    {t:'Water Pollution Effects', b:['Contaminated drinking water → cholera, typhoid, dysentery','Eutrophication: excess fertiliser → algal blooms → depletes oxygen → fish die','Plastic waste harms aquatic wildlife — fish ingest microplastics','Botswana: many villages rely on boreholes — groundwater pollution is serious']},
+    {t:'Reducing Pollution', b:['Use renewable energy (solar, wind) instead of fossil fuels','Proper sewage treatment before releasing water into rivers','Reduce single-use plastics — carry reusable bags and bottles','Public transport and cycling reduce vehicle exhaust emissions']},
+  ],
+  [
+    {t:'Wildlife Conservation in Botswana', b:['Botswana has ~38% of land under conservation (national parks and game reserves)','Chobe National Park: largest elephant population in Africa (~130,000 elephants)','Central Kalahari Game Reserve: second largest game reserve in the world','KAZA Transfrontier Conservation Area: shared with Zimbabwe, Zambia, Namibia, Zimbabwe']},
+    {t:'Threats to Wildlife', b:['Habitat loss: farming, settlements reduce available wild land','Poaching: illegal hunting of elephants (ivory), rhinos (horn), pangolins','Human–wildlife conflict: crop raiding by elephants, predators killing livestock','Climate change: altering water availability and vegetation patterns']},
+    {t:'Conservation Strategies', b:['National parks: areas where human settlement and hunting are prohibited','Community-based natural resource management (CBNRM): local communities manage and benefit from wildlife','Anti-poaching units: rangers patrol parks, confiscate illegal hunting equipment','Ecotourism: wildlife tourism generates income that funds conservation']},
+    {t:'Water Conservation', b:['Botswana is a water-scarce country (arid/semi-arid climate)','Harvest rainwater: collection tanks on buildings','Fix leaking taps — a dripping tap wastes hundreds of litres per day','Water-wise gardening: use indigenous drought-resistant plants','North-South Carrier pipeline brings water from Letsibogo Dam to Gaborone']},
+  ],
+  [
+    {t:'The 3Rs: Reduce, Reuse, Recycle', b:['Reduce: use less material in the first place — buy less, use less packaging','Reuse: use items multiple times before disposing — containers, bags, jars','Recycle: process waste materials into new products — paper, glass, aluminium, plastic','Best order: Reduce first, then Reuse, then Recycle (most energy/resource saving at top)']},
+    {t:'Recyclable Materials', b:['Paper and cardboard: can be recycled 5–7 times; saves trees','Glass: 100% recyclable indefinitely; melted and reformed','Aluminium (cans): energy saving of 95% vs making new aluminium','Plastic: types 1 (PET bottles) and 2 (HDPE) most commonly recycled','Organic waste: composting converts food scraps into garden fertiliser']},
+    {t:'Recycling in Botswana', b:['Tetra Pak recycling available in Gaborone, Francistown, Maun','Glass recycling: collect at supermarkets','Scrap metal dealers accept aluminium, copper, steel','Composting encouraged in schools and communities','Botswana does not yet have kerbside recycling — must bring items to collection points']},
+    {t:'Benefits of Recycling', b:['Reduces waste going to landfill — extends landfill life','Saves energy: recycling aluminium uses 95% less energy than mining new','Reduces greenhouse gas emissions from waste decomposition','Creates jobs in waste collection, sorting, and processing','Reduces demand for raw materials — protects natural habitats']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Natural Resources','Pollution','Conservation in Botswana','Recycling'];
+  let h=`<html><head><title>Environmental Science Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #33691e;padding-bottom:8px;color:#33691e}
+    h2{font-size:1rem;color:#558b2f;margin:22px 0 6px;border-left:4px solid #558b2f;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 7 Science — Environmental Science</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── ECO CHOICES GAME ─────────────────────────────────────
+const ECO_CARDS=[
+  {text:'Use a reusable\nwater bottle',     answer:'Sustainable',   emoji:'🍶'},
+  {text:'Burn rubbish\nin the backyard',    answer:'Unsustainable', emoji:'🔥'},
+  {text:'Walk or cycle\nto school',         answer:'Sustainable',   emoji:'🚶'},
+  {text:'Leave tap\nrunning while brushing',answer:'Unsustainable', emoji:'🚰'},
+  {text:'Plant indigenous\ntrees',          answer:'Sustainable',   emoji:'🌱'},
+  {text:'Pour chemicals\ninto the river',   answer:'Unsustainable', emoji:'☠️'},
+  {text:'Compost food\nscraps',             answer:'Sustainable',   emoji:'♻️'},
+  {text:'Leave lights on\nwhen not needed', answer:'Unsustainable', emoji:'💡'},
+  {text:'Buy only what\nyou need',          answer:'Sustainable',   emoji:'🛍️'},
+  {text:'Throw plastic\nin the bush',       answer:'Unsustainable', emoji:'🗑️'},
+];
+
+let ecoDrags, ecoActive, placed2, ecoScore;
+
+function resetGame(){
+  let sh=[...ECO_CARDS].sort(()=>Math.random()-0.5).slice(0,8);
+  let cols=3, gapX=140, gapY=52, startX=30, startY=380;
+  ecoDrags=sh.map((c,i)=>({
+    ...c, x:startX+(i%cols)*gapX, y:startY+Math.floor(i/cols)*gapY,
+    sx:startX+(i%cols)*gapX, sy:startY+Math.floor(i/cols)*gapY,
+    slot:null, correct:null, ox:0,oy:0
+  }));
+  placed2={Sustainable:[],Unsustainable:[]}; ecoActive=null; ecoScore=0;
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880,H=510;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    sk.background(240,250,240);
+    if(tab<4){ drawEnvAnim(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(240,252,240); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b,bh=16+lines.length*14+8;
+      sk.fill(51,105,30); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawEnvAnim(){
+    // Simple Botswana landscape
+    // Sky
+    sk.fill(135,206,235); sk.noStroke(); sk.rect(30,30,440,350,8);
+    // Ground
+    sk.fill(180,140,80); sk.rect(30,270,440,110,0,0,8,8);
+    // Sun
+    sk.fill(255,220,60); sk.ellipse(400,80,50,50);
+    // Trees
+    function tree(x){sk.fill(100,60,30);sk.rect(x-6,220,12,60);sk.fill(60,140,60);sk.ellipse(x,200,60,80);}
+    tree(100); tree(180); tree(380);
+    // Elephant
+    sk.fill(150,140,130);
+    sk.ellipse(248,270,90,60); // body
+    sk.ellipse(205,250,50,50); // head
+    sk.fill(160,150,140); sk.rect(218,270,14,40,4); sk.rect(238,270,14,40,4); // legs
+    sk.stroke(150,140,130); sk.strokeWeight(3); sk.noFill();
+    sk.beginShape(); sk.vertex(205,260); sk.bezierVertex(195,260,185,270,183,285); sk.vertex(183,285); sk.endShape();
+    sk.noStroke();
+    // Label
+    sk.fill(30); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Botswana — protecting natural resources',248,420);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawGame(){
+    sk.fill(51,105,30); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Eco Choices — drag each action to SUSTAINABLE or UNSUSTAINABLE', W/2,22);
+    sk.fill(80); sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('Score: '+ecoScore+' / '+ecoDrags.length, W/2,38);
+
+    // Two columns
+    let cols=['Sustainable','Unsustainable'];
+    let colCols=[[60,160,60],[200,50,50]];
+    cols.forEach((col,i)=>{
+      let cx=30+i*240, cy=50, cw=225, ch=290;
+      sk.fill(colCols[i][0],colCols[i][1],colCols[i][2],30); sk.stroke(colCols[i][0],colCols[i][1],colCols[i][2]); sk.strokeWeight(2);
+      sk.rect(cx,cy,cw,ch,8);
+      sk.fill(colCols[i][0],colCols[i][1],colCols[i][2]); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text((i===0?'✅ ':'❌ ')+col, cx+cw/2, cy+22);
+      placed2[col].forEach((c,j)=>{
+        let py=cy+42+j*46;
+        sk.fill(c.correct?[200,255,200]:[255,200,200]); sk.stroke(c.correct?[0,150,0]:[200,0,0]); sk.strokeWeight(1.5);
+        sk.rect(cx+4,py,cw-8,38,6);
+        sk.fill(30); sk.noStroke(); sk.textSize(16); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(c.emoji, cx+10, py+19);
+        sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER);
+        sk.text((c.correct?'✓ ':' ✗ ')+c.text.replace('\n',' '), cx+32, py+19);
+      });
+    });
+
+    // Palette
+    sk.fill(220,248,220); sk.noStroke(); sk.rect(22,362,450,130,8);
+    sk.fill(51,105,30); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Drag each action to the correct side:', 30,378);
+
+    ecoDrags.forEach(d=>{
+      if(d.slot!==null||d===ecoActive) return;
+      sk.fill(200,230,200); sk.stroke(80,140,80); sk.strokeWeight(1.5);
+      sk.rect(d.sx,d.sy,125,42,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(14); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(d.emoji, d.sx+6, d.sy+21);
+      sk.textSize(8.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(d.text, d.sx+28, d.sy+21);
+    });
+
+    if(ecoActive){
+      sk.fill(200,230,200); sk.stroke(80,140,80); sk.strokeWeight(2);
+      sk.rect(ecoActive.x,ecoActive.y,125,42,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(14); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(ecoActive.emoji, ecoActive.x+6, ecoActive.y+21);
+      sk.textSize(8.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(ecoActive.text, ecoActive.x+28, ecoActive.y+21);
+    }
+
+    if(Object.values(placed2).flat().length===ecoDrags.length){
+      sk.fill(0,0,0,140); sk.noStroke(); sk.rect(100,150,280,130,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('Done! '+ecoScore+'/'+ecoDrags.length+' correct', 240,195);
+      sk.fill(200,255,220); sk.textSize(11); sk.textStyle(sk.NORMAL);
+      sk.text(ecoScore===ecoDrags.length?'Perfect eco-champion!':'Review the ✗ items',240,222);
+      sk.fill(180,230,180); sk.rect(180,238,120,32,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',240,254);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    if(Object.values(placed2).flat().length===ecoDrags.length&&mx>180&&mx<300&&my>238&&my<270){ resetGame(); return; }
+    for(let d of ecoDrags){
+      if(d.slot!==null) continue;
+      if(mx>d.sx&&mx<d.sx+125&&my>d.sy&&my<d.sy+42){ ecoActive=d; d.ox=d.sx-mx; d.oy=d.sy-my; return; }
+    }
+  };
+  sk.mouseDragged=()=>{ if(tab!==4||!ecoActive) return; ecoActive.x=sk.mouseX+ecoActive.ox; ecoActive.y=sk.mouseY+ecoActive.oy; };
+  sk.mouseReleased=()=>{
+    if(tab!==4||!ecoActive) return;
+    let dropped=false;
+    ['Sustainable','Unsustainable'].forEach((col,i)=>{
+      let cx=30+i*240,cy=50,cw=225,ch=290;
+      if(ecoActive.x+62>cx&&ecoActive.x+62<cx+cw&&ecoActive.y+21>cy&&ecoActive.y+21<cy+ch){
+        ecoActive.slot=col; ecoActive.correct=(col===ecoActive.answer);
+        if(ecoActive.correct) ecoScore++;
+        placed2[col].push(ecoActive); dropped=true;
+      }
+    });
+    if(!dropped){ ecoActive.x=ecoActive.sx; ecoActive.y=ecoActive.sy; }
+    ecoActive=null;
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Metals & Reactivity — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[14,16,22]))}
+
+const STEPS=[
+  {
+    title:'The Reactivity Series',
+    body:`The <strong>reactivity series</strong> ranks metals from most to least reactive based on how readily they form positive ions.
+    <br><br>
+    <strong>Most reactive → Least reactive:</strong>
+    <br>
+    <em>K, Na, Ca, Mg, Al, Zn, Fe, Ni, Sn, Pb, (H), Cu, Ag, Au, Pt</em>
+    <br><br>
+    Memory tip: <em><strong>K</strong>ing <strong>Na</strong>poleon <strong>Ca</strong>refully <strong>Mg</strong>ade <strong>Al</strong>l <strong>Z</strong>inc <strong>Fe</strong>rmentations — <strong>N</strong>ot <strong>S</strong>o <strong>P</strong>leasant <strong>Cu</strong>ring <strong>S</strong>ores <strong>A</strong>nd <strong>G</strong>aining <strong>P</strong>ain</em>
+    <br><br>
+    More reactive metals react vigorously with water and acids; less reactive ones don't.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const metals=[
+        {sym:'K',c:[231,76,60]},{sym:'Na',c:[231,76,60]},{sym:'Ca',c:[231,76,60]},
+        {sym:'Mg',c:[241,196,15]},{sym:'Al',c:[241,196,15]},{sym:'Zn',c:[241,196,15]},
+        {sym:'Fe',c:[46,204,113]},{sym:'Cu',c:[52,152,219]},{sym:'Ag',c:[155,89,182]},
+        {sym:'Au',c:[155,89,182]},
+      ];
+      const bw=W/(metals.length+1);
+      metals.forEach((m,i)=>{
+        const x=(i+1)*bw;
+        const h=H*(0.7-i*0.055);
+        const y=H*0.85-h;
+        const pulse=1+Math.sin(t*1.5+i)*0.04;
+        sk.fill(...m.c,180);sk.noStroke();
+        sk.rect(x-bw*0.35,y,bw*0.7,h,3,3,0,0);
+        sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.TOP);
+        sk.text(m.sym,x,y+3);sk.textStyle(sk.NORMAL);
+      });
+      sk.fill(255,255,255,60);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('← Most reactive',W*0.03,H*0.9);
+      sk.textAlign(sk.RIGHT);sk.text('Least →',W*0.97,H*0.9);
+      // Arrows
+      sk.stroke(231,76,60,120);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.05,H*0.08,W*0.35,H*0.08);
+      sk.fill(231,76,60,120);sk.noStroke();
+      sk.triangle(W*0.05,H*0.08,W*0.15,H*0.08-5,W*0.15,H*0.08+5);
+      sk.fill(231,76,60);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Reacts with cold water',W*0.38,H*0.09);
+    }
+  },
+  {
+    title:'Displacement Reactions',
+    body:`A more reactive metal can <strong>displace</strong> a less reactive metal from its salt solution.
+    <br><br>
+    <strong>Rule:</strong> If metal A is more reactive than metal B, then A will displace B from B's salt solution.
+    <br><br>
+    Examples:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Fe + CuSO₄ → FeSO₄ + Cu ✓ (Fe more reactive than Cu)</li>
+      <li>Cu + ZnSO₄ → no reaction ✗ (Cu less reactive than Zn)</li>
+      <li>Zn + 2HCl → ZnCl₂ + H₂ (Zn displaces hydrogen from acid)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,14,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Beaker
+      sk.fill(52,152,219,60);sk.noStroke();sk.rect(W*0.22,H*0.3,W*0.56,H*0.5,0,0,8,8);
+      sk.stroke(100,180,255,100);sk.strokeWeight(1.5);sk.noFill();
+      sk.rect(W*0.22,H*0.3,W*0.56,H*0.5,0,0,8,8);
+      // CuSO4 solution (blue)
+      sk.fill(52,152,219,120);sk.noStroke();
+      const solutionH=(1-Math.min(1,t/8))*H*0.4;
+      sk.rect(W*0.22,H*0.8-solutionH,W*0.56,solutionH,0,0,8,8);
+      // Iron rod being added
+      sk.fill(150,150,150,220);sk.noStroke();
+      sk.rect(W*0.48,H*0.15,8,H*0.5);
+      // Copper depositing on rod
+      if(t>2){
+        const copperH=Math.min(H*0.3,((t-2)*8));
+        sk.fill(184,115,51,200);sk.noStroke();
+        sk.rect(W*0.46,H*0.55,12,copperH,2);
+      }
+      // Labels
+      sk.fill(255,255,255,120);sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('CuSO₄ (aq)',W*0.5,H*0.38);
+      sk.fill(150,150,150);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Fe rod',W*0.55,H*0.22);
+      if(t>2){sk.fill(184,115,51);sk.text('Cu depositing',W*0.55,H*0.6);}
+      // Equation
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Fe + CuSO₄ → FeSO₄ + Cu',W*0.5,H*0.9);
+    }
+  },
+  {
+    q:'Reactivity Series — K to Au with Reactions',
+    content:`<h3>The Reactivity Series</h3><p>The reactivity series ranks metals in order of how readily they lose electrons and form positive ions. Metals at the top react vigorously with cold water and dilute acids; those at the bottom are largely inert. This series also determines which extraction method is needed.</p><ul><li>Most reactive (K, Na, Ca): react violently with cold water producing hydrogen gas and a metal hydroxide; extracted by electrolysis</li><li>Moderately reactive (Mg, Al, Zn, Fe): react with dilute acids but not cold water (or only slowly); extracted by reduction with carbon in a blast furnace</li><li>Least reactive (Cu, Ag, Au): do not react with dilute acids or water; found as native metals or extracted by simple smelting/electrolytic refining</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="300" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">The Reactivity Series</text>
+  <!-- Reactivity arrow -->
+  <line x1="30" y1="28" x2="30" y2="285" stroke="#e65100" stroke-width="3" marker-end="url(#arr)"/>
+  <text x="22" y="160" fill="#e65100" font-size="10" font-weight="bold" transform="rotate(-90,22,160)">Increasing reactivity</text>
+  <!-- Metals list -->
+  <!-- K -->
+  <rect x="44" y="28" width="60" height="20" rx="3" fill="#c62828"/><text x="74" y="42" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">K</text>
+  <!-- Na -->
+  <rect x="44" y="52" width="60" height="20" rx="3" fill="#c62828"/><text x="74" y="66" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Na</text>
+  <!-- Ca -->
+  <rect x="44" y="76" width="60" height="20" rx="3" fill="#c62828"/><text x="74" y="90" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Ca</text>
+  <!-- Mg -->
+  <rect x="44" y="100" width="60" height="20" rx="3" fill="#e65100"/><text x="74" y="114" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Mg</text>
+  <!-- Al -->
+  <rect x="44" y="124" width="60" height="20" rx="3" fill="#e65100"/><text x="74" y="138" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Al</text>
+  <!-- Zn -->
+  <rect x="44" y="148" width="60" height="20" rx="3" fill="#f57c00"/><text x="74" y="162" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Zn</text>
+  <!-- Fe -->
+  <rect x="44" y="172" width="60" height="20" rx="3" fill="#f57c00"/><text x="74" y="186" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Fe</text>
+  <!-- Pb -->
+  <rect x="44" y="196" width="60" height="20" rx="3" fill="#ffa726"/><text x="74" y="210" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Pb</text>
+  <!-- H (reference) -->
+  <rect x="44" y="220" width="60" height="20" rx="3" fill="#78909c" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/><text x="74" y="234" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">(H)</text>
+  <!-- Cu -->
+  <rect x="44" y="244" width="60" height="20" rx="3" fill="#42a5f5"/><text x="74" y="258" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Cu</text>
+  <!-- Ag -->
+  <rect x="44" y="268" width="60" height="20" rx="3" fill="#5c6bc0"/><text x="74" y="282" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Ag</text>
+  <!-- Reactions column 1: with cold water -->
+  <rect x="115" y="24" width="90" height="22" rx="3" fill="#e65100" opacity="0.15"/>
+  <text x="160" y="39" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Cold water</text>
+  <text x="160" y="52" text-anchor="middle" fill="#2e7d32" font-size="9">React vigorously</text>
+  <text x="160" y="65" text-anchor="middle" fill="#2e7d32" font-size="9">React</text>
+  <text x="160" y="79" text-anchor="middle" fill="#f57c00" font-size="9">React (slowly)</text>
+  <text x="160" y="116" text-anchor="middle" fill="#c62828" font-size="9">No reaction</text>
+  <line x1="115" y1="104" x2="205" y2="104" stroke="#333" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <!-- Reactions column 2: with dilute acid -->
+  <rect x="215" y="24" width="90" height="22" rx="3" fill="#e65100" opacity="0.15"/>
+  <text x="260" y="39" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Dilute acid</text>
+  <text x="260" y="55" text-anchor="middle" fill="#2e7d32" font-size="9">React (dangerously)</text>
+  <text x="260" y="79" text-anchor="middle" fill="#2e7d32" font-size="9">React vigorously</text>
+  <text x="260" y="103" text-anchor="middle" fill="#2e7d32" font-size="9">React</text>
+  <text x="260" y="127" text-anchor="middle" fill="#2e7d32" font-size="9">React slowly</text>
+  <text x="260" y="163" text-anchor="middle" fill="#2e7d32" font-size="9">Very slowly</text>
+  <text x="260" y="222" text-anchor="middle" fill="#c62828" font-size="9">No reaction</text>
+  <line x1="215" y1="175" x2="305" y2="175" stroke="#333" stroke-width="0.8" stroke-dasharray="3,2"/>
+  <!-- Extraction column -->
+  <rect x="315" y="24" width="97" height="22" rx="3" fill="#e65100" opacity="0.15"/>
+  <text x="363" y="39" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Extraction</text>
+  <rect x="315" y="46" width="97" height="78" rx="3" fill="#c62828" opacity="0.15"/>
+  <text x="363" y="82" text-anchor="middle" fill="#c62828" font-size="9">Electrolysis</text>
+  <rect x="315" y="128" width="97" height="88" rx="3" fill="#f57c00" opacity="0.15"/>
+  <text x="363" y="170" text-anchor="middle" fill="#f57c00" font-size="9">Reduction</text>
+  <text x="363" y="183" text-anchor="middle" fill="#f57c00" font-size="9">by carbon</text>
+  <rect x="315" y="220" width="97" height="68" rx="3" fill="#42a5f5" opacity="0.15"/>
+  <text x="363" y="252" text-anchor="middle" fill="#1565c0" font-size="9">Found native</text>
+  <text x="363" y="265" text-anchor="middle" fill="#1565c0" font-size="9">or smelting</text>
+</svg>`
+  },
+  {
+    q:'Displacement Reaction — Iron Rod in CuSO₄',
+    content:`<h3>Displacement Reaction: Fe + CuSO₄</h3><p>A displacement reaction occurs when a more reactive metal pushes a less reactive metal out of its salt solution. Iron is above copper in the reactivity series, so iron can displace copper from copper sulfate solution.</p><ul><li>Iron rod placed in blue CuSO₄ solution: Fe atoms lose electrons (oxidation) forming Fe²⁺ ions in solution — the blue colour fades as Cu²⁺ ions are removed</li><li>Cu²⁺ ions in solution gain those electrons (reduction) and are deposited as reddish-brown copper metal on the iron rod</li><li>Overall ionic equation: Fe + Cu²⁺ → Fe²⁺ + Cu — this is a redox reaction (simultaneous oxidation and reduction)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="265" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Displacement Reaction: Fe + CuSO₄</text>
+  <!-- Beaker -->
+  <rect x="80" y="60" width="120" height="130" rx="0" fill="none" stroke="#333" stroke-width="2.5"/>
+  <rect x="80" y="60" width="3" height="130" fill="#333"/>
+  <rect x="197" y="60" width="3" height="130" fill="#333"/>
+  <line x1="80" y1="190" x2="200" y2="190" stroke="#333" stroke-width="2.5"/>
+  <!-- Solution (blue CuSO4) -->
+  <rect x="83" y="100" width="114" height="87" fill="#1565c0" opacity="0.3"/>
+  <!-- Iron rod -->
+  <rect x="132" y="40" width="16" height="150" rx="3" fill="#78909c"/>
+  <text x="140" y="35" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Fe rod</text>
+  <!-- Copper coating on lower part of rod -->
+  <rect x="133" y="105" width="14" height="85" rx="2" fill="#b5651d" opacity="0.9"/>
+  <!-- Label solution -->
+  <text x="140" y="128" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">CuSO₄</text>
+  <text x="140" y="142" text-anchor="middle" fill="#fff" font-size="9">(blue solution)</text>
+  <!-- Arrow right -->
+  <line x1="220" y1="130" x2="248" y2="130" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="234" y="122" text-anchor="middle" fill="#e65100" font-size="9">After</text>
+  <!-- After beaker -->
+  <rect x="255" y="60" width="120" height="130" rx="0" fill="none" stroke="#333" stroke-width="2.5"/>
+  <rect x="255" y="60" width="3" height="130" fill="#333"/>
+  <rect x="372" y="60" width="3" height="130" fill="#333"/>
+  <line x1="255" y1="190" x2="375" y2="190" stroke="#333" stroke-width="2.5"/>
+  <!-- Solution (paler = FeSO4, green/pale) -->
+  <rect x="258" y="100" width="114" height="87" fill="#a5d6a7" opacity="0.4"/>
+  <!-- Iron rod in after beaker -->
+  <rect x="307" y="40" width="16" height="150" rx="3" fill="#78909c"/>
+  <!-- Copper coating thicker -->
+  <rect x="306" y="95" width="18" height="95" rx="3" fill="#b5651d" opacity="0.85"/>
+  <!-- Label -->
+  <text x="315" y="128" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">FeSO₄</text>
+  <text x="315" y="142" text-anchor="middle" fill="#333" font-size="9">(pale green)</text>
+  <text x="315" y="156" text-anchor="middle" fill="#b5651d" font-size="9">Cu deposited</text>
+  <!-- Equation -->
+  <rect x="10" y="205" width="400" height="52" rx="6" fill="#e65100" opacity="0.12" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="221" text-anchor="middle" fill="#e65100" font-size="12" font-weight="bold">Fe + CuSO₄ → FeSO₄ + Cu</text>
+  <text x="210" y="237" text-anchor="middle" fill="#333" font-size="10">Iron (more reactive) displaces copper from its solution</text>
+  <text x="210" y="251" text-anchor="middle" fill="#333" font-size="10">Fe → Fe²⁺ + 2e⁻ (oxidation)      Cu²⁺ + 2e⁻ → Cu (reduction)</text>
+</svg>`
+  },
+  {
+    q:'Rusting — Conditions Required (Water + Oxygen)',
+    content:`<h3>Conditions Required for Rusting</h3><p>Rusting is the corrosion of iron to form hydrated iron(III) oxide (Fe₂O₃·xH₂O). The classic three-tube experiment demonstrates that both water AND oxygen must be present simultaneously — neither alone is sufficient.</p><ul><li>Tube 1 (water + air): the iron nail rusts — both water and dissolved oxygen are present, so the electrochemical corrosion process occurs</li><li>Tube 2 (dry air only): no rusting — silica gel removes all moisture, so even though oxygen is present, there is no water to enable the reaction</li><li>Tube 3 (boiled water sealed with oil): no rusting — boiling removes dissolved oxygen and the oil layer prevents more entering, so even though water is present, there is no oxygen</li></ul>`,
+    visual:`<svg viewBox="0 0 420 275" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="275" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Conditions for Rusting</text>
+  <!-- Three test tubes showing conditions -->
+  <!-- Tube 1: Water + Air → Rusts -->
+  <rect x="20" y="35" width="110" height="175" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="75" y="52" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Tube 1</text>
+  <!-- Water + air - rusting -->
+  <rect x="32" y="100" width="86" height="100" rx="4" fill="#42a5f5" opacity="0.35"/>
+  <text x="75" y="145" text-anchor="middle" fill="#1565c0" font-size="9">Water</text>
+  <!-- Air space -->
+  <text x="75" y="85" text-anchor="middle" fill="#333" font-size="9">Air (O₂)</text>
+  <!-- Rusty nail -->
+  <rect x="70" y="75" width="10" height="125" rx="2" fill="#a0522d"/>
+  <rect x="68" y="95" width="14" height="40" rx="2" fill="#8b4513" opacity="0.6"/>
+  <text x="75" y="62" text-anchor="middle" fill="#a0522d" font-size="8">nail</text>
+  <text x="75" y="200" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">RUSTS</text>
+  <!-- Tube 2: Dry air only → No rust -->
+  <rect x="155" y="35" width="110" height="175" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="52" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Tube 2</text>
+  <!-- Silica gel at bottom (drying agent) -->
+  <rect x="167" y="150" width="86" height="50" rx="4" fill="#ffe082" opacity="0.6"/>
+  <text x="210" y="180" text-anchor="middle" fill="#333" font-size="8">Silica gel</text>
+  <text x="210" y="191" text-anchor="middle" fill="#333" font-size="8">(dry air only)</text>
+  <!-- Nail not rusty -->
+  <rect x="205" y="70" width="10" height="95" rx="2" fill="#78909c"/>
+  <text x="210" y="62" text-anchor="middle" fill="#78909c" font-size="8">nail</text>
+  <text x="210" y="200" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">NO RUST</text>
+  <!-- Tube 3: Boiled water (no O2) → No rust -->
+  <rect x="290" y="35" width="110" height="175" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="345" y="52" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Tube 3</text>
+  <!-- Boiled water (no dissolved O2) -->
+  <rect x="302" y="80" width="86" height="120" rx="4" fill="#42a5f5" opacity="0.35"/>
+  <!-- Oil layer on top -->
+  <rect x="302" y="80" width="86" height="12" rx="4" fill="#ffd54f" opacity="0.7"/>
+  <text x="345" y="90" text-anchor="middle" fill="#333" font-size="8">Oil (seals)</text>
+  <text x="345" y="145" text-anchor="middle" fill="#1565c0" font-size="8">Boiled water</text>
+  <text x="345" y="158" text-anchor="middle" fill="#1565c0" font-size="8">(no O₂)</text>
+  <!-- Nail not rusty -->
+  <rect x="340" y="65" width="10" height="135" rx="2" fill="#78909c"/>
+  <text x="345" y="200" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">NO RUST</text>
+  <!-- Conclusion -->
+  <rect x="10" y="220" width="400" height="48" rx="6" fill="#e65100" opacity="0.12" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="237" text-anchor="middle" fill="#e65100" font-size="12" font-weight="bold">Conclusion: Rusting requires BOTH water AND oxygen</text>
+  <text x="210" y="252" text-anchor="middle" fill="#333" font-size="10">Fe + water + O₂ → hydrated iron(III) oxide (rust) = Fe₂O₃·xH₂O</text>
+  <text x="210" y="264" text-anchor="middle" fill="#333" font-size="10">Neither water alone nor oxygen alone is sufficient</text>
+</svg>`
+  },
+  {
+    q:'Extraction of Iron — Blast Furnace Zones',
+    content:`<h3>Blast Furnace — Iron Extraction</h3><p>Iron is extracted from iron ore (Fe₂O₃) in a blast furnace using coke (carbon) as the reducing agent and limestone as a flux to remove acidic impurities. The furnace operates continuously at temperatures up to 1900°C.</p><ul><li>Zone 2 (~1000°C): coke burns in the hot air blast to form CO₂, which reacts with more coke to form carbon monoxide (CO) — the actual reducing agent</li><li>Zone 3 (~1500°C): CO reduces Fe₂O₃ to molten iron (Fe₂O₃ + 3CO → 2Fe + 3CO₂); limestone (CaCO₃) decomposes and its CaO reacts with silica impurities to form molten slag (CaSiO₃)</li><li>Zone 4 (bottom): molten iron is denser than slag and sinks — both are tapped off separately, iron for steel-making and slag for road-building</li></ul>`,
+    visual:`<svg viewBox="0 0 420 290" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="290" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Blast Furnace — Iron Extraction</text>
+  <!-- Furnace shape (trapezoid) -->
+  <polygon points="150,28 270,28 305,248 115,248" fill="#bf8040" opacity="0.5" stroke="#7d5a28" stroke-width="2"/>
+  <!-- Zone colours: top = input zone, middle-upper = reduction, middle = liquid, bottom = liquid iron -->
+  <!-- Zone 1: Input at top -->
+  <polygon points="163,30 257,30 268,75 152,75" fill="#a5d6a7" opacity="0.7"/>
+  <text x="210" y="58" text-anchor="middle" fill="#1b5e20" font-size="9" font-weight="bold">Zone 1 (Top, ~250°C)</text>
+  <text x="210" y="70" text-anchor="middle" fill="#1b5e20" font-size="8">Iron ore (Fe₂O₃) + coke (C) + limestone (CaCO₃)</text>
+  <!-- Zone 2: CO2 formation -->
+  <polygon points="152,76 268,76 280,128 140,128" fill="#ffe082" opacity="0.7"/>
+  <text x="210" y="97" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Zone 2 (~1000°C)</text>
+  <text x="210" y="110" text-anchor="middle" fill="#333" font-size="8">C + O₂ → CO₂   then   CO₂ + C → 2CO</text>
+  <text x="210" y="122" text-anchor="middle" fill="#333" font-size="8">CO is the reducing agent</text>
+  <!-- Zone 3: Reduction -->
+  <polygon points="140,129 280,129 292,180 128,180" fill="#ffab91" opacity="0.7"/>
+  <text x="210" y="148" text-anchor="middle" fill="#bf360c" font-size="9" font-weight="bold">Zone 3 (~1500°C) — Reduction</text>
+  <text x="210" y="162" text-anchor="middle" fill="#333" font-size="8">Fe₂O₃ + 3CO → 2Fe + 3CO₂</text>
+  <text x="210" y="174" text-anchor="middle" fill="#333" font-size="8">Limestone removes impurities (slag)</text>
+  <!-- Zone 4: Molten iron -->
+  <polygon points="128,181 292,181 305,247 115,247" fill="#ffd54f" opacity="0.7"/>
+  <text x="210" y="204" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Zone 4 (Bottom, ~1900°C)</text>
+  <text x="210" y="218" text-anchor="middle" fill="#333" font-size="8">Molten iron collects + molten slag floats</text>
+  <text x="210" y="232" text-anchor="middle" fill="#333" font-size="8">Iron tapped off at bottom</text>
+  <!-- Hot air blast in -->
+  <line x1="20" y1="205" x2="115" y2="205" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="10" y="195" fill="#e65100" font-size="8" font-weight="bold">Hot air</text>
+  <text x="10" y="207" fill="#e65100" font-size="8">blast (O₂)</text>
+  <line x1="400" y1="205" x2="305" y2="205" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="398" y="195" text-anchor="end" fill="#e65100" font-size="8" font-weight="bold">Hot air</text>
+  <text x="398" y="207" text-anchor="end" fill="#e65100" font-size="8">blast (O₂)</text>
+  <!-- Outputs -->
+  <line x1="50" y1="248" x2="113" y2="248" stroke="#ffd54f" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="48" y="262" text-anchor="end" fill="#333" font-size="8">Slag</text>
+  <line x1="370" y1="248" x2="307" y2="248" stroke="#a0522d" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="371" y="262" fill="#a0522d" font-size="8">Molten iron</text>
+  <!-- Top gas out -->
+  <line x1="210" y1="28" x2="210" y2="10" stroke="#546e7a" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="210" y="8" text-anchor="middle" fill="#546e7a" font-size="8">Waste gas (CO₂, CO, N₂)</text>
+</svg>`
+  },
+  {
+    q:'Alloys Comparison — Steel, Bronze, Brass',
+    content:`<h3>Common Alloys — Composition and Uses</h3><p>An alloy is a mixture of a metal with one or more other elements (metals or non-metals). Alloys are engineered to have better properties than the pure constituent metals, most importantly greater hardness and strength.</p><ul><li>Steel (Fe + C): adding carbon disrupts the regular iron lattice, preventing layers from sliding — stronger and harder than pure iron; used in construction and engineering</li><li>Stainless steel (Fe + Cr + Ni): chromium forms a protective oxide layer that makes the alloy highly corrosion-resistant; used in cutlery and surgical instruments</li><li>Bronze (Cu + Sn) and Brass (Cu + Zn): harder than pure copper, corrosion-resistant; bronze for coins/bearings, brass for pipes and musical instruments</li></ul>`,
+    visual:`<svg viewBox="0 0 420 275" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="275" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Common Alloys — Composition & Uses</text>
+  <!-- Header row -->
+  <rect x="8" y="26" width="404" height="20" rx="3" fill="#e65100" opacity="0.85"/>
+  <text x="75" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Alloy</text>
+  <text x="175" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Composition</text>
+  <text x="285" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Properties</text>
+  <text x="388" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Uses</text>
+  <!-- Steel row -->
+  <rect x="8" y="48" width="404" height="44" rx="0" fill="#fff"/>
+  <rect x="10" y="50" width="12" height="40" rx="2" fill="#546e7a"/>
+  <text x="75" y="65" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Steel</text>
+  <text x="75" y="80" text-anchor="middle" fill="#e65100" font-size="9">(Fe + C)</text>
+  <text x="175" y="62" text-anchor="middle" fill="#333" font-size="9">Fe (iron) + 0.1–1.5%</text>
+  <text x="175" y="76" text-anchor="middle" fill="#333" font-size="9">C (carbon)</text>
+  <text x="285" y="62" text-anchor="middle" fill="#333" font-size="9">Stronger &amp; harder</text>
+  <text x="285" y="76" text-anchor="middle" fill="#333" font-size="9">than pure iron</text>
+  <text x="388" y="62" text-anchor="middle" fill="#333" font-size="9">Buildings, cars,</text>
+  <text x="388" y="76" text-anchor="middle" fill="#333" font-size="9">bridges, tools</text>
+  <!-- Stainless steel row -->
+  <rect x="8" y="94" width="404" height="44" rx="0" fill="#e65100" opacity="0.07"/>
+  <rect x="10" y="96" width="12" height="40" rx="2" fill="#90a4ae"/>
+  <text x="75" y="111" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Stainless</text>
+  <text x="75" y="124" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Steel</text>
+  <text x="175" y="108" text-anchor="middle" fill="#333" font-size="9">Fe + ~18% Cr</text>
+  <text x="175" y="122" text-anchor="middle" fill="#333" font-size="9">+ ~8% Ni</text>
+  <text x="285" y="108" text-anchor="middle" fill="#333" font-size="9">Corrosion-resistant,</text>
+  <text x="285" y="122" text-anchor="middle" fill="#333" font-size="9">hard, shiny</text>
+  <text x="388" y="108" text-anchor="middle" fill="#333" font-size="9">Cutlery, sinks,</text>
+  <text x="388" y="122" text-anchor="middle" fill="#333" font-size="9">surgical tools</text>
+  <!-- Bronze row -->
+  <rect x="8" y="140" width="404" height="44" rx="0" fill="#fff"/>
+  <rect x="10" y="142" width="12" height="40" rx="2" fill="#b5651d"/>
+  <text x="75" y="157" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Bronze</text>
+  <text x="75" y="172" text-anchor="middle" fill="#e65100" font-size="9">(Cu + Sn)</text>
+  <text x="175" y="154" text-anchor="middle" fill="#333" font-size="9">Cu (copper) ~90%</text>
+  <text x="175" y="168" text-anchor="middle" fill="#333" font-size="9">+ Sn (tin) ~10%</text>
+  <text x="285" y="154" text-anchor="middle" fill="#333" font-size="9">Harder than copper,</text>
+  <text x="285" y="168" text-anchor="middle" fill="#333" font-size="9">low friction</text>
+  <text x="388" y="154" text-anchor="middle" fill="#333" font-size="9">Coins, statues,</text>
+  <text x="388" y="168" text-anchor="middle" fill="#333" font-size="9">bearings, bells</text>
+  <!-- Brass row -->
+  <rect x="8" y="186" width="404" height="44" rx="0" fill="#e65100" opacity="0.07"/>
+  <rect x="10" y="188" width="12" height="40" rx="2" fill="#ffd600"/>
+  <text x="75" y="203" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Brass</text>
+  <text x="75" y="218" text-anchor="middle" fill="#e65100" font-size="9">(Cu + Zn)</text>
+  <text x="175" y="200" text-anchor="middle" fill="#333" font-size="9">Cu (copper) ~70%</text>
+  <text x="175" y="214" text-anchor="middle" fill="#333" font-size="9">+ Zn (zinc) ~30%</text>
+  <text x="285" y="200" text-anchor="middle" fill="#333" font-size="9">Hard, corrosion-</text>
+  <text x="285" y="214" text-anchor="middle" fill="#333" font-size="9">resistant, gold colour</text>
+  <text x="388" y="200" text-anchor="middle" fill="#333" font-size="9">Pipes, locks,</text>
+  <text x="388" y="214" text-anchor="middle" fill="#333" font-size="9">musical instruments</text>
+  <!-- Column dividers -->
+  <line x1="132" y1="26" x2="132" y2="232" stroke="#e65100" stroke-width="0.8" opacity="0.5"/>
+  <line x1="233" y1="26" x2="233" y2="232" stroke="#e65100" stroke-width="0.8" opacity="0.5"/>
+  <line x1="338" y1="26" x2="338" y2="232" stroke="#e65100" stroke-width="0.8" opacity="0.5"/>
+  <!-- Why harder note -->
+  <rect x="8" y="238" width="404" height="30" rx="5" fill="#e65100" opacity="0.12"/>
+  <text x="210" y="252" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Why alloys are harder:</text>
+  <text x="210" y="264" text-anchor="middle" fill="#333" font-size="10">Different atom sizes disrupt the regular lattice — layers cannot slide easily</text>
+</svg>`
+  },
+  {
+    title:'Extracting Metals',
+    body:`The method used to extract a metal depends on its <strong>position in the reactivity series</strong>:
+    <br><br>
+    <strong>Very reactive (K, Na, Ca, Mg, Al)</strong> → extracted by <em>electrolysis</em> (cannot be reduced by carbon)
+    <br><br>
+    <strong>Moderately reactive (Zn, Fe, Pb)</strong> → extracted by <em>reduction with carbon/coke</em> in a blast furnace
+    <br><br>
+    <strong>Low reactivity (Cu, Ag, Au)</strong> → found as the <em>native element</em> or extracted by roasting/electrolytic refining
+    <br><br>
+    Iron: in a blast furnace, coke (C) reduces iron ore (Fe₂O₃):<br>
+    Fe₂O₃ + 3CO → 2Fe + 3CO₂`,
+    draw:(sk)=>{
+      bg(sk,[10,12,20]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Blast furnace shape
+      const cx=W/2;
+      sk.fill(80,50,20,180);sk.noStroke();
+      sk.beginShape();
+      sk.vertex(cx-W*0.18,H*0.1);sk.vertex(cx+W*0.18,H*0.1);
+      sk.vertex(cx+W*0.28,H*0.88);sk.vertex(cx-W*0.28,H*0.88);
+      sk.endShape(sk.CLOSE);
+      sk.fill(100,60,20,220);sk.noStroke();
+      sk.beginShape();
+      sk.vertex(cx-W*0.18,H*0.1);sk.vertex(cx+W*0.18,H*0.1);
+      sk.vertex(cx+W*0.22,H*0.88);sk.vertex(cx-W*0.22,H*0.88);
+      sk.endShape(sk.CLOSE);
+      // Zones
+      [[H*0.15,'Iron ore + coke\n+ limestone',[200,200,100]],
+       [H*0.38,'CO + Fe₂O₃ →',[231,76,60]],
+       [H*0.55,'Molten iron\nforms here',[241,196,15]],
+      ].forEach(([y,txt,c])=>{
+        sk.fill(...c,200);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(txt,cx,y);
+      });
+      // Molten iron dripping
+      for(let i=0;i<3;i++){
+        const dy=((t*25+i*20)%H*0.3);
+        sk.fill(255,180,50,200);sk.noStroke();sk.circle(cx-10+i*10,H*0.6+dy,7);
+      }
+      // Labels
+      sk.fill(255,220,50);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('BLAST FURNACE',cx,H*0.04);
+      sk.textStyle(sk.NORMAL);
+    }
+  },
+  {
+    title:'🎮 Check — Reactivity & Extraction',
+    body:'Answer these questions on the reactivity series and metal extraction.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which metal is MOST reactive?',opts:['Iron (Fe)','Copper (Cu)','Potassium (K)','Silver (Ag)'],ans:2,exp:'Potassium (K) is at the top of the reactivity series — the most reactive metal. It reacts violently even with cold water.'},
+      {q:'Iron displaces copper from copper sulphate solution because:',opts:['Iron is less reactive than copper','Iron is more reactive than copper','Iron is a better conductor','Copper dissolves in water'],ans:1,exp:'Iron is HIGHER in the reactivity series than copper — it can displace copper from its salt solutions: Fe + CuSO₄ → FeSO₄ + Cu.'},
+      {q:'Aluminium is extracted by electrolysis rather than reduction with carbon because:',opts:['Aluminium is cheaper than carbon','Aluminium is LESS reactive than carbon','Aluminium is MORE reactive than carbon — carbon cannot reduce it','Carbon reacts with aluminium'],ans:2,exp:'Aluminium is MORE reactive than carbon, so carbon cannot reduce Al₂O₃. Electrolysis is needed to provide enough energy to extract it.'},
+      {q:'In the blast furnace, what reduces iron oxide to iron?',opts:['Oxygen','Carbon dioxide','Carbon monoxide (CO)','Water'],ans:2,exp:'Carbon monoxide (CO) is the reducing agent: Fe₂O₃ + 3CO → 2Fe + 3CO₂. The CO is produced from coke (carbon) reacting with the hot blast of air.'},
+    ]}
+  },
+  {
+    title:'Rusting & Corrosion',
+    body:`<strong>Rusting</strong> is the corrosion of iron. It requires both <strong>water AND oxygen</strong>.
+    <br><br>
+    The word equation: <br>Iron + oxygen + water → hydrated iron(III) oxide (rust)
+    <br><br>
+    <strong>Preventing rust:</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Painting or oiling</strong> — physical barrier</li>
+      <li><strong>Galvanising</strong> — coating with zinc (Zn sacrifices itself — more reactive)</li>
+      <li><strong>Sacrificial protection</strong> — attach a more reactive metal (Mg, Zn) to iron; the reactive metal corrodes instead</li>
+      <li><strong>Alloying</strong> — stainless steel (Fe + Cr + Ni) doesn't rust</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[18,12,10]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Iron beam
+      sk.fill(150,150,160);sk.noStroke();sk.rect(W*0.15,H*0.35,W*0.7,H*0.25,4);
+      // Rust spreading
+      const rustProg=Math.min(1,t/15);
+      const rustW=W*0.7*rustProg;
+      sk.fill(178,90,30,200);sk.noStroke();sk.rect(W*0.15,H*0.35,rustW,H*0.25*0.5,4);
+      for(let i=0;i<10;i++){
+        const rx=W*0.15+Math.random()*rustW;
+        const ry=H*0.35+Math.random()*H*0.25;
+        if(sk.frameCount%3===0){
+          sk.fill(180,80,20,160);sk.circle(rx,ry,sk.random(8,18));
+        }
+      }
+      // H2O drops
+      for(let i=0;i<4;i++){
+        const dx=W*0.2+i*W*0.17;
+        const dy=H*0.18+((t*20+i*15)%50);
+        sk.fill(100,150,255,180);sk.noStroke();sk.circle(dx,dy,10);
+        sk.fill(100,150,255);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('💧',dx,dy);
+      }
+      // O2
+      sk.fill(200,100,100,100);sk.noStroke();
+      for(let i=0;i<3;i++){
+        sk.circle(W*0.25+i*W*0.22,H*0.28,14);
+        sk.fill(231,100,60);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('O₂',W*0.25+i*W*0.22,H*0.28);
+        sk.fill(200,100,100,100);
+      }
+      // Labels
+      sk.fill(178,90,30);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('RUST forming',W/2,H*0.7);sk.textStyle(sk.NORMAL);
+      sk.fill(255,255,255,80);sk.textSize(9);
+      sk.text('Needs: water + oxygen',W/2,H*0.8);
+    }
+  },
+  {
+    title:'Alloys & Uses of Metals',
+    body:`An <strong>alloy</strong> is a mixture of metals (or metal + non-metal) with improved properties.
+    <br><br>
+    Common alloys:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Steel</strong> — Fe + C (stronger than pure iron, used in construction)</li>
+      <li><strong>Stainless steel</strong> — Fe + Cr + Ni (resists rust, used in cutlery)</li>
+      <li><strong>Bronze</strong> — Cu + Sn (harder than copper, used in tools)</li>
+      <li><strong>Brass</strong> — Cu + Zn (hard and corrosion-resistant, used in pipes/fittings)</li>
+    </ul>
+    Why alloys are harder: Different-sized atoms disrupt the regular lattice, making it harder for layers to slide.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Pure metal - regular lattice
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Pure Metal (layers slide easily)',W*0.28,H*0.08);
+      const r=12;
+      for(let row=0;row<4;row++){
+        for(let col=0;col<5;col++){
+          const x=W*0.06+col*r*2.5;
+          const y=H*0.16+row*r*2.5;
+          sk.fill(241,196,15,200);sk.noStroke();sk.circle(x,y,r*2);
+        }
+      }
+      // Sliding arrow
+      sk.stroke(231,76,60,160);sk.strokeWeight(1.5);sk.noFill();
+      const slideX=((t*20)%60)-10;
+      sk.line(W*0.06+slideX,H*0.28,W*0.06+slideX+50,H*0.28);
+      // Alloy - irregular
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Alloy (different sizes block sliding)',W*0.72,H*0.08);
+      const alloyPos=[[0,0],[1,0],[2,0],[3,0],[4,0],[0,1],[1,1],[2,1],[3,1],[4,1],
+                      [0,2],[1,2],[2,2],[3,2],[4,2],[0,3],[1,3],[2,3],[3,3],[4,3]];
+      alloyPos.forEach(([col,row],i)=>{
+        const isLarge=(i%5===2);
+        const sz=isLarge?r*1.5:r;
+        const x=W*0.52+col*r*2.5+(isLarge?3:0);
+        const y=H*0.16+row*r*2.5+(isLarge?3:0);
+        sk.fill(isLarge?[52,152,219]:[241,196,15]);
+        sk.noStroke();sk.circle(x,y,sz*2);
+      });
+      // Blocked arrow
+      sk.stroke(46,204,113,160);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.52,H*0.28,W*0.62,H*0.28);
+      sk.fill(46,204,113,200);sk.textSize(11);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('✗',W*0.63,H*0.28);
+    }
+  },
+  {
+    title:'🎮 Final — Metals & Reactivity',
+    body:'Apply your knowledge of reactivity, rusting, and alloys.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Iron rusts when exposed to:',opts:['Only water','Only oxygen','Both water AND oxygen','Carbon dioxide'],ans:2,exp:'Rusting requires BOTH water and oxygen. Neither alone is sufficient to cause iron to rust.'},
+      {q:'Galvanising protects iron by coating it with:',opts:['Copper','Zinc','Lead','Chromium'],ans:1,exp:'Galvanising coats iron with zinc. Zinc is more reactive than iron and acts as a sacrificial anode — it corrodes first, protecting the iron underneath.'},
+      {q:'Why are alloys often harder than pure metals?',opts:['They have more electrons','Different-sized atoms disrupt the regular lattice, preventing layers from sliding','They contain non-metals only','They have stronger ionic bonds'],ans:1,exp:'In an alloy, atoms of different sizes are mixed. These disrupt the regular arrangement, making it harder for layers to slide past each other — so the alloy is harder and stronger.'},
+      {q:'Which metal cannot be extracted by reduction with carbon?',opts:['Iron','Lead','Zinc','Potassium'],ans:3,exp:'Potassium (K) is MORE reactive than carbon. Carbon cannot reduce K₂O to K. Instead, potassium must be extracted by electrolysis.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#37474f',dark:'#102027',light:'#eceff1',
+  title:'Metals & Reactivity — Series, Extraction & Rusting',
+});
+</script></body></html>

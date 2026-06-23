@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homeostasis — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#bf360c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ffccbc;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffccbc}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s}
+    .btn-t{border-color:#c62828;color:#c62828;background:#fff}.btn-t.on{background:#c62828;color:#fff}
+    .btn-g{border-color:#1b5e20;color:#1b5e20;background:#fff}.btn-g.on{background:#1b5e20;color:#fff}
+    .btn-n{border-color:#01579b;color:#01579b;background:#fff}.btn-n.on{background:#01579b;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Homeostasis</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn btn-t on" id="b0" onclick="setMode(0)">🌡 Temperature Control</button>
+  <button class="btn btn-g"   id="b1" onclick="setMode(1)">🩸 Blood Glucose</button>
+  <button class="btn btn-n"   id="b2" onclick="setMode(2)">🔄 Negative Feedback</button>
+  <button class="btn" id="b-prac" onclick="setHomeostasisPractice(!homeostasisMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let mode=0,envTemp=0,bloodGlucose=0.5;
+function setMode(n){mode=n;[0,1,2].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Homeostasis</h2><ul><li><b>Homeostasis</b>: Maintaining a constant internal environment despite external changes.</li><li><b>Insulin</b>: Produced by pancreas β-cells; lowers blood glucose by stimulating uptake and glycogen storage.</li><li><b>Glucagon</b>: Produced by pancreas α-cells; raises blood glucose by breaking down glycogen.</li><li><b>Temperature regulation</b>: Hypothalamus detects changes; sweating and vasodilation cool the body; shivering and vasoconstriction warm it.</li><li><b>Negative feedback</b>: The response opposes the original change, restoring balance.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let homeostasisMcq=false;
+const HOMEOSTASIS_MCQ=[
+  {q:'What is homeostasis?',opts:['Maintaining a constant internal environment','Increasing body temperature','Breaking down glucose','Producing hormones'],c:0,tip:'Homeostasis keeps internal conditions stable despite external changes.'},
+  {q:'Which hormone lowers blood glucose levels?',opts:['Insulin','Glucagon','Adrenaline','Thyroxine'],c:0,tip:'Insulin from pancreatic beta cells lowers blood glucose.'},
+  {q:'Where is insulin produced?',opts:['Pancreas','Liver','Kidney','Adrenal gland'],c:0,tip:'Insulin is made by beta cells in the islets of Langerhans in the pancreas.'},
+  {q:'When you overheat, what happens to blood vessels near the skin?',opts:['Vasodilation (widen)','Vasoconstriction (narrow)','No change','They close completely'],c:0,tip:'Vasodilation increases heat loss from the skin surface.'},
+  {q:'In a negative feedback loop, what does the effector do?',opts:['Corrects the change and restores balance','Amplifies the change','Detects the change','Sends signals to the brain'],c:0,tip:'The effector reverses the deviation — that is negative feedback.'},
+  {q:'Which organ monitors blood temperature and triggers corrections?',opts:['Hypothalamus','Cerebellum','Medulla oblongata','Thalamus'],c:0,tip:'The hypothalamus acts as the body\'s thermostat.'},
+  {q:'When blood glucose is too low, which hormone is released?',opts:['Glucagon','Insulin','Adrenaline','Cortisol'],c:0,tip:'Glucagon from alpha cells breaks down glycogen to raise blood glucose.'}
+];
+let homeostasisMcqIdx=0,homeostasisMcqSel=-1,homeostasisMcqScore=0,homeostasisMcqDone=false,homeostasisMcqFeedback=null;
+function setHomeostasisPractice(on){homeostasisMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){homeostasisMcqIdx=0;homeostasisMcqSel=-1;homeostasisMcqScore=0;homeostasisMcqDone=false;homeostasisMcqFeedback=null;}}
+function drawHomeostasisMCQ(s){s.background(252,252,240);if(homeostasisMcqDone){s.fill(27,94,32);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+homeostasisMcqScore+'/'+HOMEOSTASIS_MCQ.length,440,215);let msg=homeostasisMcqScore===HOMEOSTASIS_MCQ.length?'Perfect! You understand Homeostasis!':homeostasisMcqScore>=5?'Great job!':'Review insulin, glucagon & feedback loops.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=HOMEOSTASIS_MCQ[homeostasisMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(homeostasisMcqIdx/HOMEOSTASIS_MCQ.length),10,5);s.fill(27,94,32);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(homeostasisMcqIdx+1)+' of '+HOMEOSTASIS_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=homeostasisMcqSel===i,correct=homeostasisMcqFeedback!==null&&i===q.c,wrong=homeostasisMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(homeostasisMcqFeedback){s.fill(homeostasisMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(homeostasisMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function homeostasisMcqClick(mx,my){if(homeostasisMcqDone){if(mx>310&&mx<570&&my>290&&my<334){homeostasisMcqIdx=0;homeostasisMcqSel=-1;homeostasisMcqScore=0;homeostasisMcqDone=false;homeostasisMcqFeedback=null;}return;}if(homeostasisMcqFeedback!==null){homeostasisMcqIdx++;homeostasisMcqSel=-1;homeostasisMcqFeedback=null;if(homeostasisMcqIdx>=HOMEOSTASIS_MCQ.length)homeostasisMcqDone=true;return;}HOMEOSTASIS_MCQ[homeostasisMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){homeostasisMcqSel=i;homeostasisMcqFeedback=i===HOMEOSTASIS_MCQ[homeostasisMcqIdx].c?'correct':'wrong';if(i===HOMEOSTASIS_MCQ[homeostasisMcqIdx].c)homeostasisMcqScore++;}});}
+
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    if(homeostasisMcq){ drawHomeostasisMCQ(sk); return; }
+    tick+=0.04;
+    sk.background(248,252,248);
+    if(mode===0) drawThermoReg();
+    else if(mode===1) drawBloodGlucose();
+    else drawNegFeedback();
+    drawInfoPanel();
+  };
+
+  function drawThermoReg(){
+    // Body temp meter
+    let bodyTemp=37+Math.sin(tick*0.4)*0.2;
+    let cx=248,cy=270;
+    // Thermometer dial
+    sk.fill(255,255,255,220);sk.stroke(100,100,100);sk.strokeWeight(2);
+    sk.ellipse(cx,cy,220,220);
+    // Temperature zones
+    sk.noStroke();
+    sk.fill(0,150,220,160);sk.arc(cx,cy,200,200,sk.PI,sk.PI*1.5); // cold zone (left)
+    sk.fill(0,200,80,160);sk.arc(cx,cy,200,200,sk.PI*1.35,sk.PI*1.65); // normal zone (bottom)
+    sk.fill(220,50,50,160);sk.arc(cx,cy,200,200,sk.PI*1.5,sk.PI*2); // hot zone (right)
+    // Needle
+    let needleA=sk.map(bodyTemp,35,41,sk.PI,sk.TWO_PI)+Math.sin(tick*3)*0.02;
+    sk.stroke(30,30,30);sk.strokeWeight(3);
+    sk.line(cx,cy,cx+Math.cos(needleA)*88,cy+Math.sin(needleA)*88);
+    sk.fill(30);sk.noStroke();sk.ellipse(cx,cy,14);
+    // Labels
+    sk.fill(0,100,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('COLD',cx-70,cy+12);
+    sk.fill(0,160,50);sk.text('NORMAL',cx,cy+100);
+    sk.fill(200,30,30);sk.text('HOT',cx+70,cy+12);
+    sk.textStyle(sk.NORMAL);
+    // Temp reading
+    sk.fill(30);sk.textSize(18);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(bodyTemp.toFixed(1)+'°C',cx,cy-60);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(10);sk.text('Body Temperature',cx,cy-44);
+
+    // Too Hot responses
+    let hotY=60,colX=18;
+    sk.fill(255,220,200,200);sk.stroke(200,80,30);sk.strokeWeight(1.2);
+    sk.rect(colX,hotY,175,180,8);sk.noStroke();
+    sk.fill(200,50,20);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('🔥 TOO HOT:',colX+8,hotY+18);sk.textStyle(sk.NORMAL);
+    const hotResps=['↑ Sweating (evaporation\n  cools skin)','↑ Vasodilation (blood vessels\n  widen — more blood to skin)','Hairs lie flat (no\n  insulation layer)','Reduced metabolic\n  rate'];
+    hotResps.forEach((r,i)=>{
+      sk.fill(160,40,20);sk.ellipse(colX+14,hotY+38+i*35,7);
+      sk.fill(30);sk.textSize(9.5);
+      r.split('\n').forEach((l,li)=>sk.text(l,colX+22,hotY+42+i*35+li*12));
+    });
+
+    // Too Cold responses
+    let coldX=320,coldY=60;
+    sk.fill(200,230,255,200);sk.stroke(30,80,200);sk.strokeWeight(1.2);
+    sk.rect(coldX,coldY,175,180,8);sk.noStroke();
+    sk.fill(20,50,200);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('❄ TOO COLD:',coldX+8,coldY+18);sk.textStyle(sk.NORMAL);
+    const coldResps=['↑ Shivering (muscle\n  contractions → heat)','↑ Vasoconstriction\n  (vessels narrow)','Hairs stand erect\n  (trap insulating air)','↑ Metabolic rate\n  (more heat generated)'];
+    coldResps.forEach((r,i)=>{
+      sk.fill(20,50,200);sk.ellipse(coldX+14,coldY+38+i*35,7);
+      sk.fill(30);sk.textSize(9.5);
+      r.split('\n').forEach((l,li)=>sk.text(l,coldX+22,coldY+42+i*35+li*12));
+    });
+
+    // Hypothalamus label at top
+    sk.fill(100,0,150,200);sk.stroke(80,0,120);sk.strokeWeight(1.5);
+    sk.rect(cx-80,cy-120,160,28,7);sk.noStroke();
+    sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Hypothalamus = Thermostat',cx,cy-102);sk.textStyle(sk.NORMAL);
+    // Arrow from hypothalamus to responses
+    sk.stroke(100,0,150,150);sk.strokeWeight(1.5);
+    sk.line(cx-80,cy-106,colX+175,hotY+90);
+    sk.line(cx+80,cy-106,coldX,coldY+90);
+
+    // Negative feedback symbol at bottom
+    sk.fill(30);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Both mechanisms are NEGATIVE FEEDBACK — they return body temp to 37°C',cx,460);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawBloodGlucose(){
+    bloodGlucose=0.5+Math.sin(tick*0.5)*0.38;
+    let cx=248,cy=240;
+    // Glucose graph
+    let gx=18,gy=60,gw=460,gh=280;
+    sk.fill(250,252,250,200);sk.stroke(180);sk.strokeWeight(1);sk.rect(gx,gy,gw,gh,6);
+    // Normal range band
+    sk.fill(200,255,200,100);sk.noStroke();sk.rect(gx,gy+gh*0.3,gw,gh*0.4);
+    // Axis labels
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.RIGHT);
+    sk.text('HIGH',gx-4,gy+30);sk.text('NORMAL\nRANGE',gx-4,gy+gh/2);sk.text('LOW',gx-4,gy+gh-20);
+    sk.textAlign(sk.LEFT);sk.text('Blood Glucose Level',gx+4,gy-4);
+    // Wave line
+    sk.stroke(0,130,0);sk.strokeWeight(2.5);sk.noFill();sk.beginShape();
+    for(let x=0;x<=gw;x+=3){
+      let t2=x/gw*sk.TWO_PI*2.5;
+      let yval=gh/2+Math.sin(t2-tick*0.5)*gh*0.35;
+      sk.vertex(gx+x,gy+yval);
+    }
+    sk.endShape();
+    // Mark current position
+    let curX=gx+gw*((tick*0.5)%(Math.PI*2.5)/(Math.PI*2.5)%(1));
+    let curGluc=gh/2+Math.sin(tick*0.5-tick*0.5)*gh*0.35;
+    let glucHigh=bloodGlucose>0.5;
+
+    // Insulin/Glucagon response boxes
+    let iy=360;
+    sk.fill(255,230,230,220);sk.stroke(180,30,30);sk.strokeWeight(1.2);
+    sk.rect(gx,iy,220,130,8);sk.noStroke();
+    sk.fill(180,0,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('↑ HIGH GLUCOSE:',gx+8,iy+18);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Pancreas → releases INSULIN',gx+8,iy+36);
+    sk.text('Insulin → liver converts',gx+8,iy+52);
+    sk.text('glucose → GLYCOGEN (stored)',gx+8,iy+68);
+    sk.text('Blood glucose returns to normal',gx+8,iy+88);
+    sk.fill(180,0,0,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('← NEGATIVE FEEDBACK',gx+8,iy+108);sk.textStyle(sk.NORMAL);
+
+    sk.fill(230,255,230,220);sk.stroke(30,130,30);sk.strokeWeight(1.2);
+    sk.rect(gx+238,iy,222,130,8);sk.noStroke();
+    sk.fill(0,130,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('↓ LOW GLUCOSE:',gx+246,iy+18);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Pancreas → releases GLUCAGON',gx+246,iy+36);
+    sk.text('Glucagon → liver converts',gx+246,iy+52);
+    sk.text('GLYCOGEN → glucose',gx+246,iy+68);
+    sk.text('Blood glucose returns to normal',gx+246,iy+88);
+    sk.fill(0,130,0,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('← NEGATIVE FEEDBACK',gx+246,iy+108);sk.textStyle(sk.NORMAL);
+
+    // Normal range indicator
+    sk.fill(0,120,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Normal range: ~4–6 mmol/L',gx+8,gy+gh*0.3+14);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawNegFeedback(){
+    let cx=248,cy=255;
+    // Big loop diagram
+    const nodes=[
+      {label:'Normal\nLevel',x:cx,y:cy-140,col:[0,150,60]},
+      {label:'Stimulus\n(Deviation)',x:cx+150,y:cy-40,col:[200,100,0]},
+      {label:'Receptor\n(Detects change)',x:cx+140,y:cy+90,col:[30,80,200]},
+      {label:'Control Centre\n(e.g. Hypothalamus)',x:cx,y:cy+170,col:[120,0,160]},
+      {label:'Effector\n(Makes response)',x:cx-140,y:cy+90,col:[180,30,30]},
+      {label:'Response\n(Corrects deviation)',x:cx-145,y:cy-40,col:[0,100,50]},
+    ];
+    // Draw arrows between nodes
+    for(let i=0;i<nodes.length;i++){
+      let n1=nodes[i],n2=nodes[(i+1)%nodes.length];
+      sk.stroke(100,100,100,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(n1.x,n1.y,n2.x,n2.y);
+      // Arrowhead
+      let a=Math.atan2(n2.y-n1.y,n2.x-n1.x);
+      let mx=(n1.x+n2.x)/2,my=(n1.y+n2.y)/2;
+      sk.fill(100);sk.noStroke();
+      sk.push();sk.translate(mx,my);sk.rotate(a);sk.triangle(0,0,-12,5,-12,-5);sk.pop();
+    }
+    // Draw nodes
+    nodes.forEach((n,i)=>{
+      sk.fill(n.col[0],n.col[1],n.col[2],30);
+      sk.stroke(n.col[0],n.col[1],n.col[2]);sk.strokeWeight(2);
+      sk.rect(n.x-62,n.y-22,124,44,8);sk.noStroke();
+      sk.fill(n.col[0],n.col[1],n.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      n.label.split('\n').forEach((l,li)=>sk.text(l,n.x,n.y+(li-0.5)*14));sk.textStyle(sk.NORMAL);
+    });
+    // Center label
+    sk.fill(30,30,80,220);sk.stroke(30,30,80);sk.strokeWeight(2);
+    sk.ellipse(cx,cy,90,40);sk.noStroke();
+    sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('NEGATIVE',cx,cy-4);sk.text('FEEDBACK',cx,cy+10);sk.textStyle(sk.NORMAL);
+
+    // Key idea box
+    sk.fill(255,248,220,220);sk.stroke(220,160,0);sk.strokeWeight(1.5);
+    sk.rect(330,420,145,72,7);sk.noStroke();
+    sk.fill(120,80,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Key Principle:',338,436);sk.textStyle(sk.NORMAL);sk.fill(30);sk.textSize(9.5);
+    sk.text('Response OPPOSES the',338,452);sk.text('original change to restore',338,466);sk.text('normal (set point).',338,480);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    const cols=[[180,30,20],[20,120,30],[10,70,180]];let c=cols[mode];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);sk.noStroke();
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Thermoregulation','Blood Glucose Control','Negative Feedback Loop'];
+    sk.text(titles[mode],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+
+    let sy=py+52;
+    const allInfo=[
+      [{t:'What is Homeostasis?',b:'Maintaining a CONSTANT internal environment\ndespite changes outside the body.'},{t:'Normal Body Temperature',b:'37°C in humans.\nSet by the HYPOTHALAMUS (thermostat in brain).'},{t:'Why important?',b:'Enzymes work best at 37°C.\nToo hot (>40°C): enzymes denature.\nToo cold: metabolic rate falls dangerously.'},{t:'Diabetes mellitus',b:'TYPE 1: Pancreas cannot produce insulin.\nTYPE 2: Cells do not respond to insulin.\nResult: dangerously high blood glucose.'}],
+      [{t:'What is Blood Glucose?',b:'Glucose (sugar) dissolved in blood.\nNormal: ~4–6 mmol/L.'},{t:'Insulin (hormone)',b:'Produced by β-cells in pancreas.\nStimulates uptake of glucose by liver/muscle.\nGlycogen stored in liver.'},{t:'Glucagon (hormone)',b:'Produced by α-cells in pancreas.\nStimulates breakdown of glycogen → glucose.\nReleased when blood glucose falls too low.'},{t:'Where is it regulated?',b:'Pancreas detects and responds.\nLiver is the main effector organ (stores/releases glycogen).'}],
+      [{t:'Negative Feedback Principle',b:'The response to a change OPPOSES that change\nand returns the system to its SET POINT.'},{t:'Set Point',b:'The ideal value maintained.\nBody temperature: 37°C\nBlood glucose: 4–6 mmol/L\nBlood pH: 7.35–7.45'},{t:'Receptor → Control → Effector',b:'Receptor: Detects change (e.g. thermoreceptors).\nControl centre: Brain/glands (integrates response).\nEffector: Muscle/gland (makes the response).'},{t:'Positive Feedback (contrast)',b:'Response AMPLIFIES the change (less common).\nExample: childbirth contractions\n(NOT homeostasis — heads away from set point).'}],
+    ];
+    allInfo[mode].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*15+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*15));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(homeostasisMcq){ homeostasisMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

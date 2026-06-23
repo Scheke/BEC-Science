@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Advanced Respiration — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,15,22]))}
+
+const STEPS=[
+  {
+    title:'Overview — Aerobic Respiration Stages',
+    body:`Aerobic respiration releases energy from glucose in three main stages:
+    <ol style="margin:8px 0 0 18px;line-height:2.2">
+      <li><strong>Glycolysis</strong> — in the cytoplasm; glucose → pyruvate; nets 2 ATP</li>
+      <li><strong>Krebs Cycle</strong> — in the mitochondrial matrix; pyruvate broken down; produces CO₂, NADH, FADH₂</li>
+      <li><strong>Oxidative Phosphorylation</strong> — in the inner mitochondrial membrane; NADH/FADH₂ → 32–34 ATP</li>
+    </ol>
+    Overall equation:
+    <br><br>
+    <strong>C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ~36–38 ATP</strong>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const stages=[
+        {n:'Glycolysis',loc:'Cytoplasm',atp:'2 ATP',c:[52,152,219],x:0.18},
+        {n:'Krebs Cycle',loc:'Matrix',atp:'2 ATP + NADH',c:[155,89,182],x:0.5},
+        {n:'Ox. Phosphorylation',loc:'Inner membrane',atp:'32-34 ATP',c:[231,76,60],x:0.82},
+      ];
+      // Mitochondria outline
+      sk.noFill();sk.stroke(255,165,50,80);sk.strokeWeight(2);
+      sk.ellipse(W*0.66,H*0.5,W*0.6,H*0.6);
+      sk.fill(255,165,50,30);sk.noStroke();sk.ellipse(W*0.66,H*0.5,W*0.6,H*0.6);
+      sk.fill(255,165,50);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Mitochondria',W*0.66,H*0.18);
+      stages.forEach((s,i)=>{
+        const pulse=1+Math.sin(t*1.5+i*1.2)*0.07;
+        sk.fill(...s.c,50);sk.noStroke();sk.ellipse(s.x*W,H*0.5,100*pulse,70*pulse);
+        sk.fill(...s.c);sk.ellipse(s.x*W,H*0.5,84,60);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(s.n,s.x*W,H*0.5-10);
+        sk.fill(255,255,255,150);sk.textSize(8);
+        sk.text(s.loc,s.x*W,H*0.5+3);
+        sk.fill(255,220,50);sk.textSize(8.5);sk.textStyle(sk.BOLD);
+        sk.text(s.atp,s.x*W,H*0.5+16);sk.textStyle(sk.NORMAL);
+        if(i<2){
+          const nx=stages[i+1].x;
+          const prog=((t*0.3+i*0.3)%1);
+          sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+          sk.line(s.x*W+44,H*0.5,nx*W-44,H*0.5);
+          sk.fill(255,200,50,220);sk.noStroke();
+          sk.circle(sk.lerp(s.x*W+44,nx*W-44,prog),H*0.5,8);
+        }
+      });
+    }
+  },
+  {
+    q:'Aerobic vs Anaerobic — Comparison Table',
+    content:`<h3>Aerobic vs Anaerobic Respiration</h3><p>Study this diagram carefully. Both aerobic and anaerobic respiration release energy from glucose in the form of ATP, but they differ greatly in efficiency, products, and location. You must be able to compare these two processes and write the word and symbol equations for each. Aerobic respiration is far more efficient because it fully oxidises glucose using oxygen.</p><ul><li><strong>Aerobic respiration:</strong> requires oxygen; occurs in cytoplasm AND mitochondria; produces CO₂ + H₂O + 36–38 ATP; equation: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP; used during rest and moderate exercise</li><li><strong>Anaerobic respiration in animals:</strong> no oxygen needed; cytoplasm only; produces lactic acid + 2 ATP; causes muscle fatigue and oxygen debt; equation: C₆H₁₂O₆ → 2C₃H₆O₃ + 2 ATP</li><li><strong>Anaerobic respiration in yeast (fermentation):</strong> no oxygen needed; cytoplasm only; produces ethanol + CO₂ + 2 ATP; exploited in brewing (alcohol production) and bread-making (CO₂ makes dough rise)</li><li><strong>Key difference:</strong> aerobic yields ~18× more ATP per glucose molecule than anaerobic</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="300" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Aerobic vs Anaerobic Respiration</text>
+  <!-- Header row -->
+  <rect x="15" y="32" width="130" height="32" rx="4" fill="#c62828"/>
+  <text x="80" y="53" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Feature</text>
+  <rect x="150" y="32" width="120" height="32" rx="4" fill="#1565c0"/>
+  <text x="210" y="49" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">AEROBIC</text>
+  <text x="210" y="61" text-anchor="middle" font-size="9" fill="#bbdefb">(with oxygen)</text>
+  <rect x="275" y="32" width="130" height="32" rx="4" fill="#bf360c"/>
+  <text x="340" y="49" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">ANAEROBIC</text>
+  <text x="340" y="61" text-anchor="middle" font-size="9" fill="#ffccbc">(without oxygen)</text>
+  <!-- Row 1: Oxygen -->
+  <rect x="15" y="64" width="130" height="34" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="80" y="85" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Oxygen needed?</text>
+  <rect x="150" y="64" width="120" height="34" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="210" y="85" text-anchor="middle" font-size="11" fill="#2e7d32" font-weight="bold">YES</text>
+  <rect x="275" y="64" width="130" height="34" fill="#fbe9e7" stroke="#c62828" stroke-width="0.8"/>
+  <text x="340" y="85" text-anchor="middle" font-size="11" fill="#c62828" font-weight="bold">NO</text>
+  <!-- Row 2: Location -->
+  <rect x="15" y="98" width="130" height="34" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="80" y="119" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Location</text>
+  <rect x="150" y="98" width="120" height="34" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="210" y="112" text-anchor="middle" font-size="9" fill="#333">Cytoplasm +</text>
+  <text x="210" y="125" text-anchor="middle" font-size="9" fill="#333">Mitochondria</text>
+  <rect x="275" y="98" width="130" height="34" fill="#fbe9e7" stroke="#c62828" stroke-width="0.8"/>
+  <text x="340" y="115" text-anchor="middle" font-size="9" fill="#333">Cytoplasm only</text>
+  <!-- Row 3: Products -->
+  <rect x="15" y="132" width="130" height="50" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="80" y="155" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Products</text>
+  <rect x="150" y="132" width="120" height="50" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="210" y="148" text-anchor="middle" font-size="9" fill="#333">CO₂ + H₂O</text>
+  <text x="210" y="162" text-anchor="middle" font-size="9" fill="#333">+ ATP</text>
+  <rect x="275" y="132" width="130" height="50" fill="#fbe9e7" stroke="#c62828" stroke-width="0.8"/>
+  <text x="340" y="146" text-anchor="middle" font-size="9" fill="#333">Animals: Lactic acid</text>
+  <text x="340" y="160" text-anchor="middle" font-size="9" fill="#333">Yeast: Ethanol + CO₂</text>
+  <text x="340" y="174" text-anchor="middle" font-size="9" fill="#333">+ ATP</text>
+  <!-- Row 4: ATP yield -->
+  <rect x="15" y="182" width="130" height="34" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="80" y="203" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">ATP yield</text>
+  <rect x="150" y="182" width="120" height="34" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="210" y="203" text-anchor="middle" font-size="13" fill="#1565c0" font-weight="bold">36–38 ATP</text>
+  <rect x="275" y="182" width="130" height="34" fill="#fbe9e7" stroke="#c62828" stroke-width="0.8"/>
+  <text x="340" y="203" text-anchor="middle" font-size="13" fill="#c62828" font-weight="bold">2 ATP only</text>
+  <!-- Row 5: Examples -->
+  <rect x="15" y="216" width="130" height="46" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="80" y="238" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">When used</text>
+  <rect x="150" y="216" width="120" height="46" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="210" y="232" text-anchor="middle" font-size="9" fill="#333">Normal activity,</text>
+  <text x="210" y="246" text-anchor="middle" font-size="9" fill="#333">rest, moderate</text>
+  <text x="210" y="259" text-anchor="middle" font-size="9" fill="#333">exercise</text>
+  <rect x="275" y="216" width="130" height="46" fill="#fbe9e7" stroke="#c62828" stroke-width="0.8"/>
+  <text x="340" y="232" text-anchor="middle" font-size="9" fill="#333">Intense exercise,</text>
+  <text x="340" y="246" text-anchor="middle" font-size="9" fill="#333">sprouting seeds,</text>
+  <text x="340" y="259" text-anchor="middle" font-size="9" fill="#333">brewing/baking</text>
+  <!-- Equation comparison -->
+  <rect x="15" y="268" width="390" height="28" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="280" text-anchor="middle" font-size="9" fill="#1565c0">Aerobic: C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 36-38 ATP</text>
+  <text x="210" y="292" text-anchor="middle" font-size="9" fill="#c62828">Anaerobic (animals): C₆H₁₂O₆ → 2 Lactic acid + 2 ATP</text>
+</svg>`
+  },
+  {
+    title:'Stage 1 — Glycolysis',
+    body:`<strong>Glycolysis</strong> occurs in the <em>cytoplasm</em> (no mitochondria needed).
+    <br><br>
+    One glucose (6C) is split into two pyruvate molecules (3C each):
+    <br><br>
+    <strong>Glucose + 2 ATP → 2 Pyruvate + 4 ATP + 2 NADH</strong>
+    <br><br>
+    Net gain: <strong>2 ATP</strong> (4 produced – 2 used to start)
+    <br><br>
+    Key point: Glycolysis requires no oxygen — it can occur in both aerobic and anaerobic conditions. This is why anaerobic respiration still starts with glycolysis.`,
+    draw:(sk)=>{
+      bg(sk,[15,20,30]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Glucose
+      sk.fill(241,196,15,200);sk.noStroke();sk.circle(W*0.12,H/2,50);
+      sk.fill(15,20,30);sk.textSize(12);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C₆',W*0.12,H/2);
+      sk.fill(241,196,15);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Glucose',W*0.12,H*0.7);
+      // Arrow through glycolysis box
+      sk.fill(52,152,219,50);sk.noStroke();sk.rect(W*0.3,H*0.3,W*0.4,H*0.4,10);
+      sk.fill(52,152,219);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('GLYCOLYSIS',W*0.5,H*0.45);sk.textStyle(sk.NORMAL);
+      sk.fill(255,255,255,60);sk.textSize(8.5);sk.text('in Cytoplasm',W*0.5,H*0.57);
+      // ATP used
+      sk.fill(231,76,60);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('− 2 ATP (used)',W*0.5,H*0.3-12);
+      // Two pyruvates
+      const pr=((t*30)%80);
+      [H*0.38,H*0.62].forEach((y,i)=>{
+        sk.fill(155,89,182,200);sk.noStroke();sk.circle(W*0.88,y,36);
+        sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C₃',W*0.88,y);
+        sk.fill(155,89,182);sk.textSize(8);sk.textAlign(sk.CENTER);sk.text('Pyruvate',W*0.88,y+22);
+      });
+      // Outputs
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('+ 4 ATP (produced)',W*0.5,H*0.72);
+      sk.text('+ 2 NADH',W*0.5,H*0.80);
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.text('Net = +2 ATP',W*0.5,H*0.90);
+    }
+  },
+  {
+    q:'Glycolysis Summary — Step by Step',
+    content:`<h3>Glycolysis — Glucose to Pyruvate Diagram</h3><p>Study this diagram carefully. Glycolysis is the first stage of both aerobic and anaerobic respiration. It takes place in the cytoplasm and does not require oxygen, which is why it occurs in both conditions. One 6-carbon glucose molecule is split into two 3-carbon pyruvate molecules, with a net gain of 2 ATP and 2 NADH.</p><ul><li><strong>Energy investment phase:</strong> 2 ATP are used to activate glucose and convert it to fructose-1,6-bisphosphate (an unstable 6-carbon intermediate); this step requires energy input before any is gained</li><li><strong>Splitting:</strong> the 6-carbon molecule is split into two 3-carbon molecules which are then converted to pyruvate through several steps</li><li><strong>Energy payoff phase:</strong> 4 ATP are produced (substrate-level phosphorylation) and 2 NADH are formed; net gain is 2 ATP (4 produced − 2 used) and 2 NADH</li><li><strong>Fate of pyruvate:</strong> if oxygen is available, pyruvate enters the mitochondria for the Krebs cycle; if no oxygen, pyruvate is converted to lactic acid (animals) or ethanol + CO₂ (yeast)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="280" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Glycolysis — Glucose to Pyruvate</text>
+  <text x="210" y="35" text-anchor="middle" font-size="9" fill="#555">Location: Cytoplasm (no mitochondria needed)</text>
+  <!-- Glucose -->
+  <rect x="155" y="48" width="110" height="40" rx="8" fill="#f9a825"/>
+  <text x="210" y="65" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">GLUCOSE (C₆)</text>
+  <text x="210" y="81" text-anchor="middle" font-size="9" fill="#fff3e0">6-carbon sugar</text>
+  <!-- Step 1: ATP investment -->
+  <line x1="210" y1="88" x2="210" y2="112" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="240" y="92" width="150" height="28" rx="4" fill="#ffcdd2" stroke="#c62828" stroke-width="1"/>
+  <text x="315" y="108" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">− 2 ATP used</text>
+  <text x="315" y="120" text-anchor="middle" font-size="8" fill="#555">(energy investment phase)</text>
+  <!-- Intermediate -->
+  <rect x="140" y="112" width="140" height="32" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="210" y="126" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">Fructose-1,6-bisphosphate</text>
+  <text x="210" y="140" text-anchor="middle" font-size="8" fill="#555">(6C, unstable)</text>
+  <!-- Step 2: splitting -->
+  <line x1="210" y1="144" x2="210" y2="168" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="240" y="148" width="150" height="24" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="315" y="164" text-anchor="middle" font-size="9" fill="#555">Molecule split into 2 × 3C</text>
+  <!-- Two pyruvates -->
+  <rect x="55" y="168" width="110" height="40" rx="6" fill="#7b1fa2" stroke="#c62828" stroke-width="1.5"/>
+  <text x="110" y="184" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">PYRUVATE (C₃)</text>
+  <text x="110" y="198" text-anchor="middle" font-size="9" fill="#e1bee7">(×1)</text>
+  <rect x="255" y="168" width="110" height="40" rx="6" fill="#7b1fa2" stroke="#c62828" stroke-width="1.5"/>
+  <text x="310" y="184" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">PYRUVATE (C₃)</text>
+  <text x="310" y="198" text-anchor="middle" font-size="9" fill="#e1bee7">(×1)</text>
+  <!-- Outputs from the split step -->
+  <rect x="20" y="228" width="110" height="40" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.2"/>
+  <text x="75" y="244" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">+ 4 ATP</text>
+  <text x="75" y="258" text-anchor="middle" font-size="8" fill="#333">(energy payoff phase)</text>
+  <rect x="155" y="228" width="110" height="40" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.2"/>
+  <text x="210" y="244" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">+ 2 NADH</text>
+  <text x="210" y="258" text-anchor="middle" font-size="8" fill="#333">(electron carriers)</text>
+  <rect x="290" y="228" width="110" height="40" rx="5" fill="#fff3e0" stroke="#f9a825" stroke-width="1.2"/>
+  <text x="345" y="244" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">Net: +2 ATP</text>
+  <text x="345" y="258" text-anchor="middle" font-size="8" fill="#333">(4 made − 2 used)</text>
+  <!-- Arrows to outputs -->
+  <line x1="130" y1="208" x2="95" y2="226" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="185" y1="208" x2="200" y2="226" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="310" y1="208" x2="330" y2="226" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
+</svg>`
+  },
+  {
+    title:'Stage 2 — Krebs Cycle',
+    body:`The <strong>Krebs Cycle</strong> (citric acid cycle) occurs in the <em>mitochondrial matrix</em>.
+    <br><br>
+    Pyruvate (3C) → Acetyl-CoA (2C) + CO₂
+    <br><br>
+    Each turn of the cycle (×2 per glucose) produces:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>2 CO₂ (released as waste)</li>
+      <li>3 NADH (electron carriers)</li>
+      <li>1 FADH₂ (electron carrier)</li>
+      <li>1 ATP</li>
+    </ul>
+    The key products (NADH, FADH₂) carry electrons to the final stage.`,
+    draw:(sk)=>{
+      bg(sk,[10,15,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.03;
+      const cx=W/2,cy=H/2;
+      const r=Math.min(W,H)*0.3;
+      // Circle
+      sk.noFill();sk.stroke(155,89,182,100);sk.strokeWeight(2);sk.circle(cx,cy,r*2);
+      // Rotating molecules on cycle
+      const molecules=['Citrate\n(6C)','Isocitrate\n(6C)','α-KG\n(5C)','Succinate\n(4C)','Malate\n(4C)','Oxaloacetate\n(4C)'];
+      molecules.forEach((m,i)=>{
+        const ang=t*0.3+(i/molecules.length)*sk.TWO_PI;
+        const x=cx+Math.cos(ang)*r;
+        const y=cy+Math.sin(ang)*r;
+        sk.fill(155,89,182,140);sk.noStroke();sk.ellipse(x,y,48,32);
+        sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(m,x,y);
+      });
+      // Centre label
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('KREBS\nCYCLE',cx,cy);sk.textStyle(sk.NORMAL);
+      // Products
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('→ 2 CO₂ (waste)',W*0.02,H*0.12);
+      sk.text('→ 3 NADH',W*0.02,H*0.24);
+      sk.text('→ 1 FADH₂',W*0.02,H*0.33);
+      sk.text('→ 1 ATP',W*0.02,H*0.42);
+      sk.fill(255,255,255,60);sk.textSize(8);sk.text('(×2 per glucose)',W*0.02,H*0.52);
+    }
+  },
+  {
+    q:'Krebs Cycle — Simplified Inputs and Outputs',
+    content:`<h3>Krebs Cycle — Simplified Inputs and Outputs Diagram</h3><p>Study this diagram carefully. The Krebs cycle (citric acid cycle) is the second major stage of aerobic respiration, occurring in the mitochondrial matrix. Each glucose molecule produces two pyruvates from glycolysis, so the Krebs cycle runs twice per glucose. The cycle does not produce much ATP directly, but it generates large quantities of electron carriers (NADH and FADH₂) that power the final stage.</p><ul><li><strong>Link reaction:</strong> pyruvate (3C) enters the mitochondria and is converted to acetyl-CoA (2C) with the release of one CO₂ and one NADH; this happens before the cycle itself begins</li><li><strong>Per turn of the cycle:</strong> 2 CO₂ released (waste — this is the CO₂ we exhale); 3 NADH produced; 1 FADH₂ produced; 1 ATP produced directly</li><li><strong>Per glucose molecule (×2 turns):</strong> 4 CO₂ + 6 NADH + 2 FADH₂ + 2 ATP total from the Krebs cycle</li><li><strong>Key role:</strong> the NADH and FADH₂ are the crucial outputs — they carry high-energy electrons to the electron transport chain (oxidative phosphorylation) where most of the ATP is actually made</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="300" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Krebs Cycle — Simplified</text>
+  <text x="210" y="35" text-anchor="middle" font-size="9" fill="#555">Location: Mitochondrial matrix · Runs TWICE per glucose molecule</text>
+  <!-- Pyruvate input -->
+  <rect x="155" y="45" width="110" height="38" rx="6" fill="#7b1fa2"/>
+  <text x="210" y="61" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">PYRUVATE (C₃)</text>
+  <text x="210" y="76" text-anchor="middle" font-size="8" fill="#e1bee7">from glycolysis</text>
+  <!-- Link reaction -->
+  <line x1="210" y1="83" x2="210" y2="108" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="240" y="86" width="150" height="26" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="315" y="98" text-anchor="middle" font-size="9" fill="#555">Link reaction: loses CO₂</text>
+  <text x="315" y="110" text-anchor="middle" font-size="8" fill="#555">Pyruvate → Acetyl-CoA (2C)</text>
+  <!-- Acetyl-CoA -->
+  <rect x="145" y="108" width="130" height="32" rx="6" fill="#ff8f00" stroke="#c62828" stroke-width="1.5"/>
+  <text x="210" y="122" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Acetyl-CoA (2C)</text>
+  <text x="210" y="135" text-anchor="middle" font-size="8" fill="#ffe082">enters Krebs cycle</text>
+  <!-- Krebs circle -->
+  <circle cx="210" cy="195" r="52" fill="none" stroke="#c62828" stroke-width="2.5"/>
+  <text x="210" y="188" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">KREBS</text>
+  <text x="210" y="203" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">CYCLE</text>
+  <!-- Arrow into cycle -->
+  <line x1="210" y1="140" x2="210" y2="143" stroke="#ff8f00" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Outputs: arrows out of circle -->
+  <!-- CO2 left -->
+  <line x1="160" y1="185" x2="108" y2="175" stroke="#555" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="20" y="158" width="88" height="36" rx="5" fill="#cfd8dc" stroke="#546e7a" stroke-width="1"/>
+  <text x="64" y="174" text-anchor="middle" font-size="10" fill="#263238" font-weight="bold">2 CO₂</text>
+  <text x="64" y="187" text-anchor="middle" font-size="8" fill="#555">released (waste)</text>
+  <!-- NADH right -->
+  <line x1="260" y1="185" x2="310" y2="172" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="310" y="155" width="95" height="36" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="357" y="171" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">3 NADH</text>
+  <text x="357" y="184" text-anchor="middle" font-size="8" fill="#555">electron carriers</text>
+  <!-- FADH2 bottom right -->
+  <line x1="250" y1="238" x2="310" y2="248" stroke="#1565c0" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="310" y="236" width="95" height="36" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <text x="357" y="252" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">1 FADH₂</text>
+  <text x="357" y="265" text-anchor="middle" font-size="8" fill="#555">electron carrier</text>
+  <!-- ATP bottom left -->
+  <line x1="165" y1="238" x2="108" y2="248" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="20" y="236" width="88" height="36" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/>
+  <text x="64" y="252" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">1 ATP</text>
+  <text x="64" y="265" text-anchor="middle" font-size="8" fill="#555">(per turn)</text>
+  <!-- Note at bottom -->
+  <text x="210" y="290" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Per glucose (×2 turns): 4CO₂ + 6NADH + 2FADH₂ + 2ATP</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Glycolysis & Krebs Cycle',
+    body:'Test your knowledge of the first two stages of aerobic respiration.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Where does glycolysis take place?',opts:['Mitochondrial matrix','Inner mitochondrial membrane','Cytoplasm','Nucleus'],ans:2,exp:'Glycolysis occurs in the cytoplasm — no mitochondria needed. This is why both aerobic and anaerobic respiration begin with glycolysis.'},
+      {q:'What is the net ATP yield from glycolysis alone (per glucose)?',opts:['4 ATP','2 ATP','38 ATP','0 ATP'],ans:1,exp:'Glycolysis uses 2 ATP to start and produces 4 ATP — a net gain of 2 ATP per glucose molecule.'},
+      {q:'The Krebs cycle takes place in the:',opts:['Cytoplasm','Outer mitochondrial membrane','Inner membrane','Mitochondrial matrix'],ans:3,exp:'The Krebs (citric acid) cycle occurs in the mitochondrial matrix — the fluid-filled interior of the mitochondria.'},
+      {q:'What carbon-containing waste product is released in the Krebs cycle?',opts:['Glucose','Pyruvate','Carbon dioxide (CO₂)','Lactic acid'],ans:2,exp:'Carbon dioxide (CO₂) is released when the 6-carbon intermediates are broken down in the Krebs cycle — this is the CO₂ we breathe out.'},
+    ]}
+  },
+  {
+    title:'Stage 3 — Oxidative Phosphorylation',
+    body:`This final stage occurs on the <strong>inner mitochondrial membrane</strong> and produces most of the ATP.
+    <br><br>
+    NADH and FADH₂ (electron carriers from Krebs) pass electrons along the <strong>electron transport chain</strong>.
+    <br><br>
+    The energy released pumps H⁺ ions across the membrane. They flow back through <strong>ATP synthase</strong>, generating <strong>32–34 ATP</strong>.
+    <br><br>
+    Oxygen is the final electron acceptor — it combines with H⁺ to form <strong>water (H₂O)</strong>.`,
+    draw:(sk)=>{
+      bg(sk,[10,10,20]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.03;
+      // Inner membrane
+      sk.fill(255,165,50,30);sk.noStroke();sk.rect(0,H*0.38,W,H*0.24);
+      sk.stroke(255,165,50,80);sk.strokeWeight(2);
+      sk.line(0,H*0.38,W,H*0.38);
+      sk.line(0,H*0.62,W,H*0.62);
+      sk.fill(255,165,50);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Inner mitochondrial membrane',4,H*0.36);
+      // Electron transport proteins
+      for(let i=0;i<4;i++){
+        const x=W*(0.15+i*0.2);
+        sk.fill(100,160,255,180);sk.noStroke();sk.rect(x-14,H*0.38,28,H*0.24,4);
+        sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('ETC\n'+(i+1),x,H*0.5);
+        // H+ ions pumping
+        const ions=[0.3,0.6,0.85];
+        ions.forEach(p=>{
+          const iy=H*0.3-((t*20+i*15+p*30)%50);
+          if(iy>H*0.12){
+            sk.fill(231,76,60,200);sk.noStroke();sk.circle(x,iy,7);
+            sk.fill(231,76,60);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('H⁺',x,iy);
+          }
+        });
+      }
+      // ATP synthase
+      sk.fill(46,204,113,180);sk.noStroke();sk.rect(W*0.88,H*0.38,22,H*0.24,4);
+      sk.fill(255);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('ATP\nSyn',W*0.89,H*0.5);
+      // H+ flowing back
+      const backH=((t*15)%40);
+      sk.fill(46,204,113,200);sk.noStroke();sk.circle(W*0.89,H*0.38+backH,7);
+      // O2 + H+ → H2O
+      sk.fill(100,200,255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('O₂ + 4H⁺ → 2H₂O',W*0.5,H*0.18);sk.textStyle(sk.NORMAL);
+      // ATP output
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);
+      sk.text('→ 32–34 ATP',W*0.5,H*0.82);
+    }
+  },
+  {
+    q:'ATP Structure — Labeled Diagram',
+    content:`<h3>ATP — Adenosine Triphosphate Structure Diagram</h3><p>Study this diagram carefully. ATP (adenosine triphosphate) is the universal energy currency of all living cells. Every process that requires energy in a cell — muscle contraction, active transport, protein synthesis, DNA replication — is powered by ATP. It is produced in respiration and consumed immediately wherever energy is needed.</p><ul><li><strong>Structure:</strong> ATP consists of adenosine (adenine base + ribose sugar) attached to a chain of three phosphate groups; the bonds linking the second and third phosphate groups (~) are high-energy bonds</li><li><strong>Energy release (hydrolysis):</strong> ATP + H₂O → ADP + inorganic phosphate (Pᵢ) + energy (~30.5 kJ/mol); breaking the terminal phosphate bond releases energy for cell work; the enzyme ATP hydrolase (ATPase) catalyses this</li><li><strong>Energy storage (phosphorylation):</strong> ADP + Pᵢ + energy → ATP; energy from respiration is used to re-attach a phosphate group, regenerating ATP; this ATP–ADP cycle repeats continuously — a single ATP molecule can be recycled approximately 500 times per day</li><li><strong>Advantage of ATP:</strong> releases energy in small, controlled amounts exactly where it is needed, rather than releasing all energy from glucose at once</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="270" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">ATP — Adenosine Triphosphate</text>
+  <text x="210" y="34" text-anchor="middle" font-size="9" fill="#555">The universal energy currency of cells</text>
+  <!-- Adenosine (adenine + ribose) -->
+  <ellipse cx="80" cy="130" rx="65" ry="45" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <text x="80" y="120" text-anchor="middle" font-size="10" fill="#0d47a1" font-weight="bold">ADENOSINE</text>
+  <text x="80" y="135" text-anchor="middle" font-size="9" fill="#333">Adenine base</text>
+  <text x="80" y="148" text-anchor="middle" font-size="9" fill="#333">+ Ribose sugar</text>
+  <!-- 3 phosphate groups -->
+  <rect x="155" y="105" width="52" height="50" rx="6" fill="#ef9a9a" stroke="#c62828" stroke-width="2"/>
+  <text x="181" y="127" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">P</text>
+  <text x="181" y="143" text-anchor="middle" font-size="8" fill="#ffcdd2">phosphate</text>
+  <rect x="215" y="105" width="52" height="50" rx="6" fill="#ef9a9a" stroke="#c62828" stroke-width="2"/>
+  <text x="241" y="127" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">P</text>
+  <text x="241" y="143" text-anchor="middle" font-size="8" fill="#ffcdd2">phosphate</text>
+  <rect x="275" y="105" width="52" height="50" rx="6" fill="#c62828" stroke="#7f0000" stroke-width="2"/>
+  <text x="301" y="127" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">P</text>
+  <text x="301" y="143" text-anchor="middle" font-size="8" fill="#ffcdd2">phosphate</text>
+  <!-- High-energy bond markers -->
+  <text x="210" y="99" text-anchor="middle" font-size="16" fill="#f9a825">~</text>
+  <text x="270" y="99" text-anchor="middle" font-size="16" fill="#f9a825">~</text>
+  <!-- Label: high energy bonds -->
+  <text x="210" y="84" text-anchor="middle" font-size="9" fill="#f9a825" font-weight="bold">High-energy bonds</text>
+  <text x="270" y="84" text-anchor="middle" font-size="9" fill="#f9a825" font-weight="bold">(release energy</text>
+  <text x="270" y="74" text-anchor="middle" font-size="9" fill="#f9a825" font-weight="bold">when broken)</text>
+  <!-- Connection line adenosine to first P -->
+  <line x1="143" y1="130" x2="153" y2="130" stroke="#1565c0" stroke-width="2"/>
+  <!-- ATP → ADP + Pi equation -->
+  <rect x="330" y="105" width="78" height="50" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="369" y="123" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">Released</text>
+  <text x="369" y="136" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">energy</text>
+  <text x="369" y="149" text-anchor="middle" font-size="9" fill="#1b5e20">used for</text>
+  <text x="369" y="161" text-anchor="middle" font-size="9" fill="#1b5e20">cell work</text>
+  <line x1="327" y1="130" x2="308" y2="130" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Hydrolysis reaction -->
+  <rect x="20" y="190" width="380" height="65" rx="5" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="207" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">ATP ↔ ADP + Pᵢ (inorganic phosphate)</text>
+  <text x="210" y="222" text-anchor="middle" font-size="9" fill="#333">ATP + H₂O → ADP + Pᵢ + ENERGY (hydrolysis — releases ~30.5 kJ/mol)</text>
+  <text x="210" y="238" text-anchor="middle" font-size="9" fill="#333">ADP + Pᵢ + ENERGY → ATP (phosphorylation — stores energy)</text>
+  <text x="210" y="252" text-anchor="middle" font-size="9" fill="#555" font-style="italic">This cycle repeats constantly — one ATP molecule is recycled ~500 times per day!</text>
+</svg>`
+  },
+  {
+    title:'Anaerobic Respiration',
+    body:`When oxygen is unavailable, cells switch to <strong>anaerobic respiration</strong>:
+    <br><br>
+    <strong>In animals/humans (muscles):</strong><br>
+    Glucose → Lactic acid + 2 ATP<br>
+    (causes muscle fatigue and the "burn")
+    <br><br>
+    <strong>In yeast (fermentation):</strong><br>
+    Glucose → Ethanol + CO₂ + 2 ATP<br>
+    (used in brewing, bread-making)
+    <br><br>
+    Key points:
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li>Only <strong>2 ATP</strong> produced (vs 36–38 aerobic)</li>
+      <li>No Krebs or electron transport chain</li>
+      <li>Lactic acid must be removed — the "<strong>oxygen debt</strong>"</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[20,10,15]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Split screen
+      sk.fill(30,80,40,80);sk.noStroke();sk.rect(0,0,W/2,H);
+      sk.fill(80,30,30,80);sk.rect(W/2,0,W/2,H);
+      sk.fill(255,255,255,80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('YEAST',W/4,22);sk.text('MUSCLE CELLS',W*3/4,22);sk.textStyle(sk.NORMAL);
+      // Yeast pathway
+      sk.fill(241,196,15,200);sk.noStroke();sk.circle(W*0.18,H*0.38,42);
+      sk.fill(15);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Glucose',W*0.18,H*0.38);
+      sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.18,H*0.44,W*0.18,H*0.56);
+      sk.fill(52,152,219,180);sk.noStroke();sk.circle(W*0.12,H*0.64,32);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Ethanol',W*0.12,H*0.64);
+      sk.fill(100,200,100,180);sk.noStroke();sk.circle(W*0.3,H*0.64,32);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('CO₂',W*0.3,H*0.64);
+      // Muscle pathway
+      sk.fill(241,196,15,200);sk.noStroke();sk.circle(W*0.68,H*0.38,42);
+      sk.fill(15);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Glucose',W*0.68,H*0.38);
+      sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.68,H*0.44,W*0.68,H*0.56);
+      sk.fill(231,76,60,180);sk.noStroke();sk.circle(W*0.68,H*0.64,42);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Lactic\nAcid',W*0.68,H*0.64);
+      // ATP
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('+ 2 ATP',W/4,H*0.82);sk.text('+ 2 ATP',W*3/4,H*0.82);
+    }
+  },
+  {
+    q:'Fermentation Pathways — Yeast vs Muscle',
+    content:`<h3>Fermentation Pathways — Yeast vs Muscle Diagram</h3><p>Study this diagram carefully. Fermentation is anaerobic respiration that regenerates NAD⁺ so that glycolysis can continue when oxygen is unavailable. Both yeast and animal muscle cells start with glycolysis producing pyruvate, but they then take different pathways to deal with the pyruvate and the NADH produced. Only 2 ATP are produced — compared to 36–38 from aerobic respiration.</p><ul><li><strong>Yeast (alcoholic fermentation):</strong> pyruvate is decarboxylated (loses CO₂) → ethanal → reduced by NADH to ethanol (C₂H₅OH); products are ethanol + CO₂ + 2 ATP; used industrially in brewing beer and wine, and in bread-making where CO₂ causes dough to rise</li><li><strong>Animal muscle cells (lactic acid fermentation):</strong> pyruvate is directly reduced by NADH → lactic acid (lactate); no CO₂ is released; lactic acid causes the burning sensation in muscles during intense exercise and leads to muscle fatigue</li><li><strong>Oxygen debt:</strong> after exercise, extra oxygen is needed to oxidise lactic acid back to pyruvate and then CO₂ and water; this is why you continue breathing heavily after stopping exercise — repaying the "oxygen debt" (EPOC: excess post-exercise oxygen consumption)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="300" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Fermentation Pathways</text>
+  <!-- Dividing line -->
+  <line x1="210" y1="32" x2="210" y2="285" stroke="#c62828" stroke-width="1.5" stroke-dasharray="5,4"/>
+  <!-- YEAST side -->
+  <text x="105" y="40" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">YEAST</text>
+  <text x="105" y="54" text-anchor="middle" font-size="9" fill="#555">(Alcoholic fermentation)</text>
+  <!-- Yeast pathway boxes -->
+  <rect x="50" y="62" width="110" height="32" rx="6" fill="#f9a825"/>
+  <text x="105" y="78" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Glucose (C₆)</text>
+  <text x="105" y="91" text-anchor="middle" font-size="8" fill="#fff3e0">6-carbon</text>
+  <line x1="105" y1="94" x2="105" y2="118" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="50" y="118" width="110" height="30" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1.2"/>
+  <text x="105" y="133" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">Glycolysis</text>
+  <text x="105" y="146" text-anchor="middle" font-size="8" fill="#555">(cytoplasm)</text>
+  <line x1="105" y1="148" x2="105" y2="172" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="50" y="172" width="110" height="30" rx="5" fill="#7b1fa2" stroke="#c62828" stroke-width="1.2"/>
+  <text x="105" y="188" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Pyruvate (C₃)</text>
+  <!-- Decarboxylation -->
+  <line x1="105" y1="202" x2="68" y2="228" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="105" y1="202" x2="148" y2="228" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="22" y="228" width="85" height="40" rx="5" fill="#1565c0"/>
+  <text x="64" y="244" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Ethanol</text>
+  <text x="64" y="258" text-anchor="middle" font-size="8" fill="#bbdefb">(C₂H₅OH)</text>
+  <rect x="117" y="228" width="75" height="40" rx="5" fill="#555"/>
+  <text x="154" y="244" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">CO₂</text>
+  <text x="154" y="258" text-anchor="middle" font-size="8" fill="#ccc">released</text>
+  <!-- ATP yield yeast -->
+  <rect x="38" y="278" width="130" height="18" rx="3" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/>
+  <text x="103" y="291" text-anchor="middle" font-size="9" fill="#e65100" font-weight="bold">Net: 2 ATP produced</text>
+  <!-- Applications yeast -->
+  <text x="105" y="215" text-anchor="middle" font-size="8" fill="#2e7d32">loses CO₂, reduces</text>
+  <!-- MUSCLE side -->
+  <text x="315" y="40" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">MUSCLE CELLS</text>
+  <text x="315" y="54" text-anchor="middle" font-size="9" fill="#555">(Lactic acid fermentation)</text>
+  <!-- Muscle pathway boxes -->
+  <rect x="260" y="62" width="110" height="32" rx="6" fill="#f9a825"/>
+  <text x="315" y="78" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Glucose (C₆)</text>
+  <text x="315" y="91" text-anchor="middle" font-size="8" fill="#fff3e0">6-carbon</text>
+  <line x1="315" y1="94" x2="315" y2="118" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="260" y="118" width="110" height="30" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1.2"/>
+  <text x="315" y="133" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">Glycolysis</text>
+  <text x="315" y="146" text-anchor="middle" font-size="8" fill="#555">(cytoplasm)</text>
+  <line x1="315" y1="148" x2="315" y2="172" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <rect x="260" y="172" width="110" height="30" rx="5" fill="#7b1fa2" stroke="#c62828" stroke-width="1.2"/>
+  <text x="315" y="188" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Pyruvate (C₃)</text>
+  <!-- Direct to lactic acid -->
+  <line x1="315" y1="202" x2="315" y2="228" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="345" y="218" text-anchor="start" font-size="8" fill="#555">reduced</text>
+  <text x="345" y="228" text-anchor="start" font-size="8" fill="#555">by NADH</text>
+  <rect x="255" y="228" width="120" height="40" rx="5" fill="#c62828"/>
+  <text x="315" y="244" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">LACTIC ACID</text>
+  <text x="315" y="258" text-anchor="middle" font-size="8" fill="#ffcdd2">(causes muscle fatigue)</text>
+  <!-- ATP yield muscle -->
+  <rect x="248" y="278" width="130" height="18" rx="3" fill="#ffcdd2" stroke="#c62828" stroke-width="1"/>
+  <text x="313" y="291" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Net: 2 ATP produced</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Aerobic vs Anaerobic Respiration',
+    body:'Apply your knowledge of all three stages and compare aerobic/anaerobic respiration.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Where does oxidative phosphorylation take place?',opts:['Cytoplasm','Mitochondrial matrix','Inner mitochondrial membrane','Outer mitochondrial membrane'],ans:2,exp:'The electron transport chain and ATP synthase are located on the inner mitochondrial membrane — this is where 32–34 ATP are produced.'},
+      {q:'What is the total approximate ATP yield from aerobic respiration of one glucose?',opts:['2','4','20','36–38'],ans:3,exp:'Aerobic respiration yields about 36–38 ATP total: 2 from glycolysis, 2 from Krebs, and 32–34 from oxidative phosphorylation.'},
+      {q:'In anaerobic respiration in yeast, what two products are made?',opts:['Lactic acid + CO₂','Ethanol + CO₂','Lactic acid + water','Ethanol + water'],ans:1,exp:'Yeast fermentation produces ethanol (alcohol) and carbon dioxide. This is exploited in brewing and bread-making.'},
+      {q:'The "oxygen debt" after exercise is needed to:',opts:['Make more NADH','Remove lactic acid built up during anaerobic respiration','Start glycolysis again','Cool the muscles down'],ans:1,exp:'During intense exercise, lactic acid builds up. After exercise, extra oxygen is needed to respire and remove the lactic acid — this is the "oxygen debt" or EPOC.'},
+      {q:'Which electron carriers carry energy from the Krebs cycle to oxidative phosphorylation?',opts:['ATP and ADP','Glucose and pyruvate','NADH and FADH₂','CO₂ and H₂O'],ans:2,exp:'NADH and FADH₂ are high-energy electron carriers produced in the Krebs cycle. They donate electrons to the electron transport chain, powering ATP synthesis.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#880e4f',dark:'#560027',light:'#fce4ec',
+  title:'Advanced Respiration — Glycolysis, Krebs & Electron Transport',
+});
+</script></body></html>

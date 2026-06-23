@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Energy — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,12,20]))}
+
+const STEPS=[
+  {
+    title:'Forms of Energy',
+    body:`Energy is the ability to do work. It exists in many forms:
+    <br><br>
+    <ul style="margin:6px 0 0 18px;line-height:2.2;column-count:2">
+      <li><strong>Kinetic</strong> — moving objects</li>
+      <li><strong>Potential (gravitational)</strong> — height</li>
+      <li><strong>Elastic (strain)</strong> — stretched spring</li>
+      <li><strong>Chemical</strong> — stored in bonds</li>
+      <li><strong>Thermal (heat)</strong> — temperature</li>
+      <li><strong>Light (radiant)</strong> — photons</li>
+      <li><strong>Electrical</strong> — charge flow</li>
+      <li><strong>Sound</strong> — vibrations</li>
+      <li><strong>Nuclear</strong> — atomic nucleus</li>
+    </ul>
+    <br>
+    Unit of energy: <strong>Joule (J)</strong>
+    <br>1 kJ = 1000 J`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const forms=[
+        {n:'Kinetic',icon:'🏃',c:[52,152,219],x:0.15,y:0.3},
+        {n:'Gravitational',icon:'⬆',c:[46,204,113],x:0.35,y:0.3},
+        {n:'Chemical',icon:'⚗',c:[231,76,60],x:0.55,y:0.3},
+        {n:'Thermal',icon:'🌡',c:[255,100,0],x:0.75,y:0.3},
+        {n:'Electrical',icon:'⚡',c:[241,196,15],x:0.15,y:0.72},
+        {n:'Light',icon:'☀',c:[255,240,0],x:0.35,y:0.72},
+        {n:'Sound',icon:'🔊',c:[155,89,182],x:0.55,y:0.72},
+        {n:'Nuclear',icon:'⚛',c:[26,188,156],x:0.75,y:0.72},
+      ];
+      forms.forEach((f,i)=>{
+        const cx=f.x*W,cy=f.y*H,pulse=1+Math.sin(t*1.3+i*0.7)*0.1;
+        sk.fill(...f.c,40);sk.noStroke();sk.circle(cx,cy,56*pulse);
+        sk.fill(...f.c,180);sk.circle(cx,cy,38*pulse);
+        sk.fill(255);sk.textSize(14);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(f.icon,cx,cy-4);
+        sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.text(f.n,cx,cy+24);
+      });
+    }
+  },
+  {
+    title:'Conservation of Energy',
+    body:`<strong>Law of Conservation of Energy</strong>: Energy cannot be created or destroyed — it can only be transferred or transformed from one form to another.
+    <br><br>
+    The TOTAL amount of energy in a closed system remains constant.
+    <br><br>
+    Energy transfer examples:
+    <ul style="margin:6px 0 0 18px;line-height:2.1">
+      <li>Burning fuel: Chemical → Thermal + Light</li>
+      <li>Falling object: Gravitational PE → Kinetic KE</li>
+      <li>Torch battery: Chemical → Electrical → Light + Thermal</li>
+      <li>Stretched spring: Elastic PE → Kinetic KE</li>
+      <li>Photosynthesis: Light → Chemical (glucose)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ball rolling down ramp example
+      // Ramp
+      sk.stroke(100,150,200,140);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.1,H*0.2,W*0.85,H*0.78);
+      // Ball at top
+      const rollProg=(t*0.15)%1;
+      const bx=W*0.1+rollProg*(W*0.75);
+      const by=H*0.2+rollProg*(H*0.58);
+      sk.fill(231,76,60,200);sk.noStroke();sk.circle(bx,by,18);
+      // Energy bar (GPE vs KE)
+      const barX=W*0.06,barY=H*0.86,barW=W*0.88,barH=16;
+      sk.fill(50,50,50,120);sk.noStroke();sk.rect(barX,barY,barW,barH,4);
+      // GPE part
+      sk.fill(46,204,113,200);sk.noStroke();sk.rect(barX,barY,barW*(1-rollProg),barH,4,0,0,4);
+      // KE part
+      sk.fill(52,152,219,200);sk.noStroke();sk.rect(barX+barW*(1-rollProg),barY,barW*rollProg,barH,0,4,4,0);
+      // Labels
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.CENTER);
+      if(barW*(1-rollProg)>50)sk.text('GPE',barX+barW*(1-rollProg)/2,barY+11);
+      sk.fill(52,152,219);
+      if(barW*rollProg>20)sk.text('KE',barX+barW*(1-rollProg)+barW*rollProg/2,barY+11);
+      // Total energy line
+      sk.stroke(255,220,50,180);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(barX,barY-6,barX+barW,barY-6);
+      sk.fill(255,220,50);sk.textSize(8);sk.textAlign(sk.RIGHT);sk.text('Total energy constant',barX+barW,barY-8);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Ball rolling down: GPE → KE',W*0.5,H*0.1);
+    }
+  },
+  {
+    title:'Efficiency & Wasted Energy',
+    body:`No energy transfer is 100% efficient. Some energy is always "wasted" as <strong>thermal (heat) energy</strong> or sound.
+    <br><br>
+    <strong>Efficiency</strong> = (useful energy output ÷ total energy input) × 100%
+    <br><br>
+    Example: A light bulb receives 100 J of electrical energy.
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>10 J → useful light energy</li>
+      <li>90 J → wasted as heat</li>
+      <li>Efficiency = 10/100 × 100 = <strong>10%</strong></li>
+    </ul>
+    <br>
+    Energy saving ideas: LED bulbs (more efficient), insulation, electric cars. Wasted energy always dissipates into the environment — it's not "lost" but becomes less useful (spreads out as heat).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Light bulb
+      const glow=180+60*Math.sin(t*2);
+      sk.fill(255,220,100,glow);sk.noStroke();sk.circle(W*0.5,H*0.4,60);
+      sk.fill(255,220,100,80);sk.circle(W*0.5,H*0.4,90);
+      sk.fill(200,200,200,180);sk.rect(W*0.44,H*0.52,W*0.12,H*0.06,2);
+      sk.rect(W*0.46,H*0.58,W*0.08,H*0.04,1);
+      // Useful light rays
+      for(let i=0;i<6;i++){
+        const ang=sk.TWO_PI/6*i+t*0.5;
+        const len=40+20*Math.sin(t*2+i);
+        sk.stroke(255,220,100,200);sk.strokeWeight(2);
+        sk.line(W*0.5+Math.cos(ang)*30,H*0.4+Math.sin(ang)*30,W*0.5+Math.cos(ang)*len,H*0.4+Math.sin(ang)*len);
+      }
+      // Heat lost
+      for(let i=0;i<5;i++){
+        const hx=W*0.5+(i-2)*20,hy=H*0.25-((t*0.8+i*0.2)%1)*H*0.2;
+        const ha=200*(1-((t*0.8+i*0.2)%1));
+        sk.fill(255,100,0,ha);sk.noStroke();sk.circle(hx,hy,8);
+      }
+      sk.fill(255,100,0);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Heat wasted (90%)',W*0.5,H*0.06);
+      sk.fill(255,220,100);sk.text('Useful light (10%)',W*0.5,H*0.92);
+      // Efficiency bar
+      sk.fill(50,50,50,120);sk.noStroke();sk.rect(W*0.1,H*0.77,W*0.8,14,4);
+      sk.fill(255,220,100,200);sk.rect(W*0.1,H*0.77,W*0.08,14,4,0,0,4);
+      sk.fill(255,100,0,200);sk.rect(W*0.18,H*0.77,W*0.72,14,0,4,4,0);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('Efficiency = 10%',W*0.5,H*0.72);
+    }
+  },
+  {
+    q:'Energy Types — Labeled Diagram',
+    content:`<h3>Energy Types — Labeled Diagram</h3><p>Energy is the ability to do work. It exists in many different forms and can be transferred between objects or transformed from one type to another. The SI unit of all energy is the Joule (J).</p><ul><li>Kinetic energy (KE = ½mv²) is energy of movement; gravitational potential energy (GPE = mgh) is stored energy due to height</li><li>Chemical energy is stored in the bonds of food, fuel, and batteries; thermal energy is related to temperature and particle movement</li><li>Energy cannot be created or destroyed — this is the Law of Conservation of Energy (energy only changes form)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 275" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="275" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Forms of Energy</text>
+  <!-- Row 1: 4 energy types -->
+  <!-- Kinetic -->
+  <rect x="10" y="28" width="90" height="70" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" rx="6"/>
+  <text x="55" y="50" text-anchor="middle" font-size="20">🏃</text>
+  <text x="55" y="68" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Kinetic</text>
+  <text x="55" y="80" text-anchor="middle" font-size="8" fill="#333">Moving objects</text>
+  <text x="55" y="91" text-anchor="middle" font-size="8" fill="#555">E = ½mv²</text>
+  <!-- Gravitational PE -->
+  <rect x="110" y="28" width="90" height="70" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="155" y="50" text-anchor="middle" font-size="20">🌍</text>
+  <text x="155" y="68" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Gravitational</text>
+  <text x="155" y="80" text-anchor="middle" font-size="8" fill="#333">PE (height)</text>
+  <text x="155" y="91" text-anchor="middle" font-size="8" fill="#555">E = mgh</text>
+  <!-- Thermal -->
+  <rect x="210" y="28" width="90" height="70" fill="#fff3e0" stroke="#e65100" stroke-width="2" rx="6"/>
+  <text x="255" y="50" text-anchor="middle" font-size="20">🌡️</text>
+  <text x="255" y="68" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Thermal</text>
+  <text x="255" y="80" text-anchor="middle" font-size="8" fill="#333">Heat energy</text>
+  <text x="255" y="91" text-anchor="middle" font-size="8" fill="#555">temperature</text>
+  <!-- Electrical -->
+  <rect x="310" y="28" width="100" height="70" fill="#fffde7" stroke="#f9a825" stroke-width="2" rx="6"/>
+  <text x="360" y="50" text-anchor="middle" font-size="20">⚡</text>
+  <text x="360" y="68" text-anchor="middle" font-size="10" font-weight="bold" fill="#f57f17">Electrical</text>
+  <text x="360" y="80" text-anchor="middle" font-size="8" fill="#333">Charge flow</text>
+  <text x="360" y="91" text-anchor="middle" font-size="8" fill="#555">circuits/batteries</text>
+  <!-- Row 2: 4 more -->
+  <!-- Chemical -->
+  <rect x="10" y="108" width="90" height="70" fill="#fce4ec" stroke="#c62828" stroke-width="2" rx="6"/>
+  <text x="55" y="130" text-anchor="middle" font-size="20">⚗️</text>
+  <text x="55" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Chemical</text>
+  <text x="55" y="160" text-anchor="middle" font-size="8" fill="#333">Bonds in food,</text>
+  <text x="55" y="171" text-anchor="middle" font-size="8" fill="#333">fuel, batteries</text>
+  <!-- Light -->
+  <rect x="110" y="108" width="90" height="70" fill="#fffde7" stroke="#f9a825" stroke-width="2" rx="6"/>
+  <text x="155" y="130" text-anchor="middle" font-size="20">☀️</text>
+  <text x="155" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#f57f17">Light</text>
+  <text x="155" y="160" text-anchor="middle" font-size="8" fill="#333">Radiant/EM waves</text>
+  <text x="155" y="171" text-anchor="middle" font-size="8" fill="#555">photons from sun</text>
+  <!-- Sound -->
+  <rect x="210" y="108" width="90" height="70" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="6"/>
+  <text x="255" y="130" text-anchor="middle" font-size="20">🔊</text>
+  <text x="255" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b1fa2">Sound</text>
+  <text x="255" y="160" text-anchor="middle" font-size="8" fill="#333">Vibrations through</text>
+  <text x="255" y="171" text-anchor="middle" font-size="8" fill="#555">a medium</text>
+  <!-- Nuclear -->
+  <rect x="310" y="108" width="100" height="70" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="360" y="130" text-anchor="middle" font-size="20">⚛️</text>
+  <text x="360" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Nuclear</text>
+  <text x="360" y="160" text-anchor="middle" font-size="8" fill="#333">Atomic nucleus</text>
+  <text x="360" y="171" text-anchor="middle" font-size="8" fill="#555">fission/fusion</text>
+  <!-- Key fact box -->
+  <rect x="10" y="188" width="400" height="78" fill="#2e7d32" rx="6"/>
+  <text x="210" y="204" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Unit of ALL Energy: JOULE (J)</text>
+  <text x="210" y="220" text-anchor="middle" font-size="10" fill="#c8e6c9">Energy can be TRANSFERRED between objects or TRANSFORMED from one type to another</text>
+  <text x="210" y="236" text-anchor="middle" font-size="10" fill="#c8e6c9">but the TOTAL energy in a closed system always stays CONSTANT</text>
+  <text x="210" y="252" text-anchor="middle" font-size="10" fill="#a5d6a7">(Law of Conservation of Energy)</text>
+  <text x="210" y="264" text-anchor="middle" font-size="9" fill="#81c784">1 kJ = 1000 J &nbsp;|&nbsp; 1 MJ = 1 000 000 J</text>
+</svg>`
+  },
+  {
+    q:'Energy Transformation Chain: Sun → Movement',
+    content:`<h3>Energy Transformation Chain: Sun → Movement</h3><p>Energy is constantly being transformed from one type to another. At every transformation, some energy is lost as heat — which is why no energy transfer is 100% efficient. The total energy always remains constant.</p><ul><li>Sun → plant: light energy is transformed to chemical energy (glucose) by photosynthesis</li><li>Food → animal movement: chemical energy → kinetic energy (via respiration in muscles)</li><li>At each step, some energy escapes as waste heat — this is unavoidable (energy is not destroyed, just less useful)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 245" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="245" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Energy Transformation Chain</text>
+  <!-- Chain 1: Sun → Plant → Animal → Movement -->
+  <text x="210" y="38" text-anchor="middle" font-size="10" fill="#555">Sun → Photosynthesis → Food → Animal movement</text>
+  <!-- Sun -->
+  <circle cx="48" cy="88" r="28" fill="#ffe082" stroke="#f9a825" stroke-width="2"/>
+  <text x="48" y="84" text-anchor="middle" font-size="16">☀️</text>
+  <text x="48" y="100" text-anchor="middle" font-size="9" font-weight="bold" fill="#f57f17">LIGHT</text>
+  <text x="48" y="112" text-anchor="middle" font-size="8" fill="#555">energy</text>
+  <line x1="78" y1="88" x2="108" y2="88" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Plant -->
+  <circle cx="138" cy="88" r="28" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="138" y="84" text-anchor="middle" font-size="16">🌿</text>
+  <text x="138" y="100" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">CHEMICAL</text>
+  <text x="138" y="112" text-anchor="middle" font-size="8" fill="#555">in glucose</text>
+  <line x1="168" y1="88" x2="198" y2="88" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Animal eating -->
+  <circle cx="228" cy="88" r="28" fill="#ffcc80" stroke="#e65100" stroke-width="2"/>
+  <text x="228" y="84" text-anchor="middle" font-size="16">🐄</text>
+  <text x="228" y="100" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">CHEMICAL</text>
+  <text x="228" y="112" text-anchor="middle" font-size="8" fill="#555">in food</text>
+  <line x1="258" y1="88" x2="288" y2="88" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Movement -->
+  <circle cx="318" cy="88" r="28" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="318" y="84" text-anchor="middle" font-size="16">🏃</text>
+  <text x="318" y="100" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">KINETIC</text>
+  <text x="318" y="112" text-anchor="middle" font-size="8" fill="#555">movement</text>
+  <line x1="348" y1="88" x2="378" y2="88" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Heat wasted -->
+  <circle cx="395" cy="88" r="18" fill="#ffccbc" stroke="#e53935" stroke-width="2"/>
+  <text x="395" y="84" text-anchor="middle" font-size="12">🌡️</text>
+  <text x="395" y="97" text-anchor="middle" font-size="8" fill="#e53935">HEAT</text>
+  <!-- Chain 2: Electrical -->
+  <text x="210" y="138" text-anchor="middle" font-size="10" fill="#555">Battery → Lamp → Light + Heat</text>
+  <circle cx="48" cy="178" r="24" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="48" y="176" text-anchor="middle" font-size="12">🔋</text>
+  <text x="48" y="192" text-anchor="middle" font-size="8" font-weight="bold" fill="#2e7d32">CHEMICAL</text>
+  <line x1="74" y1="178" x2="100" y2="178" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <circle cx="125" cy="178" r="24" fill="#fffde7" stroke="#f9a825" stroke-width="2"/>
+  <text x="125" y="174" text-anchor="middle" font-size="12">⚡</text>
+  <text x="125" y="188" text-anchor="middle" font-size="8" font-weight="bold" fill="#f57f17">ELECTRICAL</text>
+  <line x1="151" y1="178" x2="177" y2="178" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <circle cx="202" cy="178" r="24" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+  <text x="202" y="174" text-anchor="middle" font-size="12">💡</text>
+  <text x="202" y="188" text-anchor="middle" font-size="8" font-weight="bold" fill="#f57f17">LIGHT</text>
+  <!-- Plus heat wasted -->
+  <text x="238" y="180" text-anchor="middle" font-size="14" fill="#e53935">+</text>
+  <circle cx="270" cy="178" r="22" fill="#ffccbc" stroke="#e53935" stroke-width="2"/>
+  <text x="270" y="174" text-anchor="middle" font-size="12">🌡️</text>
+  <text x="270" y="190" text-anchor="middle" font-size="8" fill="#e53935">HEAT</text>
+  <!-- Key note -->
+  <rect x="10" y="210" width="400" height="30" fill="#2e7d32" rx="5"/>
+  <text x="210" y="224" text-anchor="middle" font-size="10" fill="#fff">Energy transformations are never 100% efficient — some is ALWAYS lost as heat</text>
+  <text x="210" y="237" text-anchor="middle" font-size="10" fill="#c8e6c9">Total energy is ALWAYS conserved (Law of Conservation of Energy)</text>
+</svg>`
+  },
+  {
+    q:'Renewable vs Non-Renewable Sources',
+    content:`<h3>Renewable vs Non-Renewable Sources</h3><p>Energy sources are classified as renewable (naturally replenished) or non-renewable (finite, will run out). Burning fossil fuels releases carbon dioxide, which contributes to the greenhouse effect and climate change.</p><ul><li>Renewable sources: solar, wind, hydroelectric, biomass, tidal, geothermal — will not run out and have lower carbon emissions</li><li>Non-renewable sources: coal, oil, natural gas (fossil fuels), and nuclear — provide reliable large-scale power but are finite and polluting</li><li>Botswana is rich in coal (Morupule Power Station) and is increasingly investing in solar energy to diversify its electricity supply</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Energy Sources — Renewable vs Non-Renewable</text>
+  <!-- Header columns -->
+  <rect x="10" y="26" width="195" height="26" fill="#2e7d32" rx="5"/>
+  <text x="107" y="44" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">RENEWABLE ♻️</text>
+  <rect x="215" y="26" width="195" height="26" fill="#795548" rx="5"/>
+  <text x="312" y="44" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">NON-RENEWABLE ⚠️</text>
+  <!-- Renewable list -->
+  <rect x="10" y="52" width="195" height="155" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5" rx="4"/>
+  <text x="107" y="70" text-anchor="middle" font-size="10" fill="#333">☀️ Solar (sunlight)</text>
+  <text x="107" y="86" text-anchor="middle" font-size="10" fill="#333">💨 Wind (turbines)</text>
+  <text x="107" y="102" text-anchor="middle" font-size="10" fill="#333">💧 Hydroelectric (water)</text>
+  <text x="107" y="118" text-anchor="middle" font-size="10" fill="#333">🌿 Biomass (wood/crops)</text>
+  <text x="107" y="134" text-anchor="middle" font-size="10" fill="#333">🌊 Tidal / wave energy</text>
+  <text x="107" y="150" text-anchor="middle" font-size="10" fill="#333">🌋 Geothermal (heat)</text>
+  <text x="107" y="172" text-anchor="middle" font-size="9" fill="#2e7d32">✓ Will NOT run out</text>
+  <text x="107" y="183" text-anchor="middle" font-size="9" fill="#2e7d32">✓ Lower carbon emissions</text>
+  <text x="107" y="194" text-anchor="middle" font-size="9" fill="#2e7d32">✓ Sustainable long-term</text>
+  <!-- Non-renewable list -->
+  <rect x="215" y="52" width="195" height="155" fill="#efebe9" stroke="#795548" stroke-width="1.5" rx="4"/>
+  <text x="312" y="70" text-anchor="middle" font-size="10" fill="#333">🪨 Coal (fossil fuel)</text>
+  <text x="312" y="86" text-anchor="middle" font-size="10" fill="#333">🛢️ Oil / Petroleum</text>
+  <text x="312" y="102" text-anchor="middle" font-size="10" fill="#333">💨 Natural gas</text>
+  <text x="312" y="118" text-anchor="middle" font-size="10" fill="#333">⚛️ Nuclear (uranium)</text>
+  <text x="312" y="140" text-anchor="middle" font-size="9" fill="#c62828">✗ Will run out (finite)</text>
+  <text x="312" y="152" text-anchor="middle" font-size="9" fill="#c62828">✗ CO₂ → global warming</text>
+  <text x="312" y="164" text-anchor="middle" font-size="9" fill="#c62828">✗ Air pollution</text>
+  <text x="312" y="176" text-anchor="middle" font-size="9" fill="#c62828">✗ Oil spills</text>
+  <text x="312" y="188" text-anchor="middle" font-size="9" fill="#555">Formed over millions of years</text>
+  <text x="312" y="200" text-anchor="middle" font-size="9" fill="#555">from ancient organisms</text>
+  <!-- Note at bottom -->
+  <rect x="10" y="214" width="400" height="30" fill="#2e7d32" rx="5"/>
+  <text x="210" y="228" text-anchor="middle" font-size="10" fill="#fff">Botswana: rich in COAL (Morupule); investing in SOLAR energy</text>
+  <text x="210" y="242" text-anchor="middle" font-size="9" fill="#c8e6c9">Fossil fuels burning → CO₂ → greenhouse effect → climate change</text>
+</svg>`
+  },
+  {
+    q:'Sankey Diagram — Energy Input vs Output',
+    content:`<h3>Sankey Diagram — Energy Input vs Output</h3><p>A Sankey diagram shows energy transformations, where the width of each arrow represents the amount of energy. It makes clear how much energy is usefully transferred versus how much is wasted, usually as heat.</p><ul><li>The wide input arrow on the left represents total energy input; it splits into useful output and wasted energy</li><li>Efficiency = (Useful energy output ÷ Total energy input) × 100% — a traditional light bulb is only ~10% efficient</li><li>The width of each branch is proportional to the amount of energy — a wide wasted-heat arrow means poor efficiency</li></ul>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="240" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Sankey Diagram — Light Bulb (100 J input)</text>
+  <!-- Sankey diagram: input arrow (left) splits into useful output and wasted -->
+  <!-- Input arrow (wide) -->
+  <polygon points="30,80 30,170 120,170 120,80" fill="#f9a825" stroke="#e65100" stroke-width="1.5"/>
+  <text x="75" y="122" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">100 J</text>
+  <text x="75" y="135" text-anchor="middle" font-size="9" fill="#ffe082">ELECTRICAL</text>
+  <text x="75" y="146" text-anchor="middle" font-size="9" fill="#ffe082">INPUT</text>
+  <!-- Arrow going right from box -->
+  <!-- Useful output arrow (narrow, right and slightly angled down) -->
+  <polygon points="120,95 120,115 310,108 310,88" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="215" y="106" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">10 J USEFUL LIGHT</text>
+  <!-- End of useful output (circle at right) -->
+  <circle cx="330" cy="98" r="20" fill="#ffe082" stroke="#f9a825" stroke-width="2"/>
+  <text x="330" y="95" text-anchor="middle" font-size="14">💡</text>
+  <text x="330" y="107" text-anchor="middle" font-size="8" fill="#333">Light</text>
+  <!-- Wasted heat arrow (wide, going down) -->
+  <polygon points="120,115 310,122 310,165 120,170" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="215" y="148" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">90 J WASTED HEAT</text>
+  <!-- Heat symbol at end -->
+  <circle cx="330" cy="155" r="20" fill="#ffccbc" stroke="#e53935" stroke-width="2"/>
+  <text x="330" y="152" text-anchor="middle" font-size="14">🌡️</text>
+  <text x="330" y="166" text-anchor="middle" font-size="8" fill="#e53935">Heat</text>
+  <!-- Width key -->
+  <text x="25" y="195" font-size="9" fill="#333">Width of arrow represents amount of energy</text>
+  <!-- Efficiency box -->
+  <rect x="10" y="205" width="400" height="30" fill="#2e7d32" rx="5"/>
+  <text x="210" y="219" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Efficiency = Useful output ÷ Total input × 100%</text>
+  <text x="210" y="232" text-anchor="middle" font-size="10" fill="#c8e6c9">= 10 ÷ 100 × 100% = 10% &nbsp;(90 J is WASTED as heat)</text>
+</svg>`
+  },
+  {
+    q:'Conservation of Energy — Flowchart',
+    content:`<h3>Conservation of Energy — Flowchart</h3><p>The Law of Conservation of Energy states that energy cannot be created or destroyed — it can only be transformed from one form to another or transferred between objects. The total energy in a closed system always remains constant.</p><ul><li>Every energy transformation has useful output and wasted heat — efficiency measures the fraction that is useful</li><li>Even wasted heat is not destroyed; it raises the temperature of surroundings — total energy is always conserved</li><li>Efficiency = (Useful energy output ÷ Total energy input) × 100% — higher efficiency means less energy wasted as heat</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Law of Conservation of Energy</text>
+  <!-- Law statement -->
+  <rect x="55" y="26" width="310" height="32" fill="#2e7d32" rx="6"/>
+  <text x="210" y="40" text-anchor="middle" font-size="10" fill="#fff">"Energy cannot be created or destroyed —</text>
+  <text x="210" y="53" text-anchor="middle" font-size="10" fill="#fff">it can only be TRANSFERRED or TRANSFORMED."</text>
+  <!-- Example 1: Falling ball -->
+  <rect x="10" y="70" width="120" height="40" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5" rx="5"/>
+  <text x="70" y="85" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Ball at top:</text>
+  <text x="70" y="97" text-anchor="middle" font-size="9" fill="#333">100 J GPE, 0 J KE</text>
+  <line x1="130" y1="90" x2="165" y2="90" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="168" y="70" width="120" height="40" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5" rx="5"/>
+  <text x="228" y="85" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Halfway:</text>
+  <text x="228" y="97" text-anchor="middle" font-size="9" fill="#333">50 J GPE + 50 J KE</text>
+  <line x1="288" y1="90" x2="325" y2="90" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="328" y="70" width="82" height="40" fill="#81c784" stroke="#2e7d32" stroke-width="1.5" rx="5"/>
+  <text x="369" y="85" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">At bottom:</text>
+  <text x="369" y="97" text-anchor="middle" font-size="9" fill="#fff">0 J GPE, 100 J KE</text>
+  <text x="210" y="122" text-anchor="middle" font-size="10" fill="#2e7d32">Total energy = 100 J at EVERY point</text>
+  <!-- Visual energy bars -->
+  <text x="70" y="140" text-anchor="middle" font-size="9" fill="#2e7d32">GPE</text>
+  <rect x="40" y="142" width="60" height="20" fill="#2e7d32" rx="2"/>
+  <text x="228" y="140" text-anchor="middle" font-size="9" fill="#2e7d32">GPE+KE</text>
+  <rect x="168" y="142" width="30" height="20" fill="#2e7d32" rx="2"/>
+  <rect x="198" y="142" width="30" height="20" fill="#1565c0" rx="2"/>
+  <text x="369" y="140" text-anchor="middle" font-size="9" fill="#1565c0">KE</text>
+  <rect x="329" y="142" width="60" height="20" fill="#1565c0" rx="2"/>
+  <!-- Energy types that are always produced -->
+  <rect x="10" y="172" width="400" height="68" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="5"/>
+  <text x="210" y="188" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Remember: In real life, energy is ALWAYS "lost" to heat</text>
+  <text x="210" y="202" text-anchor="middle" font-size="9" fill="#333">Friction, air resistance, and electrical resistance all produce unwanted heat</text>
+  <text x="210" y="218" text-anchor="middle" font-size="9" fill="#333">This heat spreads out and is HARDER TO USE — it's not actually destroyed</text>
+  <text x="210" y="234" text-anchor="middle" font-size="9" fill="#555">The TOTAL energy is always conserved — this is a fundamental law of physics</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Energy & Efficiency',
+    body:'Test your understanding of energy forms, conservation, and efficiency.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the SI unit of energy?',opts:['Watt (W)','Newton (N)','Joule (J)','Pascal (Pa)'],ans:2,exp:'The SI unit of energy is the JOULE (J). Power (energy per second) is the Watt (W = J/s). The Newton is a unit of force. 1 kilojoule (kJ) = 1000 J.'},
+      {q:'A ball rolls off a table. Just before it hits the ground, most of its energy is...',opts:['Gravitational potential energy','Chemical energy','Kinetic energy','Sound energy'],ans:2,exp:'As the ball falls, GRAVITATIONAL POTENTIAL ENERGY (GPE = mgh) is converted to KINETIC ENERGY (KE = ½mv²). Just before hitting the ground, almost all the original GPE has been converted to KE (ignoring air resistance). Total energy is conserved.'},
+      {q:'An electric motor receives 500 J and produces 350 J of useful work. What is its efficiency?',opts:['30%','70%','85%','500%'],ans:1,exp:'Efficiency = (useful output / total input) × 100% = (350 / 500) × 100% = 70%. The remaining 150 J (30%) is wasted, mainly as heat due to friction and resistance.'},
+      {q:'Which of these best illustrates the Law of Conservation of Energy?',opts:['Energy is created from nothing in a nuclear reactor','When a car brakes, kinetic energy disappears completely','A phone battery converts chemical energy into electrical, then sound, light and thermal energy','Energy is destroyed when you burn fuel'],ans:2,exp:'The LAW OF CONSERVATION OF ENERGY states energy cannot be created or destroyed — only converted. A phone battery converting chemical → electrical → sound/light/heat is a perfect example: energy changes FORM but the total amount stays constant. Nothing is created or destroyed.'},
+    ]}
+  },
+  {
+    title:'Energy Resources',
+    body:`<strong>Renewable energy</strong>: naturally replenished; will not run out:
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Solar, wind, hydroelectric, geothermal, tidal, biomass</li>
+      <li>Lower carbon emissions (mostly)</li>
+    </ul>
+    <br>
+    <strong>Non-renewable energy</strong>: formed over millions of years; will run out:
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Fossil fuels: coal, oil, natural gas</li>
+      <li>Nuclear fuel (uranium)</li>
+      <li>Burning fossil fuels releases CO₂ → global warming</li>
+    </ul>
+    <br>
+    <strong>Why we need alternatives</strong>: Fossil fuels are finite, cause air pollution, contribute to climate change (greenhouse effect), and oil spills damage ecosystems.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Renewable (left half)
+      sk.fill(46,204,113,120);sk.noStroke();sk.rect(W*0.02,H*0.12,W*0.45,H*0.8,6);
+      sk.fill(46,204,113);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('RENEWABLE',W*0.245,H*0.2);
+      // Sun
+      sk.fill(255,220,50,200);sk.noStroke();sk.circle(W*0.12,H*0.38,24);
+      for(let i=0;i<6;i++){const a=i*sk.PI/3+t;sk.stroke(255,220,50,160);sk.strokeWeight(1.5);sk.line(W*0.12+Math.cos(a)*12,H*0.38+Math.sin(a)*12,W*0.12+Math.cos(a)*18,H*0.38+Math.sin(a)*18);}
+      // Wind turbine
+      sk.stroke(200,200,200,160);sk.strokeWeight(2);sk.line(W*0.3,H*0.65,W*0.3,H*0.35);
+      for(let i=0;i<3;i++){
+        const ang=t*2+i*sk.TWO_PI/3;
+        sk.line(W*0.3,H*0.35,W*0.3+Math.cos(ang)*20,H*0.35+Math.sin(ang)*20);
+      }
+      // Water (hydro)
+      sk.fill(100,180,255,180);sk.noStroke();sk.ellipse(W*0.17,H*0.65,44,20);
+      const ripples=[0.25,0.5,0.75];
+      ripples.forEach(rp=>{
+        const rAlpha=200*(1-(t*0.5+rp)%1);
+        const rSize=16+28*((t*0.5+rp)%1);
+        sk.stroke(100,180,255,rAlpha);sk.strokeWeight(1);sk.noFill();
+        sk.ellipse(W*0.17,H*0.65,rSize,rSize*0.4);
+      });
+      sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Solar • Wind • Hydro',W*0.245,H*0.82);
+      // Non-renewable (right half)
+      sk.fill(100,80,50,120);sk.noStroke();sk.rect(W*0.52,H*0.12,W*0.45,H*0.8,6);
+      sk.fill(180,120,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('NON-RENEWABLE',W*0.745,H*0.2);
+      // Flame
+      for(let i=0;i<5;i++){
+        const fx=W*0.66+i*16,fh=28+16*Math.sin(t*2+i);
+        sk.fill(255,100+i*20,0,180);sk.noStroke();sk.ellipse(fx,H*0.56,10,fh);
+      }
+      // CO2 rising
+      for(let i=0;i<4;i++){
+        const gx=W*0.72+(i-2)*14,gy=H*0.34-((t*0.4+i*0.25)%1)*H*0.18;
+        const ga=160*(1-((t*0.4+i*0.25)%1));
+        sk.fill(100,100,100,ga);sk.noStroke();sk.circle(gx,gy,10);
+        sk.fill(200,200,200,ga);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('CO₂',gx,gy);
+      }
+      sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Coal • Oil • Gas',W*0.745,H*0.82);
+    }
+  },
+  {
+    title:'Heat Transfer',
+    body:`Thermal energy moves from hot to cold by three mechanisms:
+    <br><br>
+    <ol style="margin:6px 0 0 18px;line-height:2.3">
+      <li><strong>Conduction</strong> — through solids; particles vibrate and pass energy along. Metals are best conductors.</li>
+      <li><strong>Convection</strong> — through liquids and gases; hot fluid rises (less dense), cold sinks → convection current.</li>
+      <li><strong>Radiation</strong> — through empty space; electromagnetic waves (infrared). No medium needed. Dark/matt surfaces are best absorbers and emitters.</li>
+    </ol>
+    <br>
+    Insulators (e.g. wood, glass wool, air) reduce heat transfer — used in building insulation, vacuum flasks.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Conduction (left)
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Conduction',W*0.17,H*0.12);
+      // Metal bar with vibrating particles
+      sk.fill(150,150,150,120);sk.noStroke();sk.rect(W*0.05,H*0.3,W*0.22,H*0.12,3);
+      for(let i=0;i<6;i++){
+        const x=W*0.07+i*(W*0.18/5);
+        const vib=(5-i)*2*Math.sin(t*3+i*0.5);
+        const heatCol=255-i*30;
+        sk.fill(heatCol,i*40,0,180);sk.noStroke();sk.circle(x,H*0.36+vib,10);
+      }
+      // Convection (middle)
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Convection',W*0.5,H*0.12);
+      // Water container
+      sk.fill(100,150,255,20);sk.stroke(100,150,255,80);sk.strokeWeight(1.5);
+      sk.rect(W*0.37,H*0.25,W*0.26,H*0.5,3);
+      // Hot (bottom) particles rising
+      for(let i=0;i<8;i++){
+        const px=W*0.39+i%4*(W*0.06);
+        const baseY=H*0.7-Math.floor(i/4)*H*0.15;
+        const py=baseY-((t*0.4+i*0.12)%1)*H*0.4;
+        const ratio=(H*0.75-py)/(H*0.5);
+        const r=255,g=Math.floor(100+100*ratio),b=Math.floor(ratio*200);
+        sk.fill(r,g,b,160);sk.noStroke();sk.circle(px,py,10);
+      }
+      // Radiation (right)
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Radiation',W*0.83,H*0.12);
+      // Hot body emitting IR
+      sk.fill(255,100,0,200);sk.noStroke();sk.circle(W*0.76,H*0.5,24);
+      for(let i=0;i<6;i++){
+        const ang=(i/6)*sk.TWO_PI+t*0.5;
+        const wLen=20+15*Math.sin(t*2+i);
+        const alpha=180+70*Math.sin(t+i);
+        sk.stroke(255,100,0,alpha);sk.strokeWeight(1.5);sk.noFill();
+        sk.line(W*0.76+Math.cos(ang)*12,H*0.5+Math.sin(ang)*12,W*0.76+Math.cos(ang)*wLen,H*0.5+Math.sin(ang)*wLen);
+      }
+      // Cold body absorbing
+      sk.fill(52,100,200,180);sk.noStroke();sk.circle(W*0.92,H*0.5,20);
+      sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('IR waves\n(no medium needed)',W*0.84,H*0.73);
+    }
+  },
+  {
+    title:'🎮 Final — Energy Resources & Transfer',
+    body:'Final challenge on energy resources and heat transfer mechanisms.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which heat transfer method can occur through a vacuum (empty space)?',opts:['Conduction','Convection','Radiation','All three equally'],ans:2,exp:'Only RADIATION can transfer heat through a vacuum (empty space). It travels as infrared electromagnetic waves and needs NO medium. This is how the Sun\'s energy reaches Earth across the vacuum of space. Conduction and convection both need particles to transfer energy.'},
+      {q:'Why are fossil fuels considered non-renewable?',opts:['They cannot produce electricity','They took millions of years to form and are being used much faster than they can be replaced','They are too expensive to extract','They only exist underground'],ans:1,exp:'Fossil fuels (coal, oil, gas) formed from ancient organisms over MILLIONS OF YEARS. We are consuming them in centuries — far faster than they can form. Once depleted, they cannot be replaced in any practical human timescale, making them NON-RENEWABLE.'},
+      {q:'What causes a convection current in water being heated from below?',opts:['Cold water is more dense and sinks; hot water is less dense and rises','Hot water is more dense and sinks','Radiation heats the water surface first','Conduction moves heat upward'],ans:0,exp:'When water at the bottom is heated, it EXPANDS and becomes LESS DENSE, so it RISES. Cooler, denser water from above sinks to replace it. This circular movement (hot up, cold down) is a CONVECTION CURRENT. This is why radiators are placed at the bottom of rooms.'},
+      {q:'An engine inputs 2000 J but only produces 800 J of useful mechanical work. What is its efficiency?',opts:['20%','40%','60%','80%'],ans:1,exp:'Efficiency = (useful output / total input) × 100% = (800 / 2000) × 100% = 40%. The remaining 1200 J (60%) is wasted as heat (friction, etc.). No engine is 100% efficient due to the Second Law of Thermodynamics.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#f57f17',dark:'#bc5100',light:'#fff8e1',
+  title:'Energy — Forms, Conservation, Resources & Transfer',
+});
+</script></body></html>

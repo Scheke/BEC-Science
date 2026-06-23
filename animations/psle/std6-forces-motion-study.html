@@ -1,0 +1,544 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Forces and Motion — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'What Is a Force?',
+content:`<h2>Pushes and Pulls</h2>
+<p>A <strong>force</strong> is a push or pull on an object. Forces can:</p>
+<ul>
+<li>🚀 Change the <em>speed</em> of an object (speed up or slow down)</li>
+<li>↩️ Change the <em>direction</em> of an object</li>
+<li>🔄 Change the <em>shape</em> of an object</li>
+</ul>
+<p>Forces are measured in <strong>Newtons (N)</strong>.</p>
+<p>Some important forces:</p>
+<ul>
+<li>🌍 <strong>Gravity</strong> — pulls objects toward Earth's centre</li>
+<li>🛑 <strong>Friction</strong> — opposes motion between surfaces</li>
+<li>💨 <strong>Air resistance</strong> — friction from air</li>
+<li>🧲 <strong>Magnetic force</strong> — attraction/repulsion</li>
+<li>📐 <strong>Normal reaction</strong> — surface pushes back on object</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    // box
+    const bx=210,by=170,bw=80,bh=50;
+    p.fill('#ffecb3');p.stroke('#f57f17');p.strokeWeight(3);p.rect(bx-bw/2,by-bh/2,bw,bh,6);
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Object',bx,by);
+    // forces
+    const forces=[{dx:1,dy:0,col:'#e53935',lbl:'Push →',fx:bx+bw/2,fy:by,tx:bx+110,ty:by},{dx:-1,dy:0,col:'#1e88e5',lbl:'← Friction',fx:bx-bw/2,fy:by,tx:bx-110,ty:by},{dx:0,dy:1,col:'#43a047',lbl:'Gravity ↓',fx:bx,fy:by+bh/2,tx:bx,ty:by+100},{dx:0,dy:-1,col:'#8e24aa',lbl:'Normal ↑',fx:bx,fy:by-bh/2,tx:bx,ty:by-100}];
+    forces.forEach((f,i)=>{
+      const active=Math.floor(t/55)%4===i;
+      p.stroke(f.col);p.strokeWeight(active?4:2);
+      p.line(f.fx,f.fy,f.tx,f.ty);
+      p.noStroke();p.fill(f.col);p.textSize(active?13:10);p.text(f.lbl,f.tx+(f.dx>0?20:f.dx<0?-20:0),f.ty+(f.dy>0?16:f.dy<0?-16:0));
+    });
+    t++;
+  };
+}},
+{title:'Balanced and Unbalanced Forces',
+content:`<h2>Net Force Determines Motion</h2>
+<p>When forces act on an object, the <strong>net (resultant) force</strong> determines what happens:</p>
+<p>⚖️ <strong>Balanced forces</strong> (net force = 0):</p>
+<ul>
+<li>Object stays at REST, or</li>
+<li>Continues at CONSTANT SPEED in a straight line</li>
+<li>No change in motion</li>
+</ul>
+<p>⬆️ <strong>Unbalanced forces</strong> (net force ≠ 0):</p>
+<ul>
+<li>Object ACCELERATES (speeds up)</li>
+<li>Object DECELERATES (slows down)</li>
+<li>Object changes DIRECTION</li>
+</ul>
+<p>Example: a book on a table — gravity (down) = normal force (up) → BALANCED → stays still.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,px=80,vx=0;
+  p.draw=()=>{
+    p.background(245);
+    // balanced
+    p.fill('#e8f5e9');p.noStroke();p.rect(20,80,180,100,8);
+    p.fill('#43a047');p.textSize(11);p.text('Balanced',110,100);
+    p.fill('#ffecb3');p.stroke('#f57f17');p.strokeWeight(2);p.rect(80,130,60,40,4);
+    p.stroke('#e53935');p.strokeWeight(3);p.line(80,150,40,150);p.line(140,150,180,150);
+    p.noStroke();p.fill('#e53935');p.textSize(9);p.text('20N ←',45,140);p.text('→ 20N',165,140);
+    p.fill('#43a047');p.textSize(10);p.text('Net = 0 → No change',110,190);
+    // unbalanced — car accelerating
+    p.fill('#fce4ec');p.noStroke();p.rect(210,80,190,100,8);
+    p.fill('#e53935');p.textSize(11);p.text('Unbalanced',305,100);
+    if(t%120<60){vx=2;}else{vx=-2;}
+    px=p.constrain(px+(t%120<60?1:-1)*1.5,230,370);
+    p.fill('#fff176');p.stroke('#f57f17');p.strokeWeight(2);p.rect(px,130,50,30,4);
+    p.stroke('#e53935');p.strokeWeight(3);p.line(px,145,px-30,145);
+    p.stroke('#1e88e5');p.strokeWeight(3);p.line(px+50,145,px+80,145);
+    p.noStroke();p.fill('#e53935');p.textSize(9);p.text('friction',px-30,138);
+    p.fill('#1e88e5');p.text('engine',px+80,138);
+    p.fill('#e53935');p.textSize(10);p.text('Net ≠ 0 → Accelerates',305,190);
+    t++;
+  };
+}},
+{title:'Gravity and Weight',
+content:`<h2>Gravity Pulls Everything Down</h2>
+<p><strong>Gravity</strong> is the force of attraction between masses. Earth's gravity pulls everything toward its centre.</p>
+<p>Important difference:</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#1565c0;color:#fff;padding:6px">Property</th><th style="background:#1565c0;color:#fff;padding:6px">Mass</th><th style="background:#1565c0;color:#fff;padding:6px">Weight</th></tr>
+<tr style="background:#e3f2fd"><td style="padding:6px">What is it?</td><td style="padding:6px">Amount of matter</td><td style="padding:6px">Gravitational force</td></tr>
+<tr><td style="padding:6px">Units</td><td style="padding:6px">kilograms (kg)</td><td style="padding:6px">Newtons (N)</td></tr>
+<tr style="background:#e3f2fd"><td style="padding:6px">Changes?</td><td style="padding:6px">SAME everywhere</td><td style="padding:6px">CHANGES with gravity</td></tr>
+</table>
+<p><strong>Formula:</strong> Weight (N) = mass (kg) × g (N/kg)<br>
+On Earth: g = 10 N/kg. On Moon: g ≈ 1.6 N/kg</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    // Earth
+    p.fill('#1e88e5');p.noStroke();p.ellipse(130,200,100,100);p.fill(255);p.textSize(11);p.text('Earth\ng=10',130,200);
+    // Moon
+    p.fill('#bdbdbd');p.ellipse(310,200,80,80);p.fill(255);p.textSize(11);p.text('Moon\ng=1.6',310,200);
+    // falling object
+    const ey=80+30*p.sin(t*0.04);
+    p.fill('#ef5350');p.noStroke();p.ellipse(130,ey,34,34);p.fill(255);p.textSize(9);p.text('10 kg',130,ey);
+    p.fill('#333');p.textSize(10);p.text('Weight=100N',130,250);
+    p.fill('#ef5350');p.ellipse(310,ey,34,34);p.fill(255);p.textSize(9);p.text('10 kg',310,ey);
+    p.fill('#333');p.textSize(10);p.text('Weight=16N',310,250);
+    // arrows
+    p.stroke('#333');p.strokeWeight(2);p.line(130,ey+17,130,ey+40);p.line(310,ey+17,310,ey+40);
+    p.fill('#333');p.noStroke();p.textSize(10);p.text('Mass stays 10 kg',210,30);
+    t++;
+  };
+}},
+{title:'Friction',
+content:`<h2>Friction Opposes Motion</h2>
+<p><strong>Friction</strong> is a force that acts <em>opposite</em> to the direction of motion when two surfaces are in contact.</p>
+<p>✅ <strong>Useful friction:</strong></p>
+<ul>
+<li>Car brakes — friction stops the wheels</li>
+<li>Shoe soles — friction stops you slipping</li>
+<li>Writing — friction between pen and paper</li>
+<li>Climbing — friction between feet and rock</li>
+</ul>
+<p>❌ <strong>Harmful friction:</strong></p>
+<ul>
+<li>Engine parts wearing out</li>
+<li>Air resistance slowing aircraft</li>
+</ul>
+<p>Reduce friction with: <strong>lubrication</strong> (oil, grease), smooth surfaces, ball bearings.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,bx=60;
+  p.draw=()=>{
+    p.background(245);
+    // surface
+    p.fill('#ccc');p.noStroke();p.rect(0,180,420,50);
+    p.fill('#333');p.textSize(10);p.text('Rough surface',210,210);
+    // block moving right
+    bx=(bx+1.5);if(bx>360)bx=60;
+    p.fill('#ef9a9a');p.stroke('#c62828');p.strokeWeight(2);p.rect(bx,140,60,40,4);
+    p.noStroke();p.fill('#333');p.textSize(10);p.text('Block',bx+30,165);
+    // push arrow
+    p.stroke('#43a047');p.strokeWeight(3);p.line(bx-40,160,bx-2,160);p.fill('#43a047');p.noStroke();p.triangle(bx-2,155,bx+6,160,bx-2,165);
+    p.fill('#43a047');p.textSize(10);p.text('Push',bx-40,148);
+    // friction arrow
+    p.stroke('#e53935');p.strokeWeight(3);p.line(bx+62,160,bx+100,160);p.fill('#e53935');p.noStroke();p.triangle(bx+62,155,bx+54,160,bx+62,165);
+    p.fill('#e53935');p.textSize(10);p.text('Friction (opposes motion)',bx+130,148);
+    // heat particles
+    for(let i=0;i<4;i++){const hx=bx+i*15+5,hy=175+5*p.sin(t*0.2+i);p.fill(255,200,0,180);p.noStroke();p.ellipse(hx,hy,6,6);}
+    p.fill('#333');p.textSize(11);p.text('Friction generates heat and opposes motion',210,255);
+    t++;
+  };
+}},
+{title:'Terminal Velocity',
+content:`<h2>When Gravity = Air Resistance</h2>
+<p>When an object falls, two forces act on it:</p>
+<ul>
+<li>⬇️ <strong>Gravity</strong> — constant, pulls it down</li>
+<li>⬆️ <strong>Air resistance</strong> — increases as speed increases</li>
+</ul>
+<p>At first: gravity > air resistance → object <strong>ACCELERATES</strong></p>
+<p>As speed increases: air resistance GROWS</p>
+<p>Eventually: gravity = air resistance → <strong>BALANCED → TERMINAL VELOCITY</strong> (constant speed)</p>
+<p>🪂 When a parachute opens: air resistance suddenly increases → net force acts upward → object DECELERATES to safe landing speed.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,vy=1,py=30;
+  p.draw=()=>{
+    p.background(245);
+    vy=Math.min(vy+0.04,6);py+=vy;if(py>240){py=30;vy=1;}
+    // person
+    p.fill('#ffa726');p.noStroke();p.ellipse(210,py,24,24);
+    p.stroke('#5d4037');p.strokeWeight(3);p.line(210,py+12,210,py+40);
+    p.line(210,py+20,190,py+32);p.line(210,py+20,230,py+32);
+    // gravity arrow
+    p.stroke('#e53935');p.strokeWeight(3);p.line(210,py+40,210,py+60+vy*3);
+    p.noStroke();p.fill('#e53935');p.textSize(9);p.text('Gravity',240,py+50+vy);
+    // air resistance arrow
+    const arLen=vy*10;
+    p.stroke('#1e88e5');p.strokeWeight(3);p.line(210,py-12,210,py-12-arLen);
+    p.noStroke();p.fill('#1e88e5');p.textSize(9);p.text('Air resistance',170,py-20);
+    p.fill('#333');p.textSize(11);p.text(vy>5.8?'Terminal velocity reached!':'Accelerating... air resistance growing',210,270);
+    t++;
+  };
+}},
+{title:'Types of Forces',
+content:`<h3>Forces Acting on an Object</h3><p>Many different forces can act on an object at once. Each force has a direction and a size (measured in Newtons). Understanding which forces are present helps you predict what an object will do.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="mg" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#43a047"/>
+    </marker>
+    <marker id="mr" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#e53935"/>
+    </marker>
+    <marker id="mb" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+    <marker id="mo" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#e65100"/>
+    </marker>
+    <marker id="mp" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#8e24aa"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Types of Forces</text>
+  <!-- Central object box -->
+  <rect x="170" y="106" width="80" height="48" rx="8" fill="#e0f7fa" stroke="#006064" stroke-width="2.5"/>
+  <text x="210" y="127" text-anchor="middle" fill="#006064" font-size="12" font-weight="bold">Object</text>
+  <text x="210" y="143" text-anchor="middle" fill="#00363a" font-size="9">on a surface</text>
+  <!-- GRAVITY — down (green) -->
+  <line x1="210" y1="154" x2="210" y2="210" stroke="#43a047" stroke-width="3" marker-end="url(#mg)"/>
+  <text x="210" y="225" text-anchor="middle" fill="#43a047" font-size="9" font-weight="bold">GRAVITY</text>
+  <text x="210" y="237" text-anchor="middle" fill="#555" font-size="8">pulls toward Earth</text>
+  <!-- NORMAL FORCE — up (blue) -->
+  <line x1="210" y1="106" x2="210" y2="54" stroke="#1565c0" stroke-width="3" marker-end="url(#mb)"/>
+  <text x="210" y="44" text-anchor="middle" fill="#1565c0" font-size="9" font-weight="bold">NORMAL FORCE</text>
+  <text x="210" y="33" text-anchor="middle" fill="#555" font-size="8">surface pushes back up</text>
+  <!-- THRUST — right (orange) -->
+  <line x1="250" y1="130" x2="336" y2="130" stroke="#e65100" stroke-width="3" marker-end="url(#mo)"/>
+  <text x="354" y="126" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">THRUST</text>
+  <text x="354" y="138" text-anchor="middle" fill="#555" font-size="8">engine / push</text>
+  <!-- FRICTION / AIR RESISTANCE — left (red) -->
+  <line x1="170" y1="130" x2="84" y2="130" stroke="#e53935" stroke-width="3" marker-end="url(#mr)"/>
+  <text x="60" y="118" text-anchor="middle" fill="#e53935" font-size="9" font-weight="bold">FRICTION</text>
+  <text x="60" y="130" text-anchor="middle" fill="#555" font-size="8">opposes motion</text>
+  <!-- AIR RESISTANCE — upper-left diagonal (purple) -->
+  <line x1="172" y1="110" x2="112" y2="68" stroke="#8e24aa" stroke-width="3" marker-end="url(#mp)"/>
+  <text x="80" y="58" text-anchor="middle" fill="#8e24aa" font-size="9" font-weight="bold">AIR RESIST.</text>
+  <text x="80" y="70" text-anchor="middle" fill="#555" font-size="8">backward from air</text>
+  <!-- Legend box -->
+  <rect x="282" y="150" width="132" height="80" rx="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="348" y="164" text-anchor="middle" fill="#333" font-size="8" font-weight="bold">Force Colours</text>
+  <circle cx="294" cy="176" r="4" fill="#43a047"/><text x="340" y="179" text-anchor="middle" fill="#333" font-size="8">Gravity (green)</text>
+  <circle cx="294" cy="190" r="4" fill="#1565c0"/><text x="340" y="193" text-anchor="middle" fill="#333" font-size="8">Normal (blue)</text>
+  <circle cx="294" cy="204" r="4" fill="#e65100"/><text x="340" y="207" text-anchor="middle" fill="#333" font-size="8">Thrust (orange)</text>
+  <circle cx="294" cy="218" r="4" fill="#e53935"/><text x="340" y="221" text-anchor="middle" fill="#333" font-size="8">Friction (red)</text>
+  <!-- Summary bar -->
+  <rect x="0" y="244" width="420" height="16" fill="#00363a"/>
+  <text x="210" y="255" text-anchor="middle" fill="white" font-size="9">Forces are measured in Newtons (N) and always have a direction</text>
+</svg>`},
+{title:'Balanced vs Unbalanced Forces',
+content:`<h3>Resultant Force Decides What Happens</h3><p>Add up all forces acting on an object. If they cancel out (resultant = 0), the object's motion does not change. If they do not cancel, the object accelerates in the direction of the larger force. F = ma.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="mr" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#e53935"/>
+    </marker>
+    <marker id="mb" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+    <marker id="mg" markerWidth="9" markerHeight="9" refX="5" refY="4" orient="auto">
+      <path d="M1,1 L8,4 L1,7 Z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Balanced vs Unbalanced Forces</text>
+  <!-- LEFT panel: Balanced -->
+  <rect x="6" y="34" width="196" height="200" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+  <text x="104" y="52" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">BALANCED</text>
+  <!-- Box on table -->
+  <rect x="64" y="88" width="80" height="42" rx="6" fill="#b2dfdb" stroke="#006064" stroke-width="2"/>
+  <text x="104" y="113" text-anchor="middle" fill="#006064" font-size="10">Box</text>
+  <!-- Equal arrows left and right -->
+  <line x1="64" y1="109" x2="26" y2="109" stroke="#1565c0" stroke-width="3" marker-end="url(#mb)"/>
+  <text x="28" y="100" text-anchor="middle" fill="#1565c0" font-size="9">30 N</text>
+  <line x1="144" y1="109" x2="182" y2="109" stroke="#1565c0" stroke-width="3" marker-end="url(#mb)"/>
+  <text x="180" y="100" text-anchor="middle" fill="#1565c0" font-size="9">30 N</text>
+  <!-- Table surface -->
+  <rect x="44" y="130" width="120" height="8" rx="2" fill="#795548"/>
+  <text x="104" y="154" text-anchor="middle" fill="#2e7d32" font-size="9" font-weight="bold">Resultant = 0 N</text>
+  <text x="104" y="167" text-anchor="middle" fill="#2e7d32" font-size="8">Object stays still OR</text>
+  <text x="104" y="179" text-anchor="middle" fill="#2e7d32" font-size="8">moves at constant speed</text>
+  <text x="104" y="194" text-anchor="middle" fill="#555" font-size="8">(Newton's 1st Law)</text>
+  <text x="104" y="208" text-anchor="middle" fill="#2e7d32" font-size="9" font-weight="bold">No acceleration</text>
+  <text x="104" y="222" text-anchor="middle" fill="#555" font-size="8">a = 0 m/s²</text>
+  <!-- RIGHT panel: Unbalanced -->
+  <rect x="218" y="34" width="196" height="200" rx="8" fill="#fce4ec" stroke="#e53935" stroke-width="2"/>
+  <text x="316" y="52" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">UNBALANCED</text>
+  <!-- Box -->
+  <rect x="266" y="88" width="80" height="42" rx="6" fill="#ffcdd2" stroke="#c62828" stroke-width="2"/>
+  <text x="306" y="113" text-anchor="middle" fill="#c62828" font-size="10">Box</text>
+  <!-- Larger arrow right (engine), smaller arrow left (friction) -->
+  <line x1="266" y1="109" x2="234" y2="109" stroke="#1565c0" stroke-width="2.5" marker-end="url(#mb)"/>
+  <text x="234" y="100" text-anchor="middle" fill="#1565c0" font-size="9">10 N</text>
+  <line x1="346" y1="109" x2="396" y2="109" stroke="#e53935" stroke-width="4" marker-end="url(#mr)"/>
+  <text x="390" y="100" text-anchor="middle" fill="#e53935" font-size="9">40 N</text>
+  <!-- Arrow annotation -->
+  <text x="316" y="154" text-anchor="middle" fill="#c62828" font-size="9" font-weight="bold">Resultant = 30 N →</text>
+  <text x="316" y="167" text-anchor="middle" fill="#c62828" font-size="8">Object accelerates RIGHT</text>
+  <rect x="258" y="176" width="116" height="22" rx="4" fill="#c62828" opacity="0.1" stroke="#c62828" stroke-width="1"/>
+  <text x="316" y="191" text-anchor="middle" fill="#c62828" font-size="10" font-weight="bold">F = m × a</text>
+  <text x="316" y="208" text-anchor="middle" fill="#555" font-size="8">30 N = mass × acceleration</text>
+  <text x="316" y="222" text-anchor="middle" fill="#555" font-size="8">Larger force → more acceleration</text>
+  <!-- Summary bar -->
+  <rect x="0" y="238" width="420" height="22" fill="#00363a"/>
+  <text x="210" y="250" text-anchor="middle" fill="white" font-size="9">Balanced → no change in motion | Unbalanced → acceleration in direction of net force</text>
+  <text x="210" y="260" text-anchor="middle" fill="#80cbc4" font-size="8">Newton's 2nd Law: F = ma (Force = mass × acceleration)</text>
+</svg>`},
+{title:'Friction — Useful and Not Useful',
+content:`<h3>Friction: Friend or Foe?</h3><p>Friction always opposes motion, but that is not always a bad thing. Sometimes we need it; sometimes we want to reduce it. In each case, friction acts in the <strong>opposite direction</strong> to movement.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="mr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#e53935"/>
+    </marker>
+    <marker id="mg" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#43a047"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Friction — Useful and Not Useful</text>
+  <!-- LEFT: Useful -->
+  <rect x="6" y="34" width="196" height="198" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+  <text x="104" y="52" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">USEFUL Friction</text>
+  <!-- Brakes on wheel -->
+  <circle cx="70" cy="88" r="22" fill="none" stroke="#555" stroke-width="3"/>
+  <rect x="54" y="68" width="32" height="10" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="70" y="88" text-anchor="middle" fill="#555" font-size="7">wheel</text>
+  <line x1="86" y1="68" x2="108" y2="58" stroke="#43a047" stroke-width="1"/>
+  <text x="128" y="54" text-anchor="start" fill="#2e7d32" font-size="8" font-weight="bold">Brake pads</text>
+  <text x="128" y="65" text-anchor="start" fill="#555" font-size="7">friction stops wheel</text>
+  <!-- Shoe on floor -->
+  <rect x="46" y="122" width="48" height="20" rx="8" fill="#795548"/>
+  <rect x="38" y="142" width="64" height="6" rx="2" fill="#bdbdbd"/>
+  <line x1="90" y1="135" x2="120" y2="125" stroke="#43a047" stroke-width="1"/>
+  <text x="128" y="121" text-anchor="start" fill="#2e7d32" font-size="8" font-weight="bold">Shoe grip</text>
+  <text x="128" y="132" text-anchor="start" fill="#555" font-size="7">stops slipping</text>
+  <!-- Pencil writing -->
+  <line x1="52" y1="178" x2="110" y2="170" stroke="#555" stroke-width="4" stroke-linecap="round"/>
+  <line x1="70" y1="175" x2="145" y2="184" stroke="#333" stroke-width="1.5"/>
+  <text x="40" y="196" text-anchor="middle" fill="#555" font-size="7">pencil</text>
+  <line x1="128" y1="178" x2="148" y2="170" stroke="#43a047" stroke-width="1"/>
+  <text x="160" y="168" text-anchor="start" fill="#2e7d32" font-size="8" font-weight="bold">Writing</text>
+  <text x="160" y="179" text-anchor="start" fill="#555" font-size="7">pen grips paper</text>
+  <!-- Tick marks -->
+  <text x="24" y="94" text-anchor="middle" fill="#43a047" font-size="14" font-weight="bold">&#x2713;</text>
+  <text x="24" y="140" text-anchor="middle" fill="#43a047" font-size="14" font-weight="bold">&#x2713;</text>
+  <text x="24" y="180" text-anchor="middle" fill="#43a047" font-size="14" font-weight="bold">&#x2713;</text>
+  <!-- RIGHT: Not useful -->
+  <rect x="218" y="34" width="196" height="198" rx="8" fill="#fce4ec" stroke="#e53935" stroke-width="2"/>
+  <text x="316" y="52" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">NOT USEFUL Friction</text>
+  <!-- Engine parts -->
+  <circle cx="274" cy="88" r="18" fill="#b0bec5" stroke="#546e7a" stroke-width="2"/>
+  <circle cx="308" cy="88" r="18" fill="#b0bec5" stroke="#546e7a" stroke-width="2"/>
+  <text x="291" y="92" text-anchor="middle" fill="#333" font-size="7">gears</text>
+  <line x1="318" y1="78" x2="350" y2="68" stroke="#e53935" stroke-width="1"/>
+  <text x="365" y="64" text-anchor="start" fill="#c62828" font-size="8" font-weight="bold">Engine wear</text>
+  <text x="365" y="75" text-anchor="start" fill="#555" font-size="7">parts grind down</text>
+  <!-- Car with air resistance -->
+  <rect x="258" y="126" width="66" height="30" rx="6" fill="#fff176" stroke="#f57f17" stroke-width="1.5"/>
+  <circle cx="268" cy="156" r="8" fill="#555"/>
+  <circle cx="314" cy="156" r="8" fill="#555"/>
+  <text x="291" y="144" text-anchor="middle" fill="#555" font-size="8">car</text>
+  <!-- Arrow: car moving right, friction left -->
+  <line x1="258" y1="141" x2="226" y2="141" stroke="#e53935" stroke-width="2.5" marker-end="url(#mr)"/>
+  <text x="218" y="134" text-anchor="middle" fill="#e53935" font-size="7">friction</text>
+  <line x1="324" y1="141" x2="356" y2="141" stroke="#43a047" stroke-width="2.5" marker-end="url(#mg)"/>
+  <text x="364" y="134" text-anchor="middle" fill="#2e7d32" font-size="7">motion</text>
+  <text x="316" y="172" text-anchor="middle" fill="#c62828" font-size="8" font-weight="bold">Air resistance</text>
+  <text x="316" y="184" text-anchor="middle" fill="#555" font-size="7">slows vehicle</text>
+  <!-- Reduce friction note -->
+  <rect x="228" y="194" width="176" height="28" rx="4" fill="#fff9c4" stroke="#f57f17" stroke-width="1"/>
+  <text x="316" y="206" text-anchor="middle" fill="#e65100" font-size="8" font-weight="bold">Reduce with: oil/grease,</text>
+  <text x="316" y="217" text-anchor="middle" fill="#555" font-size="7">smooth surfaces, ball bearings</text>
+  <!-- Cross marks -->
+  <text x="238" y="94" text-anchor="middle" fill="#e53935" font-size="14" font-weight="bold">&#x2717;</text>
+  <text x="238" y="148" text-anchor="middle" fill="#e53935" font-size="14" font-weight="bold">&#x2717;</text>
+  <!-- Summary bar -->
+  <rect x="0" y="236" width="420" height="24" fill="#00363a"/>
+  <text x="210" y="247" text-anchor="middle" fill="white" font-size="9">Friction always acts opposite to direction of motion</text>
+  <text x="210" y="258" text-anchor="middle" fill="#80cbc4" font-size="8">Useful: brakes, grip, writing | Not useful: engine wear, air drag</text>
+</svg>`},
+{title:'Weight vs Mass',
+content:`<h3>Same Mass, Different Weight</h3><p><strong>Mass</strong> is the amount of matter in an object — it never changes. <strong>Weight</strong> is the gravitational force on that mass — it depends on <em>where</em> you are. Formula: W = mg.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="md" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#e53935"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Weight vs Mass</text>
+  <!-- Earth panel -->
+  <rect x="6" y="34" width="190" height="192" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <rect x="6" y="34" width="190" height="24" rx="8" fill="#1565c0"/>
+  <text x="101" y="50" text-anchor="middle" fill="white" font-size="11" font-weight="bold">On EARTH</text>
+  <!-- Earth ground -->
+  <rect x="22" y="194" width="158" height="14" rx="4" fill="#4caf50"/>
+  <text x="101" y="203" text-anchor="middle" fill="white" font-size="8">ground (g = 10 N/kg)</text>
+  <!-- Scale -->
+  <rect x="72" y="170" width="58" height="24" rx="4" fill="#90caf9" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="101" y="184" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="bold">600 N</text>
+  <!-- Person on scale (stick) -->
+  <circle cx="101" cy="118" r="14" fill="#ffe0b2" stroke="#795548" stroke-width="1.5"/>
+  <line x1="101" y1="132" x2="101" y2="163" stroke="#795548" stroke-width="3"/>
+  <line x1="101" y1="142" x2="82" y2="155" stroke="#795548" stroke-width="2.5"/>
+  <line x1="101" y1="142" x2="120" y2="155" stroke="#795548" stroke-width="2.5"/>
+  <line x1="101" y1="163" x2="86" y2="176" stroke="#795548" stroke-width="2.5"/>
+  <line x1="101" y1="163" x2="116" y2="176" stroke="#795548" stroke-width="2.5"/>
+  <!-- Labels -->
+  <text x="101" y="73" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="bold">Mass = 60 kg</text>
+  <text x="101" y="85" text-anchor="middle" fill="#555" font-size="8">(stays the SAME)</text>
+  <rect x="14" y="94" width="80" height="18" rx="4" fill="#c62828" opacity="0.1"/>
+  <text x="54" y="106" text-anchor="middle" fill="#c62828" font-size="8" font-weight="bold">W = 60 × 10</text>
+  <text x="54" y="116" text-anchor="middle" fill="#c62828" font-size="9" font-weight="bold">= 600 N</text>
+  <!-- Gravity arrow -->
+  <line x1="144" y1="132" x2="144" y2="158" stroke="#e53935" stroke-width="2" marker-end="url(#md)"/>
+  <text x="160" y="148" text-anchor="start" fill="#e53935" font-size="8">gravity</text>
+  <!-- Moon panel -->
+  <rect x="224" y="34" width="190" height="192" rx="8" fill="#fce4ec" stroke="#9c27b0" stroke-width="2"/>
+  <rect x="224" y="34" width="190" height="24" rx="8" fill="#7b1fa2"/>
+  <text x="319" y="50" text-anchor="middle" fill="white" font-size="11" font-weight="bold">On MOON</text>
+  <!-- Moon ground -->
+  <rect x="240" y="194" width="158" height="14" rx="4" fill="#bdbdbd"/>
+  <text x="319" y="203" text-anchor="middle" fill="#333" font-size="8">surface (g ≈ 1.6 N/kg)</text>
+  <!-- Scale -->
+  <rect x="290" y="170" width="58" height="24" rx="4" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1.5"/>
+  <text x="319" y="184" text-anchor="middle" fill="#4a148c" font-size="9" font-weight="bold">96 N</text>
+  <!-- Person on scale (stick) -->
+  <circle cx="319" cy="118" r="14" fill="#ffe0b2" stroke="#795548" stroke-width="1.5"/>
+  <line x1="319" y1="132" x2="319" y2="163" stroke="#795548" stroke-width="3"/>
+  <line x1="319" y1="142" x2="300" y2="155" stroke="#795548" stroke-width="2.5"/>
+  <line x1="319" y1="142" x2="338" y2="155" stroke="#795548" stroke-width="2.5"/>
+  <line x1="319" y1="163" x2="304" y2="176" stroke="#795548" stroke-width="2.5"/>
+  <line x1="319" y1="163" x2="334" y2="176" stroke="#795548" stroke-width="2.5"/>
+  <!-- Labels -->
+  <text x="319" y="73" text-anchor="middle" fill="#4a148c" font-size="9" font-weight="bold">Mass = 60 kg</text>
+  <text x="319" y="85" text-anchor="middle" fill="#555" font-size="8">(stays the SAME)</text>
+  <rect x="232" y="94" width="80" height="18" rx="4" fill="#9c27b0" opacity="0.1"/>
+  <text x="272" y="106" text-anchor="middle" fill="#7b1fa2" font-size="8" font-weight="bold">W = 60 × 1.6</text>
+  <text x="272" y="116" text-anchor="middle" fill="#7b1fa2" font-size="9" font-weight="bold">= 96 N</text>
+  <!-- Formula banner -->
+  <rect x="130" y="128" width="160" height="38" rx="8" fill="#006064" stroke="#00363a" stroke-width="2"/>
+  <text x="210" y="145" text-anchor="middle" fill="white" font-size="12" font-weight="bold">W = m × g</text>
+  <text x="210" y="159" text-anchor="middle" fill="#b2ebf2" font-size="8">Weight = mass × gravity</text>
+  <!-- Summary bar -->
+  <rect x="0" y="230" width="420" height="30" fill="#00363a"/>
+  <text x="210" y="243" text-anchor="middle" fill="white" font-size="9">Mass (kg) = same everywhere | Weight (N) = changes with gravitational field strength</text>
+  <text x="210" y="256" text-anchor="middle" fill="#80cbc4" font-size="8">Earth: g = 10 N/kg | Moon: g ≈ 1.6 N/kg | Weight is 6x less on the Moon</text>
+</svg>`},
+{title:'Simple Machines — Making Work Easier',
+content:`<h3>Machines Reduce the Force Needed</h3><p>Simple machines do not reduce the total <strong>work done</strong> (Work = Force × Distance), but they let you use a <strong>smaller force over a longer distance</strong> to achieve the same result.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="mg" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#2e7d32"/>
+    </marker>
+    <marker id="mr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#c62828"/>
+    </marker>
+    <marker id="mb" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Simple Machines — Making Work Easier</text>
+  <!-- LEVER box -->
+  <rect x="6" y="34" width="128" height="184" rx="7" fill="#e0f7fa" stroke="#006064" stroke-width="1.5"/>
+  <text x="70" y="50" text-anchor="middle" fill="#006064" font-size="10" font-weight="bold">LEVER (see-saw)</text>
+  <!-- Lever beam -->
+  <line x1="20" y1="148" x2="126" y2="118" stroke="#795548" stroke-width="5" stroke-linecap="round"/>
+  <!-- Fulcrum triangle -->
+  <polygon points="73,148 83,168 63,168" fill="#546e7a"/>
+  <text x="73" y="178" text-anchor="middle" fill="#546e7a" font-size="8" font-weight="bold">Fulcrum</text>
+  <!-- Load on left -->
+  <rect x="14" y="128" width="24" height="20" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="26" y="141" text-anchor="middle" fill="#c62828" font-size="8">Load</text>
+  <line x1="26" y1="148" x2="26" y2="164" stroke="#c62828" stroke-width="2" marker-end="url(#mr)"/>
+  <!-- Effort on right -->
+  <line x1="116" y1="102" x2="116" y2="88" stroke="#2e7d32" stroke-width="2" marker-end="url(#mg)"/>
+  <text x="116" y="85" text-anchor="middle" fill="#2e7d32" font-size="8">Effort</text>
+  <text x="70" y="196" text-anchor="middle" fill="#555" font-size="7">Long effort arm =</text>
+  <text x="70" y="207" text-anchor="middle" fill="#555" font-size="7">less force needed</text>
+  <!-- RAMP / INCLINED PLANE box -->
+  <rect x="142" y="34" width="132" height="184" rx="7" fill="#fff9c4" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="208" y="50" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">INCLINED PLANE</text>
+  <!-- Ramp shape -->
+  <polygon points="154,175 268,175 268,95" fill="#ffe082" stroke="#f57f17" stroke-width="2"/>
+  <text x="222" y="148" text-anchor="middle" fill="#e65100" font-size="8">Ramp</text>
+  <!-- Block on ramp -->
+  <rect x="218" y="125" width="22" height="18" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Push arrow up ramp -->
+  <line x1="208" y1="136" x2="194" y2="150" stroke="#2e7d32" stroke-width="2.5" marker-end="url(#mg)"/>
+  <text x="182" y="162" text-anchor="middle" fill="#2e7d32" font-size="8" font-weight="bold">Small</text>
+  <text x="182" y="172" text-anchor="middle" fill="#2e7d32" font-size="8" font-weight="bold">force</text>
+  <!-- vs lift straight up -->
+  <rect x="152" y="95" width="18" height="14" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <rect x="152" y="125" width="18" height="14" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5" opacity="0.4"/>
+  <line x1="161" y1="95" x2="161" y2="77" stroke="#c62828" stroke-width="2.5" marker-end="url(#mr)"/>
+  <text x="161" y="72" text-anchor="middle" fill="#c62828" font-size="7">Large force</text>
+  <text x="161" y="82" text-anchor="middle" fill="#c62828" font-size="7">straight up</text>
+  <text x="208" y="196" text-anchor="middle" fill="#555" font-size="7">Same work done —</text>
+  <text x="208" y="207" text-anchor="middle" fill="#555" font-size="7">less force, more distance</text>
+  <!-- PULLEY box -->
+  <rect x="282" y="34" width="132" height="184" rx="7" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <text x="348" y="50" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">PULLEY</text>
+  <!-- Fixed pulley wheel at top -->
+  <circle cx="348" cy="84" r="16" fill="#b0bec5" stroke="#546e7a" stroke-width="2"/>
+  <circle cx="348" cy="84" r="6" fill="#546e7a"/>
+  <!-- Rope left side (load side) -->
+  <line x1="334" y1="84" x2="334" y2="155" stroke="#795548" stroke-width="2.5"/>
+  <!-- Load box -->
+  <rect x="318" y="155" width="32" height="22" rx="4" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="334" y="169" text-anchor="middle" fill="#c62828" font-size="8">Load</text>
+  <!-- Rope right side (effort side) -->
+  <line x1="362" y1="84" x2="362" y2="130" stroke="#795548" stroke-width="2.5"/>
+  <!-- Effort arrow going up-down to pull -->
+  <line x1="362" y1="130" x2="362" y2="148" stroke="#2e7d32" stroke-width="2.5" marker-end="url(#mg)"/>
+  <text x="388" y="140" text-anchor="middle" fill="#2e7d32" font-size="8">Effort</text>
+  <!-- Direction arrows on ropes -->
+  <text x="320" y="120" text-anchor="middle" fill="#c62828" font-size="18">&#x2193;</text>
+  <text x="374" y="120" text-anchor="middle" fill="#2e7d32" font-size="18">&#x2193;</text>
+  <text x="348" y="196" text-anchor="middle" fill="#555" font-size="7">Pulley changes direction</text>
+  <text x="348" y="207" text-anchor="middle" fill="#555" font-size="7">of force; reduces effort</text>
+  <!-- Summary bar -->
+  <rect x="0" y="222" width="420" height="38" fill="#00363a"/>
+  <text x="210" y="236" text-anchor="middle" fill="white" font-size="9">Simple machines: Lever | Inclined Plane | Pulley | Wheel &amp; Axle | Screw | Wedge</text>
+  <text x="210" y="249" text-anchor="middle" fill="#b2ebf2" font-size="8">Work = Force × Distance — machines reduce force but increase distance</text>
+  <text x="210" y="260" text-anchor="middle" fill="#80cbc4" font-size="8">Total work done stays the same</text>
+</svg>`},
+{title:'Mini-Quiz: Forces',
+mcq:[
+  {q:'A book sits still on a table. The forces on it are:',opts:['Only gravity acting downward','Only normal force acting upward','Gravity downward and normal force upward — balanced','No forces at all'],ans:2,exp:'The book has GRAVITY pulling it DOWN and a NORMAL REACTION FORCE from the table pushing UP. These two forces are EQUAL and OPPOSITE → BALANCED → the book stays still. This is Newton\'s First Law.'},
+  {q:'Friction is a force that:',opts:['Always makes things go faster','Acts opposite to the direction of motion','Only exists in water','Acts in the direction of motion'],ans:1,exp:'FRICTION acts OPPOSITE to the direction of motion. It slows things down and converts kinetic energy to heat. It is caused by irregularities in surfaces rubbing together.'},
+]},
+{title:'Mini-Quiz: Weight &amp; Terminal Velocity',
+mcq:[
+  {q:'A 5 kg object on Earth (g = 10 N/kg) has a weight of:',opts:['5 N','50 N','500 N','0.5 N'],ans:1,exp:'Weight = mass × g = 5 × 10 = 50 N. Mass (5 kg) stays the same everywhere, but weight changes with gravity. On the Moon (g ≈ 1.6 N/kg), the same object would weigh only 8 N.'},
+  {q:'A skydiver reaches terminal velocity when:',opts:['They jump out of the plane','Air resistance equals gravity','The parachute opens','They land on the ground'],ans:1,exp:'TERMINAL VELOCITY is reached when AIR RESISTANCE = GRAVITY (balanced forces). There is no longer a net force, so there is no acceleration — the diver falls at a CONSTANT SPEED.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#1565c0',dark:'#003c8f',light:'#e3f2fd',title:'Forces &amp; Motion'});
+</script></body></html>

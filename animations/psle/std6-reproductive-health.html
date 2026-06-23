@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reproductive Health — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#006064;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#80cbc4;color:#004d40;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #80cbc4}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #006064;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#006064;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#006064;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%206">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 6 Science</span>
+  <h1>Reproductive Health &amp; Puberty</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Growth &amp; Development</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Puberty Changes</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Emotional Health</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Personal Hygiene</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Puberty Match</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [
+    {t:'Human Life Stages', b:['Infancy (0–2 yr): rapid growth, total dependence on adults','Childhood (2–12 yr): growth, language, social skills develop','Adolescence (puberty, 9–18 yr): rapid physical and emotional changes','Adulthood (18+ yr): full physical development; reproductive maturity','Old age: gradual decline in body systems']},
+    {t:'What Drives Growth?', b:['Growth hormones produced by the pituitary gland','Hormones are chemical messengers carried in the blood','Good nutrition (especially proteins) supports healthy growth','Regular physical activity builds strong bones and muscles','Adequate sleep is critical — most growth hormone released during sleep']},
+    {t:'Measuring Growth', b:['Height, weight, and BMI are common growth indicators','Growth spurts occur in infancy and during puberty','Boys and girls have different growth patterns through adolescence','Regular health check-ups monitor growth against standard charts']},
+    {t:'The Reproductive System', b:['Male and female reproductive systems differ in structure and function','Both systems produce sex cells (gametes): sperm (male) and eggs (female)','Fertilisation: a sperm cell fuses with an egg cell to form an embryo','A fertilised egg implants in the uterus and develops for ~40 weeks (gestation)']},
+  ],
+  [
+    {t:'What is Puberty?', b:['Puberty is the period when the body changes to become capable of reproduction','In girls: usually starts between ages 9–13','In males: usually starts between ages 11–14','Triggered by sex hormones: oestrogen (females), testosterone (males)']},
+    {t:'Changes in Females', b:['Breasts develop','Hips widen (pelvis broadens)','Pubic and underarm hair grows','Menstruation (periods) begins — monthly cycle of uterine lining','Growth spurt — rapid increase in height','Skin may produce more oil (acne)']},
+    {t:'Changes in Males', b:['Testes and penis grow larger','Pubic, facial, and body hair grows','Voice deepens (voice "breaks")','Shoulders broaden, muscles develop','Sperm production begins','Growth spurt — rapid height increase']},
+    {t:'Changes in Both', b:['Body hair grows (underarms, pubic area)','Skin becomes oilier — acne possible','Sweat glands become more active','Emotional changes: mood swings, greater self-awareness','Sexual feelings may develop','Strong need for personal hygiene']},
+  ],
+  [
+    {t:'Emotional Changes', b:['Puberty hormones affect mood and emotions','May experience: mood swings, irritability, anxiety, excitement','Greater awareness of identity, body image, and social relationships','Normal to feel confused — these feelings are temporary']},
+    {t:'Healthy Relationships', b:['Respect: treating others with dignity, listening, communicating honestly','Trust: being reliable and keeping confidences','Consent: agreeing to physical contact — ALWAYS needed','Boundaries: your right to say no to anything that feels wrong or uncomfortable']},
+    {t:'Dealing with Peer Pressure', b:['Peers (friends your age) may pressure you to behave in certain ways','Positive peer pressure: studying hard, joining sports teams','Negative pressure: trying substances, risky behaviour, bullying','Strategies: say no clearly, suggest alternatives, find supportive friends']},
+    {t:'Getting Help', b:['Talk to a trusted adult: parent, relative, teacher, school counsellor','Do not keep worries about health or relationships to yourself','In Botswana: Youth Health Services at clinics and hospitals','Hotline for young people: Government of Botswana social welfare services']},
+  ],
+  [
+    {t:'Why Hygiene Matters More During Puberty', b:['Increased sweat gland activity → body odour if not washed','More sebum (skin oil) → oily skin and possible acne','Pubic hair can trap moisture and bacteria if not cleaned','Good hygiene protects health and builds confidence']},
+    {t:'Daily Hygiene Routine', b:['Bath or shower daily with soap and water','Wash underarms and genitals carefully (front to back for females)','Change underwear every day; use clean, breathable cotton','Clean teeth twice daily with fluoride toothpaste','Wash hands before eating and after using the toilet']},
+    {t:'Menstrual Hygiene', b:['Change sanitary pads every 4–6 hours','Wrap used pads in paper before disposing; NEVER flush them','Wash hands before and after changing pads','Period blood is normal and clean — no need to feel shame','Pain during periods is common — heat, light exercise, or medication can help']},
+    {t:'Skin and Hair', b:['Wash face gently twice daily to reduce acne-causing bacteria','Do not pop pimples — risk of scarring and infection','Keep hair clean and neatly groomed','If acne is severe, consult a clinic; over-the-counter treatments are available']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Growth & Development','Puberty Changes','Emotional Health','Personal Hygiene'];
+  let h=`<html><head><title>Reproductive Health Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #006064;padding-bottom:8px;color:#006064}
+    h2{font-size:1rem;color:#00838f;margin:22px 0 6px;border-left:4px solid #00838f;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 6 Science — Reproductive Health &amp; Puberty</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── PUBERTY MATCH GAME ───────────────────────────────────
+const CARDS=[
+  {text:'Voice deepens',       answer:'Male', col:[100,180,255]},
+  {text:'Hips widen',          answer:'Female', col:[255,160,200]},
+  {text:'Body hair grows',     answer:'Both', col:[180,220,140]},
+  {text:'Breasts develop',     answer:'Female', col:[255,160,200]},
+  {text:'Shoulders broaden',   answer:'Male', col:[100,180,255]},
+  {text:'Menstruation begins', answer:'Female', col:[255,160,200]},
+  {text:'Acne may develop',    answer:'Both', col:[180,220,140]},
+  {text:'Sperm production',    answer:'Male', col:[100,180,255]},
+  {text:'Growth spurt',        answer:'Both', col:[180,220,140]},
+  {text:'Pubic hair grows',    answer:'Both', col:[180,220,140]},
+  {text:'Testes enlarge',      answer:'Male', col:[100,180,255]},
+  {text:'Ovulation begins',    answer:'Female', col:[255,160,200]},
+];
+
+const COLS=['Male','Female','Both'];
+const COL_COLS=[[100,160,255],[255,140,180],[150,210,120]];
+
+let cardPool, draggables, placed, activeDrag, score, total;
+
+function resetGame(){
+  // Shuffle and take 8 cards for this round
+  let shuffled=[...CARDS].sort(()=>Math.random()-0.5).slice(0,8);
+  total=shuffled.length;
+  let palY=390;
+  draggables=shuffled.map((c,i)=>({
+    ...c, x:40+i%4*110, y:palY+Math.floor(i/4)*52,
+    sx:40+i%4*110, sy:palY+Math.floor(i/4)*52,
+    slot:null, correct:null, ox:0, oy:0
+  }));
+  placed={Male:[],Female:[],Both:[]};
+  activeDrag=null; score=0;
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880, H=510;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    sk.background(240,252,250);
+    if(tab<4){ drawHealthAnim(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(240,252,250); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b,bh=16+lines.length*14+8;
+      sk.fill(0,96,100); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawHealthAnim(){
+    // Life stages timeline
+    let stages=['Infant\n0–2','Child\n2–12','Adolescent\n9–18','Adult\n18+','Elder\n60+'];
+    let heights=[0.4,0.6,1,0.95,0.8];
+    let cols=[[255,200,150],[255,180,100],[100,180,255],[80,160,80],[150,130,110]];
+    let stageW=90;
+    stages.forEach((s,i)=>{
+      let bh=heights[i]*200;
+      let bx=30+i*stageW, by=280-bh;
+      sk.fill(cols[i][0],cols[i][1],cols[i][2]); sk.stroke(cols[i][0]*0.6,cols[i][1]*0.6,cols[i][2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(bx+5,by,stageW-10,bh,8,8,0,0);
+      sk.fill(40); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER);
+      sk.text(s, bx+stageW/2, by-10);
+    });
+    // Ground line
+    sk.stroke(100); sk.strokeWeight(1.5); sk.line(30,280,480,280);
+    sk.fill(40); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Human Life Stages & Growth', 255, 320);
+    sk.fill(60); sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('Bar height = relative physical growth/development',255,340);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawGame(){
+    sk.fill(0,96,100); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Puberty Match — drag each change to the correct column (Male / Female / Both)', W/2,22);
+
+    // Score
+    sk.fill(0,96,100); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.RIGHT);
+    sk.text('Placed: '+Object.values(placed).flat().length+' / '+total, 480, 22);
+
+    // Columns
+    COLS.forEach((col,i)=>{
+      let cx=30+i*150, cy=50, cw=140, ch=300;
+      sk.fill(COL_COLS[i][0],COL_COLS[i][1],COL_COLS[i][2],40); sk.stroke(COL_COLS[i][0],COL_COLS[i][1],COL_COLS[i][2]); sk.strokeWeight(2);
+      sk.rect(cx,cy,cw,ch,8);
+      sk.fill(COL_COLS[i][0]*0.6,COL_COLS[i][1]*0.6,COL_COLS[i][2]*0.6); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(col, cx+cw/2, cy+20);
+      // Placed cards
+      placed[col].forEach((card,j)=>{
+        let cy2=cy+40+j*38;
+        sk.fill(card.correct?[200,255,200]:[255,200,200]); sk.stroke(card.correct?[0,150,0]:[200,0,0]); sk.strokeWeight(1.5);
+        sk.rect(cx+4,cy2,cw-8,32,6);
+        sk.fill(card.correct?[0,100,0]:[150,0,0]); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text((card.correct?'✓ ':' ✗ ')+card.text, cx+cw/2, cy2+16);
+      });
+    });
+
+    // Palette
+    sk.fill(220,248,245); sk.noStroke(); sk.rect(22,370,448,120,8);
+    sk.fill(0,96,100); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Drag to the correct column:', 30,388);
+
+    draggables.forEach(d=>{
+      if(d.slot!==null||d===activeDrag) return;
+      sk.fill(d.col[0],d.col[1],d.col[2]); sk.stroke(d.col[0]*0.6,d.col[1]*0.6,d.col[2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(d.sx,d.sy,100,36,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(d.text, d.sx+50, d.sy+18);
+    });
+
+    if(activeDrag){
+      sk.fill(activeDrag.col[0],activeDrag.col[1],activeDrag.col[2]); sk.stroke(activeDrag.col[0]*0.6,activeDrag.col[1]*0.6,activeDrag.col[2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(activeDrag.x,activeDrag.y,100,36,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(activeDrag.text, activeDrag.x+50, activeDrag.y+18);
+    }
+
+    // Win
+    if(Object.values(placed).flat().length===total){
+      sk.fill(0,0,0,140); sk.noStroke(); sk.rect(80,150,310,140,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All Done! Score: '+score+'/'+total, 235,195);
+      sk.fill(200,255,240); sk.textSize(11); sk.textStyle(sk.NORMAL);
+      sk.text(score===total?'Perfect! All correct!':'Review the ones marked ✗', 235,222);
+      sk.fill(255,210,100); sk.rect(175,240,120,34,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',235,257);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    if(Object.values(placed).flat().length===total&&mx>175&&mx<295&&my>240&&my<274){ resetGame(); return; }
+    for(let d of draggables){
+      if(d.slot!==null) continue;
+      if(mx>d.sx&&mx<d.sx+100&&my>d.sy&&my<d.sy+36){
+        activeDrag=d; d.ox=d.sx-mx; d.oy=d.sy-my; return;
+      }
+    }
+  };
+
+  sk.mouseDragged=()=>{
+    if(tab!==4||!activeDrag) return;
+    activeDrag.x=sk.mouseX+activeDrag.ox;
+    activeDrag.y=sk.mouseY+activeDrag.oy;
+  };
+
+  sk.mouseReleased=()=>{
+    if(tab!==4||!activeDrag) return;
+    let dropped=false;
+    COLS.forEach((col,i)=>{
+      let cx=30+i*150, cy=50, cw=140, ch=300;
+      if(activeDrag.x+50>cx&&activeDrag.x+50<cx+cw&&activeDrag.y+18>cy&&activeDrag.y+18<cy+ch){
+        activeDrag.slot=col;
+        activeDrag.correct=(col===activeDrag.answer);
+        if(activeDrag.correct) score++;
+        placed[col].push(activeDrag);
+        dropped=true;
+      }
+    });
+    if(!dropped){ activeDrag.x=activeDrag.sx; activeDrag.y=activeDrag.sy; }
+    activeDrag=null;
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

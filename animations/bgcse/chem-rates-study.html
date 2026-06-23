@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Rates of Reaction — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,14,20]))}
+
+const STEPS=[
+  {
+    title:'Collision Theory',
+    body:`For a reaction to occur, particles must:
+    <ol style="margin:8px 0 0 18px;line-height:2.2">
+      <li><strong>Collide</strong> with each other</li>
+      <li>Have <strong>enough energy</strong> — at least the <em>activation energy (Eₐ)</em></li>
+      <li>Have the correct <strong>orientation</strong></li>
+    </ol>
+    Collisions that lead to a reaction are called <strong>successful collisions</strong>.
+    <br><br>
+    Rate of reaction depends on the <em>frequency</em> and <em>energy</em> of successful collisions.
+    <br><br>
+    Anything that increases collision frequency or energy <strong>increases the rate</strong>.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const particles=[];
+      if(!sk._ps){
+        sk._ps=[];
+        for(let i=0;i<20;i++){
+          sk._ps.push({x:sk.random(20,W-20),y:sk.random(20,H-20),
+            vx:sk.random(-1.5,1.5),vy:sk.random(-1.5,1.5),
+            c:[sk.random([52,231]),sk.random([100,76]),sk.random([200,60])]});
+        }
+      }
+      // Flash on collision
+      sk._ps.forEach((p,i)=>{
+        p.x+=p.vx;p.y+=p.vy;
+        if(p.x<10||p.x>W-10)p.vx*=-1;
+        if(p.y<10||p.y>H-10)p.vy*=-1;
+        sk._ps.forEach((q,j)=>{
+          if(j<=i)return;
+          const d=Math.hypot(p.x-q.x,p.y-q.y);
+          if(d<20){
+            // Flash
+            sk.fill(255,220,50,200);sk.noStroke();sk.circle((p.x+q.x)/2,(p.y+q.y)/2,18);
+            sk.fill(255,220,50);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);
+            sk.text('💥',(p.x+q.x)/2,(p.y+q.y)/2);
+          }
+        });
+        sk.fill(...p.c,200);sk.noStroke();sk.circle(p.x,p.y,16);
+      });
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Particles must collide with enough energy → reaction occurs',W/2,H*0.96);
+    }
+  },
+  {
+    title:'Factors Affecting Rate',
+    body:`Four main factors control reaction rate:
+    <br><br>
+    <strong>1. Temperature ↑</strong> → particles move faster → more frequent, more energetic collisions → faster rate
+    <br><br>
+    <strong>2. Concentration ↑</strong> (solutions) or <strong>Pressure ↑</strong> (gases) → more particles in same space → more frequent collisions → faster rate
+    <br><br>
+    <strong>3. Surface area ↑</strong> (smaller pieces) → more particles exposed → more collisions possible → faster rate
+    <br><br>
+    <strong>4. Catalyst</strong> → provides alternative pathway with <em>lower activation energy</em> → more successful collisions → faster rate`,
+    draw:(sk)=>{
+      bg(sk,[10,14,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const factors=[
+        {icon:'🌡️',label:'Temperature',desc:'↑ speed',c:[231,76,60],x:0.22,y:0.35},
+        {icon:'💧',label:'Concentration',desc:'↑ density',c:[52,152,219],x:0.68,y:0.35},
+        {icon:'🧱',label:'Surface Area',desc:'↑ exposed',c:[46,204,113],x:0.22,y:0.72},
+        {icon:'⚗️',label:'Catalyst',desc:'↓ Eₐ',c:[241,196,15],x:0.68,y:0.72},
+      ];
+      factors.forEach((f,i)=>{
+        const cx=f.x*W,cy=f.y*H;
+        const pulse=1+Math.sin(t*1.5+i)*0.07;
+        sk.fill(...f.c,40);sk.noStroke();sk.ellipse(cx,cy,120*pulse,80*pulse);
+        sk.fill(...f.c);sk.ellipse(cx,cy,100,66);
+        sk.fill(255);sk.textSize(18);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(f.icon,cx,cy-10);
+        sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.text(f.label,cx,cy+10);
+        sk.textStyle(sk.NORMAL);sk.fill(255,255,255,160);sk.textSize(8.5);sk.text(f.desc,cx,cy+22);
+      });
+      // Centre
+      sk.fill(255,255,255,120);sk.noStroke();sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('All → ↑ Rate',W/2,H/2);sk.textStyle(sk.NORMAL);
+    }
+  },
+  {
+    q:'Rate vs Time Graph — Product Formed',
+    content:`<h3>Rate vs Time Graph — Product Formed</h3><p>This graph plots the volume of gas produced (or mass of product formed) against time. Its shape reveals how quickly a reaction proceeds and allows you to compare different reaction conditions.</p><ul><li>The initial gradient (steepness) indicates the initial rate — steeper means faster; higher temperature or concentration gives a steeper start</li><li>The gradient decreases over time as reactants are consumed and collisions become less frequent</li><li>All curves with the same starting amounts of reactant reach the same final plateau volume, because the same total amount of product is formed regardless of speed</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="280" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Rate vs Time — Product Formed Graph</text>
+  <!-- Axes -->
+  <line x1="55" y1="235" x2="55" y2="30" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="55" y1="235" x2="390" y2="235" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="28" y="135" fill="#333" font-size="11" font-weight="bold" transform="rotate(-90,28,135)">Volume of gas / cm³</text>
+  <text x="220" y="255" text-anchor="middle" fill="#333" font-size="11">Time / s</text>
+  <!-- Three curves: high, normal, low conditions -->
+  <!-- High temp/conc - red, steep, reaches plateau early -->
+  <path d="M 55,235 C 80,180 105,130 125,100 C 145,75 162,65 185,62 C 210,60 270,60 385,60" fill="none" stroke="#c62828" stroke-width="2.5"/>
+  <!-- Normal - blue -->
+  <path d="M 55,235 C 90,200 120,165 150,135 C 175,110 200,90 230,78 C 260,68 310,64 385,63" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+  <!-- Low temp/conc - grey, shallow -->
+  <path d="M 55,235 C 100,220 140,200 175,178 C 210,156 245,130 275,110 C 305,92 345,76 385,70" fill="none" stroke="#546e7a" stroke-width="2" stroke-dasharray="5,3"/>
+  <!-- Plateau annotations -->
+  <line x1="186" y1="62" x2="186" y2="235" stroke="#c62828" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="194" y="95" fill="#c62828" font-size="9">Reaction</text>
+  <text x="194" y="107" fill="#c62828" font-size="9">finished</text>
+  <!-- Labels -->
+  <text x="390" y="57" fill="#c62828" font-size="9" font-weight="bold">High T/conc</text>
+  <text x="390" y="70" fill="#1565c0" font-size="9">Normal</text>
+  <text x="390" y="82" fill="#546e7a" font-size="9">Low T/conc</text>
+  <!-- Gradient annotations -->
+  <line x1="55" y1="235" x2="90" y2="185" stroke="#c62828" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="60" y="190" fill="#c62828" font-size="9" font-style="italic">Steeper =</text>
+  <text x="60" y="202" fill="#c62828" font-size="9" font-style="italic">faster rate</text>
+  <!-- Key features box -->
+  <rect x="60" y="35" width="100" height="70" rx="5" fill="#fff" stroke="#e65100" stroke-width="1"/>
+  <text x="110" y="50" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Key Features</text>
+  <text x="70" y="65" fill="#333" font-size="8">• Steep start = fast rate</text>
+  <text x="70" y="78" fill="#333" font-size="8">• Gradient falls as</text>
+  <text x="70" y="89" fill="#333" font-size="8">  reactant is used up</text>
+  <text x="70" y="100" fill="#333" font-size="8">• Plateau = finished</text>
+  <!-- Same final volume label -->
+  <text x="290" y="45" text-anchor="middle" fill="#333" font-size="9">Same total product</text>
+  <text x="290" y="57" text-anchor="middle" fill="#333" font-size="9">(same reactant mass)</text>
+</svg>`
+  },
+  {
+    q:'Effect of Concentration on Rate — Collision Theory',
+    content:`<h3>Effect of Concentration on Reaction Rate</h3><p>Increasing the concentration of a dissolved reactant increases the number of particles in a given volume. With more particles present, collisions happen more frequently per second, so the rate of reaction increases.</p><ul><li>Low concentration: fewer particles per dm³ → fewer collisions per second → slower rate</li><li>High concentration: more particles per dm³ → more frequent collisions → faster rate, shown by a steeper initial gradient on a rate graph</li><li>The same principle applies to gas pressure: increasing pressure squeezes gas molecules closer together, effectively increasing concentration and collision frequency</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="270" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Effect of Concentration on Reaction Rate</text>
+  <!-- Low concentration box -->
+  <rect x="10" y="28" width="190" height="165" rx="8" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="105" y="46" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Low Concentration</text>
+  <!-- Few particles -->
+  <circle cx="40" cy="80" r="12" fill="#1565c0" opacity="0.7"/><circle cx="85" cy="65" r="12" fill="#e65100" opacity="0.7"/>
+  <circle cx="140" cy="95" r="12" fill="#1565c0" opacity="0.7"/><circle cx="60" cy="130" r="12" fill="#e65100" opacity="0.7"/>
+  <circle cx="170" cy="70" r="12" fill="#1565c0" opacity="0.7"/><circle cx="110" cy="145" r="12" fill="#e65100" opacity="0.7"/>
+  <text x="105" y="172" text-anchor="middle" fill="#333" font-size="10">Fewer particles per volume</text>
+  <text x="105" y="184" text-anchor="middle" fill="#c62828" font-size="10" font-weight="bold">Fewer collisions → Slow rate</text>
+  <!-- High concentration box -->
+  <rect x="220" y="28" width="190" height="165" rx="8" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="315" y="46" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">High Concentration</text>
+  <!-- Many particles packed -->
+  <circle cx="248" cy="70" r="11" fill="#1565c0" opacity="0.7"/><circle cx="273" cy="58" r="11" fill="#e65100" opacity="0.7"/>
+  <circle cx="298" cy="72" r="11" fill="#1565c0" opacity="0.7"/><circle cx="323" cy="60" r="11" fill="#e65100" opacity="0.7"/>
+  <circle cx="348" cy="74" r="11" fill="#1565c0" opacity="0.7"/><circle cx="395" cy="62" r="11" fill="#e65100" opacity="0.7"/>
+  <circle cx="240" cy="100" r="11" fill="#e65100" opacity="0.7"/><circle cx="265" cy="90" r="11" fill="#1565c0" opacity="0.7"/>
+  <circle cx="290" cy="103" r="11" fill="#e65100" opacity="0.7"/><circle cx="315" cy="93" r="11" fill="#1565c0" opacity="0.7"/>
+  <circle cx="340" cy="107" r="11" fill="#e65100" opacity="0.7"/><circle cx="380" cy="95" r="11" fill="#1565c0" opacity="0.7"/>
+  <circle cx="252" cy="130" r="11" fill="#1565c0" opacity="0.7"/><circle cx="278" cy="122" r="11" fill="#e65100" opacity="0.7"/>
+  <circle cx="304" cy="133" r="11" fill="#1565c0" opacity="0.7"/><circle cx="360" cy="127" r="11" fill="#e65100" opacity="0.7"/>
+  <!-- Collision flash -->
+  <circle cx="286" cy="83" r="8" fill="#ffd600" opacity="0.9"/>
+  <text x="286" y="87" text-anchor="middle" fill="#333" font-size="9">!</text>
+  <circle cx="352" cy="112" r="8" fill="#ffd600" opacity="0.9"/>
+  <text x="352" y="116" text-anchor="middle" fill="#333" font-size="9">!</text>
+  <text x="315" y="172" text-anchor="middle" fill="#333" font-size="10">More particles per volume</text>
+  <text x="315" y="184" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">More collisions → Fast rate</text>
+  <!-- Arrow in middle -->
+  <text x="210" y="127" text-anchor="middle" fill="#e65100" font-size="20" font-weight="bold">→</text>
+  <!-- Bottom summary -->
+  <rect x="10" y="200" width="400" height="62" rx="6" fill="#e65100" opacity="0.1" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="216" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Collision Theory Explanation:</text>
+  <text x="210" y="232" text-anchor="middle" fill="#333" font-size="10">Higher concentration = more particles in the same volume</text>
+  <text x="210" y="246" text-anchor="middle" fill="#333" font-size="10">More particles = greater chance of collision per second</text>
+  <text x="210" y="260" text-anchor="middle" fill="#333" font-size="10">More collisions = more successful reactions = faster rate</text>
+</svg>`
+  },
+  {
+    q:'Maxwell-Boltzmann Distribution — Effect of Temperature',
+    content:`<h3>Maxwell-Boltzmann Energy Distribution</h3><p>The Maxwell-Boltzmann distribution shows how kinetic energies are spread among all the particles in a gas sample at a given temperature. Not all particles have the same energy — only those with energy equal to or greater than the activation energy (Eₐ) can react.</p><ul><li>At low temperature: the curve is tall and narrow, peaked towards lower energies — only a small proportion of particles exceed Eₐ (small shaded area to the right of Eₐ)</li><li>At high temperature: the curve flattens and shifts to the right — many more particles now have energy ≥ Eₐ (larger shaded area), so more successful collisions occur per second</li><li>Even a small rise in temperature significantly increases the number of particles above Eₐ, explaining why a 10°C rise can roughly double reaction rate</li></ul>`,
+    visual:`<svg viewBox="0 0 420 275" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="275" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Maxwell-Boltzmann Energy Distribution</text>
+  <!-- Axes -->
+  <line x1="40" y1="220" x2="40" y2="35" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="40" y1="220" x2="400" y2="220" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="20" y="130" fill="#333" font-size="10" font-weight="bold" transform="rotate(-90,20,130)">Number of particles</text>
+  <text x="220" y="240" text-anchor="middle" fill="#333" font-size="11">Kinetic energy</text>
+  <!-- Low temperature curve (blue) - narrower, taller, peak to left -->
+  <path d="M 40,220 C 60,219 80,210 100,175 C 115,148 125,110 135,80 C 142,60 148,50 155,52 C 162,54 168,70 178,95 C 190,125 205,158 225,185 C 250,210 285,220 400,220" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+  <!-- High temperature curve (red) - broader, shorter, peak to right -->
+  <path d="M 40,220 C 65,218 90,212 115,198 C 135,186 150,165 170,145 C 188,127 202,115 215,108 C 228,103 238,104 250,108 C 265,115 280,128 300,148 C 325,172 355,200 400,218" fill="none" stroke="#c62828" stroke-width="2.5"/>
+  <!-- Activation energy line -->
+  <line x1="310" y1="35" x2="310" y2="220" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="315" y="50" fill="#e65100" font-size="10" font-weight="bold">Eₐ</text>
+  <text x="315" y="63" fill="#e65100" font-size="9">(activation</text>
+  <text x="315" y="75" fill="#e65100" font-size="9">energy)</text>
+  <!-- Shaded areas above Ea -->
+  <!-- Blue shaded (small) -->
+  <path d="M 310,220 C 330,210 360,215 400,220 Z" fill="#1565c0" opacity="0.25"/>
+  <!-- Red shaded (larger) -->
+  <path d="M 310,148 C 325,172 355,200 400,218 L 400,220 L 310,220 Z" fill="#c62828" opacity="0.25"/>
+  <!-- Labels on curves -->
+  <text x="145" y="42" fill="#1565c0" font-size="10" font-weight="bold">Low T</text>
+  <text x="215" y="98" fill="#c62828" font-size="10" font-weight="bold">High T</text>
+  <!-- Annotation for shaded areas -->
+  <text x="360" y="198" text-anchor="middle" fill="#c62828" font-size="9" font-weight="bold">Larger</text>
+  <text x="360" y="209" text-anchor="middle" fill="#c62828" font-size="9">shaded</text>
+  <text x="360" y="220" text-anchor="middle" fill="#c62828" font-size="9">area</text>
+  <!-- Key box -->
+  <rect x="42" y="38" width="225" height="55" rx="5" fill="#fff" stroke="#e65100" stroke-width="1"/>
+  <text x="155" y="53" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Effect of Increasing Temperature:</text>
+  <text x="50" y="67" fill="#333" font-size="9">• Curve shifts RIGHT and flattens</text>
+  <text x="50" y="80" fill="#333" font-size="9">• More particles have energy ≥ Eₐ</text>
+  <text x="50" y="91" fill="#333" font-size="9">• More successful collisions → faster rate</text>
+</svg>`
+  },
+  {
+    q:'Catalyst Effect — Energy Profile Diagram',
+    content:`<h3>Catalyst Effect on Activation Energy</h3><p>An energy profile (reaction coordinate) diagram shows how the energy of the system changes as reactants convert to products. The peak represents the activation energy barrier that particles must overcome. A catalyst lowers this barrier by providing an alternative reaction pathway.</p><ul><li>Without catalyst: particles must climb a high energy "hill" (high Eₐ) — few particles have sufficient energy, so the rate is slow</li><li>With catalyst: an alternative lower-energy pathway is available — more particles can now react, increasing the rate significantly</li><li>The overall energy change (ΔH) between reactants and products is unchanged by a catalyst — it only lowers Eₐ and is not consumed in the reaction</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="270" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Catalyst Effect on Activation Energy</text>
+  <!-- Axes -->
+  <line x1="40" y1="235" x2="40" y2="25" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="40" y1="235" x2="400" y2="235" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="16" y="135" fill="#333" font-size="10" font-weight="bold" transform="rotate(-90,16,135)">Energy</text>
+  <text x="220" y="255" text-anchor="middle" fill="#333" font-size="11">Reaction Progress</text>
+  <!-- Reactant energy level -->
+  <line x1="40" y1="190" x2="110" y2="190" stroke="#333" stroke-width="2"/>
+  <text x="35" y="190" text-anchor="end" fill="#333" font-size="9">Reactants</text>
+  <!-- Product energy level (lower = exothermic) -->
+  <line x1="330" y1="210" x2="400" y2="210" stroke="#333" stroke-width="2"/>
+  <text x="400" y="206" fill="#333" font-size="9">Products</text>
+  <!-- Without catalyst: high activation energy curve (red) -->
+  <path d="M 40,190 C 80,190 100,190 110,190 C 125,190 140,155 155,110 C 165,78 170,55 180,48 C 190,42 200,46 210,55 C 220,65 230,85 245,115 C 260,145 280,175 310,195 C 320,198 325,202 330,210 C 345,210 380,210 400,210" fill="none" stroke="#c62828" stroke-width="2.5"/>
+  <!-- With catalyst: lower activation energy curve (green dashed) -->
+  <path d="M 40,190 C 80,190 100,190 110,190 C 125,190 136,170 148,145 C 158,124 165,112 178,107 C 191,103 200,107 212,114 C 225,122 240,145 260,168 C 280,190 305,205 330,210 C 345,210 380,210 400,210" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <!-- Activation energy arrows -->
+  <!-- Without catalyst Ea -->
+  <line x1="180" y1="48" x2="180" y2="190" stroke="#c62828" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="175" y1="48" x2="175" y2="190" stroke="none"/>
+  <text x="162" y="35" fill="#c62828" font-size="9" font-weight="bold">Eₐ (no cat.)</text>
+  <text x="162" y="46" fill="#c62828" font-size="9">higher</text>
+  <!-- With catalyst Ea -->
+  <line x1="178" y1="107" x2="178" y2="190" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="282" y="90" fill="#2e7d32" font-size="9" font-weight="bold">Eₐ (with cat.)</text>
+  <text x="282" y="102" fill="#2e7d32" font-size="9">lower</text>
+  <!-- Double-headed arrows for Ea comparison -->
+  <line x1="240" y1="107" x2="240" y2="190" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="265" y1="48" x2="265" y2="190" stroke="#c62828" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Legend -->
+  <rect x="42" y="30" width="115" height="40" rx="4" fill="#fff" stroke="#e65100" stroke-width="1"/>
+  <line x1="50" y1="44" x2="80" y2="44" stroke="#c62828" stroke-width="2"/>
+  <text x="86" y="47" fill="#333" font-size="9">No catalyst</text>
+  <line x1="50" y1="60" x2="80" y2="60" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5,2"/>
+  <text x="86" y="63" fill="#333" font-size="9">With catalyst</text>
+  <!-- Delta H annotation -->
+  <line x1="385" y1="190" x2="385" y2="210" stroke="#333" stroke-width="1.5"/>
+  <text x="396" y="200" fill="#333" font-size="9">ΔH</text>
+  <!-- Key message -->
+  <rect x="10" y="240" width="400" height="24" rx="4" fill="#e65100" opacity="0.12"/>
+  <text x="210" y="256" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Catalyst lowers Eₐ — more particles react — rate increases. ΔH unchanged.</text>
+</svg>`
+  },
+  {
+    q:'Factors Affecting Rate — Summary Table',
+    content:`<h3>Factors Affecting Rate — Summary</h3><p>Five factors can change the rate of a chemical reaction, and each can be explained using collision theory. All of them either increase the frequency of collisions or increase the proportion of collisions with enough energy to react.</p><ul><li>Temperature: particles gain kinetic energy, move faster, collide more often and with greater energy — rate increases significantly</li><li>Concentration (solutions) / Pressure (gases): more particles in the same volume increases collision frequency</li><li>Surface area: breaking a solid into smaller pieces exposes more particles at the surface, allowing more collisions with the other reactant</li><li>Catalyst: provides a lower-energy alternative pathway, so more particles have sufficient energy to react — is not consumed in the process</li></ul>`,
+    visual:`<svg viewBox="0 0 420 285" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="285" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Factors Affecting Rate — Summary</text>
+  <!-- Header -->
+  <rect x="8" y="26" width="404" height="20" rx="3" fill="#e65100" opacity="0.85"/>
+  <text x="90" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Factor</text>
+  <text x="200" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">What changes</text>
+  <text x="320" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Rate effect</text>
+  <!-- Row 1: Temperature -->
+  <rect x="8" y="48" width="404" height="42" rx="0" fill="#fff"/>
+  <text x="18" y="64" fill="#c62828" font-size="14">🌡️</text>
+  <text x="40" y="62" fill="#333" font-size="11" font-weight="bold">Temperature ↑</text>
+  <text x="40" y="76" fill="#333" font-size="10">Particles move faster</text>
+  <text x="200" y="64" text-anchor="middle" fill="#333" font-size="10">More frequent collisions</text>
+  <text x="200" y="78" text-anchor="middle" fill="#333" font-size="10">More energetic collisions</text>
+  <text x="340" y="68" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Increases</text>
+  <text x="340" y="82" text-anchor="middle" fill="#2e7d32" font-size="9">(significantly)</text>
+  <!-- Row 2: Concentration -->
+  <rect x="8" y="92" width="404" height="42" rx="0" fill="#e65100" opacity="0.07"/>
+  <text x="18" y="108" fill="#1565c0" font-size="14">💧</text>
+  <text x="40" y="106" fill="#333" font-size="11" font-weight="bold">Concentration ↑</text>
+  <text x="40" y="120" fill="#333" font-size="10">More solute particles per dm³</text>
+  <text x="200" y="106" text-anchor="middle" fill="#333" font-size="10">More frequent collisions</text>
+  <text x="200" y="120" text-anchor="middle" fill="#333" font-size="10">per unit time</text>
+  <text x="340" y="114" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Increases</text>
+  <!-- Row 3: Pressure -->
+  <rect x="8" y="136" width="404" height="42" rx="0" fill="#fff"/>
+  <text x="18" y="153" fill="#546e7a" font-size="14">⬆️</text>
+  <text x="40" y="151" fill="#333" font-size="11" font-weight="bold">Pressure ↑ (gases)</text>
+  <text x="40" y="165" fill="#333" font-size="10">Gas particles closer together</text>
+  <text x="200" y="151" text-anchor="middle" fill="#333" font-size="10">Same as increased</text>
+  <text x="200" y="165" text-anchor="middle" fill="#333" font-size="10">concentration</text>
+  <text x="340" y="158" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Increases</text>
+  <!-- Row 4: Surface Area -->
+  <rect x="8" y="180" width="404" height="42" rx="0" fill="#e65100" opacity="0.07"/>
+  <text x="18" y="197" fill="#2e7d32" font-size="14">🧱</text>
+  <text x="40" y="195" fill="#333" font-size="11" font-weight="bold">Surface area ↑</text>
+  <text x="40" y="209" fill="#333" font-size="10">Smaller pieces of solid</text>
+  <text x="200" y="195" text-anchor="middle" fill="#333" font-size="10">More particles exposed</text>
+  <text x="200" y="209" text-anchor="middle" fill="#333" font-size="10">to reactant</text>
+  <text x="340" y="202" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Increases</text>
+  <!-- Row 5: Catalyst -->
+  <rect x="8" y="224" width="404" height="42" rx="0" fill="#fff"/>
+  <text x="18" y="241" fill="#e65100" font-size="14">⚗️</text>
+  <text x="40" y="239" fill="#333" font-size="11" font-weight="bold">Catalyst added</text>
+  <text x="40" y="253" fill="#333" font-size="10">Alternative lower-Eₐ pathway</text>
+  <text x="200" y="239" text-anchor="middle" fill="#333" font-size="10">Lower activation energy</text>
+  <text x="200" y="253" text-anchor="middle" fill="#333" font-size="10">More particles can react</text>
+  <text x="340" y="239" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Increases</text>
+  <text x="340" y="253" text-anchor="middle" fill="#333" font-size="9">not consumed</text>
+  <!-- Column dividers -->
+  <line x1="152" y1="26" x2="152" y2="266" stroke="#e65100" stroke-width="0.8" opacity="0.5"/>
+  <line x1="262" y1="26" x2="262" y2="266" stroke="#e65100" stroke-width="0.8" opacity="0.5"/>
+  <line x1="8" y1="266" x2="412" y2="266" stroke="#e65100" stroke-width="1" opacity="0.5"/>
+</svg>`
+  },
+  {
+    title:'Activation Energy & Catalysts',
+    body:`<strong>Activation energy (Eₐ)</strong> is the minimum energy needed for a reaction to occur.
+    <br><br>
+    A <strong>catalyst</strong> speeds up a reaction without being used up. It works by:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Providing an alternative reaction pathway</li>
+      <li>The new pathway has a <strong>lower activation energy</strong></li>
+      <li>More particles now have enough energy to react</li>
+      <li>Reaction rate increases</li>
+    </ul>
+    Important: the catalyst is NOT consumed — it is regenerated and can be used again.
+    <br><br>
+    Example: Iron catalyst in the Haber process (N₂ + 3H₂ ⇌ 2NH₃).`,
+    draw:(sk)=>{
+      bg(sk,[10,10,20]);
+      const W=sk.width,H=sk.height;
+      const t=sk.frameCount*0.025;
+      // Energy profile diagram
+      const draw_curve=(eaPeak,col,dash=false)=>{
+        if(dash){sk.drawingContext.setLineDash([5,5]);}
+        sk.noFill();sk.stroke(...col);sk.strokeWeight(2.5);
+        sk.beginShape();
+        for(let x=0;x<W;x+=3){
+          const p=x/W;
+          let y;
+          if(p<0.15)y=H*0.75;
+          else if(p<0.4){const r=(p-0.15)/0.25;y=H*0.75-eaPeak*sk.sin(r*sk.PI);}
+          else if(p<0.55)y=H*0.75-eaPeak+H*0.15+(p-0.4)/0.15*(H*0.15);
+          else y=H*0.6;
+          sk.vertex(x,y);
+        }
+        sk.endShape();
+        if(dash)sk.drawingContext.setLineDash([]);
+      };
+      draw_curve(H*0.48,[231,76,60]);// Without catalyst (high Ea)
+      draw_curve(H*0.26,[46,204,113],true);// With catalyst (lower Ea)
+      // Labels
+      sk.noStroke();sk.fill(231,76,60);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Without catalyst',W*0.04,H*0.18);
+      sk.fill(46,204,113);sk.text('With catalyst (lower Eₐ)',W*0.04,H*0.28);
+      // Axis labels
+      sk.fill(255,255,255,100);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Reaction progress →',W*0.5,H*0.92);
+      sk.push();sk.translate(14,H*0.5);sk.rotate(-sk.HALF_PI);
+      sk.text('Energy',0,0);sk.pop();
+      // Reactants/Products
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Reactants',W*0.02,H*0.72);
+      sk.fill(255,255,255,80);sk.textAlign(sk.RIGHT);
+      sk.text('Products',W-4,H*0.57);
+    }
+  },
+  {
+    title:'🎮 Check — Rates & Catalysts',
+    body:'Answer these questions on collision theory and reaction rate factors.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Why does increasing temperature increase reaction rate?',opts:['More particles are created','Particles move faster and collide more often and with more energy','The activation energy is lowered','More catalyst is produced'],ans:1,exp:'Higher temperature gives particles more kinetic energy — they move faster, collide more frequently, and each collision has more energy. More successful collisions = faster rate.'},
+      {q:'A catalyst increases reaction rate by:',opts:['Increasing activation energy','Increasing the concentration of reactants','Providing a lower energy alternative pathway','Being consumed in the reaction'],ans:2,exp:'A catalyst provides an alternative pathway with LOWER activation energy. More particles now have enough energy to react — rate increases. The catalyst is not consumed.'},
+      {q:'Why does powdering marble react faster with acid than a marble chip?',opts:['The powder contains more chemical energy','The powder has a smaller surface area','The powder has a larger surface area exposed to acid','The powder has lower activation energy'],ans:2,exp:'Powdering the marble increases the surface area — more particles are exposed to the acid, so more collisions occur per second, increasing the rate.'},
+      {q:'Which of these does NOT affect rate of reaction?',opts:['Temperature','Concentration','Colour of the reactants','Presence of a catalyst'],ans:2,exp:'The colour of reactants has no effect on reaction rate. Rate is affected by temperature, concentration/pressure, surface area, and catalysts.'},
+    ]}
+  },
+  {
+    title:'Measuring Reaction Rate',
+    body:`Rate of reaction can be measured by tracking how quickly a <strong>reactant is used up</strong> or a <strong>product is formed</strong>.
+    <br><br>
+    Common methods:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Volume of gas</strong> — collect gas in a syringe, measure over time</li>
+      <li><strong>Change in mass</strong> — mass decreases as gas escapes (top-pan balance)</li>
+      <li><strong>Colour change</strong> — colorimetry or visual (e.g. disappearing cross method)</li>
+      <li><strong>pH change</strong> — use a pH probe for acid/base reactions</li>
+    </ul>
+    <strong>Rate = change in quantity ÷ time</strong>`,
+    draw:(sk)=>{
+      bg(sk,[12,18,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Flask with escaping gas
+      sk.fill(100,180,255,60);sk.noStroke();
+      sk.triangle(W*0.18,H*0.88,W*0.44,H*0.88,W*0.31,H*0.58);
+      sk.stroke(100,180,255,120);sk.strokeWeight(1.5);sk.noFill();
+      sk.triangle(W*0.18,H*0.88,W*0.44,H*0.88,W*0.31,H*0.58);
+      // Bubbles
+      for(let i=0;i<5;i++){
+        const by=H*0.58-((t*30+i*20)%H*0.45);
+        sk.fill(255,255,255,120);sk.noStroke();sk.circle(W*0.31+sk.sin(by*0.1)*8,by,7);
+      }
+      // Gas syringe
+      sk.fill(200,200,255,60);sk.noStroke();sk.rect(W*0.52,H*0.38,W*0.38,H*0.12,4);
+      const pistonX=W*0.52+W*0.38*Math.min(0.85,(t/20));
+      sk.fill(150,150,200,180);sk.rect(pistonX,H*0.38,8,H*0.12);
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Gas syringe',W*0.71,H*0.38-10);
+      // Graph
+      sk.stroke(46,204,113,180);sk.strokeWeight(2);sk.noFill();
+      sk.beginShape();
+      for(let x=0;x<W*0.4;x+=3){
+        const px=W*0.52+x;
+        const py=H*0.7-H*0.25*(1-Math.exp(-x*0.012));
+        sk.vertex(px,py);
+      }sk.endShape();
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);
+      sk.line(W*0.52,H*0.45,W*0.52,H*0.75);
+      sk.line(W*0.52,H*0.75,W*0.92,H*0.75);
+      sk.fill(46,204,113);sk.textSize(8);sk.textAlign(sk.LEFT);
+      sk.text('Volume of gas produced',W*0.53,H*0.46);
+      sk.fill(255,255,255,80);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Time',W*0.72,H*0.80);
+    }
+  },
+  {
+    title:'Rate Graphs & Interpretation',
+    body:`A typical rate graph (product formed vs time):
+    <ul style="margin:8px 0 0 18px;line-height:2">
+      <li><strong>Steep start</strong> — reaction is fastest at the beginning (reactant concentration highest)</li>
+      <li><strong>Gradient decreasing</strong> — rate slows as reactants are used up</li>
+      <li><strong>Plateau</strong> — reaction stops (reactant fully used up)</li>
+    </ul>
+    <strong>Steeper gradient = faster rate</strong>
+    <br><br>
+    Higher temperature/concentration gives a steeper initial gradient but reaches the same final volume (same amount of product from same starting material).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Draw multiple curves
+      const conditions=[
+        {label:'High temp/conc',k:0.025,col:[231,76,60]},
+        {label:'Normal',k:0.012,col:[52,152,219]},
+        {label:'Low temp/conc',k:0.006,col:[100,180,255]},
+      ];
+      const ax=W*0.1,ay=H*0.82;
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);sk.noFill();
+      sk.line(ax,H*0.1,ax,ay);sk.line(ax,ay,W*0.92,ay);
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.push();sk.translate(ax-14,H*0.5);sk.rotate(-sk.HALF_PI);sk.text('Product formed',0,0);sk.pop();
+      sk.textAlign(sk.CENTER);sk.text('Time →',W*0.5,ay+14);
+      conditions.forEach((c,i)=>{
+        sk.stroke(...c.col,200);sk.strokeWeight(2.5);sk.noFill();
+        sk.beginShape();
+        for(let x=0;x<W*0.8;x+=3){
+          const px=ax+x;
+          const vol=H*0.65*(1-Math.exp(-c.k*x));
+          sk.vertex(px,ay-vol);
+        }sk.endShape();
+        sk.fill(...c.col);sk.noStroke();sk.textSize(9);sk.textAlign(sk.RIGHT);
+        sk.text(c.label,W*0.9,H*0.12+i*H*0.1);
+      });
+    }
+  },
+  {
+    title:'🎮 Final — Rates of Reaction',
+    body:'Apply everything you know about measuring and changing reaction rates.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'On a rate graph (volume vs time), a steeper initial gradient means:',opts:['The reaction is slower','The activation energy is higher','The reaction is faster initially','The product is more dense'],ans:2,exp:'A steeper gradient means more product is forming per unit time — the reaction rate is FASTER. This happens at higher temperature or concentration.'},
+      {q:'In the disappearing cross method, the reaction is faster when:',opts:['The cross disappears MORE slowly','The cross disappears LESS quickly','The cross disappears MORE quickly','The cross never disappears'],ans:2,exp:'Faster rate = cross disappears more QUICKLY because more product (precipitate) forms per second, blocking the cross sooner.'},
+      {q:'When a rate graph reaches a plateau, this means:',opts:['The catalyst is used up','A reactant has been fully used up','Temperature has dropped','The product decomposes'],ans:1,exp:'The graph flattens when a reactant is completely used up. No more reactant = no more reaction = no more product formation.'},
+      {q:'Iron is used as a catalyst in the Haber process. After the reaction:',opts:['The iron is consumed','Less iron is present than at the start','The same amount of iron remains','Iron becomes a product'],ans:2,exp:'A catalyst is NOT consumed in the reaction. The same mass of iron remains at the end — it speeds up the reaction without being used up.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#bf360c',dark:'#870000',light:'#fbe9e7',
+  title:'Rates of Reaction — Collision Theory, Catalysts & Graphs',
+});
+</script></body></html>

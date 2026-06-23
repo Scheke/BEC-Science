@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Solar System — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#1a237e;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#9fa8da;color:#1a237e;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #9fa8da}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #1a237e;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#1a237e;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#1a237e;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%207">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 7 Science</span>
+  <h1>The Solar System</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Our Solar System</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Day &amp; Night</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">The Moon</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Planets</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Planet Order</button>
+</div>
+
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [ // Tab 0
+    {t:'The Solar System', b:['The Solar System is held together by the Sun\'s gravity','It contains: 1 star (Sun), 8 planets, moons, asteroids, comets','The Sun is ~1.4 million km across — 109× wider than Earth','Everything orbits the Sun in an elliptical (oval) path']},
+    {t:'Order from the Sun', b:['My Very Energetic Mother Just Served Us Nachos','Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune','Inner planets (1–4): small, rocky, close together','Outer planets (5–8): large gas giants, spread far apart']},
+    {t:'Units of Distance', b:['Astronomical Unit (AU) = Earth–Sun distance = ~150 million km','Light-year = distance light travels in 1 year (not used in Std 7)','Earth is exactly 1 AU from the Sun by definition']},
+    {t:'Key Facts', b:['Sun contains 99.8% of all mass in the Solar System','Planets do NOT produce their own light — they REFLECT sunlight','The further from the Sun, the longer a planet\'s year (orbit period)']},
+  ],
+  [ // Tab 1
+    {t:'Day and Night', b:['Earth rotates (spins) on its axis once every 24 hours','The side facing the Sun experiences DAYTIME','The side facing away experiences NIGHT','Earth rotates west to east — so the Sun rises in the EAST']},
+    {t:'Earth\'s Axis', b:['Earth\'s axis is tilted at 23.5° to its orbital plane','The tilt causes SEASONS (not the distance from the Sun)','When tilted toward Sun = summer; away = winter','Botswana is in the southern hemisphere: summer in Dec–Feb']},
+    {t:'Proof of Earth\'s Rotation', b:['Time zones exist — it is not noon everywhere at the same time','Botswana is UTC+2 (Central Africa Time)','The Sun appears to move across the sky from east to west each day']},
+    {t:'Year vs Day', b:['1 day = one full rotation on Earth\'s axis (24 h)','1 year = one full orbit around the Sun (~365.25 days)','Leap year every 4 years adds the extra 0.25 day → 366 days in Feb']},
+  ],
+  [ // Tab 2
+    {t:'The Moon', b:['Earth\'s only natural satellite — orbits Earth in ~27.3 days','The Moon does NOT produce its own light — reflects sunlight','Distance from Earth: ~384,400 km','Diameter: ~3,474 km (about ¼ of Earth\'s diameter)']},
+    {t:'Phases of the Moon', b:['New Moon → Waxing Crescent → First Quarter → Waxing Gibbous','→ Full Moon → Waning Gibbous → Third Quarter → Waning Crescent','Cycle repeats every ~29.5 days (lunar month)','The same side of the Moon always faces Earth (tidal locking)']},
+    {t:'Eclipses', b:['Solar eclipse: Moon passes between Earth and Sun (blocks sunlight)','Lunar eclipse: Earth passes between Sun and Moon (Earth\'s shadow on Moon)','Solar eclipses are rare at any one location (only during new moon)','Lunar eclipses are visible from half of Earth simultaneously']},
+    {t:'Moon\'s Effects on Earth', b:['The Moon\'s gravity causes ocean TIDES on Earth','High tide on the side facing the Moon, and also the opposite side','Two high tides and two low tides roughly every 24 hours']},
+  ],
+  [ // Tab 3
+    {t:'Inner Planets (Rocky)', b:['Mercury: smallest, no atmosphere, extreme temperature swings','Venus: hottest (460°C), dense CO₂ atmosphere, rotates backwards','Earth: only known planet with liquid water and life','Mars: red dust, thin CO₂ atmosphere, Olympus Mons (tallest volcano)']},
+    {t:'Outer Planets (Gas Giants)', b:['Jupiter: largest planet, Great Red Spot (300-year storm), 95 moons','Saturn: iconic rings (ice and rock), least dense planet (floats on water)','Uranus: rotates on its side (97.8° tilt), ice giant, blue-green colour','Neptune: strongest winds in Solar System (~2100 km/h), 14 moons']},
+    {t:'Dwarf Planets & Other Objects', b:['Pluto (reclassified 2006): too small to clear its orbit — dwarf planet','Asteroid belt: rocky debris between Mars and Jupiter','Comets: icy bodies with tails that appear near the Sun','Kuiper Belt: region beyond Neptune with frozen objects']},
+    {t:'Mnemonic', b:['My Very Energetic Mother Just Served Us Nachos','M = Mercury   V = Venus   E = Earth   M = Mars','J = Jupiter   S = Saturn   U = Uranus   N = Neptune']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Our Solar System','Day & Night','The Moon','Planets'];
+  let h=`<html><head><title>Solar System Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #1a237e;padding-bottom:8px;color:#1a237e}
+    h2{font-size:1rem;color:#283593;margin:22px 0 6px;border-left:4px solid #283593;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 7 Science — The Solar System</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── PLANET ORDER GAME ────────────────────────────────────
+const PLANETS = [
+  {name:'Mercury', r:8,  col:[180,180,180], fact:'Closest to Sun, no atmosphere'},
+  {name:'Venus',   r:13, col:[255,198,100], fact:'Hottest planet (460°C)'},
+  {name:'Earth',   r:14, col:[70,130,200],  fact:'Our home, liquid water'},
+  {name:'Mars',    r:11, col:[210,80,50],   fact:'Red planet, largest volcano'},
+  {name:'Jupiter', r:32, col:[220,160,100], fact:'Largest planet, Great Red Spot'},
+  {name:'Saturn',  r:28, col:[230,190,120], fact:'Famous rings of ice and rock'},
+  {name:'Uranus',  r:20, col:[130,200,220], fact:'Tilted 97.8° on its side'},
+  {name:'Neptune', r:18, col:[60,90,200],   fact:'Strongest winds in Solar System'},
+];
+
+let slots, draggables, activeDrag, score, gameWon, showFact;
+
+function resetGame(){
+  // 8 slots in a row
+  let startX=58, slotSpacing=48, slotY=230;
+  slots=PLANETS.map((p,i)=>({x:startX+i*slotSpacing, y:slotY, filled:null, correct:false}));
+
+  // Shuffle draggables and place in palette row
+  let shuffled=[...PLANETS].sort(()=>Math.random()-0.5);
+  let palY=400, palStart=30, palW=430;
+  draggables=shuffled.map((p,i)=>({
+    name:p.name, r:p.r, col:p.col, fact:p.fact,
+    x:palStart+i*(palW/7.5), y:palY,
+    sx:palStart+i*(palW/7.5), sy:palY,
+    slot:-1, ox:0, oy:0
+  }));
+
+  activeDrag=null; score=0; gameWon=false; showFact='';
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880, H=510;
+  let tick=0;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    tick++;
+    sk.background(5,5,30);
+    if(tab<4){ drawStarfield(); drawPlanetAnim(); drawInfoPanel(); }
+    else { drawStarfield(); drawGame(); }
+  };
+
+  function drawStarfield(){
+    sk.noStroke();
+    // Static stars (deterministic via pseudo-random)
+    for(let i=0;i<120;i++){
+      let sx=(i*137.508)%490, sy=(i*91.17+i*13)%510;
+      let br=150+(i%4)*25;
+      sk.fill(br,br,255,160+i%80);
+      sk.ellipse(sx,sy,1.2+(i%3)*0.6,1.2+(i%3)*0.6);
+    }
+  }
+
+  // ── Info panel ───────────────────────────────────────
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(10,15,60,200); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b, bh=16+lines.length*14+8;
+      sk.fill(26,35,126); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  // ── Animated solar system ─────────────────────────────
+  function drawPlanetAnim(){
+    const sx=240, sy=280, scale=0.85;
+    // Sun
+    for(let r=60;r>28;r-=8){ sk.fill(255,200,0,20+r/2); sk.noStroke(); sk.ellipse(sx,sy,r*2,r*2); }
+    sk.fill(255,220,0); sk.ellipse(sx,sy,56,56);
+    sk.fill(255,240,100); sk.textSize(10); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('☀ Sun',sx,sy);
+
+    const orbits=[40,65,88,112,170,220,265,300];
+    PLANETS.forEach((p,i)=>{
+      let orb=orbits[i]*scale;
+      sk.noFill(); sk.stroke(255,255,255,25); sk.strokeWeight(1);
+      sk.ellipse(sx,sy,orb*2,orb*2);
+      let angle=tick*0.01*(1/(i+1))*1.5 + i*0.9;
+      let px=sx+sk.cos(angle)*orb, py=sy+sk.sin(angle)*orb*0.38;
+      sk.noStroke(); sk.fill(p.col[0],p.col[1],p.col[2]);
+      sk.ellipse(px,py,p.r*0.7,p.r*0.7);
+      if(i===5){// Saturn rings
+        sk.noFill(); sk.stroke(p.col[0],p.col[1],p.col[2],140); sk.strokeWeight(2.5);
+        sk.ellipse(px,py,p.r*1.6,p.r*0.35);
+      }
+      if(tab===3||tab===0){
+        sk.fill(255,255,255,180); sk.noStroke(); sk.textSize(9); sk.textAlign(sk.CENTER,sk.BASELINE);
+        sk.text(p.name, px, py-p.r*0.4-4);
+      }
+    });
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  // ── PLANET ORDER GAME ─────────────────────────────────
+  function drawGame(){
+    // Title
+    sk.fill(255); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Place the 8 planets in order from the Sun — Mercury is slot 1, Neptune is slot 8', W/2, 22);
+
+    // Sun on left
+    for(let r=40;r>18;r-=6){ sk.fill(255,200,0,20+r); sk.noStroke(); sk.ellipse(28,230,r*2,r*2); }
+    sk.fill(255,220,0); sk.ellipse(28,230,36,36);
+    sk.fill(30); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('Sun',28,230);
+
+    // Slot numbers and orbital line
+    sk.stroke(255,255,255,30); sk.strokeWeight(1.5);
+    sk.line(44,230,482,230);
+
+    // Score
+    sk.fill(200,230,255); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.RIGHT);
+    sk.text('Correct: '+score+' / 8', 480, 22);
+
+    // Slots
+    slots.forEach((sl,i)=>{
+      let correct = sl.filled!==null && sl.filled===PLANETS[i].name;
+      let occupied = sl.filled!==null;
+      if(occupied) sk.fill(correct?[27,94,32]:[120,0,0]).concat ? sk.fill(correct?27:120, correct?94:0, correct?32:0, 180) : 0;
+      sk.fill(correct?27:occupied?120:40, correct?94:0, correct?32:0, occupied?180:120);
+      sk.stroke(correct?[100,255,100]:occupied?[255,100,100]:[100,130,180]);
+      sk.strokeWeight(1.5); sk.ellipse(sl.x,sl.y,48,48);
+      sk.fill(180,200,255); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.BASELINE);
+      sk.text(i+1,sl.x,sl.y+28);
+    });
+
+    // Draggable planets
+    draggables.forEach(d=>{
+      if(d.slot>=0||d===activeDrag) return;
+      drawPlanetCard(d.sx,d.sy,d);
+    });
+
+    // Placed planets in slots (drawn at slot positions)
+    draggables.forEach(d=>{
+      if(d.slot<0||d===activeDrag) return;
+      let sl=slots[d.slot];
+      drawPlanetCard(sl.x,sl.y,d);
+    });
+
+    // Active drag on top
+    if(activeDrag) drawPlanetCard(activeDrag.x,activeDrag.y,activeDrag);
+
+    // Fact label
+    if(showFact){
+      sk.fill(10,20,80,220); sk.noStroke(); sk.rect(30,455,460,40,6);
+      sk.fill(220,230,255); sk.textSize(11); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(showFact,260,475);
+    }
+
+    // Win message
+    if(gameWon){
+      sk.fill(0,0,0,160); sk.noStroke(); sk.rect(80,160,350,130,12);
+      sk.fill(255,235,59); sk.textSize(20); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All 8 Planets Correct!', 255,205);
+      sk.fill(200,240,255); sk.textSize(13); sk.textStyle(sk.NORMAL);
+      sk.text('My Very Energetic Mother Just Served Us Nachos', 255,235);
+      sk.fill(180,200,255); sk.textSize(11);
+      sk.text('Tap Reset to play again', 255,262);
+      // Reset btn
+      sk.fill(26,35,126); sk.noStroke(); sk.rect(200,278,110,32,8);
+      sk.fill(255); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('↺ Reset',255,294);
+    }
+
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawPlanetCard(x,y,d){
+    sk.fill(d.col[0],d.col[1],d.col[2]); sk.noStroke(); sk.ellipse(x,y,d.r*1.6,d.r*1.6);
+    if(d.name==='Saturn'){
+      sk.noFill(); sk.stroke(d.col[0],d.col[1],d.col[2],160); sk.strokeWeight(2);
+      sk.ellipse(x,y,d.r*2.8,d.r*0.5);
+    }
+    sk.fill(255); sk.noStroke(); sk.textSize(8); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.BASELINE);
+    sk.text(d.name, x, y+d.r*0.8+10);
+    sk.textStyle(sk.NORMAL);
+  }
+
+  // ── Mouse events ─────────────────────────────────────
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX, my=sk.mouseY;
+
+    if(gameWon&&mx>200&&mx<310&&my>278&&my<310){ resetGame(); return; }
+
+    // Try to pick from palette (unplaced)
+    for(let d of draggables){
+      if(d.slot>=0) continue;
+      if(sk.dist(mx,my,d.sx,d.sy)<d.r+8){
+        activeDrag=d; d.ox=d.sx-mx; d.oy=d.sy-my; showFact=d.name+': '+d.fact; return;
+      }
+    }
+    // Try to pick from slot
+    for(let d of draggables){
+      if(d.slot<0) continue;
+      let sl=slots[d.slot];
+      if(sk.dist(mx,my,sl.x,sl.y)<26){
+        activeDrag=d; d.ox=sl.x-mx; d.oy=sl.y-my;
+        sl.filled=null; d.slot=-1; checkScore(); showFact=d.name+': '+d.fact; return;
+      }
+    }
+  };
+
+  sk.mouseDragged=()=>{
+    if(tab!==4||!activeDrag) return;
+    activeDrag.x=sk.mouseX+activeDrag.ox;
+    activeDrag.y=sk.mouseY+activeDrag.oy;
+  };
+
+  sk.mouseReleased=()=>{
+    if(tab!==4||!activeDrag) return;
+    let placed=false;
+    for(let i=0;i<slots.length;i++){
+      let sl=slots[i];
+      if(sl.filled===null && sk.dist(activeDrag.x,activeDrag.y,sl.x,sl.y)<28){
+        activeDrag.x=sl.x; activeDrag.y=sl.y;
+        activeDrag.slot=i; sl.filled=activeDrag.name;
+        placed=true; break;
+      }
+    }
+    if(!placed){ activeDrag.x=activeDrag.sx; activeDrag.y=activeDrag.sy; activeDrag.slot=-1; }
+    activeDrag=null;
+    checkScore();
+  };
+
+  function checkScore(){
+    score=slots.filter((sl,i)=>sl.filled===PLANETS[i].name).length;
+    gameWon = score===8;
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+

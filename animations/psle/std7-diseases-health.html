@@ -1,0 +1,399 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diseases &amp; Health — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#bf360c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ffab91;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffab91}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #bf360c;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#bf360c;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#bf360c;color:#fff}
+    .btn.practice{border-color:#1b5e20;color:#1b5e20}
+    .btn.practice:hover,.btn.practice.on{background:#1b5e20;color:#fff;border-color:#1b5e20}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%207">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 7 Science</span>
+  <h1>Diseases &amp; Health</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Communicable Diseases</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Malaria</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">HIV/AIDS</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Substance Abuse</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Break the Chain</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4){ gamePhase='choose'; currentQ=0; score=0; answered=false; }
+}
+
+const allBoxes=[
+  [
+    {t:'What are Communicable Diseases?', b:['Diseases that spread from one person to another','Caused by: bacteria, viruses, fungi, parasites','Spread by: contact, droplets (coughing/sneezing), contaminated water/food, vectors (mosquitoes)','Examples in Botswana: malaria, tuberculosis (TB), cholera, COVID-19, measles']},
+    {t:'How Diseases Spread (Chain of Infection)', b:['1. Pathogen (disease-causing agent)','2. Reservoir (where it lives — person, animal, soil)','3. Mode of exit (cough, faeces, blood)','4. Mode of transmission (air, water, touch, vector)','5. Mode of entry (mouth, lungs, skin cut)','6. Susceptible host (unvaccinated, poor nutrition, weakened immunity)']},
+    {t:'Breaking the Chain', b:['Vaccination: prevents susceptible host from getting infected','Hand washing: breaks transmission through touch and contaminated surfaces','Boiling water: kills pathogens in drinking water','Covering mouth when coughing: stops droplet spread','Mosquito control: nets, repellents, draining stagnant water']},
+    {t:'Non-Communicable Diseases (NCDs)', b:['Do NOT spread from person to person','Examples: diabetes, heart disease, cancer, asthma, hypertension','Caused by: poor diet, physical inactivity, smoking, alcohol, genetics','Prevention: balanced diet, exercise, no smoking, regular medical check-ups']},
+  ],
+  [
+    {t:'What is Malaria?', b:['Caused by the Plasmodium parasite','Transmitted by the bite of the female Anopheles mosquito','Vector-borne disease — the mosquito is the VECTOR (carrier)','Most common in tropical and subtropical regions including Botswana (northern regions)']},
+    {t:'Transmission Cycle', b:['1. Female Anopheles mosquito bites infected person — picks up Plasmodium','2. Parasite develops in mosquito (10–21 days)','3. Infected mosquito bites healthy person — injects parasite','4. Parasite travels to liver, then red blood cells','5. Red blood cells burst → fever, chills, headache, vomiting every 48–72 hours']},
+    {t:'Symptoms & Treatment', b:['Early symptoms: fever, chills, headache, muscle aches, nausea','Severe malaria: anaemia, convulsions, coma — can be FATAL if untreated','Treatment: antimalarial drugs (artemisinin-based combination therapy — ACT)','Seek treatment WITHIN 24 hours of fever onset in malaria areas','In Botswana: districts Chobe, Ngamiland, North East highest risk']},
+    {t:'Prevention', b:['Sleep under insecticide-treated mosquito net (ITN) — most effective','Use insect repellent (DEET) on exposed skin at dusk and dawn','Indoor Residual Spraying (IRS): DDT/pyrethroid sprayed on walls','Drain stagnant water (puddles, tyres, flower pots) — mosquito breeding sites','Wear long sleeves and trousers at dusk and dawn (peak mosquito activity)']},
+  ],
+  [
+    {t:'What is HIV/AIDS?', b:['HIV: Human Immunodeficiency Virus — attacks the immune system (CD4 T-cells)','AIDS: Acquired Immune Deficiency Syndrome — advanced stage of HIV infection','HIV is VIRAL — there is currently no cure, but effective treatment exists','Botswana has made major progress in HIV treatment: >95% of people on ART']},
+    {t:'How HIV is Transmitted', b:['Unprotected sexual intercourse with an infected person','Sharing needles/syringes contaminated with infected blood','Blood transfusion with untested HIV-positive blood (rare with modern testing)','Mother to child during pregnancy, childbirth, or breastfeeding (PMTCT reduces this to <5%)']},
+    {t:'How HIV is NOT Transmitted', b:['Hugging, shaking hands, sharing food or utensils','Mosquito or insect bites (virus does NOT survive in insects)','Sharing toilets, swimming pools, or classrooms','Tears, sweat, or saliva (unless blood-contaminated)','Coughing or sneezing']},
+    {t:'Prevention & Treatment', b:['Use condoms correctly every time during sexual activity','Know your status — get tested regularly','Treatment: Antiretroviral Therapy (ART) suppresses HIV to undetectable levels','Undetectable = Untransmittable (U=U): people on effective ART cannot transmit HIV sexually','In Botswana: free ART at all government clinics; ARV coverage is among Africa\'s highest']},
+  ],
+  [
+    {t:'What is Substance Abuse?', b:['Substance abuse: using a substance in harmful quantities or for non-medical purposes','Substances of abuse: tobacco, alcohol, cannabis, inhalants (glue), prescription drug misuse','Addiction: physical and psychological dependence — very hard to stop without help','Young people are especially vulnerable — developing brains are more easily harmed']},
+    {t:'Effects on Health', b:['Tobacco: lung cancer, heart disease, COPD, nicotine addiction','Alcohol: liver damage (cirrhosis), brain damage, addiction, violence risk','Cannabis: memory problems, mental health (psychosis risk), reduced motivation','Inhalants (glue, petrol): brain and kidney damage — can cause sudden death on first use']},
+    {t:'Peer Pressure & Refusal Skills', b:['Peer pressure: social influence from peers to try substances','Refusal strategies: say "No, I don\'t do that" clearly and confidently','Suggest an alternative activity; leave the situation if needed','Find friends who respect your decisions — positive peer groups matter','Report bullying or extreme pressure to a trusted adult']},
+    {t:'Getting Help', b:['Botswana Drug Control Board: coordinates drug prevention programmes','Youth-friendly clinics offer confidential counselling','Narcotics Anonymous (NA) groups available in major cities','Talk to a parent, school counsellor, or health worker','Recovery is possible with support — addiction is a health issue, not a moral failure']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Communicable Diseases','Malaria','HIV/AIDS','Substance Abuse'];
+  let h=`<html><head><title>Diseases & Health Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #bf360c;padding-bottom:8px;color:#bf360c}
+    h2{font-size:1rem;color:#d84315;margin:22px 0 6px;border-left:4px solid #d84315;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 7 Science — Diseases &amp; Health</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── BREAK THE CHAIN GAME ─────────────────────────────────
+// MCQ: choose the correct prevention/break method for disease transmission scenarios
+const QUESTIONS=[
+  {q:'A mosquito breeding site is a puddle of stagnant water near your home.\nHow do you break the malaria transmission chain?',
+   opts:['Drain the water','Take antibiotics daily','Avoid eating mangoes','Sleep in the day'],
+   correct:0, tip:'Removing stagnant water eliminates mosquito breeding sites — breaking the transmission chain.'},
+  {q:'Someone with cholera has used a water source.\nWhat should you do before drinking water from that source?',
+   opts:['Boil the water for 1 minute','Add sugar to the water','Wait one hour','Filter with cloth only'],
+   correct:0, tip:'Boiling kills the Vibrio cholerae bacteria that causes cholera.'},
+  {q:'You want to protect yourself from HIV transmission.',
+   opts:['Use condoms consistently','Avoid swimming pools','Take vitamin C supplements','Stay away from sick people'],
+   correct:0, tip:'Consistent correct condom use greatly reduces the risk of sexual transmission of HIV.'},
+  {q:'A child has measles (spread by coughing). How do you protect others?',
+   opts:['Vaccinate the child before exposure (MMR vaccine)','Give the child more vegetables','Open all windows','Use mosquito nets'],
+   correct:0, tip:'Vaccination prevents the disease from establishing — classic chain-of-infection prevention.'},
+  {q:'A person is offered a shared needle to inject drugs.\nWhat should they do to protect against HIV?',
+   opts:['Refuse — NEVER share needles','Wipe the needle with cloth','Dilute with clean water','Use after the other person'],
+   correct:0, tip:'Sharing needles transmits HIV directly through blood. Refusal is the only safe option.'},
+  {q:'Which action prevents transmission of TB (spread through air by coughing)?',
+   opts:['Patient wears a mask and ventilates the room','Patient eats more protein','Patient avoids cold water','Patient stays in the sun'],
+   correct:0, tip:'TB spreads through respiratory droplets — masks and ventilation reduce airborne concentration.'},
+  {q:'A friend is being pressured to smoke cigarettes by peers.',
+   opts:['Say "No" firmly and walk away','Try it once to see','Tell the friend to smoke less','Say nothing and join in'],
+   correct:0, tip:'Clear refusal and removing yourself from the situation is the most effective strategy.'},
+  {q:'After using the toilet, what is the most important hygiene action to prevent disease transmission?',
+   opts:['Wash hands with soap and water','Rinse hands with water only','Use hand sanitiser on dry hands','Apply moisturiser'],
+   correct:0, tip:'Soap breaks down the lipid layer of many pathogens — hand washing with soap is highly effective.'},
+];
+
+let gamePhase, currentQ, score, answered, selectedOpt, showTip;
+
+function initGame(){ gamePhase='quiz'; currentQ=0; score=0; answered=false; selectedOpt=-1; showTip=''; }
+initGame();
+
+new p5(sk=>{
+  const W=880,H=510;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    sk.background(255,248,245);
+    if(tab<4){ drawDiseaseAnim(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(255,245,240); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b,bh=16+lines.length*14+8;
+      sk.fill(191,54,12); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawDiseaseAnim(){
+    if(tab===0) drawChainAnim();
+    else if(tab===1) drawMalariaAnim();
+    else if(tab===2) drawHIVAnim();
+    else drawSubstanceAnim();
+  }
+
+  function drawChainAnim(){
+    // Animated chain of infection
+    let nodes=['Pathogen','Reservoir','Exit','Transmission','Entry','Host'];
+    let cols=[[220,50,50],[220,130,50],[200,180,50],[50,180,100],[50,140,200],[120,50,200]];
+    let tick2=sk.frameCount*0.015;
+    nodes.forEach((n,i)=>{
+      let angle=(i/6)*sk.TWO_PI-sk.HALF_PI;
+      let cx=248+Math.cos(angle)*160, cy=240+Math.sin(angle)*140;
+      let active=Math.floor(tick2%(nodes.length+1))===i;
+      sk.fill(cols[i][0],cols[i][1],cols[i][2],active?255:120); sk.stroke(cols[i][0]*0.7,cols[i][1]*0.7,cols[i][2]*0.7); sk.strokeWeight(active?2.5:1.5);
+      sk.ellipse(cx,cy,active?70:55,active?40:32);
+      sk.fill(active?255:220); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(n,cx,cy);
+      // Arrow to next
+      let next=(i+1)%nodes.length;
+      let na=(next/6)*sk.TWO_PI-sk.HALF_PI;
+      let nx=248+Math.cos(na)*160,ny=240+Math.sin(na)*140;
+      sk.stroke(150); sk.strokeWeight(1.5); sk.line(cx+(nx-cx)*0.35,cy+(ny-cy)*0.35,cx+(nx-cx)*0.65,cy+(ny-cy)*0.65);
+    });
+    sk.fill(30); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Chain of Infection — break any link to stop spread',248,430);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawMalariaAnim(){
+    // Mosquito cycle
+    sk.fill(240,220,200); sk.noStroke(); sk.ellipse(130,200,80,100);
+    sk.fill(50); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER); sk.text('Infected\nPerson',130,200);
+    sk.fill(220,200,240); sk.ellipse(350,200,80,100);
+    sk.fill(50); sk.text('Healthy\nPerson',350,200);
+    // Mosquito icon
+    sk.fill(120,80,60); sk.ellipse(248,160,24,14);
+    sk.stroke(80); sk.strokeWeight(1.5); sk.line(240,154,230,140); sk.line(256,154,266,140);
+    sk.noStroke(); sk.fill(50); sk.textSize(9); sk.text('🦟',240,175);
+    // Arrows
+    sk.stroke(200,50,50); sk.strokeWeight(2); sk.noFill();
+    sk.arc(248,200,200,120,sk.PI,0);
+    sk.arc(248,200,200,120,0,sk.PI);
+    sk.fill(50); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('Bite 1: picks up Plasmodium', 60,350);
+    sk.text('Bite 2 (10–21 days later): injects parasite into healthy person',60,368);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawHIVAnim(){
+    // T-cell with HIV
+    sk.fill(100,180,255,180); sk.stroke(60,120,200); sk.strokeWeight(1.5); sk.ellipse(248,200,120,120);
+    sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('CD4 T-cell\n(immune cell)',248,200);
+    // HIV particles
+    for(let i=0;i<6;i++){
+      let a=i*sk.TWO_PI/6+sk.frameCount*0.02;
+      let hx=248+Math.cos(a)*90, hy=200+Math.sin(a)*90;
+      sk.fill(220,80,80); sk.ellipse(hx,hy,18,18);
+      sk.fill(255); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('HIV',hx,hy);
+    }
+    sk.fill(50); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('HIV attacks and destroys CD4 T-cells (immune cells)',50,340);
+    sk.text('Fewer T-cells → weaker immune system → susceptible to infections',50,358);
+    sk.text('ART keeps HIV undetectable → immune system stays strong',50,376);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawSubstanceAnim(){
+    let subs=['Tobacco','Alcohol','Cannabis','Inhalants'];
+    let orgs=['Lungs','Liver','Brain','Brain + Kidneys'];
+    let cols=[[220,80,60],[220,160,60],[100,160,80],[180,100,200]];
+    subs.forEach((s,i)=>{
+      let y=80+i*88;
+      sk.fill(cols[i][0],cols[i][1],cols[i][2],80); sk.stroke(cols[i][0]*0.7,cols[i][1]*0.7,cols[i][2]*0.7); sk.strokeWeight(1.5);
+      sk.rect(40,y,390,70,8);
+      sk.fill(30); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT); sk.text(s,60,y+22);
+      sk.fill(80); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.text('Damages: '+orgs[i],60,y+42);
+    });
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  // ── GAME ─────────────────────────────────────────────
+  function drawGame(){
+    if(gamePhase==='done'){ drawDone(); return; }
+    let q=QUESTIONS[currentQ];
+    // Header
+    sk.fill(191,54,12); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Break the Chain — choose the correct prevention method', W/2,22);
+    sk.fill(80); sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('Question '+(currentQ+1)+' of '+QUESTIONS.length+'   Score: '+score, W/2,38);
+
+    // Question box
+    sk.fill(255,240,235); sk.noStroke(); sk.rect(30,52,460,85,8);
+    sk.fill(30); sk.textSize(11); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text(q.q, 44,70,440,80);
+
+    // Options
+    q.opts.forEach((opt,i)=>{
+      let oy=148+i*60;
+      let correct=i===q.correct;
+      let chosen=i===selectedOpt;
+      let col=answered?(correct?[200,255,200]:(chosen?[255,200,200]:[255,255,255])):[255,255,255];
+      sk.fill(col[0],col[1],col[2]); sk.stroke(answered&&correct?[0,150,0]:answered&&chosen?[200,0,0]:[191,54,12]); sk.strokeWeight(answered&&(correct||chosen)?2.5:1.5);
+      sk.rect(30,oy,460,46,8);
+      sk.fill(30); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text((answered?(correct?'✓ ':(chosen?'✗ ':' ')):'  ')+String.fromCharCode(65+i)+'. '+opt, 48,oy+23);
+    });
+
+    // Tip
+    if(answered&&showTip){
+      sk.fill(240,252,240); sk.noStroke(); sk.rect(30,392,460,60,8);
+      sk.fill(0,100,0); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text('Why: '+showTip, 42,408,440,60);
+    }
+
+    // Next / skip button
+    if(answered){
+      sk.fill(191,54,12); sk.noStroke(); sk.rect(350,460,130,36,8);
+      sk.fill(255); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(currentQ<QUESTIONS.length-1?'Next →':'See Score', 415,478);
+    }
+
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawDone(){
+    sk.fill(255,248,245); sk.noStroke(); sk.rect(80,120,360,270,12);
+    sk.fill(191,54,12); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+    sk.text('Quiz Complete!', 260,165);
+    sk.fill(30); sk.textSize(28); sk.text(score+' / '+QUESTIONS.length, 260,215);
+    let msg=score>=7?'Excellent! You can break the chain!':score>=5?'Good — review the missed ones':' Keep studying the disease notes';
+    sk.fill(80); sk.textSize(12); sk.textStyle(sk.NORMAL); sk.text(msg,260,248);
+    sk.fill(191,54,12); sk.rect(190,270,140,40,8);
+    sk.fill(255); sk.textSize(13); sk.textStyle(sk.BOLD); sk.text('↺ Try Again',260,290);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    if(gamePhase==='done'&&mx>190&&mx<330&&my>270&&my<310){ initGame(); return; }
+    if(gamePhase!=='quiz') return;
+    let q=QUESTIONS[currentQ];
+    // Check option clicks
+    if(!answered){
+      q.opts.forEach((opt,i)=>{
+        let oy=148+i*60;
+        if(mx>30&&mx<490&&my>oy&&my<oy+46){
+          selectedOpt=i; answered=true;
+          if(i===q.correct){ score++; showTip=q.tip; }
+          else { showTip=q.tip; }
+        }
+      });
+    }
+    // Next button
+    if(answered&&mx>350&&mx<480&&my>460&&my<496){
+      if(currentQ<QUESTIONS.length-1){ currentQ++; answered=false; selectedOpt=-1; showTip=''; }
+      else { gamePhase='done'; }
+    }
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,554 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Classification — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+
+/* ══ STEPS 0–4  ANIMATIONS ══ */
+
+{title:'What Is Classification?',
+content:`<h2>Organising Living Things</h2>
+<p><strong>Classification</strong> is the grouping of living things based on their shared features. Scientists classify living things so they can:</p>
+<ul>
+<li>🔍 Identify and name organisms</li>
+<li>📚 Study relationships between species</li>
+<li>🌍 Communicate with scientists worldwide</li>
+</ul>
+<p>The major kingdoms include:</p>
+<ul>
+<li>🌿 <strong>Plants</strong> — photosynthesise, cannot move</li>
+<li>🐾 <strong>Animals</strong> — consume food, can move</li>
+<li>🍄 <strong>Fungi</strong> — absorb nutrients from dead matter</li>
+<li>🦠 <strong>Bacteria</strong> — single-celled prokaryotes</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,300);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const ks=[{n:'Plants',col:'#43a047',x:105,y:100},{n:'Animals',col:'#e53935',x:315,y:100},{n:'Fungi',col:'#8e24aa',x:105,y:220},{n:'Bacteria',col:'#f4511e',x:315,y:220}];
+    p.fill('#f5f5f5');p.stroke('#ccc');p.strokeWeight(2);p.rect(50,40,320,230,18);
+    p.noStroke();p.fill('#555');p.textSize(13);p.text('Living World',210,62);
+    ks.forEach((k,i)=>{const pulse=1+0.08*p.sin(t*0.04+i*1.5);p.fill(k.col);p.noStroke();p.ellipse(k.x,k.y,88*pulse,60*pulse);p.fill(255);p.textSize(14);p.text(k.n,k.x,k.y);});
+    t++;
+  };
+}},
+
+{title:'Characteristics of Living Things',
+content:`<h2>MRS GREN</h2>
+<p>All living things share 7 characteristics remembered as <strong>MRS GREN</strong>:</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><td style="padding:6px;background:#e8f5e9"><strong>M</strong> — Movement</td><td style="padding:6px;background:#e8f5e9">Can move themselves or parts</td></tr>
+<tr><td style="padding:6px"><strong>R</strong> — Respiration</td><td style="padding:6px">Release energy from food</td></tr>
+<tr><td style="padding:6px;background:#e8f5e9"><strong>S</strong> — Sensitivity</td><td style="padding:6px;background:#e8f5e9">Respond to changes (stimuli)</td></tr>
+<tr><td style="padding:6px"><strong>G</strong> — Growth</td><td style="padding:6px">Increase in size over time</td></tr>
+<tr><td style="padding:6px;background:#e8f5e9"><strong>R</strong> — Reproduction</td><td style="padding:6px;background:#e8f5e9">Make offspring</td></tr>
+<tr><td style="padding:6px"><strong>E</strong> — Excretion</td><td style="padding:6px">Remove waste products</td></tr>
+<tr><td style="padding:6px;background:#e8f5e9"><strong>N</strong> — Nutrition</td><td style="padding:6px;background:#e8f5e9">Obtain food/energy</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const letters='MRSGREN'.split('');
+  const clrs=['#e53935','#f4511e','#8e24aa','#1e88e5','#00897b','#43a047','#6d4c41'];
+  let shown=0,frame=0;
+  p.draw=()=>{
+    p.background(245);
+    if(frame%50===0) shown=Math.min(shown+1,7);
+    letters.slice(0,shown).forEach((l,i)=>{const x=60+i*45,y=145;p.fill(clrs[i]);p.noStroke();p.rect(x-18,y-26,36,52,8);p.fill(255);p.textSize(22);p.text(l,x,y);});
+    p.fill('#333');p.noStroke();p.textSize(13);p.text('MRS GREN — all 7 features of life',210,235);
+    frame++;
+  };
+}},
+
+{title:'Vertebrates vs Invertebrates',
+content:`<h2>Animals With and Without Backbones</h2>
+<p>All animals fall into two groups:</p>
+<ul>
+<li>🦴 <strong>Vertebrates</strong> — have a <em>backbone (spine)</em>. Only 5 classes: fish, amphibians, reptiles, birds, mammals.</li>
+<li>🐛 <strong>Invertebrates</strong> — no backbone. Much more numerous! Examples: insects, spiders, worms, snails, jellyfish.</li>
+</ul>
+<p><strong>The 5 vertebrate classes:</strong></p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0;font-size:.88rem">
+<tr><th style="background:#2e7d32;color:#fff;padding:4px">Class</th><th style="background:#2e7d32;color:#fff;padding:4px">Skin</th><th style="background:#2e7d32;color:#fff;padding:4px">Temp.</th><th style="background:#2e7d32;color:#fff;padding:4px">Young</th></tr>
+<tr style="background:#e8f5e9"><td style="padding:4px">Fish</td><td style="padding:4px">Wet scales</td><td style="padding:4px">Cold</td><td style="padding:4px">Eggs in water</td></tr>
+<tr><td style="padding:4px">Amphibians</td><td style="padding:4px">Moist, smooth</td><td style="padding:4px">Cold</td><td style="padding:4px">Eggs in water</td></tr>
+<tr style="background:#e8f5e9"><td style="padding:4px">Reptiles</td><td style="padding:4px">Dry scales</td><td style="padding:4px">Cold</td><td style="padding:4px">Eggs on land</td></tr>
+<tr><td style="padding:4px">Birds</td><td style="padding:4px">Feathers</td><td style="padding:4px">Warm</td><td style="padding:4px">Eggs on land</td></tr>
+<tr style="background:#e8f5e9"><td style="padding:4px">Mammals</td><td style="padding:4px">Hair / fur</td><td style="padding:4px">Warm</td><td style="padding:4px">Live young (mostly)</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const groups=[{n:'Fish 🐟',c:'#1e88e5'},{n:'Amphibian 🐸',c:'#43a047'},{n:'Reptile 🦎',c:'#8e24aa'},{n:'Bird 🦅',c:'#f4511e'},{n:'Mammal 🦁',c:'#e53935'}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%80===0) active=(active+1)%5;
+    const cx=210,cy=145,r=110;
+    groups.forEach((g,i)=>{
+      const a=p.TWO_PI*(i/5)-p.HALF_PI;const x=cx+r*p.cos(a),y=cy+r*p.sin(a);const isA=active===i;
+      p.fill(isA?g.c:'#ddd');p.noStroke();p.ellipse(x,y,isA?90:70,isA?54:42);
+      p.fill(isA?255:'#666');p.textSize(isA?11:10);p.text(g.n,x,y);
+      p.stroke('#aaa');p.strokeWeight(1);p.line(cx,cy,x,y);
+    });
+    p.fill('#333');p.noStroke();p.textSize(13);p.text('5 Vertebrate Classes',cx,cy);
+    t++;
+  };
+}},
+
+{title:'Warm-Blooded vs Cold-Blooded',
+content:`<h2>Body Temperature Control</h2>
+<p>One important difference between vertebrate classes is how they regulate body temperature:</p>
+<p>🔥 <strong>Warm-blooded (endotherms)</strong> — Birds and Mammals</p>
+<ul><li>Maintain a CONSTANT body temperature regardless of environment</li><li>Active even in cold conditions</li><li>Need more food for energy</li></ul>
+<p>❄️ <strong>Cold-blooded (ectotherms)</strong> — Fish, Amphibians, Reptiles</p>
+<ul><li>Body temperature CHANGES with surroundings</li><li>Slow/inactive when cold, must bask in sun</li><li>Need less food</li></ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const temp=18+12*p.sin(t*0.04);
+    const cBody=p.map(temp,6,30,180,255,true);
+    p.fill(0,0,cBody);p.noStroke();p.ellipse(105,150,80,60);p.fill(255);p.textSize(11);p.text('Lizard 🦎',105,148);p.fill('#333');p.textSize(9);p.text('Body: '+p.nf(temp,1,0)+'°C',105,175);
+    p.fill(220,40,40);p.noStroke();p.ellipse(315,150,80,60);p.fill(255);p.textSize(11);p.text('Dog 🐕',315,148);p.fill('#333');p.textSize(9);p.text('Body: 37°C',315,175);
+    const th=p.map(temp,6,30,180,60);
+    p.fill('#eee');p.stroke('#aaa');p.rect(198,60,24,140,6);
+    p.fill(p.color(p.map(temp,6,30,0,220),0,p.map(temp,6,30,200,0)));p.noStroke();p.rect(198,th,24,60+140-th,6);
+    p.fill('#333');p.textSize(11);p.text('Env: '+p.nf(temp,1,0)+'°C',210,235);
+    t++;
+  };
+}},
+
+{title:'Plants, Fungi, and Bacteria',
+content:`<h2>Other Kingdoms</h2>
+<p><strong>Plants 🌿</strong></p>
+<ul><li>Make food by <em>photosynthesis</em> — sunlight + CO₂ + water → glucose</li><li>Cells have <em>cell walls</em> (cellulose) and <em>chlorophyll</em></li><li>Cannot move from place to place</li></ul>
+<p><strong>Fungi 🍄</strong></p>
+<ul><li>CANNOT photosynthesise — no chlorophyll</li><li>Absorb nutrients from dead or living material (decomposers)</li><li>Cell walls made of <em>chitin</em></li></ul>
+<p><strong>Bacteria 🦠</strong></p>
+<ul><li>Single-celled, no nucleus (prokaryotes)</li><li>Only visible under a microscope</li><li>Some helpful (yoghurt, soil), some cause disease (cholera, TB)</li></ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    p.fill('#43a047');p.noStroke();p.ellipse(75,110,60,80);p.stroke('#2e7d32');p.strokeWeight(3);p.line(75,150,75,220);p.noStroke();p.fill('#43a047');p.ellipse(55,180,38,24);p.ellipse(95,180,38,24);p.fill('#333');p.textSize(10);p.text('Plant 🌿',75,245);
+    p.fill('#8e24aa');p.noStroke();p.ellipse(210,100,80,50);p.fill('#ba68c8');p.rect(196,100,28,80,0,0,8,8);p.fill(255);p.textSize(18);p.text('🍄',210,130);p.fill('#333');p.textSize(10);p.text('Fungi',210,245);
+    for(let i=0;i<6;i++){const bx=345+30*p.cos(p.TWO_PI*i/6+t*0.03);const by=140+24*p.sin(p.TWO_PI*i/6+t*0.03);p.fill('#f4511e');p.noStroke();p.ellipse(bx,by,18,12);}
+    p.fill('#333');p.textSize(10);p.text('Bacteria 🦠',345,245);
+    t++;
+  };
+}},
+
+/* ══ STEPS 5–11  SVG DIAGRAMS ══ */
+
+{title:'Vertebrate vs Invertebrate — Labeled Diagram',
+content:`<h3>Key Differences at a Glance</h3>
+<p>The single most important distinction in animal classification is the <strong>backbone (vertebral column / spine)</strong>. Everything else follows from that split.</p>
+<ul>
+<li>Vertebrates: only 5 classes — all relatively well-known large animals</li>
+<li>Invertebrates: 95% of all animal species fall here — insects alone outnumber everything</li>
+<li>🔑 Exam tip: spiders are NOT insects (8 legs, arachnid). Insects have exactly 6 legs.</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="la" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker></defs>
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Animals — Two Major Groups</text>
+  <!-- Left: VERTEBRATE (frog) -->
+  <rect x="10" y="20" width="190" height="205" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="105" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#1b5e20">VERTEBRATE</text>
+  <text x="105" y="51" text-anchor="middle" font-size="10" fill="#2e7d32">Has a backbone (spine)</text>
+  <!-- Frog body -->
+  <ellipse cx="105" cy="120" rx="45" ry="35" fill="#66bb6a"/>
+  <!-- Frog head -->
+  <ellipse cx="105" cy="85" rx="28" ry="22" fill="#66bb6a"/>
+  <!-- Frog eyes -->
+  <circle cx="90" cy="78" r="7" fill="#fff" stroke="#333" stroke-width="1"/>
+  <circle cx="120" cy="78" r="7" fill="#fff" stroke="#333" stroke-width="1"/>
+  <circle cx="90" cy="78" r="4" fill="#1a237e"/>
+  <circle cx="120" cy="78" r="4" fill="#1a237e"/>
+  <!-- Frog legs -->
+  <path d="M62,130 Q40,145 35,165 Q50,175 65,155" fill="#4caf50" stroke="#2e7d32" stroke-width="1"/>
+  <path d="M148,130 Q170,145 175,165 Q160,175 145,155" fill="#4caf50" stroke="#2e7d32" stroke-width="1"/>
+  <!-- Spine indicator -->
+  <line x1="105" y1="97" x2="105" y2="148" stroke="#c62828" stroke-width="2.5" stroke-dasharray="4,2"/>
+  <text x="160" y="128" font-size="9" fill="#c62828" font-weight="bold">backbone</text>
+  <line x1="155" y1="125" x2="115" y2="120" stroke="#c62828" stroke-width="1" marker-end="url(#la)"/>
+  <!-- Label: Frog = Amphibian -->
+  <text x="105" y="178" text-anchor="middle" font-size="10" fill="#333">Frog = <tspan font-weight="bold">Amphibian</tspan></text>
+  <!-- 5 classes list -->
+  <text x="105" y="195" text-anchor="middle" font-size="9" fill="#555">Classes: Fish · Amphibian</text>
+  <text x="105" y="207" text-anchor="middle" font-size="9" fill="#555">Reptile · Bird · Mammal</text>
+  <!-- Right: INVERTEBRATE (insect) -->
+  <rect x="220" y="20" width="190" height="205" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="315" y="38" text-anchor="middle" font-size="12" font-weight="bold" fill="#bf360c">INVERTEBRATE</text>
+  <text x="315" y="51" text-anchor="middle" font-size="10" fill="#e65100">No backbone at all</text>
+  <!-- Grasshopper-like insect -->
+  <!-- Body segments: head, thorax, abdomen -->
+  <ellipse cx="280" cy="100" rx="16" ry="13" fill="#ffa726"/>
+  <ellipse cx="305" cy="108" rx="20" ry="15" fill="#ff9800"/>
+  <ellipse cx="338" cy="112" rx="28" ry="18" fill="#ffa726"/>
+  <!-- 6 legs (3 pairs) from thorax -->
+  <line x1="296" y1="115" x2="276" y2="135" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="305" y1="118" x2="300" y2="145" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="316" y1="115" x2="330" y2="138" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="296" y1="105" x2="278" y2="90" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="305" y1="100" x2="300" y2="82" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="316" y1="105" x2="332" y2="90" stroke="#e65100" stroke-width="1.5"/>
+  <!-- Antennae -->
+  <line x1="272" y1="92" x2="258" y2="76" stroke="#555" stroke-width="1.5"/>
+  <line x1="278" y1="90" x2="268" y2="74" stroke="#555" stroke-width="1.5"/>
+  <!-- Eye -->
+  <circle cx="273" cy="98" r="5" fill="#fff" stroke="#333" stroke-width="1"/>
+  <circle cx="273" cy="98" r="3" fill="#111"/>
+  <!-- 3 body segments label -->
+  <text x="280" y="78" text-anchor="middle" font-size="8" fill="#555">Head</text>
+  <text x="305" y="84" text-anchor="middle" font-size="8" fill="#555">Thorax</text>
+  <text x="340" y="86" text-anchor="middle" font-size="8" fill="#555">Abdomen</text>
+  <!-- 6 legs label -->
+  <text x="315" y="165" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">6 legs → INSECT</text>
+  <text x="315" y="178" text-anchor="middle" font-size="9" fill="#333">Other examples:</text>
+  <text x="315" y="190" text-anchor="middle" font-size="9" fill="#555">Spider (8 legs) · Worm</text>
+  <text x="315" y="202" text-anchor="middle" font-size="9" fill="#555">Snail · Crab · Jellyfish</text>
+</svg>`},
+
+{title:'The 5 Classes of Vertebrates',
+content:`<h3>How to Tell Them Apart</h3>
+<p>When you see an animal in an exam, use these key features to classify it quickly:</p>
+<ol>
+<li>Does it have <strong>feathers</strong>? → Bird</li>
+<li>Does it have <strong>hair or fur</strong>? → Mammal</li>
+<li>Does it have <strong>dry scales</strong> and lay eggs on land? → Reptile</li>
+<li>Does it have <strong>wet scales</strong> and live in water? → Fish</li>
+<li>Does it have <strong>moist smooth skin</strong> and need water for eggs? → Amphibian</li>
+</ol>
+<p>Memory tip: <strong>"Fat Armadillos Really Build Muscles"</strong> = Fish, Amphibians, Reptiles, Birds, Mammals</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">5 Classes of Vertebrates — Key Features</text>
+  <!-- 5 tiles in a row then staggered second row -->
+  <!-- Tile: FISH -->
+  <rect x="8" y="22" width="76" height="104" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <!-- Fish shape -->
+  <ellipse cx="46" cy="55" rx="22" ry="13" fill="#42a5f5"/>
+  <polygon points="68,55 78,47 78,63" fill="#1e88e5"/>
+  <circle cx="36" cy="52" r="3" fill="#fff"/>
+  <circle cx="36" cy="52" r="1.5" fill="#111"/>
+  <text x="46" y="79" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">FISH</text>
+  <text x="46" y="92" text-anchor="middle" font-size="8" fill="#555">Wet scales</text>
+  <text x="46" y="103" text-anchor="middle" font-size="8" fill="#555">Gills, fins</text>
+  <text x="46" y="114" text-anchor="middle" font-size="8" fill="#0288d1">Cold-blooded</text>
+  <text x="46" y="125" text-anchor="middle" font-size="9" fill="#555">e.g. Tilapia</text>
+  <!-- Tile: AMPHIBIAN -->
+  <rect x="90" y="22" width="76" height="104" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Frog simplified -->
+  <ellipse cx="128" cy="55" rx="18" ry="14" fill="#66bb6a"/>
+  <circle cx="120" cy="47" r="5" fill="#66bb6a"/>
+  <circle cx="136" cy="47" r="5" fill="#66bb6a"/>
+  <circle cx="119" cy="46" r="3" fill="#fff"/><circle cx="119" cy="46" r="1.5" fill="#111"/>
+  <circle cx="135" cy="46" r="3" fill="#fff"/><circle cx="135" cy="46" r="1.5" fill="#111"/>
+  <text x="128" y="79" text-anchor="middle" font-size="10" font-weight="bold" fill="#1b5e20">AMPHIBIAN</text>
+  <text x="128" y="92" text-anchor="middle" font-size="8" fill="#555">Moist skin</text>
+  <text x="128" y="103" text-anchor="middle" font-size="8" fill="#555">Eggs in water</text>
+  <text x="128" y="114" text-anchor="middle" font-size="8" fill="#0288d1">Cold-blooded</text>
+  <text x="128" y="125" text-anchor="middle" font-size="9" fill="#555">e.g. Frog</text>
+  <!-- Tile: REPTILE -->
+  <rect x="172" y="22" width="76" height="104" rx="8" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+  <!-- Lizard simplified -->
+  <ellipse cx="210" cy="55" rx="20" ry="11" fill="#ce93d8"/>
+  <ellipse cx="232" cy="57" rx="10" ry="6" fill="#ba68c8"/>
+  <!-- legs -->
+  <line x1="196" y1="62" x2="188" y2="73" stroke="#8e24aa" stroke-width="1.5"/>
+  <line x1="204" y1="64" x2="200" y2="75" stroke="#8e24aa" stroke-width="1.5"/>
+  <line x1="216" y1="62" x2="220" y2="73" stroke="#8e24aa" stroke-width="1.5"/>
+  <line x1="222" y1="64" x2="228" y2="74" stroke="#8e24aa" stroke-width="1.5"/>
+  <text x="210" y="89" text-anchor="middle" font-size="10" font-weight="bold" fill="#6a1b9a">REPTILE</text>
+  <text x="210" y="102" text-anchor="middle" font-size="8" fill="#555">Dry scales</text>
+  <text x="210" y="113" text-anchor="middle" font-size="8" fill="#555">Eggs on land</text>
+  <text x="210" y="124" text-anchor="middle" font-size="8" fill="#0288d1">Cold-blooded</text>
+  <text x="210" y="135" text-anchor="middle" font-size="9" fill="#555">e.g. Lizard</text>
+  <!-- Tile: BIRD -->
+  <rect x="254" y="22" width="76" height="104" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+  <!-- Bird simplified -->
+  <ellipse cx="292" cy="55" rx="20" ry="14" fill="#ffa726"/>
+  <ellipse cx="278" cy="48" rx="12" ry="10" fill="#ffb74d"/>
+  <!-- Wing feathers hinted -->
+  <path d="M292,55 Q308,45 318,50 Q308,58 292,60" fill="#ff9800"/>
+  <circle cx="275" cy="46" r="3" fill="#fff"/>
+  <circle cx="275" cy="46" r="1.5" fill="#111"/>
+  <!-- Beak -->
+  <polygon points="271,51 265,54 271,57" fill="#ffcc02"/>
+  <text x="292" y="79" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">BIRD</text>
+  <text x="292" y="92" text-anchor="middle" font-size="8" fill="#555">Feathers</text>
+  <text x="292" y="103" text-anchor="middle" font-size="8" fill="#555">Wings, beak</text>
+  <text x="292" y="114" text-anchor="middle" font-size="8" fill="#c62828">Warm-blooded</text>
+  <text x="292" y="125" text-anchor="middle" font-size="9" fill="#555">e.g. Eagle</text>
+  <!-- Tile: MAMMAL -->
+  <rect x="336" y="22" width="76" height="104" rx="8" fill="#fce4ec" stroke="#e53935" stroke-width="1.5"/>
+  <!-- Dog/mammal simplified -->
+  <ellipse cx="374" cy="58" rx="22" ry="14" fill="#ef9a9a"/>
+  <ellipse cx="358" cy="48" rx="14" ry="11" fill="#ef9a9a"/>
+  <!-- Ears -->
+  <ellipse cx="350" cy="40" rx="6" ry="9" fill="#e57373"/>
+  <ellipse cx="366" cy="38" rx="6" ry="9" fill="#e57373"/>
+  <!-- Eye nose -->
+  <circle cx="354" cy="46" r="3" fill="#fff"/>
+  <circle cx="354" cy="46" r="1.5" fill="#111"/>
+  <circle cx="360" cy="52" r="2" fill="#c2185b"/>
+  <!-- Tail -->
+  <path d="M396,60 Q410,50 408,45" fill="none" stroke="#e57373" stroke-width="2"/>
+  <text x="374" y="83" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">MAMMAL</text>
+  <text x="374" y="96" text-anchor="middle" font-size="8" fill="#555">Hair / fur</text>
+  <text x="374" y="107" text-anchor="middle" font-size="8" fill="#555">Live young, milk</text>
+  <text x="374" y="118" text-anchor="middle" font-size="8" fill="#c62828">Warm-blooded</text>
+  <text x="374" y="129" text-anchor="middle" font-size="9" fill="#555">e.g. Human</text>
+  <!-- Temperature comparison bar -->
+  <rect x="8" y="138" width="404" height="50" rx="8" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="210" y="154" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Body Temperature Regulation</text>
+  <rect x="20" y="162" width="130" height="18" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <text x="85" y="175" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold">Cold-blooded: Fish · Amphibian · Reptile</text>
+  <rect x="165" y="162" width="240" height="18" rx="5" fill="#ffebee" stroke="#e53935" stroke-width="1"/>
+  <text x="285" y="175" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Warm-blooded: Bird · Mammal</text>
+  <!-- Exam tip -->
+  <rect x="8" y="197" width="404" height="46" rx="8" fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="210" y="212" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Exam Quick-Check</text>
+  <text x="210" y="227" text-anchor="middle" font-size="9" fill="#555">Feathers → Bird  ·  Hair → Mammal  ·  Dry scales → Reptile  ·  Moist skin → Amphibian  ·  Fins → Fish</text>
+  <text x="210" y="240" text-anchor="middle" font-size="9" fill="#c62828">Spider = 8 legs = Arachnid (NOT insect!)  ·  Insect = 6 legs always</text>
+</svg>`},
+
+{title:'MRS GREN — Illustrated',
+content:`<h3>All 7 Life Processes in Detail</h3>
+<p>The mnemonic MRS GREN helps you remember every characteristic of living things. All 7 must be present for something to be classified as alive — a car moves but is not alive because it doesn't show all 7.</p>
+<p><strong>Common exam question:</strong> "A fire grows, moves, and needs fuel. Is it alive?" Answer: NO — a fire does not reproduce, excrete, or have sensitivity in a biological sense.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">MRS GREN — The 7 Characteristics of Life</text>
+  <!-- 7 boxes in 2 rows: 4 top, 3 bottom -->
+  <!-- M -->
+  <rect x="8" y="22" width="90" height="58" rx="7" fill="#fce4ec" stroke="#e53935" stroke-width="1.5"/>
+  <text x="53" y="40" text-anchor="middle" font-size="16" font-weight="bold" fill="#e53935">M</text>
+  <text x="53" y="54" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Movement</text>
+  <text x="53" y="67" text-anchor="middle" font-size="8" fill="#555">Move body or parts</text>
+  <text x="53" y="76" text-anchor="middle" font-size="8" fill="#888">e.g. plant grows to light</text>
+  <!-- R -->
+  <rect x="106" y="22" width="90" height="58" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+  <text x="151" y="40" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">R</text>
+  <text x="151" y="54" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">Respiration</text>
+  <text x="151" y="67" text-anchor="middle" font-size="8" fill="#555">Release energy</text>
+  <text x="151" y="76" text-anchor="middle" font-size="8" fill="#888">from food (all cells)</text>
+  <!-- S -->
+  <rect x="204" y="22" width="90" height="58" rx="7" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+  <text x="249" y="40" text-anchor="middle" font-size="16" font-weight="bold" fill="#8e24aa">S</text>
+  <text x="249" y="54" text-anchor="middle" font-size="10" font-weight="bold" fill="#6a1b9a">Sensitivity</text>
+  <text x="249" y="67" text-anchor="middle" font-size="8" fill="#555">Respond to stimuli</text>
+  <text x="249" y="76" text-anchor="middle" font-size="8" fill="#888">e.g. eye blink, plant</text>
+  <!-- G -->
+  <rect x="302" y="22" width="110" height="58" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="357" y="40" text-anchor="middle" font-size="16" font-weight="bold" fill="#1565c0">G</text>
+  <text x="357" y="54" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">Growth</text>
+  <text x="357" y="67" text-anchor="middle" font-size="8" fill="#555">Increase in size</text>
+  <text x="357" y="76" text-anchor="middle" font-size="8" fill="#888">e.g. seed → tree</text>
+  <!-- R2 -->
+  <rect x="8" y="90" width="120" height="58" rx="7" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="68" y="108" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">R</text>
+  <text x="68" y="122" text-anchor="middle" font-size="10" font-weight="bold" fill="#1b5e20">Reproduction</text>
+  <text x="68" y="135" text-anchor="middle" font-size="8" fill="#555">Make offspring</text>
+  <text x="68" y="144" text-anchor="middle" font-size="8" fill="#888">sexual or asexual</text>
+  <!-- E -->
+  <rect x="138" y="90" width="120" height="58" rx="7" fill="#e0f7fa" stroke="#006064" stroke-width="1.5"/>
+  <text x="198" y="108" text-anchor="middle" font-size="16" font-weight="bold" fill="#006064">E</text>
+  <text x="198" y="122" text-anchor="middle" font-size="10" font-weight="bold" fill="#004d40">Excretion</text>
+  <text x="198" y="135" text-anchor="middle" font-size="8" fill="#555">Remove waste</text>
+  <text x="198" y="144" text-anchor="middle" font-size="8" fill="#888">e.g. urine, sweat, CO₂</text>
+  <!-- N -->
+  <rect x="268" y="90" width="144" height="58" rx="7" fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="340" y="108" text-anchor="middle" font-size="16" font-weight="bold" fill="#e65100">N</text>
+  <text x="340" y="122" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">Nutrition</text>
+  <text x="340" y="135" text-anchor="middle" font-size="8" fill="#555">Obtain food/energy</text>
+  <text x="340" y="144" text-anchor="middle" font-size="8" fill="#888">plant: photosynthesis</text>
+  <!-- KEY at bottom -->
+  <rect x="8" y="158" width="404" height="86" rx="8" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="210" y="174" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Why This Matters in Exams</text>
+  <text x="210" y="190" text-anchor="middle" font-size="9" fill="#555">Question: "Is a candle flame alive?"</text>
+  <text x="210" y="203" text-anchor="middle" font-size="9" fill="#555">✗ It moves (flickers)  ✗ It grows  ✓ It "respires" (burns fuel)  ✗ But it does NOT:</text>
+  <text x="210" y="216" text-anchor="middle" font-size="9" fill="#c62828">Reproduce · Excrete · Show sensitivity · Have nutrition (biological)</text>
+  <text x="210" y="232" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">→ NOT alive. ALL 7 characteristics must be present.</text>
+</svg>`},
+
+{title:'Flowering vs Non-Flowering Plants',
+content:`<h3>Two Major Plant Groups</h3>
+<p>Plants are divided into two main groups based on whether they produce <strong>flowers and seeds</strong>:</p>
+<p>🌸 <strong>Flowering plants (Angiosperms)</strong></p>
+<ul><li>Produce <em>flowers</em> for reproduction</li><li>Seeds are enclosed inside a <em>fruit</em></li><li>Most common — maize, mango, roses, beans</li></ul>
+<p>🌲 <strong>Non-flowering plants</strong></p>
+<ul><li><em>Gymnosperms</em>: seeds in cones, NOT fruits (e.g. pine trees)</li><li><em>Ferns</em>: reproduce using spores, not seeds at all</li><li><em>Mosses</em>: very simple, no true roots or stems, reproduce by spores</li></ul>`,
+visual:`<svg viewBox="0 0 420 245" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Flowering vs Non-Flowering Plants</text>
+  <!-- Left: FLOWERING PLANT (angiosperm) -->
+  <rect x="8" y="22" width="195" height="210" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="106" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">FLOWERING PLANT</text>
+  <text x="106" y="52" text-anchor="middle" font-size="9" fill="#555">(Angiosperm)</text>
+  <!-- Flower -->
+  <circle cx="106" cy="90" r="14" fill="#ffd600"/>
+  <ellipse cx="106" cy="70" rx="8" ry="12" fill="#e91e63"/>
+  <ellipse cx="106" cy="110" rx="8" ry="12" fill="#e91e63"/>
+  <ellipse cx="86" cy="90" rx="12" ry="8" fill="#e91e63"/>
+  <ellipse cx="126" cy="90" rx="12" ry="8" fill="#e91e63"/>
+  <circle cx="106" cy="90" r="10" fill="#ffd600"/>
+  <!-- Stem and leaves -->
+  <line x1="106" y1="104" x2="106" y2="180" stroke="#2e7d32" stroke-width="3"/>
+  <ellipse cx="88" cy="145" rx="16" ry="8" fill="#4caf50" transform="rotate(-30,88,145)"/>
+  <ellipse cx="124" cy="160" rx="16" ry="8" fill="#4caf50" transform="rotate(30,124,160)"/>
+  <!-- Root -->
+  <line x1="106" y1="180" x2="106" y2="200" stroke="#795548" stroke-width="2"/>
+  <line x1="106" y1="190" x2="88" y2="205" stroke="#795548" stroke-width="1.5"/>
+  <line x1="106" y1="195" x2="124" y2="208" stroke="#795548" stroke-width="1.5"/>
+  <!-- Labeled parts -->
+  <line x1="122" y1="90" x2="160" y2="85" stroke="#888" stroke-width="1"/>
+  <text x="162" y="88" font-size="8" fill="#555">Flower</text>
+  <line x1="88" y1="145" x2="48" y2="145" stroke="#888" stroke-width="1"/>
+  <text x="20" y="148" font-size="8" fill="#555">Leaf</text>
+  <line x1="106" y1="160" x2="155" y2="155" stroke="#888" stroke-width="1"/>
+  <text x="157" y="158" font-size="8" fill="#555">Stem</text>
+  <line x1="106" y1="200" x2="155" y2="205" stroke="#888" stroke-width="1"/>
+  <text x="157" y="208" font-size="8" fill="#555">Root</text>
+  <!-- Key feature -->
+  <rect x="18" y="213" width="175" height="14" rx="4" fill="#c8e6c9"/>
+  <text x="106" y="223" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">Seed enclosed in fruit ✓</text>
+  <!-- Right: NON-FLOWERING (3 types) -->
+  <rect x="217" y="22" width="195" height="210" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="315" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#bf360c">NON-FLOWERING PLANTS</text>
+  <!-- Pine cone (gymnosperm) -->
+  <rect x="225" y="52" width="55" height="55" rx="6" fill="#efebe9" stroke="#8d6e63" stroke-width="1"/>
+  <!-- Simple cone shape -->
+  <polygon points="252,60 245,100 260,100" fill="#8d6e63"/>
+  <ellipse cx="252" cy="68" rx="6" ry="5" fill="#795548"/>
+  <ellipse cx="248" cy="78" rx="7" ry="5" fill="#6d4c41"/>
+  <ellipse cx="256" cy="88" rx="7" ry="5" fill="#795548"/>
+  <text x="252" y="118" text-anchor="middle" font-size="9" font-weight="bold" fill="#6d4c41">Gymnosperm</text>
+  <text x="252" y="128" text-anchor="middle" font-size="8" fill="#555">Seed in CONE</text>
+  <text x="252" y="138" text-anchor="middle" font-size="8" fill="#555">e.g. Pine tree</text>
+  <!-- Fern -->
+  <rect x="285" y="52" width="55" height="55" rx="6" fill="#e8f5e9" stroke="#43a047" stroke-width="1"/>
+  <!-- Frond shape -->
+  <path d="M312,98 Q308,80 300,65" fill="none" stroke="#388e3c" stroke-width="2"/>
+  <ellipse cx="304" cy="73" rx="7" ry="4" fill="#66bb6a" transform="rotate(-30,304,73)"/>
+  <ellipse cx="307" cy="83" rx="7" ry="4" fill="#66bb6a" transform="rotate(-15,307,83)"/>
+  <ellipse cx="310" cy="93" rx="7" ry="4" fill="#66bb6a"/>
+  <text x="312" y="118" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Fern</text>
+  <text x="312" y="128" text-anchor="middle" font-size="8" fill="#555">Spores (no seed)</text>
+  <text x="312" y="138" text-anchor="middle" font-size="8" fill="#555">Fronds with spots</text>
+  <!-- Moss -->
+  <rect x="345" y="52" width="60" height="55" rx="6" fill="#dcedc8" stroke="#7cb342" stroke-width="1"/>
+  <!-- Moss lumpy shape -->
+  <ellipse cx="368" cy="90" rx="20" ry="12" fill="#aed581"/>
+  <ellipse cx="358" cy="83" rx="12" ry="8" fill="#c5e1a5"/>
+  <ellipse cx="376" cy="80" rx="11" ry="8" fill="#c5e1a5"/>
+  <text x="372" y="118" text-anchor="middle" font-size="9" font-weight="bold" fill="#558b2f">Moss</text>
+  <text x="372" y="128" text-anchor="middle" font-size="8" fill="#555">Spores (no seed)</text>
+  <text x="372" y="138" text-anchor="middle" font-size="8" fill="#555">No true roots</text>
+  <!-- Comparison notes -->
+  <text x="315" y="158" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">No flowers produced</text>
+  <text x="315" y="170" text-anchor="middle" font-size="9" fill="#555">Gymnosperm: cones not fruits</text>
+  <text x="315" y="182" text-anchor="middle" font-size="9" fill="#555">Ferns &amp; Mosses: spores only</text>
+  <rect x="227" y="213" width="175" height="14" rx="4" fill="#ffe0b2"/>
+  <text x="315" y="223" text-anchor="middle" font-size="9" fill="#bf360c" font-weight="bold">No flowers · No enclosed seeds</text>
+</svg>`},
+
+{title:'Classification Key — How to Identify Animals',
+content:`<h3>Using a Dichotomous Key</h3>
+<p>A <strong>dichotomous key</strong> is a tool that identifies organisms by asking a series of YES/NO questions. Each question splits organisms into two groups until you reach the name of the organism.</p>
+<p><strong>How to use it:</strong></p>
+<ol>
+<li>Look at the organism carefully</li>
+<li>Answer the first YES/NO question</li>
+<li>Follow the arrow to the next question</li>
+<li>Repeat until you reach an identification</li>
+</ol>
+<p>Dichotomous keys are used by scientists, doctors (identifying diseases), and ecologists (identifying species in the field).</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ka" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#333"/></marker></defs>
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Dichotomous Key — Classifying Animals</text>
+  <!-- Root question -->
+  <rect x="130" y="20" width="160" height="32" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="35" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Does it have a backbone?</text>
+  <text x="210" y="47" text-anchor="middle" font-size="9" fill="#555">(a vertebral column / spine)</text>
+  <!-- YES branch left -->
+  <line x1="160" y1="52" x2="100" y2="75" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#ka)"/>
+  <text x="118" y="67" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">YES</text>
+  <!-- NO branch right -->
+  <line x1="260" y1="52" x2="320" y2="75" stroke="#e53935" stroke-width="1.5" marker-end="url(#ka)"/>
+  <text x="303" y="67" text-anchor="middle" font-size="9" fill="#e53935" font-weight="bold">NO</text>
+  <!-- YES sub-question: warm-blooded? -->
+  <rect x="30" y="75" width="150" height="30" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="105" y="88" text-anchor="middle" font-size="9" font-weight="bold" fill="#1b5e20">Is it warm-blooded?</text>
+  <text x="105" y="100" text-anchor="middle" font-size="8" fill="#555">(constant body temp)</text>
+  <!-- NO sub-question: insects? -->
+  <rect x="248" y="75" width="150" height="30" rx="6" fill="#ffebee" stroke="#e53935" stroke-width="1.5"/>
+  <text x="323" y="88" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">Does it have 6 legs?</text>
+  <text x="323" y="100" text-anchor="middle" font-size="8" fill="#555">(and 3 body segments)</text>
+  <!-- YES warm-blooded → Bird or Mammal -->
+  <line x1="80" y1="105" x2="55" y2="130" stroke="#2e7d32" stroke-width="1.2" marker-end="url(#ka)"/>
+  <text x="55" y="122" text-anchor="middle" font-size="8" fill="#2e7d32">YES</text>
+  <line x1="130" y1="105" x2="155" y2="130" stroke="#e65100" stroke-width="1.2" marker-end="url(#ka)"/>
+  <text x="148" y="122" text-anchor="middle" font-size="8" fill="#e65100">NO</text>
+  <!-- NO warm-blooded = Fish/Amphibian/Reptile -->
+  <!-- 6-legs YES → Insect, NO → other invert -->
+  <line x1="290" y1="105" x2="275" y2="130" stroke="#2e7d32" stroke-width="1.2" marker-end="url(#ka)"/>
+  <text x="270" y="122" text-anchor="middle" font-size="8" fill="#2e7d32">YES</text>
+  <line x1="355" y1="105" x2="368" y2="130" stroke="#e53935" stroke-width="1.2" marker-end="url(#ka)"/>
+  <text x="373" y="122" text-anchor="middle" font-size="8" fill="#e53935">NO</text>
+  <!-- Has feathers? -->
+  <rect x="8" y="130" width="90" height="28" rx="6" fill="#fff3e0" stroke="#e65100" stroke-width="1.2"/>
+  <text x="53" y="141" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">Has feathers?</text>
+  <text x="53" y="153" text-anchor="middle" font-size="8" fill="#555">YES=Bird NO=Mammal</text>
+  <!-- Cold vertebrate -->
+  <rect x="108" y="130" width="90" height="28" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+  <text x="153" y="141" text-anchor="middle" font-size="8" font-weight="bold" fill="#0d47a1">Cold-blooded</text>
+  <text x="153" y="153" text-anchor="middle" font-size="8" fill="#555">Fish/Reptile/Amphibian</text>
+  <!-- Insect result -->
+  <rect x="235" y="130" width="70" height="28" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.2"/>
+  <text x="270" y="141" text-anchor="middle" font-size="8" font-weight="bold" fill="#2e7d32">INSECT</text>
+  <text x="270" y="153" text-anchor="middle" font-size="8" fill="#555">(6 legs)</text>
+  <!-- Other invertebrate -->
+  <rect x="318" y="130" width="92" height="28" rx="6" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.2"/>
+  <text x="364" y="141" text-anchor="middle" font-size="8" font-weight="bold" fill="#6a1b9a">OTHER INVERT.</text>
+  <text x="364" y="153" text-anchor="middle" font-size="8" fill="#555">Spider, Worm, etc.</text>
+  <!-- Final results row -->
+  <rect x="8" y="175" width="404" height="66" rx="8" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="210" y="191" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Example Identifications</text>
+  <text x="55" y="208" text-anchor="middle" font-size="9" fill="#c62828">Eagle: YES backbone</text>
+  <text x="55" y="220" text-anchor="middle" font-size="9" fill="#c62828">→ Warm → Feathers</text>
+  <text x="55" y="232" text-anchor="middle" font-size="9" fill="#c62828">→ BIRD ✓</text>
+  <text x="160" y="208" text-anchor="middle" font-size="9" fill="#1565c0">Butterfly: NO backbone</text>
+  <text x="160" y="220" text-anchor="middle" font-size="9" fill="#1565c0">→ 6 legs, 3 segments</text>
+  <text x="160" y="232" text-anchor="middle" font-size="9" fill="#1565c0">→ INSECT ✓</text>
+  <text x="280" y="208" text-anchor="middle" font-size="9" fill="#6a1b9a">Spider: NO backbone</text>
+  <text x="280" y="220" text-anchor="middle" font-size="9" fill="#6a1b9a">→ NOT 6 legs (has 8)</text>
+  <text x="280" y="232" text-anchor="middle" font-size="9" fill="#6a1b9a">→ ARACHNID ✓</text>
+  <text x="380" y="208" text-anchor="middle" font-size="9" fill="#2e7d32">Frog: YES backbone</text>
+  <text x="380" y="220" text-anchor="middle" font-size="9" fill="#2e7d32">→ Cold-blooded</text>
+  <text x="380" y="232" text-anchor="middle" font-size="9" fill="#2e7d32">→ AMPHIBIAN ✓</text>
+</svg>`},
+
+/* ══ MCQ STEPS ══ */
+
+{title:'Mini-Quiz: Characteristics &amp; Groups',
+mcq:[
+  {q:'Which of the following is NOT a characteristic of living things?',opts:['Reproduction','Growth','Made of plastic','Respiration'],ans:2,exp:'Living things show MRS GREN — Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. Being "made of plastic" is NOT one of them!'},
+  {q:'Birds and mammals are different from fish, reptiles and amphibians because birds and mammals are:',opts:['Larger','Warm-blooded','Cold-blooded','Invertebrates'],ans:1,exp:'BIRDS and MAMMALS are WARM-BLOODED — they maintain a constant body temperature regardless of the environment. Fish, reptiles, and amphibians are COLD-BLOODED.'},
+]},
+
+{title:'Mini-Quiz: Vertebrates &amp; Kingdoms',
+mcq:[
+  {q:'Mushrooms belong to which kingdom?',opts:['Plants','Animals','Fungi','Bacteria'],ans:2,exp:'Mushrooms are FUNGI. They cannot photosynthesise — they absorb nutrients from dead material. Their cell walls are made of chitin, not cellulose like plants.'},
+  {q:'Which of these is a vertebrate?',opts:['Butterfly','Earthworm','Frog','Spider'],ans:2,exp:'A FROG is a vertebrate (amphibian) — it has a backbone. Butterflies (insects) and spiders (arachnids) are invertebrates with no backbone. Earthworms are annelid worms — also invertebrates.'},
+]},
+
+{title:'Exam Practice Questions',
+mcq:[
+  {q:'A student says: "A mushroom is a plant because it grows in soil." What is wrong with this statement?',opts:['Mushrooms do grow in soil, so the student is right','Mushrooms cannot photosynthesise and are classified as Fungi, not Plants','Mushrooms are animals','Mushrooms are bacteria'],ans:1,exp:'Mushrooms are FUNGI — they lack chlorophyll and cannot photosynthesise. They absorb food from dead matter (decomposers). Plants use sunlight to MAKE food. Growing in soil does not make something a plant.'},
+  {q:'Which feature would you use FIRST to distinguish an insect from a spider?',opts:['Body colour','Number of legs (6 for insect, 8 for spider)','Whether it can fly','Whether it lives on land'],ans:1,exp:'The most reliable feature is number of legs: insects always have exactly 6 legs and 3 body segments (head, thorax, abdomen). Spiders (arachnids) have 8 legs and 2 body segments. Some insects fly but not all, and spiders can also live anywhere.'},
+  {q:'A plant reproduces by releasing spores (not seeds) and has no flowers. Which group does it belong to?',opts:['Angiosperm (flowering plant)','Gymnosperm','Fern or Moss','Vertebrate'],ans:2,exp:'Ferns and mosses reproduce by SPORES, not seeds or flowers. Angiosperms have flowers and seeds in fruits. Gymnosperms have seeds in cones. Spore-producers with no seeds → Ferns or Mosses.'},
+]},
+
+];
+new StudyEngine(STEPS,{color:'#2e7d32',dark:'#1b5e20',light:'#e8f5e9',title:'Classification of Living Things'});
+</script></body></html>

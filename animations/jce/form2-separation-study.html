@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Separation Techniques — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,16,24]))}
+
+const STEPS=[
+  {
+    title:'Why Separate Mixtures?',
+    body:`A <strong>mixture</strong> contains two or more substances physically combined. Unlike compounds, the components keep their own properties and can be separated by <strong>physical methods</strong>.
+    <br><br>
+    The separation technique chosen depends on the <strong>properties of the components</strong>:
+    <ul style="margin:8px 0 0 18px;line-height:2.2">
+      <li>Particle size → <strong>filtration</strong></li>
+      <li>Boiling point → <strong>distillation</strong></li>
+      <li>Solubility → <strong>crystallisation</strong></li>
+      <li>Travel speed on paper → <strong>chromatography</strong></li>
+      <li>Magnetic property → <strong>magnetic separation</strong></li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const techs=[
+        {n:'Filtration',c:[52,152,219],x:0.17,y:0.4,icon:'▽'},
+        {n:'Distillation',c:[231,76,60],x:0.37,y:0.4,icon:'⟳'},
+        {n:'Chromatography',c:[46,204,113],x:0.57,y:0.4,icon:'≡'},
+        {n:'Crystallisation',c:[241,196,15],x:0.77,y:0.4,icon:'✦'},
+        {n:'Magnetic\nSeparation',c:[155,89,182],x:0.47,y:0.75,icon:'⊕'},
+      ];
+      // Centre
+      sk.fill(255,255,255,60);sk.noStroke();sk.circle(W*0.47,H*0.4,38);
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('Mixture',W*0.47,H*0.4);
+      techs.forEach((tc,i)=>{
+        const cx=tc.x*W,cy=tc.y*H,pulse=1+Math.sin(t*1.3+i*0.8)*0.08;
+        sk.fill(...tc.c,40);sk.noStroke();sk.circle(cx,cy,60*pulse);
+        sk.fill(...tc.c,180);sk.circle(cx,cy,42*pulse);
+        sk.fill(255);sk.textSize(13);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(tc.icon,cx,cy-5);
+        sk.textSize(8);sk.textStyle(sk.NORMAL);sk.text(tc.n,cx,cy+24);
+      });
+    }
+  },
+  {
+    title:'Filtration',
+    body:`<strong>Filtration</strong> separates an <strong>insoluble solid</strong> from a liquid.
+    <br><br>
+    The mixture is poured through <strong>filter paper</strong> in a funnel:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li>The liquid (filtrate) passes through — collected in a beaker</li>
+      <li>The solid (residue) stays on the filter paper</li>
+    </ul>
+    <br>
+    <strong>Examples:</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Sand from water</li>
+      <li>Chalk from chalk-water mixture</li>
+      <li>Soil from muddy water</li>
+    </ul>
+    The filter paper acts like a sieve — only particles smaller than the paper's pores can pass through.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Funnel
+      sk.fill(180,220,255,60);sk.stroke(100,180,255,180);sk.strokeWeight(2);
+      sk.triangle(W*0.35,H*0.1,W*0.65,H*0.1,W*0.5,H*0.42);
+      // Filter paper
+      sk.fill(255,250,220,180);sk.noStroke();
+      sk.triangle(W*0.38,H*0.12,W*0.62,H*0.12,W*0.5,H*0.4);
+      // Stem
+      sk.stroke(100,180,255,180);sk.strokeWeight(8);sk.noFill();
+      sk.line(W*0.5,H*0.42,W*0.5,H*0.6);
+      // Collection beaker
+      sk.fill(100,180,255,20);sk.stroke(100,180,255,120);sk.strokeWeight(2);
+      sk.rect(W*0.38,H*0.6,W*0.24,H*0.28,0,0,6,6);
+      // Filtrate drip
+      const dripY=H*0.6+H*0.2*((t*0.6)%1);
+      sk.fill(100,180,255,200);sk.noStroke();sk.circle(W*0.5,dripY,6);
+      // Residue (sand) on filter paper
+      for(let i=0;i<12;i++){
+        const rx=W*0.44+Math.random()*W*0.12,ry=H*0.22+Math.random()*H*0.1;
+        sk.fill(200,180,100,180);sk.noStroke();sk.circle(rx,ry,6);
+      }
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Residue',W*0.5,H*0.18);
+      sk.text('(solid stays)',W*0.5,H*0.22);
+      sk.fill(100,180,255);sk.text('Filtrate',W*0.5,H*0.74);
+      sk.fill(255);sk.text('(liquid passes through)',W*0.5,H*0.8);
+      sk.fill(255,255,255,80);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('Filter funnel + filter paper',W*0.5,H*0.05);
+    }
+  },
+  {
+    title:'Distillation',
+    body:`<strong>Simple distillation</strong> separates a <strong>soluble solid from a liquid</strong> (e.g. salt from salt water) by evaporating the liquid and condensing the vapour.
+    <br><br>
+    <strong>Fractional distillation</strong> separates a <strong>mixture of liquids</strong> with different boiling points.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Heat the mixture</li>
+      <li>Component with LOWEST boiling point evaporates first</li>
+      <li>Vapour rises into condenser → cooled → collected as pure liquid (distillate)</li>
+    </ul>
+    <br>Used for: purifying water, separating ethanol from water (b.p. 78°C vs 100°C), crude oil refining.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Flask
+      sk.fill(100,200,255,30);sk.stroke(100,200,255,140);sk.strokeWeight(2);
+      sk.circle(W*0.22,H*0.6,80);
+      // Heat
+      for(let i=0;i<5;i++){
+        const fx=W*0.14+i*14,fh=18+10*Math.sin(t*2+i);
+        sk.fill(255,100,0,180+30*Math.sin(t+i));sk.noStroke();
+        sk.ellipse(fx,H*0.72,10,fh);
+      }
+      // Vapour rising
+      const vAlpha=150+80*Math.sin(t*2);
+      sk.stroke(200,230,255,vAlpha);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.22,H*0.42,W*0.22,H*0.26);
+      sk.line(W*0.22,H*0.26,W*0.55,H*0.26);
+      // Condenser
+      sk.fill(150,200,255,30);sk.stroke(100,180,255,140);sk.strokeWeight(2);
+      sk.rect(W*0.55,H*0.22,W*0.2,14,3);
+      // Cooling water
+      for(let i=0;i<4;i++){
+        const cx=W*0.57+i*W*0.04,pulse=1+Math.sin(t*2+i)*0.2;
+        sk.fill(0,100,200,100*pulse);sk.noStroke();sk.circle(cx,H*0.22+7,5*pulse);
+      }
+      // Drip into collector
+      sk.stroke(100,180,255,180);sk.strokeWeight(2);
+      sk.line(W*0.75,H*0.22+14,W*0.75,H*0.46);
+      const dd=H*0.46+H*0.16*((t*0.7)%1);
+      sk.fill(100,180,255,200);sk.noStroke();sk.circle(W*0.75,dd,6);
+      // Collector beaker
+      sk.fill(100,180,255,20);sk.stroke(100,180,255,120);sk.strokeWeight(2);
+      sk.rect(W*0.65,H*0.62,W*0.2,H*0.22,0,0,6,6);
+      // Labels
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('Mixture',W*0.22,H*0.66);
+      sk.text('Condenser',W*0.65,H*0.18);
+      sk.fill(100,180,255);sk.text('Pure liquid',W*0.75,H*0.9);
+    }
+  },
+  {
+    q:'Filtration Setup — Labeled Diagram',
+    content:`<h3>Filtration Setup — Labeled Diagram</h3><p>Filtration separates an insoluble solid from a liquid. The mixture is poured through filter paper in a funnel — the liquid (filtrate) passes through, while the solid (residue) remains on the paper.</p><ul><li>Filter paper has tiny pores that allow liquid molecules through but block solid particles</li><li>The liquid that passes through is called the filtrate; the solid left behind is the residue</li><li>Example: separating sand from sand-water mixture — sand stays on paper, water passes through</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Filtration Setup</text>
+  <!-- Funnel (triangle shape) -->
+  <polygon points="130,35 290,35 210,130" fill="#b3e5fc" stroke="#2e7d32" stroke-width="2.5" fill-opacity="0.5"/>
+  <!-- Funnel rim -->
+  <rect x="125" y="28" width="170" height="14" fill="#81d4fa" stroke="#2e7d32" stroke-width="2" rx="5"/>
+  <!-- Filter paper (slightly smaller triangle, yellow) -->
+  <polygon points="145,42 275,42 210,122" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" fill-opacity="0.8"/>
+  <!-- Funnel stem -->
+  <rect x="204" y="130" width="12" height="55" fill="#81d4fa" stroke="#2e7d32" stroke-width="2" rx="2"/>
+  <!-- Beaker -->
+  <rect x="160" y="185" width="100" height="70" fill="#e3f2fd" stroke="#2e7d32" stroke-width="2.5" rx="3" fill-opacity="0.5"/>
+  <!-- Liquid in beaker (filtrate) -->
+  <rect x="162" y="220" width="96" height="33" fill="#b3e5fc" stroke="none" rx="2"/>
+  <!-- Residue on filter paper -->
+  <ellipse cx="210" cy="95" rx="30" ry="12" fill="#bcaaa4" stroke="#795548" stroke-width="1.5"/>
+  <text x="210" y="99" text-anchor="middle" font-size="9" font-weight="bold" fill="#333">Residue</text>
+  <!-- Labels with arrows -->
+  <line x1="130" y1="35" x2="60" y2="28" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="58" y="25" text-anchor="end" font-size="10" fill="#333">Funnel</text>
+  <line x1="145" y1="55" x2="70" y2="62" stroke="#f9a825" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="68" y="59" text-anchor="end" font-size="10" fill="#e65100">Filter paper</text>
+  <text x="68" y="71" text-anchor="end" font-size="9" fill="#555">(porous)</text>
+  <line x1="240" y1="95" x2="330" y2="75" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="332" y="72" font-size="10" fill="#333">Residue (solid)</text>
+  <text x="332" y="83" font-size="9" fill="#555">stays on paper</text>
+  <line x1="216" y1="158" x2="330" y2="145" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="332" y="142" font-size="10" fill="#333">Filtrate (liquid)</text>
+  <text x="332" y="153" font-size="9" fill="#555">passes through</text>
+  <line x1="210" y1="220" x2="330" y2="215" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="332" y="212" font-size="10" fill="#2e7d32">Filtrate collected</text>
+  <text x="332" y="223" font-size="9" fill="#555">(e.g. salt water)</text>
+  <!-- Ring stand suggestion -->
+  <rect x="85" y="35" width="8" height="180" fill="#9e9e9e" stroke="#2e7d32" stroke-width="1" rx="2"/>
+  <rect x="82" y="35" width="52" height="8" fill="#757575" stroke="#2e7d32" stroke-width="1" rx="2"/>
+  <!-- Example note -->
+  <rect x="10" y="248" width="400" height="18" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="210" y="261" text-anchor="middle" font-size="9" fill="#2e7d32">Example: Separating sand (residue) from salt water (filtrate)</text>
+</svg>`
+  },
+  {
+    q:'Distillation Apparatus — Labeled Diagram',
+    content:`<h3>Distillation Apparatus — Labeled Diagram</h3><p>Distillation separates a liquid from a dissolved solid, or two liquids with different boiling points. The mixture is heated until the liquid boils, the vapour travels into a condenser, and the cooled pure liquid is collected.</p><ul><li>The thermometer monitors the boiling point — this identifies which component is distilling off</li><li>The Liebig condenser cools the vapour back to liquid using cold running water around the outer jacket</li><li>The collected pure liquid is called the distillate — example: obtaining pure water from salt water</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="280" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Simple Distillation Apparatus</text>
+  <!-- Round-bottom flask -->
+  <circle cx="90" cy="175" r="45" fill="#b3e5fc" stroke="#2e7d32" stroke-width="2.5" fill-opacity="0.5"/>
+  <!-- Liquid in flask -->
+  <ellipse cx="90" cy="195" rx="40" ry="25" fill="#81d4fa" fill-opacity="0.7"/>
+  <!-- Flask neck -->
+  <rect x="82" y="120" width="16" height="30" fill="#b3e5fc" stroke="#2e7d32" stroke-width="2" rx="3"/>
+  <!-- Vapour path (goes right, then into condenser) -->
+  <path d="M98,130 L98,90 L245,90" fill="none" stroke="#2e7d32" stroke-width="2" stroke-dasharray="6,3"/>
+  <!-- Thermometer in flask -->
+  <line x1="90" y1="80" x2="90" y2="130" stroke="#e53935" stroke-width="2"/>
+  <circle cx="90" cy="85" r="6" fill="#e53935" stroke="#2e7d32" stroke-width="1"/>
+  <rect x="86" y="90" width="8" height="35" fill="#ffcdd2" stroke="#e53935" stroke-width="1" rx="2"/>
+  <!-- Condenser tube -->
+  <rect x="245" y="75" width="105" height="30" fill="#b3e5fc" stroke="#2e7d32" stroke-width="2.5" rx="5"/>
+  <!-- Cooling water outer -->
+  <rect x="245" y="65" width="105" height="50" fill="none" stroke="#1565c0" stroke-width="1.5" rx="6" stroke-dasharray="4,3"/>
+  <!-- Inner tube of condenser -->
+  <rect x="250" y="82" width="95" height="16" fill="#81d4fa" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <!-- Condensate drop exit -->
+  <line x1="350" y1="105" x2="350" y2="135" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Collecting beaker -->
+  <rect x="320" y="135" width="70" height="60" fill="#e3f2fd" stroke="#2e7d32" stroke-width="2" rx="3" fill-opacity="0.5"/>
+  <!-- Liquid in collecting beaker -->
+  <rect x="322" y="175" width="66" height="18" fill="#b3e5fc" fill-opacity="0.8" rx="2"/>
+  <!-- Heat source -->
+  <rect x="55" y="225" width="70" height="14" fill="#ff8f00" stroke="#e65100" stroke-width="1.5" rx="4"/>
+  <text x="90" y="236" text-anchor="middle" font-size="9" fill="#fff">Heat source</text>
+  <!-- Labels -->
+  <line x1="47" y1="175" x2="15" y2="160" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="13" y="157" text-anchor="end" font-size="10" fill="#333">Flask</text>
+  <text x="13" y="168" text-anchor="end" font-size="9" fill="#555">(mixture)</text>
+  <line x1="90" y1="85" x2="30" y2="78" stroke="#e53935" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="28" y="75" text-anchor="end" font-size="10" fill="#e53935">Thermometer</text>
+  <line x1="295" y1="90" x2="295" y2="55" stroke="#1565c0" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="295" y="52" text-anchor="middle" font-size="10" fill="#1565c0">Condenser</text>
+  <text x="295" y="43" text-anchor="middle" font-size="9" fill="#555">(cooling water jacket)</text>
+  <line x1="355" y1="155" x2="395" y2="140" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="397" y="137" font-size="10" fill="#333">Pure liquid</text>
+  <text x="397" y="148" font-size="9" fill="#555">(distillate)</text>
+  <!-- Process summary -->
+  <rect x="10" y="248" width="400" height="26" fill="#2e7d32" rx="4"/>
+  <text x="210" y="261" text-anchor="middle" font-size="9" fill="#fff">Heat mixture → liquid boils → vapour rises → cools in condenser → collected as pure liquid</text>
+  <text x="210" y="272" text-anchor="middle" font-size="9" fill="#c8e6c9">Lowest boiling point component distills first (e.g. ethanol b.p.78°C before water 100°C)</text>
+</svg>`
+  },
+  {
+    q:'Chromatography Setup — Labeled Diagram',
+    content:`<h3>Chromatography Setup — Labeled Diagram</h3><p>Paper chromatography separates mixtures of dissolved substances (e.g. dyes, inks, amino acids) based on how far each component travels up the paper with a solvent. Different substances have different solubilities in the solvent.</p><ul><li>The baseline (pencil line) is drawn in pencil, not ink — so the ink does not travel with the solvent</li><li>The solvent level must be below the baseline so the spots are not washed off directly into the solvent</li><li>The Rf value = distance moved by spot ÷ distance moved by solvent front — it identifies each substance under fixed conditions</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Paper Chromatography Setup</text>
+  <!-- Beaker/tank -->
+  <rect x="110" y="155" width="200" height="90" fill="#e3f2fd" stroke="#2e7d32" stroke-width="2.5" rx="4" fill-opacity="0.5"/>
+  <!-- Solvent in beaker -->
+  <rect x="112" y="195" width="196" height="48" fill="#b3e5fc" fill-opacity="0.6" rx="2"/>
+  <!-- Solvent level line -->
+  <line x1="110" y1="195" x2="310" y2="195" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <!-- Chromatography paper -->
+  <rect x="192" y="40" width="36" height="160" fill="#fffde7" stroke="#f9a825" stroke-width="2" rx="2"/>
+  <!-- Pencil line (baseline) -->
+  <line x1="192" y1="183" x2="228" y2="183" stroke="#616161" stroke-width="2.5"/>
+  <!-- Original spot on baseline -->
+  <circle cx="210" cy="183" r="6" fill="#212121"/>
+  <!-- Component spots (separated) -->
+  <circle cx="210" cy="142" r="7" fill="#e53935" fill-opacity="0.8"/>
+  <text x="232" y="145" font-size="9" fill="#e53935">Rf = 0.7</text>
+  <circle cx="210" cy="110" r="7" fill="#43a047" fill-opacity="0.8"/>
+  <text x="232" y="113" font-size="9" fill="#43a047">Rf = 0.5</text>
+  <circle cx="210" cy="74" r="7" fill="#1e88e5" fill-opacity="0.8"/>
+  <text x="232" y="77" font-size="9" fill="#1e88e5">Rf = 0.3</text>
+  <!-- Solvent front -->
+  <line x1="192" y1="60" x2="228" y2="60" stroke="#9c27b0" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="232" y="63" font-size="9" fill="#9c27b0">Solvent front</text>
+  <!-- Labels with arrows -->
+  <line x1="192" y1="90" x2="155" y2="70" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="153" y="67" text-anchor="end" font-size="10" fill="#333">Chromatography</text>
+  <text x="153" y="78" text-anchor="end" font-size="10" fill="#333">paper</text>
+  <line x1="192" y1="183" x2="155" y2="188" stroke="#616161" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="153" y="185" text-anchor="end" font-size="10" fill="#333">Pencil baseline</text>
+  <text x="153" y="196" text-anchor="end" font-size="9" fill="#555">(origin line)</text>
+  <line x1="160" y1="215" x2="130" y2="230" stroke="#1565c0" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="128" y="227" text-anchor="end" font-size="10" fill="#1565c0">Solvent</text>
+  <text x="128" y="238" text-anchor="end" font-size="9" fill="#555">(below baseline)</text>
+  <!-- Rf formula box -->
+  <rect x="10" y="225" width="400" height="38" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="5"/>
+  <text x="210" y="240" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Rf Value = Distance moved by spot ÷ Distance moved by solvent front</text>
+  <text x="210" y="256" text-anchor="middle" font-size="10" fill="#333">Rf values identify substances (specific to each compound under fixed conditions)</text>
+</svg>`
+  },
+  {
+    q:'Crystallisation Steps Flowchart',
+    content:`<h3>Crystallisation Steps Flowchart</h3><p>Crystallisation is used to obtain a pure solid from a solution. It works because a substance is more soluble in hot solvent than cold — so cooling a hot concentrated solution causes the dissolved solid to form crystals.</p><ul><li>Step 1: dissolve the solid in hot solvent to make a saturated solution; Step 2: filter to remove impurities</li><li>Step 3: evaporate some solvent to concentrate the solution; Step 4: allow to cool slowly — slow cooling gives larger, purer crystals</li><li>Step 5: filter off the crystals and dry them at low temperature to avoid decomposition</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Crystallisation — Step-by-Step Flowchart</text>
+  <!-- Step 1 -->
+  <rect x="120" y="28" width="180" height="34" fill="#2e7d32" rx="6"/>
+  <text x="210" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Step 1: Dissolve solid</text>
+  <text x="210" y="55" text-anchor="middle" font-size="9" fill="#c8e6c9">Add solid to HOT solvent (e.g. hot water)</text>
+  <line x1="210" y1="62" x2="210" y2="78" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 2 -->
+  <rect x="110" y="78" width="200" height="34" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="92" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Step 2: Filter (if impurities)</text>
+  <text x="210" y="105" text-anchor="middle" font-size="9" fill="#555">Remove any undissolved solids</text>
+  <line x1="210" y1="112" x2="210" y2="128" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 3 -->
+  <rect x="100" y="128" width="220" height="34" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="142" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Step 3: Evaporate (partially)</text>
+  <text x="210" y="155" text-anchor="middle" font-size="9" fill="#555">Heat gently to remove some water</text>
+  <line x1="210" y1="162" x2="210" y2="178" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 4 -->
+  <rect x="90" y="178" width="240" height="34" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="6"/>
+  <text x="210" y="192" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Step 4: Cool slowly</text>
+  <text x="210" y="205" text-anchor="middle" font-size="9" fill="#555">Allow solution to cool → crystals form</text>
+  <line x1="210" y1="212" x2="210" y2="228" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 5 -->
+  <rect x="80" y="228" width="260" height="26" fill="#1b5e20" rx="6"/>
+  <text x="210" y="242" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Step 5: Filter &amp; dry crystals</text>
+  <text x="210" y="252" text-anchor="middle" font-size="9" fill="#c8e6c9">Collect on filter paper, dry at low temp</text>
+  <!-- Side labels -->
+  <text x="360" y="48" text-anchor="start" font-size="9" fill="#555">↑ hot → more</text>
+  <text x="360" y="58" text-anchor="start" font-size="9" fill="#555">dissolves</text>
+  <text x="10" y="155" text-anchor="start" font-size="9" fill="#e65100">Concentrate</text>
+  <text x="10" y="165" text-anchor="start" font-size="9" fill="#e65100">the solution</text>
+  <text x="10" y="198" text-anchor="start" font-size="9" fill="#1565c0">Slow cooling =</text>
+  <text x="10" y="208" text-anchor="start" font-size="9" fill="#1565c0">bigger crystals!</text>
+</svg>`
+  },
+  {
+    q:'Separation Methods — Decision Table',
+    content:`<h3>Separation Methods — Decision Table</h3><p>Choosing the correct separation method depends on the nature of the mixture. The key question is: are the substances soluble or insoluble, and do they have different boiling points or different solubility in a solvent?</p><ul><li>Insoluble solid in liquid → Filtration (e.g. sand from water)</li><li>Soluble solid from liquid → Evaporation or Crystallisation (e.g. salt from salt water)</li><li>Two miscible liquids with different boiling points → Distillation (e.g. ethanol from water)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="255" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Which Separation Method to Use?</text>
+  <!-- Header -->
+  <rect x="10" y="26" width="400" height="24" fill="#2e7d32" rx="3"/>
+  <text x="115" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Mixture Type</text>
+  <text x="255" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Method</text>
+  <text x="375" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Example</text>
+  <!-- Row 1 -->
+  <rect x="10" y="50" width="400" height="32" fill="#c8e6c9" rx="2"/>
+  <text x="115" y="63" text-anchor="middle" font-size="10" fill="#333">Insoluble solid + liquid</text>
+  <text x="115" y="75" text-anchor="middle" font-size="9" fill="#555">(e.g. sand in water)</text>
+  <text x="255" y="70" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Filtration</text>
+  <text x="375" y="70" text-anchor="middle" font-size="9" fill="#333">Sand/chalk + water</text>
+  <!-- Row 2 -->
+  <rect x="10" y="82" width="400" height="32" fill="#fff" rx="2"/>
+  <text x="115" y="95" text-anchor="middle" font-size="10" fill="#333">Soluble solid + liquid</text>
+  <text x="115" y="107" text-anchor="middle" font-size="9" fill="#555">(dissolved in water)</text>
+  <text x="255" y="101" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Evaporation/Crystallisation</text>
+  <text x="375" y="101" text-anchor="middle" font-size="9" fill="#333">Salt water</text>
+  <!-- Row 3 -->
+  <rect x="10" y="114" width="400" height="32" fill="#c8e6c9" rx="2"/>
+  <text x="115" y="127" text-anchor="middle" font-size="10" fill="#333">Liquids (different boiling pts)</text>
+  <text x="115" y="139" text-anchor="middle" font-size="9" fill="#555">(miscible mixture)</text>
+  <text x="255" y="133" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Distillation</text>
+  <text x="375" y="133" text-anchor="middle" font-size="9" fill="#333">Ethanol + water</text>
+  <!-- Row 4 -->
+  <rect x="10" y="146" width="400" height="32" fill="#fff" rx="2"/>
+  <text x="115" y="159" text-anchor="middle" font-size="10" fill="#333">Dissolved dyes/pigments</text>
+  <text x="115" y="171" text-anchor="middle" font-size="9" fill="#555">(in a solvent)</text>
+  <text x="255" y="165" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Chromatography</text>
+  <text x="375" y="165" text-anchor="middle" font-size="9" fill="#333">Inks, food dyes</text>
+  <!-- Row 5 -->
+  <rect x="10" y="178" width="400" height="32" fill="#c8e6c9" rx="2"/>
+  <text x="115" y="191" text-anchor="middle" font-size="10" fill="#333">Magnetic + non-magnetic</text>
+  <text x="115" y="203" text-anchor="middle" font-size="9" fill="#555">(mixed solids)</text>
+  <text x="255" y="197" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Magnetic Separation</text>
+  <text x="375" y="197" text-anchor="middle" font-size="9" fill="#333">Iron + sulfur</text>
+  <!-- Dividers -->
+  <rect x="10" y="50" width="400" height="160" fill="none" stroke="#2e7d32" stroke-width="1.5" rx="2"/>
+  <line x1="210" y1="26" x2="210" y2="210" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="330" y1="26" x2="330" y2="210" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="10" y1="82" x2="410" y2="82" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="10" y1="114" x2="410" y2="114" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="10" y1="146" x2="410" y2="146" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="10" y1="178" x2="410" y2="178" stroke="#2e7d32" stroke-width="0.8"/>
+  <!-- Key reminder -->
+  <rect x="10" y="216" width="400" height="32" fill="#2e7d32" rx="5"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#fff">Key: Choose method based on PROPERTIES of the components</text>
+  <text x="210" y="243" text-anchor="middle" font-size="9" fill="#c8e6c9">Particle size? Boiling point? Solubility? Magnetism? Travel speed in solvent?</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Filtration & Distillation',
+    body:'Test your knowledge of filtration and distillation methods.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which separation technique would you use to separate sand from salt water?',opts:['Filtration only','Filtration then evaporation/crystallisation','Distillation only','Chromatography'],ans:1,exp:'First use FILTRATION to remove the sand (insoluble solid). Then use EVAPORATION or CRYSTALLISATION to recover the salt from the filtrate (salty water). You need two steps because the mixture contains both an insoluble solid and a dissolved solid.'},
+      {q:'In distillation, which liquid evaporates first?',opts:['The one with the HIGHEST boiling point','The one with the LOWEST boiling point','They both evaporate at the same time','The one with the highest density'],ans:1,exp:'In distillation, the liquid with the LOWEST boiling point evaporates (and is collected) first. For example, separating ethanol (b.p. 78°C) from water (100°C): ethanol vapour rises first, condenses, and is collected.'},
+      {q:'What remains on the filter paper after filtration?',opts:['Filtrate','Residue','Distillate','Solvent'],ans:1,exp:'The RESIDUE (insoluble solid) stays on the filter paper. The liquid that passes through (filtrate) is collected in the beaker below. Remember: R for Residue stays, F for Filtrate flows through.'},
+      {q:'Fractional distillation is used in the petroleum industry to...',opts:['Remove water from crude oil','Separate crude oil into fractions with different boiling points','Convert oil into petrol by heating','Filter solid impurities from oil'],ans:1,exp:'FRACTIONAL DISTILLATION separates crude oil into FRACTIONS (groups of hydrocarbons with similar boiling points) such as petrol, kerosene, diesel, and bitumen. Each fraction is collected at a different temperature as it boils off and condenses.'},
+    ]}
+  },
+  {
+    title:'Chromatography',
+    body:`<strong>Paper chromatography</strong> separates dissolved substances with <strong>different solubilities</strong> in a solvent.
+    <br><br>
+    How it works:
+    <ol style="margin:6px 0 0 18px;line-height:2.1">
+      <li>Put a spot of mixture at the bottom of chromatography paper</li>
+      <li>Dip the paper in solvent (below the spot)</li>
+      <li>Solvent travels up, carrying the components at different speeds</li>
+      <li>More soluble components travel higher → separated</li>
+    </ol>
+    <br>
+    <strong>Rf value</strong> = distance travelled by spot ÷ distance travelled by solvent front
+    <br><br>Used to: identify food colourings, check purity of substances, identify amino acids in forensics.`,
+    draw:(sk)=>{
+      bg(sk,[10,18,14]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const solventProg=Math.min(1,t*0.015);
+      // Paper
+      sk.fill(255,250,220,200);sk.noStroke();sk.rect(W*0.3,H*0.1,W*0.4,H*0.75,4,4,0,0);
+      // Pencil baseline
+      sk.stroke(100,100,100,160);sk.strokeWeight(1.5);
+      sk.line(W*0.3,H*0.78,W*0.7,H*0.78);
+      // Solvent level
+      const solventY=H*0.82-(H*0.65*solventProg);
+      sk.fill(100,200,255,60);sk.noStroke();
+      sk.rect(W*0.22,solventY,W*0.56,H*0.82-solventY,0,0,4,4);
+      sk.stroke(100,200,255,140);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.22,solventY,W*0.78,solventY);
+      // Components moving up
+      const comps=[
+        {c:[231,76,60],rf:0.85},
+        {c:[46,204,113],rf:0.6},
+        {c:[52,152,219],rf:0.35},
+      ];
+      comps.forEach((comp,i)=>{
+        const spotY=H*0.78-solventProg*H*0.65*comp.rf;
+        const radius=6+4*Math.sin(t*1.5+i);
+        sk.fill(...comp.c,220);sk.noStroke();
+        if(spotY>H*0.1)sk.circle(W*0.5,spotY,radius*2);
+      });
+      // Original spot (if not moved)
+      if(solventProg<0.02){
+        sk.fill(80,80,80,180);sk.noStroke();sk.circle(W*0.5,H*0.78,8);
+      }
+      // Labels
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.LEFT);
+      sk.text('Solvent front',W*0.78+4,solventY+3);
+      sk.fill(100);sk.textSize(8);
+      sk.text('Pencil line (origin)',W*0.72,H*0.79);
+      // Rf labels
+      comps.forEach((comp,i)=>{
+        const spotY=H*0.78-solventProg*H*0.65*comp.rf;
+        if(spotY>H*0.12){
+          sk.fill(...comp.c,220);sk.textSize(7.5);sk.textAlign(sk.LEFT);
+          sk.text(`Rf = ${comp.rf}`,W*0.72,spotY+3);
+        }
+      });
+    }
+  },
+  {
+    title:'Crystallisation & Evaporation',
+    body:`<strong>Evaporation</strong>: Heat the solution so the solvent evaporates, leaving the dissolved solid behind.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Best for solids that don't decompose when heated</li>
+      <li>Example: getting salt from salt water by boiling</li>
+    </ul>
+    <br>
+    <strong>Crystallisation</strong>: Dissolve the solid in hot solvent, then allow it to cool slowly so crystals form.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Gives large, pure crystals</li>
+      <li>Better for thermally sensitive substances</li>
+      <li>Example: copper sulphate crystals from solution</li>
+    </ul>
+    <br>The key difference: crystallisation gives <strong>larger, purer crystals</strong>; simple evaporation may give a coarse, impure solid.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Evaporation (left)
+      sk.fill(180,230,255,40);sk.stroke(100,180,255,120);sk.strokeWeight(1.5);
+      sk.ellipse(W*0.22,H*0.6,90,46);
+      // Bubbles
+      for(let i=0;i<5;i++){
+        const bx=W*0.14+i*14,by=H*0.6-20-((t*0.5+i*0.2)%1)*H*0.35;
+        const ba=200*(1-((t*0.5+i*0.2)%1));
+        sk.fill(180,230,255,ba);sk.noStroke();sk.circle(bx,by,8);
+      }
+      // Heat
+      for(let i=0;i<3;i++){
+        const fx=W*0.16+i*12,fh=14+8*Math.sin(t*2+i);
+        sk.fill(255,100,0,160);sk.noStroke();sk.ellipse(fx,H*0.7,8,fh);
+      }
+      // Crystals forming
+      const prog=Math.min(1,(t*0.02)%1.5);
+      for(let i=0;i<Math.floor(prog*8);i++){
+        const cx=W*0.16+i*9,cy=H*0.62-2+Math.sin(i)*4;
+        sk.fill(200,220,255,200);sk.noStroke();
+        sk.rect(cx-4,cy-4,8,8,1);
+      }
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Evaporation',W*0.22,H*0.15);
+      sk.textSize(8);sk.text('(heat away solvent)',W*0.22,H*0.82);
+      // Crystallisation (right)
+      // Hot solution cooling
+      const coolProg=Math.sin(t*0.3)*0.5+0.5;
+      sk.fill(255,100+coolProg*100,50,50);sk.noStroke();
+      sk.circle(W*0.72,H*0.5,18);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(`${Math.floor(90-coolProg*50)}°C`,W*0.72,H*0.5);
+      // Crystal growing
+      const cSize=8+coolProg*24;
+      sk.fill(52,100,200,180);sk.noStroke();
+      sk.rect(W*0.72-cSize/2,H*0.65-cSize/2,cSize,cSize,2);
+      sk.fill(100,150,255,100);sk.noStroke();
+      sk.rect(W*0.72-cSize/2+2,H*0.65-cSize/2+2,cSize-4,cSize-4,1);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Crystallisation',W*0.72,H*0.15);
+      sk.textSize(8);sk.text('(slow cooling)',W*0.72,H*0.82);
+      sk.text('Large pure crystals!',W*0.72,H*0.88);
+    }
+  },
+  {
+    title:'🎮 Final — Choosing Separation Methods',
+    body:'Apply your knowledge to choose the right technique for each scenario.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'How would you separate a mixture of blue, red and green ink dyes?',opts:['Filtration','Distillation','Paper chromatography','Evaporation'],ans:2,exp:'PAPER CHROMATOGRAPHY is used to separate dissolved dyes (ink components) because they travel at different speeds in the solvent. Filtration won\'t work (they\'re dissolved), and distillation separates liquids by boiling point.'},
+      {q:'What does the Rf value in chromatography represent?',opts:['How colourful the spot is','The ratio of distance moved by the spot to distance moved by the solvent','The speed of the solvent','The molecular weight of the substance'],ans:1,exp:'Rf = Distance moved by SPOT ÷ Distance moved by SOLVENT FRONT. Rf values are specific to each substance under fixed conditions (same solvent, paper, temperature) and can be used to identify unknown substances.'},
+      {q:'Which technique gives the purest crystals with largest crystal size?',opts:['Evaporation to dryness','Simple filtration','Crystallisation (dissolve then slow cool)','Distillation'],ans:2,exp:'CRYSTALLISATION produces large, pure crystals. Dissolving in hot solvent and cooling slowly allows crystals to grow gradually, excluding impurities. Evaporation to dryness gives small, impure crystals.'},
+      {q:'You want to separate iron filings from sulfur powder. What is the BEST method?',opts:['Filtration','Distillation','Magnetic separation','Chromatography'],ans:2,exp:'MAGNETIC SEPARATION works because IRON is a magnetic material — a magnet attracts the iron filings away from the non-magnetic sulfur powder. This is fast, easy, and leaves both substances unchanged.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#006064',dark:'#00363a',light:'#e0f7fa',
+  title:'Separation Techniques — Filtration, Distillation & Chromatography',
+});
+</script></body></html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>States of Matter — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .print-btn:hover{background:rgba(255,255,255,.25)}
+    .btn-practice{border-color:#e65100 !important;color:#e65100;background:#fff;border:2.5px solid;border-radius:24px;padding:9px 20px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s}
+    .btn-practice:hover,.btn-practice.on{background:#e65100;color:#fff}
+    .topic-header { width:100%; background:#2e7d32; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#66bb6a; color:#fff; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #c8e6c9; }
+    #controls { display:flex; gap:10px; margin-top:14px; align-items:center; }
+    .btn { padding:9px 20px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-heat { border-color:#e53935; color:#e53935; background:#fff; }
+    .btn-heat:hover { background:#e53935; color:#fff; }
+    .btn-cool { border-color:#1976d2; color:#1976d2; background:#fff; }
+    .btn-cool:hover { background:#1976d2; color:#fff; }
+    #state-display { font-size:0.9rem; color:#555; font-weight:600; padding:8px 18px; background:#fff; border-radius:24px; border:1.5px solid #e0e0e0; }
+    .info-strip { margin-top:14px; background:#e8f5e9; border:1px solid #c8e6c9; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#2e7d32; max-width:880px; width:100%; line-height:1.5; }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html">&#8592; All Topics</a>
+  <button class="print-btn" onclick="printNotes()">&#128203; Print Notes</button>
+</div>
+<div class="topic-header">
+  <span class="label">PSLE · Standard 5</span>
+  <h1>States of Matter</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-cool" onclick="setMode(0)">&#9654; Animation</button>
+  <button class="btn btn-cool" onclick="changeHeat(-1)">&#10052; Remove Heat</button>
+  <span id="state-display">State: Solid — Temperature: Low</span>
+  <button class="btn btn-heat" onclick="changeHeat(1)">&#128293; Add Heat</button>
+  <button class="btn-practice" id="btnGame" onclick="setMode(1)">&#127918; Practice</button>
+</div>
+<div class="info-strip">
+  <strong>Key idea:</strong> All matter is made of particles. The state of matter depends on how much energy (heat) the particles have.
+  Click <strong>Add Heat</strong> to see particles gain energy and change state.
+</div>
+
+<script>
+let heatStage = 0, gameMode = 0;
+function setMode(m){ gameMode=m; document.getElementById('btnGame').classList.toggle('on',m===1); if(m===1) resetSortGame(); }
+function printNotes(){
+  let h=`<html><head><title>States of Matter Notes</title><style>body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;font-size:14px}h1{border-bottom:3px solid #2e7d32;color:#2e7d32}h2{color:#388e3c;margin:18px 0 4px}p,li{line-height:1.7}ul{margin:0 0 8px 18px}@media print{body{margin:15px}}</style></head><body>
+  <h1>PSLE Science — States of Matter</h1>
+  <h2>The Three States</h2><ul><li>Solid: fixed shape, fixed volume, particles vibrate in place, tightly packed</li><li>Liquid: no fixed shape (takes shape of container), fixed volume, particles slide past each other</li><li>Gas: no fixed shape, no fixed volume (fills any container), particles move randomly and fast</li></ul>
+  <h2>Changes of State</h2><ul><li>Melting: solid → liquid (heat added, reaches melting point)</li><li>Freezing: liquid → solid (heat removed)</li><li>Evaporation/Boiling: liquid → gas (heat added)</li><li>Condensation: gas → liquid (heat removed)</li><li>Sublimation: solid → gas directly (e.g., dry ice)</li></ul>
+  <h2>Key Idea</h2><p>All matter is made of particles. The state depends on how much energy the particles have. Adding heat increases particle energy and speeds up movement — causing state changes.</p>
+  </body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+const SORT_ITEMS=[
+  {name:'Ice cube',    state:'Solid',  emoji:'🧊'},{name:'Water',       state:'Liquid', emoji:'💧'},
+  {name:'Steam',       state:'Gas',    emoji:'♨️'},{name:'Rock',        state:'Solid',  emoji:'🪨'},
+  {name:'Milk',        state:'Liquid', emoji:'🥛'},{name:'Air',         state:'Gas',    emoji:'💨'},
+  {name:'Sand',        state:'Solid',  emoji:'⏳'},{name:'Juice',       state:'Liquid', emoji:'🍊'},
+  {name:'Oxygen gas',  state:'Gas',    emoji:'🫧'},
+];
+let sortQ, sortScore, sortAnswered, sortChosen;
+function resetSortGame(){ sortQ=0; sortScore=0; sortAnswered=false; sortChosen=null; }
+const LABELS = ['Solid — Temperature: Low', 'Liquid — Temperature: Medium', 'Gas — Temperature: High'];
+function changeHeat(dir) {
+  heatStage = Math.max(0, Math.min(2, heatStage + dir));
+  document.getElementById('state-display').textContent = 'State: ' + LABELS[heatStage];
+}
+
+new p5(function(p) {
+  const W = 880, H = 450;
+  const BOX = { x: 200, y: 50, w: 480, h: 240 };
+  const NCOLS = 6, NROWS = 4, N = NCOLS * NROWS; // 24 particles
+
+  let pts = [];
+  let tick = 0;
+
+  // Also show the three info panels below
+  const STATES = [
+    { label:'SOLID',  col:[21,101,192],  bg:[219,234,254], desc:['Definite shape', 'Definite volume', 'Particles vibrate', 'Cannot be compressed'] },
+    { label:'LIQUID', col:[2,136,209],   bg:[224,242,254], desc:['Takes shape of container','Definite volume','Particles slide past each other','Hard to compress'] },
+    { label:'GAS',    col:[0,172,193],   bg:[224,252,255], desc:['No fixed shape','No fixed volume','Particles move freely','Easily compressed'] },
+  ];
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+
+    let padX = 40, padY = 32;
+    for (let r = 0; r < NROWS; r++) {
+      for (let c = 0; c < NCOLS; c++) {
+        let hx = BOX.x + padX + c * (BOX.w - 2*padX) / (NCOLS - 1);
+        let hy = BOX.y + padY + r * (BOX.h - 2*padY) / (NROWS - 1);
+        pts.push({ x: hx, y: hy, hx, hy, vx: 0, vy: 0 });
+      }
+    }
+    // Give liquid/gas initial velocities
+    for (let pt of pts) {
+      pt.vx = p.random(-0.5, 0.5);
+      pt.vy = p.random(-0.5, 0.5);
+    }
+  };
+
+  p.draw = function() {
+    tick += 0.05;
+    if(gameMode===1){ drawSortGame(); return; }
+    p.background(248, 252, 248);
+
+    let stage = heatStage;
+    let col = STATES[stage].col;
+
+    // Draw container box
+    p.fill(col[0], col[1], col[2], 18);
+    p.stroke(col[0], col[1], col[2]);
+    p.strokeWeight(3);
+    p.rect(BOX.x, BOX.y, BOX.w, BOX.h, 8);
+
+    // Flame or ice icon below box
+    p.noStroke();
+    if (stage === 2) {
+      p.fill(230, 74, 25, 200);
+      for (let i = 0; i < 5; i++) {
+        let fx = BOX.x + BOX.w/2 - 40 + i*20;
+        let fh = 14 + p.sin(tick*3 + i) * 5;
+        p.ellipse(fx, BOX.y + BOX.h + 18, 14, fh);
+      }
+    } else if (stage === 0) {
+      p.fill(21, 101, 192, 150);
+      p.textSize(22); p.textAlign(p.CENTER);
+      p.text('❄', BOX.x + BOX.w/2, BOX.y + BOX.h + 26);
+    }
+
+    // Bonds for solid
+    if (stage === 0) {
+      p.stroke(col[0], col[1], col[2], 50);
+      p.strokeWeight(1.2);
+      for (let i = 0; i < pts.length; i++) {
+        let pt = pts[i];
+        if ((i + 1) % NCOLS !== 0 && i + 1 < pts.length) p.line(pt.x, pt.y, pts[i+1].x, pts[i+1].y);
+        if (i + NCOLS < pts.length) p.line(pt.x, pt.y, pts[i+NCOLS].x, pts[i+NCOLS].y);
+      }
+      p.noStroke();
+    }
+
+    // Update and draw particles
+    for (let pt of pts) {
+      updateParticle(pt, stage);
+      drawParticle(pt, col);
+    }
+
+    // State label inside box
+    p.fill(col[0], col[1], col[2]); p.noStroke();
+    p.textSize(11); p.textAlign(p.RIGHT); p.textStyle(p.ITALIC);
+    p.text(STATES[stage].label, BOX.x + BOX.w - 10, BOX.y + 16);
+    p.textStyle(p.NORMAL);
+
+    drawInfoPanels();
+    drawPhaseBar();
+  };
+
+  function updateParticle(pt, stage) {
+    if (stage === 0) {
+      // Solid: spring to home + tiny noise
+      pt.vx += (pt.hx - pt.x) * 0.3 + p.random(-0.4, 0.4);
+      pt.vy += (pt.hy - pt.y) * 0.3 + p.random(-0.4, 0.4);
+      pt.vx *= 0.72; pt.vy *= 0.72;
+
+    } else if (stage === 1) {
+      // Liquid: random walk + gravity, stay in lower area
+      pt.vx += p.random(-0.25, 0.25);
+      pt.vy += p.random(-0.15, 0.15) + 0.08;
+      let spd = p.sqrt(pt.vx*pt.vx + pt.vy*pt.vy);
+      if (spd > 2.2) { pt.vx *= 2.2/spd; pt.vy *= 2.2/spd; }
+      // Wall bounce
+      if (pt.x < BOX.x+12) { pt.x = BOX.x+12; pt.vx = p.abs(pt.vx)*0.8; }
+      if (pt.x > BOX.x+BOX.w-12) { pt.x = BOX.x+BOX.w-12; pt.vx = -p.abs(pt.vx)*0.8; }
+      if (pt.y < BOX.y+12) { pt.y = BOX.y+12; pt.vy = p.abs(pt.vy)*0.7; }
+      if (pt.y > BOX.y+BOX.h-12) { pt.y = BOX.y+BOX.h-12; pt.vy = -p.abs(pt.vy)*0.7; }
+
+    } else {
+      // Gas: fast, fill entire box
+      if (p.abs(pt.vx) + p.abs(pt.vy) < 1) {
+        let a = p.random(p.TWO_PI);
+        pt.vx = p.cos(a)*3.5; pt.vy = p.sin(a)*3.5;
+      }
+      if (pt.x < BOX.x+9) { pt.x = BOX.x+9; pt.vx = p.abs(pt.vx); }
+      if (pt.x > BOX.x+BOX.w-9) { pt.x = BOX.x+BOX.w-9; pt.vx = -p.abs(pt.vx); }
+      if (pt.y < BOX.y+9) { pt.y = BOX.y+9; pt.vy = p.abs(pt.vy); }
+      if (pt.y > BOX.y+BOX.h-9) { pt.y = BOX.y+BOX.h-9; pt.vy = -p.abs(pt.vy); }
+    }
+
+    // Gas trail
+    if (stage === 2) {
+      let [r,g,b] = STATES[2].col;
+      p.stroke(r,g,b,40); p.strokeWeight(1.5);
+      p.line(pt.x, pt.y, pt.x - pt.vx*2.5, pt.y - pt.vy*2.5);
+      p.noStroke();
+    }
+
+    pt.x += pt.vx; pt.y += pt.vy;
+  }
+
+  function drawParticle(pt, col) {
+    let [r,g,b] = col;
+    p.noStroke();
+    p.fill(r,g,b, 220); p.ellipse(pt.x, pt.y, 14);
+    p.fill(255,255,255, 100); p.ellipse(pt.x-3, pt.y-3, 4.5);
+    p.stroke(255,255,255,100); p.strokeWeight(1.2); p.noFill();
+    p.ellipse(pt.x, pt.y, 14); p.noStroke();
+  }
+
+  function drawInfoPanels() {
+    let panW = 244, panH = 88, gap = 24;
+    let totalW = 3*panW + 2*gap;
+    let startX = (W - totalW) / 2;
+    let panY = BOX.y + BOX.h + 50;
+
+    for (let i = 0; i < 3; i++) {
+      let s = STATES[i];
+      let px = startX + i*(panW + gap);
+      let active = heatStage === i;
+
+      // Panel box
+      p.fill(s.bg[0], s.bg[1], s.bg[2]);
+      p.stroke(active ? s.col[0] : 200, active ? s.col[1] : 200, active ? s.col[2] : 200);
+      p.strokeWeight(active ? 2.5 : 1);
+      p.rect(px, panY, panW, panH, 8);
+      p.noStroke();
+
+      // State name
+      p.fill(s.col[0], s.col[1], s.col[2]);
+      p.textSize(11.5); p.textAlign(p.LEFT); p.textStyle(p.BOLD);
+      p.text(s.label, px+12, panY+17);
+      p.textStyle(p.NORMAL);
+
+      // Description
+      p.fill(50, 50, 50); p.textSize(10);
+      for (let j = 0; j < s.desc.length; j++) {
+        p.text('• ' + s.desc[j], px+12, panY+32+j*14);
+      }
+    }
+  }
+
+  function drawPhaseBar() {
+    let bx = 30, by = H - 22, bw = W - 60, bh = 10;
+    let ctx = p.drawingContext;
+    let g = ctx.createLinearGradient(bx, 0, bx+bw, 0);
+    g.addColorStop(0, '#1565C0');
+    g.addColorStop(0.4, '#1565C0');
+    g.addColorStop(0.5, '#0288D1');
+    g.addColorStop(0.65, '#0288D1');
+    g.addColorStop(0.75, '#00BCD4');
+    g.addColorStop(1, '#00BCD4');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 5);
+    ctx.fill();
+
+    p.fill(50); p.textSize(9); p.textAlign(p.LEFT); p.noStroke();
+    p.text('← Removing heat (freezing / condensing)', bx, by - 5);
+    p.textAlign(p.RIGHT);
+    p.text('Adding heat (melting / boiling) →', bx+bw, by - 5);
+  }
+
+  function drawSortGame(){
+    p.background(248,252,248);
+    if(sortQ>=SORT_ITEMS.length){ drawSortWin(); return; }
+    let item=SORT_ITEMS[sortQ];
+    p.fill(46,125,50); p.noStroke(); p.textSize(13); p.textStyle(p.BOLD); p.textAlign(p.CENTER);
+    p.text('State Sorter — What state of matter is this?', 440,25);
+    p.fill(80); p.textSize(10); p.textStyle(p.NORMAL);
+    p.text('Question '+(sortQ+1)+' of '+SORT_ITEMS.length+' | Score: '+sortScore, 440,42);
+    // Item display
+    p.fill(240,252,240); p.stroke(100,180,100); p.strokeWeight(2); p.rect(270,70,340,160,12);
+    p.textSize(60); p.textAlign(p.CENTER,p.CENTER); p.noStroke(); p.text(item.emoji, 440,135);
+    p.fill(30); p.textSize(18); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.BASELINE); p.text(item.name, 440,225);
+    // Answer buttons
+    let states=['Solid','Liquid','Gas'];
+    let cols=[[21,101,192],[0,150,136],[183,28,28]];
+    states.forEach((s,i)=>{
+      let bx=170+i*200, by=255;
+      let chosen=sortAnswered&&sortChosen===i;
+      let correct=sortAnswered&&s===item.state;
+      let wrong=chosen&&!correct;
+      p.fill(correct?[200,255,200]:wrong?[255,200,200]:[240,248,255]); p.stroke(correct?[0,150,0]:wrong?[200,0,0]:cols[i]); p.strokeWeight(2.5);
+      p.rect(bx,by,160,50,8);
+      p.fill(correct?[0,100,0]:wrong?[150,0,0]:cols[i]); p.noStroke(); p.textSize(13); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.CENTER);
+      p.text((correct?'✓ ':wrong?'✗ ':'')+s, bx+80, by+25);
+    });
+    if(sortAnswered){
+      p.fill(sortChosen===states.indexOf(item.state)?[200,255,200]:[255,240,200]); p.noStroke(); p.rect(200,325,480,40,8);
+      p.fill(sortChosen===states.indexOf(item.state)?[0,100,0]:[100,60,0]); p.textSize(11); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.CENTER);
+      p.text(sortChosen===states.indexOf(item.state)?'Correct! '+item.name+' is a '+item.state+'.':'Wrong — '+item.name+' is a '+item.state+'!', 440,345);
+      p.fill(46,125,50); p.noStroke(); p.rect(350,378,180,38,8);
+      p.fill(255); p.textSize(13); p.textStyle(p.BOLD); p.text(sortQ<SORT_ITEMS.length-1?'Next →':'See Score', 440,397);
+    }
+    p.textAlign(p.LEFT,p.BASELINE);
+  }
+
+  function drawSortWin(){
+    p.background(248,252,248);
+    p.fill(0,0,0,140); p.noStroke(); p.rect(220,140,440,230,12);
+    p.fill(255,235,59); p.textSize(22); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.CENTER);
+    p.text('Quiz Complete!', 440,195);
+    p.fill(255); p.textSize(28); p.text(sortScore+' / '+SORT_ITEMS.length, 440,240);
+    p.fill(200,240,255); p.textSize(12); p.textStyle(p.NORMAL);
+    p.text(sortScore>=8?'Excellent — solid states knowledge!':sortScore>=6?'Good work!':'Review the three states again', 440,275);
+    p.fill(200,230,255); p.rect(350,298,180,38,8);
+    p.fill(30); p.textSize(13); p.textStyle(p.BOLD); p.text('↺ Play Again',440,317);
+  }
+
+  p.mousePressed=function(){
+    if(gameMode!==1) return;
+    let mx=p.mouseX,my=p.mouseY;
+    if(sortQ>=SORT_ITEMS.length&&mx>350&&mx<530&&my>298&&my<336){ resetSortGame(); return; }
+    if(!sortAnswered){
+      let states=['Solid','Liquid','Gas'];
+      states.forEach((s,i)=>{
+        let bx=170+i*200,by=255;
+        if(mx>bx&&mx<bx+160&&my>by&&my<by+50){ sortChosen=i; sortAnswered=true; if(s===SORT_ITEMS[sortQ].state) sortScore++; }
+      });
+    } else if(mx>350&&mx<530&&my>378&&my<416){
+      sortQ++; sortAnswered=false; sortChosen=null;
+    }
+  };
+});
+</script>
+</body>
+</html>

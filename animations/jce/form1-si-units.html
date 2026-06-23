@@ -1,0 +1,417 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SI Units &amp; Measurement — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#37474f;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#b0bec5;color:#263238;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #b0bec5}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #37474f;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#37474f;transition:all .15s}
+    .btn.on{background:#37474f;color:#fff}
+    .print-btn{margin-left:auto;background:#b0bec5;color:#263238;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
+    .print-btn:hover{background:#90a4ae}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%201">&#8592; All Topics</a></div>
+<div class="topic-header"><span class="label">JCE · Form 1 Physics/Chemistry</span><h1>SI Units &amp; Measurement</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">📐 SI Base Units</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🔬 Instruments</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">⚖ Density</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🎮 Unit Match</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n)); if(n===3) resetUnitMatch();}
+function printNotes(){
+  let html='<html><head><title>SI Units Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#37474f;border-bottom:2px solid #37474f;padding-bottom:8px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:6px 10px;font-size:.9em}th{background:#37474f;color:#fff}@media print{body{padding:10px}}    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }</style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>';
+  html+='<h1>SI Units &amp; Measurement — Study Notes</h1><h2>The 7 SI Base Units</h2><table><tr><th>Quantity</th><th>Unit</th><th>Symbol</th><th>Instrument</th></tr>';
+  BASE_UNITS.forEach(u=>html+=`<tr><td>${u.qty}</td><td>${u.unit}</td><td><strong>${u.sym}</strong></td><td>${u.inst.split(',')[0]}</td></tr>`);
+  html+='</table><h2>Key Formula</h2><p>Density (ρ) = mass (m) ÷ volume (V)</p><ul><li>Unit of density: kg/m³ or g/cm³</li><li>Object floats if density &lt; liquid density</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let umSel=-1, umMatched, umWrong, umShuffled;
+function resetUnitMatch(){
+  umShuffled=[...BASE_UNITS].sort(()=>Math.random()-0.5);
+  umSel=-1; umMatched=new Set(); umWrong={l:-1,r:-1,t:0};
+}
+
+const BASE_UNITS=[
+  {qty:'Length',unit:'metre',sym:'m',icon:'📏',col:[30,120,220],
+   desc:'Distance between two points.',inst:'Ruler, tape measure, vernier calliper',sub:'km=1000m, cm=0.01m, mm=0.001m'},
+  {qty:'Mass',unit:'kilogram',sym:'kg',icon:'⚖',col:[200,100,0],
+   desc:'Amount of matter in an object.',inst:'Balance (beam balance, electronic balance)',sub:'g=0.001kg, mg=0.000001kg'},
+  {qty:'Time',unit:'second',sym:'s',icon:'⏱',col:[150,30,180],
+   desc:'Duration of an event.',inst:'Stopwatch, clock, ticker timer',sub:'min=60s, h=3600s'},
+  {qty:'Temperature',unit:'kelvin',sym:'K',icon:'🌡',col:[220,60,30],
+   desc:'Degree of hotness or coldness.',inst:'Thermometer (clinical, laboratory)',sub:'K = °C + 273 | 0°C = 273K'},
+  {qty:'Electric Current',unit:'ampere',sym:'A',icon:'⚡',col:[30,160,100],
+   desc:'Flow of electric charge.',inst:'Ammeter (connected in series)',sub:'mA = 0.001A'},
+  {qty:'Amount of Substance',unit:'mole',sym:'mol',icon:'⚗',col:[80,60,180],
+   desc:'Number of particles (6.02×10²³).',inst:'Calculated from mass and molar mass',sub:'Used in chemistry stoichiometry'},
+  {qty:'Luminous Intensity',unit:'candela',sym:'cd',icon:'🕯',col:[200,160,0],
+   desc:'Intensity of visible light emitted.',inst:'Light meter, photometer',sub:'Common unit: lux (lm/m²)'},
+];
+const INSTRUMENTS=[
+  {name:'Ruler',use:'Length',reading:'Measure from 0 mark.\nAvoid parallax error — eye level with scale.',acc:'±0.5 mm',col:[200,100,0]},
+  {name:'Measuring Cylinder',use:'Volume of liquids',reading:'Read at the bottom of the meniscus.\nEye level with liquid surface.',acc:'±0.5 cm³',col:[30,120,220]},
+  {name:'Beam Balance',use:'Mass',reading:'Add/remove masses until balanced.\nZero before use.',acc:'±0.1 g',col:[100,100,100]},
+  {name:'Thermometer',use:'Temperature',reading:'Allow 1–2 minutes to equilibrate.\nRead with bulb fully immersed.',acc:'±0.5°C',col:[220,60,30]},
+  {name:'Stopwatch',use:'Time',reading:'Start/stop precisely.\nAccount for reaction time (human error).',acc:'±0.01 s',col:[150,30,180]},
+  {name:'Ammeter',use:'Electric current',reading:'Connected in SERIES.\nCurrent direction matters.',acc:'±0.01 A',col:[30,160,100]},
+];
+let unitSel=0;
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    tick+=0.04;
+    if(tab===3){ drawUnitMatch(); return; }
+    sk.background(248,252,248);
+    if(tab===0) drawUnits();
+    else if(tab===1) drawInstruments();
+    else drawDensity();
+    drawInfoPanel();
+  };
+  sk.mouseClicked=()=>{
+    if(tab===3){
+      let mx=sk.mouseX,my=sk.mouseY;
+      if(umMatched.size===BASE_UNITS.length&&mx>300&&mx<580&&my>456&&my<492){ resetUnitMatch(); return; }
+      BASE_UNITS.forEach((u,i)=>{ let y=30+i*60; if(mx>20&&mx<270&&my>y&&my<y+52&&!umMatched.has(i)) umSel=i; });
+      if(umSel>=0){
+        umShuffled.forEach((u,i)=>{ let origIdx=BASE_UNITS.indexOf(u),y=30+i*60;
+          if(mx>290&&mx<860&&my>y&&my<y+52&&!umMatched.has(origIdx)){
+            if(origIdx===umSel){ umMatched.add(umSel); umSel=-1; }
+            else { umWrong={l:umSel,r:i,t:50}; }
+          }
+        });
+      }
+      return;
+    }
+    if(tab===0){
+      BASE_UNITS.forEach((u,i)=>{ let x=18,y=14+i*66; if(sk.mouseX>x&&sk.mouseX<x+300&&sk.mouseY>y&&sk.mouseY<y+62) unitSel=i; });
+    }
+  };
+
+  function drawUnitMatch(){
+    if(umWrong.t>0) umWrong.t--;
+    sk.background(245,248,250);
+    sk.fill(55,71,79); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Match each quantity to its SI unit — click name then unit',440,20);
+    BASE_UNITS.forEach((u,i)=>{
+      let y=30+i*60,matched=umMatched.has(i),sel=umSel===i,wrong=umWrong.l===i&&umWrong.t>0;
+      sk.fill(matched?[180,255,180]:sel?[255,235,59]:wrong?[255,180,180]:[240,244,248]);
+      sk.stroke(matched?[0,150,0]:sel?[200,160,0]:wrong?[200,0,0]:[180]); sk.strokeWeight(matched||sel||wrong?2:1);
+      sk.rect(20,y,250,52,7); sk.noStroke();
+      sk.textSize(22); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(u.icon,34,y+26);
+      sk.fill(30); sk.textSize(12); sk.textStyle(matched||sel?sk.BOLD:sk.NORMAL); sk.text(u.qty,64,y+26);
+      if(matched){ sk.fill(0,150,0); sk.textSize(18); sk.textAlign(sk.RIGHT,sk.CENTER); sk.text('✓',262,y+26); }
+    });
+    umShuffled.forEach((u,i)=>{
+      let origIdx=BASE_UNITS.indexOf(u),y=30+i*60,matched=umMatched.has(origIdx),wrong=umWrong.r===i&&umWrong.t>0;
+      sk.fill(matched?[200,255,200]:wrong?[255,200,200]:[255,255,255]);
+      sk.stroke(matched?[0,150,0]:wrong?[200,0,0]:[200]); sk.strokeWeight(1.5);
+      sk.rect(290,y,570,52,7); sk.noStroke();
+      sk.fill(u.col[0],u.col[1],u.col[2]); sk.textSize(20); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(u.sym,308,y+26);
+      sk.fill(30); sk.textSize(11); sk.textStyle(sk.NORMAL); sk.text('— '+u.unit,348,y+20);
+      sk.fill(100); sk.textSize(9); sk.text(u.desc,348,y+38,490,20);
+    });
+    if(umMatched.size===BASE_UNITS.length){
+      sk.fill(0,0,0,155); sk.noStroke(); sk.rect(260,430,360,90,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All 7 SI units matched!',440,462); sk.fill(180,240,180); sk.noStroke(); sk.rect(300,480,280,30,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',440,495);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE); sk.textStyle(sk.NORMAL);
+  }
+
+  function drawUnits(){
+    BASE_UNITS.forEach((u,i)=>{
+      let x=18,y=14+i*66,active=unitSel===i;
+      sk.fill(u.col[0],u.col[1],u.col[2],active?180:50);
+      sk.stroke(u.col[0],u.col[1],u.col[2]);sk.strokeWeight(active?2.5:1.2);
+      sk.rect(x,y,300,62,8);sk.noStroke();
+      // Quantity
+      sk.fill(active?255:u.col[0]);sk.textSize(active?13:11);sk.textStyle(active?sk.BOLD:sk.NORMAL);
+      sk.textAlign(sk.LEFT);sk.text(u.icon+' '+u.qty,x+8,y+22);sk.textStyle(sk.NORMAL);
+      // Unit name and symbol
+      sk.fill(active?255:50);sk.textSize(active?11:10);
+      sk.text(u.unit+' ('+u.sym+')',x+8,y+40);
+      // Animated symbol on right
+      sk.fill(u.col[0],u.col[1],u.col[2],active?255:150);
+      sk.textSize(28);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);
+      sk.text(u.sym,x+292,y+40);sk.textStyle(sk.NORMAL);
+    });
+  }
+
+  function drawInstruments(){
+    let cols=3;
+    INSTRUMENTS.forEach((ins,i)=>{
+      let c=i%cols,r=Math.floor(i/cols),x=14+c*160,y=16+r*225;
+      sk.fill(255,255,255,200);sk.stroke(ins.col[0],ins.col[1],ins.col[2]);sk.strokeWeight(1.5);
+      sk.rect(x,y,154,218,8);sk.noStroke();
+      drawInstrumentIcon(ins.name,x+77,y+75,tick,ins.col);
+      sk.fill(30);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(ins.name,x+77,y+140);sk.textStyle(sk.NORMAL);
+      sk.fill(ins.col[0],ins.col[1],ins.col[2]);sk.textSize(9);sk.text('Measures: '+ins.use,x+77,y+156);
+      sk.fill(80);sk.textSize(9);sk.text('Accuracy: '+ins.acc,x+77,y+172);
+    });
+  }
+
+  function drawInstrumentIcon(name,x,y,t,col){
+    sk.noStroke();
+    switch(name){
+      case 'Ruler':
+        sk.fill(220,200,140,200);sk.stroke(160,130,80);sk.strokeWeight(1.5);sk.rect(x-48,y-15,96,30,3);
+        sk.stroke(100);sk.strokeWeight(1);
+        for(let m=0;m<=8;m++){sk.line(x-45+m*12,y-15,x-45+m*12,y-15+(m%2===0?18:10));}
+        break;
+      case 'Measuring Cylinder':
+        sk.fill(200,225,255,90);sk.stroke(100,150,220);sk.strokeWeight(2);
+        sk.rect(x-16,y-40,32,80,0,0,8,8);
+        sk.fill(100,181,246,160);sk.noStroke();
+        sk.rect(x-14,y+10,28,28,0,0,7,7);
+        sk.stroke(100,150,220);sk.strokeWeight(1);
+        for(let m=1;m<=4;m++) sk.line(x+8,y+10-m*15,x+14,y+10-m*15);
+        break;
+      case 'Beam Balance':
+        sk.fill(150);sk.stroke(100);sk.strokeWeight(2);
+        sk.rect(x-3,y-40,6,60,2);sk.line(x-35,y-5,x+35,y-5);
+        sk.fill(180,120,40);sk.noStroke();
+        sk.ellipse(x-32,y+12,26,8);sk.ellipse(x+32,y+12,26,8);
+        break;
+      case 'Thermometer':
+        sk.fill(240,240,240,200);sk.stroke(180);sk.strokeWeight(1.5);
+        sk.rect(x-6,y-38,12,75,6);sk.fill(col[0],col[1],col[2]);sk.ellipse(x,y+38,14,14);
+        let hgt=30+Math.sin(t)*20;
+        sk.fill(col[0],col[1],col[2]);sk.noStroke();sk.rect(x-3,y+36-hgt,6,hgt);
+        break;
+      case 'Stopwatch':
+        sk.fill(240);sk.stroke(100);sk.strokeWeight(2);sk.ellipse(x,y,58,58);
+        sk.fill(200);sk.noStroke();sk.ellipse(x,y,50,50);
+        sk.stroke(200,30,30);sk.strokeWeight(2);
+        let a=t*2;
+        sk.line(x,y,x+Math.cos(a)*20,y+Math.sin(a)*20);
+        sk.stroke(60);sk.strokeWeight(1);
+        for(let h=0;h<12;h++){let ha=h*sk.PI/6;sk.line(x+Math.cos(ha)*22,y+Math.sin(ha)*22,x+Math.cos(ha)*26,y+Math.sin(ha)*26);}
+        break;
+      case 'Ammeter':
+        sk.fill(240,250,230);sk.stroke(60,150,60);sk.strokeWeight(2);sk.ellipse(x,y,58,58);
+        sk.fill(30);sk.noStroke();sk.textSize(20);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text('A',x,y+7);sk.textStyle(sk.NORMAL);
+        // Needle
+        let nl=t*0.5%sk.PI-sk.PI/2;
+        sk.stroke(200,30,30);sk.strokeWeight(2);sk.line(x,y+5,x+Math.cos(nl)*20,y+5+Math.sin(nl)*20);
+        break;
+    }
+  }
+
+  function drawDensity(){
+    let cx=248,cy=260;
+    // Formula triangle
+    sk.fill(230,240,255,220);sk.stroke(30,80,200);sk.strokeWeight(2);
+    sk.triangle(cx,cy-110,cx-100,cy+70,cx+100,cy+70);sk.noStroke();
+    sk.fill(30,80,200);sk.textSize(22);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('m',cx,cy-50);
+    sk.fill(30,80,200,100);sk.noStroke();sk.rect(cx-98,cy+28,196,2);
+    sk.fill(200,60,0);sk.text('ρ',cx-45,cy+62);
+    sk.fill(30,80,200);sk.text('V',cx+45,cy+62);
+    sk.textStyle(sk.NORMAL);
+    // Labels
+    sk.fill(30,80,200);sk.textSize(10);sk.textAlign(sk.CENTER);
+    sk.text('m = mass (kg)',cx,cy-14);sk.text('ρ = density (kg/m³)',cx,cy+94);sk.text('V = volume (m³)',cx,cy+110);
+
+    // Three equations
+    const eqs=[
+      {label:'Density',formula:'ρ = m ÷ V',col:[30,80,200]},
+      {label:'Mass',formula:'m = ρ × V',col:[200,60,0]},
+      {label:'Volume',formula:'V = m ÷ ρ',col:[0,130,80]},
+    ];
+    eqs.forEach((e,i)=>{
+      let ex=30+i*156,ey=355;
+      sk.fill(e.col[0],e.col[1],e.col[2],30);sk.stroke(e.col[0],e.col[1],e.col[2]);sk.strokeWeight(1.5);
+      sk.rect(ex,ey,148,64,8);sk.noStroke();
+      sk.fill(e.col[0],e.col[1],e.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(e.label,ex+74,ey+18);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(16);sk.textStyle(sk.BOLD);sk.text(e.formula,ex+74,ey+46);sk.textStyle(sk.NORMAL);
+    });
+
+    // Example calculation
+    sk.fill(240,255,240,200);sk.stroke(60,150,60,100);sk.strokeWeight(1);
+    sk.rect(18,432,460,64,8);sk.noStroke();
+    sk.fill(0,100,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EXAMPLE: A block of iron has mass = 790 g, volume = 100 cm³. Find its density.',26,449);
+    sk.textStyle(sk.NORMAL);sk.fill(30);sk.textSize(10.5);
+    sk.text('ρ = m ÷ V = 790 g ÷ 100 cm³ = 7.9 g/cm³  (or 7900 kg/m³)',26,466);
+    sk.text('This is close to the known density of iron (7874 kg/m³) ✓',26,482);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    sk.fill(255,255,255,240);sk.stroke(55,71,79);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(55,71,79,220);sk.rect(px+8,py+8,pw-16,34,7);sk.noStroke();
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['The 7 SI Base Units','Measuring Instruments','Density = mass ÷ volume'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+
+    if(tab===0){
+      let u=BASE_UNITS[unitSel];
+      let sy=py+52;
+      sk.fill(u.col[0],u.col[1],u.col[2],30);sk.stroke(u.col[0],u.col[1],u.col[2],100);sk.strokeWeight(1.2);
+      sk.rect(px+10,sy,pw-20,80,7);sk.noStroke();
+      sk.fill(u.col[0],u.col[1],u.col[2]);sk.textSize(26);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(u.icon,px+16,sy+48);sk.textSize(13);sk.text(u.qty,px+56,sy+26);sk.textStyle(sk.NORMAL);
+      sk.textSize(11);sk.fill(30);sk.text('Unit: '+u.unit+' ('+u.sym+')',px+56,sy+44);
+      sk.textSize(10.5);sk.text(u.desc,px+56,sy+62);
+      sy+=90;
+      // Instrument
+      sk.fill(240,248,255,200);sk.stroke(30,80,200,80);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,56,6);sk.noStroke();
+      sk.fill(0,60,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('INSTRUMENT:',px+16,sy+14);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);sk.text(u.inst,px+16,sy+32);sk.textSize(10);sk.fill(80);sk.text(u.sub,px+16,sy+48);
+      sy+=66;
+      // All units summary table
+      sk.fill(250,250,250,200);sk.stroke(180);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,BASE_UNITS.length*30+22,6);sk.noStroke();
+      sk.fill(55,71,79,220);sk.rect(px+11,sy,pw-22,22,6,6,0,0);sk.noStroke();
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Quantity',px+74,sy+14);sk.text('Unit',px+174,sy+14);sk.text('Symbol',px+pw-50,sy+14);
+      sk.textStyle(sk.NORMAL);
+      BASE_UNITS.forEach((uu,i)=>{
+        let ry=sy+22+i*30;
+        if(i%2===0){sk.fill(245);sk.noStroke();sk.rect(px+11,ry,pw-22,30);}
+        let active=unitSel===i;
+        sk.fill(active?uu.col[0]:30,active?uu.col[1]:60,active?uu.col[2]:80);
+        sk.textSize(9.5);sk.textStyle(active?sk.BOLD:sk.NORMAL);
+        sk.textAlign(sk.LEFT);sk.text(uu.icon+' '+uu.qty,px+16,ry+19);
+        sk.textAlign(sk.CENTER);sk.text(uu.unit,px+174,ry+19);
+        sk.textStyle(sk.BOLD);sk.text(uu.sym,px+pw-50,ry+19);sk.textStyle(sk.NORMAL);
+      });
+    } else if(tab===1){
+      let sy=py+52;
+      INSTRUMENTS.forEach(ins=>{
+        let bh=16+ins.reading.split('\n').length*14+8;
+        sk.fill(ins.col[0],ins.col[1],ins.col[2],20);sk.stroke(ins.col[0],ins.col[1],ins.col[2],80);sk.strokeWeight(1);
+        sk.rect(px+10,sy,pw-20,bh+28,6);sk.noStroke();
+        sk.fill(ins.col[0],ins.col[1],ins.col[2]);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+        sk.text(ins.name+' — measures '+ins.use,px+16,sy+16);sk.textStyle(sk.NORMAL);
+        sk.fill(30);sk.textSize(9.5);ins.reading.split('\n').forEach((l,i)=>sk.text(l,px+16,sy+30+i*14));
+        sk.fill(80,80,80);sk.textSize(9);sk.text('Accuracy: '+ins.acc,px+16,sy+bh+18);
+        sy+=bh+36;
+      });
+    } else {
+      let sy=py+52;
+      const facts=[
+        {t:'What is density?',body:'Density tells us how TIGHTLY PACKED the matter is in an object.\nA small heavy object is DENSER than a large light object.',col:[30,80,200]},
+        {t:'Floating & Sinking',body:'Object FLOATS if its density < liquid density.\nObject SINKS if its density > liquid density.\nIce (0.9 g/cm³) floats on water (1.0 g/cm³).',col:[0,130,80]},
+        {t:'Density of common substances',body:'Water: 1.0 g/cm³\nIce: 0.9 g/cm³\nAluminium: 2.7 g/cm³\nIron: 7.9 g/cm³\nGold: 19.3 g/cm³\nAir: 0.0012 g/cm³',col:[200,100,0]},
+        {t:'Converting units',body:'1 g/cm³ = 1000 kg/m³\n1 cm³ = 1 mL = 0.000001 m³\n1 kg = 1000 g',col:[150,30,180]},
+      ];
+      facts.forEach(f=>{
+        let lines=f.body.split('\n');
+        let bh=16+lines.length*14+12;
+        sk.fill(f.col[0],f.col[1],f.col[2],18);sk.stroke(f.col[0],f.col[1],f.col[2],80);sk.strokeWeight(1);
+        sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+        sk.fill(f.col[0],f.col[1],f.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+        sk.text(f.t,px+16,sy+14);sk.textStyle(sk.NORMAL);
+        sk.fill(30);sk.textSize(10);lines.forEach((l,i)=>sk.text(l,px+16,sy+28+i*14));
+        sy+=bh+10;
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Cells — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#2e7d32; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#66bb6a; color:#fff; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #c8e6c9; }
+    #info-box { margin-top:14px; background:#fff; border:2px solid #2e7d32; border-radius:8px; padding:12px 20px; max-width:880px; width:100%; min-height:48px; }
+    #info-box h3 { font-size:0.95rem; color:#1b5e20; margin-bottom:4px; }
+    #info-box p { font-size:0.83rem; color:#444; line-height:1.5; }
+    .info-strip { margin-top:10px; background:#e8f5e9; border:1px solid #c8e6c9; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#2e7d32; max-width:880px; width:100%; }
+    .print-btn{margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
+    .print-btn:hover{background:#81c784}
+    .controls{display:flex;justify-content:center;gap:10px;margin-top:10px}
+    .mbtn{padding:7px 22px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s}
+    .mbtn.anim{background:#2e7d32;color:#fff}.mbtn.anim:hover{background:#1b5e20}
+    .mbtn.practice{background:#f9a825;color:#fff}.mbtn.practice:hover{background:#f57f17}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html">&#8592; All Topics</a>
+  <button class="print-btn" onclick="printNotes()">&#128438; Print Notes</button>
+</div>
+<div class="topic-header">
+  <span class="label">JCE · Form 1 Biology</span>
+  <h1>Introduction to Cells — Plant vs Animal</h1>
+</div>
+<div id="sketch"></div>
+<div id="info-box">
+  <h3>Click any organelle to learn its function</h3>
+  <p>Hover over the cell diagrams and click the coloured structures to see what they do.</p>
+</div>
+<div class="info-strip">
+  <strong>Key differences:</strong> Plant cells have a cell wall, large central vacuole, and chloroplasts — animal cells have none of these. Both have a nucleus, cell membrane, mitochondria, and cytoplasm.
+</div>
+<div class="controls">
+  <button class="mbtn anim" onclick="setGameMode(0)">&#9654; Animation</button>
+  <button class="mbtn practice" onclick="setGameMode(1)">&#127918; Build a Cell Match</button>
+</div>
+
+<script>
+let selectedOrganelle = null;
+let gameMode=0;
+function setGameMode(m){ gameMode=m; document.getElementById('info-box').innerHTML='<h3>'+(m?'Match each organelle to its function — click a name then click the matching description.':'Click any organelle to learn its function')+'</h3><p>'+(m?'':'Hover over the cell diagrams and click the coloured structures to see what they do.')+'</p>'; if(m===1) resetCellMatch(); }
+function printNotes(){
+  let html='<html><head><title>Cell Biology Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1b5e20;border-bottom:2px solid #1b5e20;padding-bottom:8px}h2{color:#2e7d32;margin-top:16px}p{margin:4px 0 10px}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Introduction to Cells — Study Notes</h1>';
+  Object.values(ORGANELLES).forEach(o=>{ html+=`<h2>${o.name}</h2><p>${o.desc}</p>`; });
+  html+='<h2>Key Differences: Plant vs Animal Cells</h2><ul><li>Plant cells: cell wall, large vacuole, chloroplasts</li><li>Animal cells: none of the above</li><li>Both: nucleus, cell membrane, cytoplasm, mitochondria</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+const CELL_MATCH_ITEMS=[];
+let cmSelected=-1, cmMatched, cmWrong, cmShuffled;
+function resetCellMatch(){
+  CELL_MATCH_ITEMS.length=0;
+  Object.values(ORGANELLES).forEach((o,i)=>CELL_MATCH_ITEMS.push({name:o.name,desc:o.desc.substring(0,60)+(o.desc.length>60?'...':''),idx:i}));
+  cmShuffled=[...CELL_MATCH_ITEMS].sort(()=>Math.random()-0.5);
+  cmSelected=-1; cmMatched=new Set(); cmWrong={left:-1,right:-1,timer:0};
+}
+
+const ORGANELLES = {
+  cellWall:     { name:'Cell Wall',            color:[76,153,0],     desc:'Rigid outer layer made of cellulose. Provides strength and support to the plant cell. Animal cells do NOT have a cell wall.' },
+  membrane:     { name:'Cell Membrane',        color:[180,120,60],   desc:'Thin, flexible layer surrounding the cell. Controls what enters and leaves the cell. Found in BOTH plant and animal cells.' },
+  nucleus:      { name:'Nucleus',              color:[148,33,147],   desc:'The "control centre" of the cell. Contains DNA which carries genetic information and controls all cell activities.' },
+  nucleolus:    { name:'Nucleolus',            color:[100,0,120],    desc:'Found inside the nucleus. Produces ribosomes which are used to make proteins.' },
+  vacuole:      { name:'Vacuole (central)',    color:[135,206,235],  desc:'Large fluid-filled sac in plant cells. Stores water, salts, and waste. Keeps the cell firm (turgid). Animal cells have only small vacuoles.' },
+  chloroplast:  { name:'Chloroplast',          color:[34,139,34],    desc:'Contains green chlorophyll pigment. Site of PHOTOSYNTHESIS — converts light energy, CO₂ and water into glucose and oxygen. Only in plant cells!' },
+  mitochondria: { name:'Mitochondria',         color:[220,100,20],   desc:'The "powerhouse" of the cell. Site of AEROBIC RESPIRATION — releases energy (ATP) from glucose. Found in both plant and animal cells.' },
+  cytoplasm:    { name:'Cytoplasm',            color:[220,240,255],  desc:'Jelly-like fluid filling the cell. Where most chemical reactions take place. Contains all the organelles.' },
+};
+
+new p5(function(p) {
+  const W = 880, H = 500;
+  let tick = 0;
+
+  // Plant cell: left side, rectangular
+  const PC = { x: 55, y: 60, w: 370, h: 370 };
+  // Animal cell: right side, oval
+  const AC = { cx: 660, cy: 245, rw: 190, rh: 180 };
+
+  let hitTargets = []; // { id, x, y, w, h, shape }
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+  };
+
+  p.draw = function() {
+    tick += 0.04;
+    if(gameMode===1){ drawCellMatch(); return; }
+    p.background(248, 252, 248);
+    hitTargets = [];
+
+    drawDivider();
+    drawPlantCell();
+    drawAnimalCell();
+    drawTitles();
+  };
+
+  p.mouseClicked = function() {
+    if(gameMode===1){
+      let mx=p.mouseX,my=p.mouseY;
+      // Check play again button
+      if(cmMatched.size===CELL_MATCH_ITEMS.length&&mx>300&&mx<580&&my>420&&my<460){ resetCellMatch(); return; }
+      // Left column click (name)
+      CELL_MATCH_ITEMS.forEach((item,i)=>{
+        let x=20,y=40+i*55;
+        if(mx>x&&mx<x+200&&my>y&&my<y+46){ if(!cmMatched.has(i)) cmSelected=i; }
+      });
+      // Right column click (desc)
+      if(cmSelected>=0){
+        cmShuffled.forEach((item,i)=>{
+          let x=240,y=40+i*55;
+          if(mx>x&&mx<x+620&&my>y&&my<y+46){
+            let origIdx=CELL_MATCH_ITEMS.indexOf(item);
+            if(!cmMatched.has(origIdx)){
+              if(origIdx===cmSelected){ cmMatched.add(cmSelected); cmSelected=-1; }
+              else { cmWrong={left:cmSelected,right:i,timer:40}; }
+            }
+          }
+        });
+      }
+      return;
+    }
+    for (let ht of hitTargets) {
+      if (ht.shape === 'rect') {
+        if (p.mouseX >= ht.x && p.mouseX <= ht.x+ht.w && p.mouseY >= ht.y && p.mouseY <= ht.y+ht.h) {
+          setSelected(ht.id); return;
+        }
+      } else if (ht.shape === 'ellipse') {
+        let dx = (p.mouseX - ht.cx) / ht.rw, dy = (p.mouseY - ht.cy) / ht.rh;
+        if (dx*dx + dy*dy <= 1) { setSelected(ht.id); return; }
+      }
+    }
+  };
+
+  function drawCellMatch(){
+    if(cmWrong.timer>0) cmWrong.timer--;
+    p.background(245,250,245);
+    p.fill(27,94,32); p.noStroke(); p.textSize(13); p.textStyle(p.BOLD); p.textAlign(p.CENTER);
+    p.text('Match each organelle to its function',440,22);
+    p.fill(100); p.textSize(10); p.textStyle(p.NORMAL);
+    p.text('Click a name on the left, then click its matching description on the right',440,38);
+    CELL_MATCH_ITEMS.forEach((item,i)=>{
+      let x=20,y=40+i*55,matched=cmMatched.has(i),sel=cmSelected===i,wrong=cmWrong.left===i&&cmWrong.timer>0;
+      p.fill(matched?[180,255,180]:sel?[255,235,59]:wrong?[255,180,180]:[240,245,240]);
+      p.stroke(matched?[0,150,0]:sel?[200,160,0]:wrong?[200,0,0]:[180]);
+      p.strokeWeight(matched||sel||wrong?2:1); p.rect(x,y,200,46,7);
+      p.noStroke(); p.fill(matched?[0,100,0]:sel?[120,90,0]:[30]);
+      p.textSize(11); p.textStyle(matched||sel?p.BOLD:p.NORMAL); p.textAlign(p.LEFT,p.CENTER);
+      p.text(item.name,x+10,y+23);
+      if(matched){ p.fill(0,150,0); p.textSize(16); p.textAlign(p.RIGHT,p.CENTER); p.text('✓',x+190,y+23); }
+    });
+    cmShuffled.forEach((item,i)=>{
+      let origIdx=CELL_MATCH_ITEMS.indexOf(item);
+      let x=240,y=40+i*55,matched=cmMatched.has(origIdx),wrong=cmWrong.right===i&&cmWrong.timer>0;
+      p.fill(matched?[200,255,200]:wrong?[255,200,200]:[255,255,255]);
+      p.stroke(matched?[0,150,0]:wrong?[200,0,0]:[200]); p.strokeWeight(1.5);
+      p.rect(x,y,630,46,7);
+      p.noStroke(); p.fill(matched?[0,100,0]:[40]);
+      p.textSize(10); p.textStyle(p.NORMAL); p.textAlign(p.LEFT,p.CENTER);
+      p.text(item.desc,x+10,y+23,610,40);
+    });
+    if(cmMatched.size===CELL_MATCH_ITEMS.length){
+      p.fill(0,0,0,150); p.noStroke(); p.rect(250,380,380,90,12);
+      p.fill(255,235,59); p.textSize(18); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.CENTER);
+      p.text('All matched!',440,410); p.fill(220,255,220); p.textSize(11); p.textStyle(p.NORMAL);
+      p.text('You know all 8 organelles. Well done!',440,432);
+      p.fill(180,240,180); p.noStroke(); p.rect(300,446,280,34,8);
+      p.fill(30); p.textSize(12); p.textStyle(p.BOLD); p.text('↺ Play Again',440,463);
+    }
+    p.textAlign(p.LEFT,p.BASELINE); p.textStyle(p.NORMAL);
+  }
+
+  function setSelected(id) {
+    selectedOrganelle = id;
+    let o = ORGANELLES[id];
+    document.getElementById('info-box').innerHTML =
+      '<h3>' + o.name + '</h3><p>' + o.desc + '</p>';
+  }
+
+  function isSelected(id) { return selectedOrganelle === id; }
+
+  function glowColor(id, r, g, b, a) {
+    if (isSelected(id)) {
+      let pulse = 0.5 + p.sin(tick*3)*0.5;
+      return [r, g, b, Math.min(255, a + pulse*80)];
+    }
+    return [r, g, b, a];
+  }
+
+  function drawDivider() {
+    p.stroke(200, 220, 200); p.strokeWeight(1);
+    p.line(W/2, 40, W/2, H-20); p.noStroke();
+    p.fill(80); p.textSize(9); p.textAlign(p.CENTER);
+    p.text('← PLANT CELL', W/4, H-8);
+    p.text('ANIMAL CELL →', W*3/4, H-8);
+  }
+
+  function drawPlantCell() {
+    // Cytoplasm background
+    let cg = glowColor('cytoplasm', 210, 235, 245, 200);
+    p.fill(...cg); p.noStroke(); p.rect(PC.x+9, PC.y+9, PC.w-18, PC.h-18, 4);
+    hitTargets.push({ id:'cytoplasm', shape:'rect', x:PC.x+9, y:PC.y+9, w:PC.w-18, h:PC.h-18 });
+
+    // Cell wall (outer thick border)
+    let cwg = glowColor('cellWall', 76, 153, 0, 255);
+    p.fill(...cwg); p.noStroke();
+    p.rect(PC.x, PC.y, PC.w, PC.h, 6);
+    // Clear inside
+    p.fill(210, 235, 245, 200); p.rect(PC.x+9, PC.y+9, PC.w-18, PC.h-18, 3);
+    hitTargets.push({ id:'cellWall', shape:'rect', x:PC.x, y:PC.y, w:PC.w, h:PC.h });
+
+    // Cell membrane (thin inner line)
+    let mg = glowColor('membrane', 180, 120, 60, 200);
+    p.stroke(...mg); p.strokeWeight(2); p.noFill();
+    p.rect(PC.x+10, PC.y+10, PC.w-20, PC.h-20, 3); p.noStroke();
+
+    // Large central vacuole
+    let vg = glowColor('vacuole', 135, 206, 235, 170);
+    p.fill(...vg); p.noStroke();
+    p.ellipse(PC.x + PC.w/2, PC.y + PC.h/2 + 20, 200, 190);
+    hitTargets.push({ id:'vacuole', shape:'ellipse', cx:PC.x+PC.w/2, cy:PC.y+PC.h/2+20, rw:100, rh:95 });
+    p.stroke(100, 180, 220, 150); p.strokeWeight(1.5); p.noFill();
+    p.ellipse(PC.x + PC.w/2, PC.y + PC.h/2 + 20, 200, 190); p.noStroke();
+
+    // Nucleus (upper-left area)
+    let pulse = p.sin(tick*1.2)*3;
+    let ng = glowColor('nucleus', 180, 100, 200, 220);
+    p.fill(...ng);
+    p.ellipse(PC.x+105, PC.y+115, 82+pulse, 70+pulse);
+    hitTargets.push({ id:'nucleus', shape:'ellipse', cx:PC.x+105, cy:PC.y+115, rw:44, rh:38 });
+    p.stroke(130,50,150, 120); p.strokeWeight(1.5); p.noFill();
+    p.ellipse(PC.x+105, PC.y+115, 82+pulse, 70+pulse); p.noStroke();
+
+    // Nucleolus
+    let nlg = glowColor('nucleolus', 100, 0, 120, 230);
+    p.fill(...nlg); p.ellipse(PC.x+105, PC.y+115, 22, 18);
+    hitTargets.push({ id:'nucleolus', shape:'ellipse', cx:PC.x+105, cy:PC.y+115, rw:11, rh:9 });
+
+    // Chloroplasts (green ovals, scattered)
+    let chloroPos = [[PC.x+270, PC.y+90],[PC.x+310, PC.y+160],[PC.x+80, PC.y+250],[PC.x+290, PC.y+280],[PC.x+120,PC.y+330]];
+    for (let [cx,cy] of chloroPos) {
+      let clg = glowColor('chloroplast', 34, 139, 34, 220);
+      p.fill(...clg);
+      p.push(); p.translate(cx,cy); p.rotate(p.radians(30)); p.ellipse(0,0,36,18); p.pop();
+      hitTargets.push({ id:'chloroplast', shape:'ellipse', cx, cy, rw:18, rh:12 });
+      // Thylakoid lines
+      p.stroke(20,100,20,140); p.strokeWeight(1);
+      p.push(); p.translate(cx,cy); p.rotate(p.radians(30));
+      for (let l=-10;l<=10;l+=7) p.line(l,-6,l,6);
+      p.pop(); p.noStroke();
+    }
+
+    // Mitochondria (orange ovals)
+    let mitoPos = [[PC.x+200, PC.y+90],[PC.x+335, PC.y+220]];
+    for (let [mx,my] of mitoPos) {
+      let mitg = glowColor('mitochondria', 220, 100, 20, 220);
+      p.fill(...mitg); p.ellipse(mx,my,32,18);
+      hitTargets.push({ id:'mitochondria', shape:'ellipse', cx:mx, cy:my, rw:16, rh:9 });
+      p.stroke(180,60,10,130); p.strokeWeight(1); p.noFill();
+      p.ellipse(mx,my,32,18); p.noStroke();
+      p.stroke(180,60,10,100); p.strokeWeight(0.8);
+      p.line(mx-10,my,mx+10,my); p.line(mx-8,my-4,mx+8,my-4); p.noStroke();
+    }
+
+    // Labels
+    drawLabel('Cell Wall', PC.x-4, PC.y+PC.h/2, p.RIGHT, ORGANELLES.cellWall.color);
+    drawLabel('Cell Membrane', PC.x+8, PC.y+PC.h+8, p.LEFT, ORGANELLES.membrane.color);
+    drawLabel('Central Vacuole', PC.x+PC.w/2+106, PC.y+PC.h/2+20, p.LEFT, ORGANELLES.vacuole.color);
+    drawLabel('Nucleus', PC.x+105-50, PC.y+115-46, p.CENTER, ORGANELLES.nucleus.color);
+    drawLabel('Chloroplast', PC.x+PC.w-8, PC.y+85, p.RIGHT, ORGANELLES.chloroplast.color);
+    drawLabel('Mitochondrion', PC.x+200, PC.y+70, p.CENTER, ORGANELLES.mitochondria.color);
+  }
+
+  function drawAnimalCell() {
+    let cx = AC.cx, cy = AC.cy, rw = AC.rw, rh = AC.rh;
+
+    // Cytoplasm
+    let cg = glowColor('cytoplasm', 255, 228, 196, 200);
+    p.fill(...cg); p.noStroke(); p.ellipse(cx, cy, rw*2, rh*2);
+    hitTargets.push({ id:'cytoplasm', shape:'ellipse', cx, cy, rw, rh });
+
+    // Cell membrane
+    let mg = glowColor('membrane', 180, 120, 60, 230);
+    p.stroke(...mg); p.strokeWeight(2.5); p.noFill();
+    p.ellipse(cx, cy, rw*2, rh*2); p.noStroke();
+
+    // Nucleus (centre)
+    let pulse = p.sin(tick*1.2)*3;
+    let ng = glowColor('nucleus', 180, 100, 200, 220);
+    p.fill(...ng); p.ellipse(cx, cy-10, 88+pulse, 74+pulse);
+    hitTargets.push({ id:'nucleus', shape:'ellipse', cx, cy:-10+cy, rw:46, rh:40 });
+    p.stroke(130,50,150,120); p.strokeWeight(1.5); p.noFill();
+    p.ellipse(cx, cy-10, 88+pulse, 74+pulse); p.noStroke();
+
+    // Nucleolus
+    let nlg = glowColor('nucleolus', 100, 0, 120, 230);
+    p.fill(...nlg); p.ellipse(cx, cy-10, 24, 20);
+    hitTargets.push({ id:'nucleolus', shape:'ellipse', cx, cy:cy-10, rw:12, rh:10 });
+
+    // Mitochondria (more of them)
+    let mitoPos = [[cx-120,cy-60],[cx+100,cy-80],[cx-95,cy+70],[cx+110,cy+60],[cx+30,cy+110]];
+    for (let [mx,my] of mitoPos) {
+      let mitg = glowColor('mitochondria', 220, 100, 20, 220);
+      p.fill(...mitg); p.ellipse(mx,my,30,16);
+      hitTargets.push({ id:'mitochondria', shape:'ellipse', cx:mx, cy:my, rw:15, rh:8 });
+      p.stroke(180,60,10,130); p.strokeWeight(1); p.noFill(); p.ellipse(mx,my,30,16); p.noStroke();
+      p.stroke(180,60,10,100); p.strokeWeight(0.8); p.line(mx-9,my,mx+9,my); p.noStroke();
+    }
+
+    // Small vacuoles
+    let vacPos = [[cx-90,cy+20],[cx+85,cy+30],[cx-60,cy-90]];
+    for (let [vx,vy] of vacPos) {
+      let vg = glowColor('vacuole', 200, 230, 250, 180);
+      p.fill(...vg); p.ellipse(vx,vy,24,20);
+      hitTargets.push({ id:'vacuole', shape:'ellipse', cx:vx, cy:vy, rw:12, rh:10 });
+      p.stroke(100,180,220,120); p.strokeWeight(1); p.noFill(); p.ellipse(vx,vy,24,20); p.noStroke();
+    }
+
+    // Labels
+    drawLabel('Cell Membrane', cx+rw+4, cy-rh+10, p.LEFT, ORGANELLES.membrane.color);
+    drawLabel('Nucleus', cx+50, cy-60, p.LEFT, ORGANELLES.nucleus.color);
+    drawLabel('Mitochondria', cx-125, cy-80, p.RIGHT, ORGANELLES.mitochondria.color);
+    drawLabel('Small vacuoles', cx+88, cy+48, p.LEFT, ORGANELLES.vacuole.color);
+    drawLabel('No cell wall', cx, cy+rh+16, p.CENTER, [180,50,50]);
+    drawLabel('No chloroplasts', cx, cy+rh+30, p.CENTER, [180,50,50]);
+  }
+
+  function drawLabel(txt, x, y, align, col) {
+    p.noStroke(); p.textSize(10); p.textAlign(align);
+    let tw = p.textWidth(txt);
+    let bx = align===p.RIGHT ? x-tw-4 : align===p.CENTER ? x-tw/2-4 : x-4;
+    p.fill(255,255,255,200); p.rect(bx, y-12, tw+8, 15, 3);
+    p.fill(col[0], col[1], col[2]); p.text(txt, x, y);
+  }
+
+  function drawTitles() {
+    p.noStroke();
+    p.fill(34,139,34); p.textSize(14); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('PLANT CELL', PC.x+PC.w/2, PC.y-16);
+    p.fill(200,80,20); p.text('ANIMAL CELL', AC.cx, 44);
+    p.textStyle(p.NORMAL);
+  }
+});
+</script>
+</body>
+</html>

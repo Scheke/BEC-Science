@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Organic Chemistry — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,14,20]))}
+
+const STEPS=[
+  {
+    title:'Introduction to Organic Chemistry',
+    body:`<strong>Organic chemistry</strong> is the study of carbon-based compounds. Carbon is unique because it can form:
+    <ul style="margin:8px 0 0 18px;line-height:2">
+      <li>Long chains and rings</li>
+      <li>Single, double, and triple bonds</li>
+      <li>Bonds with H, O, N, S, and halogens</li>
+    </ul>
+    <strong>Homologous series</strong> — a family of organic compounds with:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>The same general formula and functional group</li>
+      <li>Each member differs by CH₂</li>
+      <li>Similar chemical properties, gradually changing physical properties</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Carbon forming bonds
+      const cx=W/2,cy=H*0.45;
+      sk.fill(100,100,100,200);sk.noStroke();sk.circle(cx,cy,40);
+      sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C',cx,cy);sk.textStyle(sk.NORMAL);
+      // 4 bonds
+      const dir=[[0,-1],[1,0],[0,1],[-1,0]];
+      const bAtoms=['C','H','O','N'];
+      const bCols=[[100,100,100],[180,180,255],[231,76,60],[100,200,100]];
+      dir.forEach(([dx,dy],i)=>{
+        const bx=cx+dx*H*0.22,by=cy+dy*H*0.22;
+        sk.stroke(...bCols[i],180);sk.strokeWeight(3);sk.noFill();
+        sk.line(cx+dx*22,cy+dy*22,bx-dx*18,by-dy*18);
+        sk.fill(...bCols[i],200);sk.noStroke();sk.circle(bx,by,30);
+        sk.fill(255);sk.textSize(11);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(bAtoms[i],bx,by);
+      });
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('Carbon forms 4 bonds — the backbone of organic chemistry',W/2,H*0.9);
+    }
+  },
+  {
+    title:'Alkanes — Saturated Hydrocarbons',
+    body:`<strong>Alkanes</strong> contain only C–H and C–C <em>single</em> bonds — they are <strong>saturated</strong>.
+    <br><br>
+    General formula: <strong>CₙH₂ₙ₊₂</strong>
+    <br><br>
+    First four members:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Methane (CH₄) — main component of natural gas</li>
+      <li>Ethane (C₂H₆) — fuel</li>
+      <li>Propane (C₃H₈) — LPG gas bottles</li>
+      <li>Butane (C₄H₁₀) — camping gas</li>
+    </ul>
+    Alkanes <strong>burn well</strong> (combustion) but are relatively <em>unreactive</em> — no functional group to attack.`,
+    draw:(sk)=>{
+      bg(sk,[12,18,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Draw methane and ethane structures
+      const drawMethane=(cx,cy,sz)=>{
+        sk.fill(80,80,80,200);sk.noStroke();sk.circle(cx,cy,sz*1.6);
+        sk.fill(255);sk.textSize(sz*0.55);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C',cx,cy);
+        [[0,-1],[1,0],[0,1],[-1,0]].forEach(([dx,dy])=>{
+          const hx=cx+dx*sz*1.2,hy=cy+dy*sz*1.2;
+          sk.stroke(180,180,255,150);sk.strokeWeight(2);sk.noFill();
+          sk.line(cx+dx*sz*0.8,cy+dy*sz*0.8,hx-dx*sz*0.5,hy-dy*sz*0.5);
+          sk.fill(180,180,255,200);sk.noStroke();sk.circle(hx,hy,sz*0.9);
+          sk.fill(255);sk.textSize(sz*0.4);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('H',hx,hy);
+        });
+      };
+      drawMethane(W*0.22,H*0.42,22);
+      sk.fill(255,255,255,120);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('CH₄\n(Methane)',W*0.22,H*0.75);
+      // Ethane
+      [W*0.55,W*0.72].forEach((cx,i)=>{
+        sk.fill(80,80,80,200);sk.noStroke();sk.circle(cx,H*0.42,26);
+        sk.fill(255);sk.textSize(11);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C',cx,H*0.42);
+        [[0,-1],[0,1],i===0?[-1,0]:[1,0]].forEach(([dx,dy])=>{
+          const hx=cx+dx*24,hy=H*0.42+dy*24;
+          sk.stroke(180,180,255,150);sk.strokeWeight(2);sk.noFill();
+          sk.line(cx+dx*13,H*0.42+dy*13,hx-dx*10,hy-dy*10);
+          sk.fill(180,180,255,200);sk.noStroke();sk.circle(hx,hy,18);
+          sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('H',hx,hy);
+        });
+      });
+      sk.stroke(80,80,80,200);sk.strokeWeight(3);sk.line(W*0.55+13,H*0.42,W*0.72-13,H*0.42);
+      sk.fill(255,255,255,120);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('C₂H₆\n(Ethane)',W*0.635,H*0.75);
+    }
+  },
+  {
+    q:'Alkane Homologous Series — CH₄ to C₄H₁₀',
+    content:`<h3>Alkane Homologous Series</h3><p>Alkanes are saturated hydrocarbons (containing only C–C single bonds) that form a homologous series — a family of compounds sharing the same general formula CₙH₂ₙ₊₂. Each successive member adds one CH₂ unit, causing a gradual and predictable change in physical properties.</p><ul><li>Methane (CH₄, n=1): gas, BP −162°C — main component of natural gas used for cooking and heating</li><li>Propane (C₃H₈) and Butane (C₄H₁₀): stored as liquefied petroleum gas (LPG) in pressurised bottles for camping and heating</li><li>Boiling point increases down the series as longer chains have stronger intermolecular forces; flammability decreases and viscosity increases with chain length</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="300" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Alkane Homologous Series (CₙH₂ₙ₊₂)</text>
+  <!-- Methane CH4 -->
+  <rect x="8" y="26" width="95" height="120" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="55" y="42" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Methane</text>
+  <text x="55" y="55" text-anchor="middle" fill="#e65100" font-size="9">CH₄ (n=1)</text>
+  <!-- C atom -->
+  <circle cx="55" cy="90" r="12" fill="#555"/>
+  <text x="55" y="94" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C</text>
+  <!-- 4 H atoms -->
+  <circle cx="55" cy="65" r="9" fill="#90caf9"/><text x="55" y="69" text-anchor="middle" fill="#fff" font-size="9">H</text>
+  <circle cx="55" cy="115" r="9" fill="#90caf9"/><text x="55" y="119" text-anchor="middle" fill="#fff" font-size="9">H</text>
+  <circle cx="30" cy="90" r="9" fill="#90caf9"/><text x="30" y="94" text-anchor="middle" fill="#fff" font-size="9">H</text>
+  <circle cx="80" cy="90" r="9" fill="#90caf9"/><text x="80" y="94" text-anchor="middle" fill="#fff" font-size="9">H</text>
+  <line x1="55" y1="78" x2="55" y2="74" stroke="#555" stroke-width="2"/>
+  <line x1="55" y1="102" x2="55" y2="106" stroke="#555" stroke-width="2"/>
+  <line x1="43" y1="90" x2="39" y2="90" stroke="#555" stroke-width="2"/>
+  <line x1="67" y1="90" x2="71" y2="90" stroke="#555" stroke-width="2"/>
+  <text x="55" y="135" text-anchor="middle" fill="#2e7d32" font-size="9">BP: −162°C</text>
+  <text x="55" y="147" text-anchor="middle" fill="#333" font-size="9">Natural gas</text>
+  <!-- Ethane C2H6 -->
+  <rect x="112" y="26" width="95" height="120" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="160" y="42" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Ethane</text>
+  <text x="160" y="55" text-anchor="middle" fill="#e65100" font-size="9">C₂H₆ (n=2)</text>
+  <circle cx="140" cy="90" r="12" fill="#555"/><text x="140" y="94" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C</text>
+  <circle cx="180" cy="90" r="12" fill="#555"/><text x="180" y="94" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C</text>
+  <line x1="152" y1="90" x2="168" y2="90" stroke="#555" stroke-width="2"/>
+  <circle cx="125" cy="75" r="8" fill="#90caf9"/><text x="125" y="79" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="125" cy="105" r="8" fill="#90caf9"/><text x="125" y="109" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="115" cy="90" r="8" fill="#90caf9"/><text x="115" y="94" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="195" cy="75" r="8" fill="#90caf9"/><text x="195" y="79" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="195" cy="105" r="8" fill="#90caf9"/><text x="195" y="109" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="205" cy="90" r="8" fill="#90caf9"/><text x="205" y="94" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <text x="160" y="135" text-anchor="middle" fill="#2e7d32" font-size="9">BP: −89°C</text>
+  <!-- Propane C3H8 -->
+  <rect x="216" y="26" width="95" height="120" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="263" y="42" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Propane</text>
+  <text x="263" y="55" text-anchor="middle" fill="#e65100" font-size="9">C₃H₈ (n=3)</text>
+  <circle cx="237" cy="90" r="10" fill="#555"/><text x="237" y="94" text-anchor="middle" fill="#fff" font-size="10">C</text>
+  <circle cx="263" cy="90" r="10" fill="#555"/><text x="263" y="94" text-anchor="middle" fill="#fff" font-size="10">C</text>
+  <circle cx="289" cy="90" r="10" fill="#555"/><text x="289" y="94" text-anchor="middle" fill="#fff" font-size="10">C</text>
+  <line x1="247" y1="90" x2="253" y2="90" stroke="#555" stroke-width="2"/>
+  <line x1="273" y1="90" x2="279" y2="90" stroke="#555" stroke-width="2"/>
+  <circle cx="222" cy="78" r="7" fill="#90caf9"/><circle cx="222" cy="102" r="7" fill="#90caf9"/>
+  <circle cx="212" cy="90" r="7" fill="#90caf9"/>
+  <circle cx="263" cy="75" r="7" fill="#90caf9"/><circle cx="263" cy="105" r="7" fill="#90caf9"/>
+  <circle cx="304" cy="78" r="7" fill="#90caf9"/><circle cx="304" cy="102" r="7" fill="#90caf9"/>
+  <circle cx="314" cy="90" r="7" fill="#90caf9"/>
+  <text x="263" y="135" text-anchor="middle" fill="#2e7d32" font-size="9">BP: −42°C</text>
+  <text x="263" y="147" text-anchor="middle" fill="#333" font-size="9">LPG bottles</text>
+  <!-- Butane C4H10 -->
+  <rect x="320" y="26" width="92" height="120" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="366" y="42" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Butane</text>
+  <text x="366" y="55" text-anchor="middle" fill="#e65100" font-size="9">C₄H₁₀ (n=4)</text>
+  <circle cx="340" cy="90" r="9" fill="#555"/><text x="340" y="94" text-anchor="middle" fill="#fff" font-size="9">C</text>
+  <circle cx="360" cy="90" r="9" fill="#555"/><text x="360" y="94" text-anchor="middle" fill="#fff" font-size="9">C</text>
+  <circle cx="380" cy="90" r="9" fill="#555"/><text x="380" y="94" text-anchor="middle" fill="#fff" font-size="9">C</text>
+  <circle cx="400" cy="90" r="9" fill="#555"/><text x="400" y="94" text-anchor="middle" fill="#fff" font-size="9">C</text>
+  <line x1="349" y1="90" x2="351" y2="90" stroke="#555" stroke-width="2"/>
+  <line x1="369" y1="90" x2="371" y2="90" stroke="#555" stroke-width="2"/>
+  <line x1="389" y1="90" x2="391" y2="90" stroke="#555" stroke-width="2"/>
+  <text x="366" y="135" text-anchor="middle" fill="#2e7d32" font-size="9">BP: −1°C</text>
+  <text x="366" y="147" text-anchor="middle" fill="#333" font-size="9">Camping gas</text>
+  <!-- Trends section -->
+  <rect x="8" y="158" width="404" height="75" rx="6" fill="#e65100" opacity="0.1" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="175" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Trends down the homologous series:</text>
+  <text x="210" y="192" text-anchor="middle" fill="#333" font-size="10">Each member differs by ONE CH₂ group (Mᵣ increases by 14)</text>
+  <text x="210" y="207" text-anchor="middle" fill="#333" font-size="10">Boiling point INCREASES (stronger intermolecular forces in longer chains)</text>
+  <text x="210" y="222" text-anchor="middle" fill="#333" font-size="10">Flammability decreases | Viscosity increases | Similar chemical reactions</text>
+  <!-- General formula note -->
+  <rect x="8" y="243" width="404" height="50" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="260" text-anchor="middle" fill="#e65100" font-size="12" font-weight="bold">General formula: CₙH₂ₙ₊₂   (saturated — all single bonds)</text>
+  <text x="210" y="278" text-anchor="middle" fill="#333" font-size="10">Complete combustion: CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O</text>
+  <text x="210" y="291" text-anchor="middle" fill="#333" font-size="10">Incomplete combustion: → CO + H₂O (+ soot if very little O₂)</text>
+</svg>`
+  },
+  {
+    q:'Functional Groups — Alcohol, Aldehyde, Ketone, Carboxylic Acid, Ester',
+    content:`<h3>Functional Groups in Organic Chemistry</h3><p>A functional group is a specific atom or group of atoms within an organic molecule that determines its characteristic chemical reactions. Different families of organic compounds are defined by their functional groups.</p><ul><li>Alcohol (–OH): ethanol (C₂H₅OH) is the alcohol in beverages and is also used as a biofuel; reacts with sodium, can be oxidised to carboxylic acids</li><li>Carboxylic acid (–COOH): ethanoic acid (CH₃COOH) is the acid in vinegar; weak acids that react with bases and carbonates</li><li>Ester (–COO–): formed by the reaction of an alcohol with a carboxylic acid with an acid catalyst — responsible for fruit flavours and aromas; used as solvents and in perfumes</li></ul>`,
+    visual:`<svg viewBox="0 0 420 290" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="290" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Functional Groups in Organic Chemistry</text>
+  <!-- Header -->
+  <rect x="8" y="26" width="404" height="18" rx="3" fill="#e65100" opacity="0.85"/>
+  <text x="90" y="38" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">Family</text>
+  <text x="180" y="38" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">Functional group</text>
+  <text x="275" y="38" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">Example</text>
+  <text x="380" y="38" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">Formula</text>
+  <!-- Alcohol -->
+  <rect x="8" y="46" width="404" height="36" rx="0" fill="#fff"/>
+  <rect x="10" y="48" width="10" height="32" rx="2" fill="#e65100"/>
+  <text x="90" y="60" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Alcohol</text>
+  <text x="90" y="74" text-anchor="middle" fill="#333" font-size="9">–OH (hydroxyl)</text>
+  <rect x="140" y="50" width="78" height="28" rx="3" fill="#e65100" opacity="0.15"/>
+  <text x="179" y="62" text-anchor="middle" fill="#e65100" font-size="14" font-weight="bold">–OH</text>
+  <text x="179" y="74" text-anchor="middle" fill="#333" font-size="8">hydroxyl group</text>
+  <text x="275" y="62" text-anchor="middle" fill="#333" font-size="10">Ethanol</text>
+  <text x="275" y="74" text-anchor="middle" fill="#333" font-size="9">in drinks/fuel</text>
+  <text x="380" y="62" text-anchor="middle" fill="#333" font-size="10">C₂H₅OH</text>
+  <!-- Aldehyde -->
+  <rect x="8" y="84" width="404" height="36" rx="0" fill="#e65100" opacity="0.07"/>
+  <rect x="10" y="86" width="10" height="32" rx="2" fill="#f57c00"/>
+  <text x="90" y="98" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Aldehyde</text>
+  <text x="90" y="112" text-anchor="middle" fill="#333" font-size="9">–CHO</text>
+  <rect x="140" y="88" width="78" height="28" rx="3" fill="#f57c00" opacity="0.15"/>
+  <text x="179" y="100" text-anchor="middle" fill="#f57c00" font-size="14" font-weight="bold">–CHO</text>
+  <text x="179" y="112" text-anchor="middle" fill="#333" font-size="8">at chain end</text>
+  <text x="275" y="100" text-anchor="middle" fill="#333" font-size="10">Ethanal</text>
+  <text x="275" y="112" text-anchor="middle" fill="#333" font-size="9">vinegar precursor</text>
+  <text x="380" y="100" text-anchor="middle" fill="#333" font-size="10">CH₃CHO</text>
+  <!-- Ketone -->
+  <rect x="8" y="122" width="404" height="36" rx="0" fill="#fff"/>
+  <rect x="10" y="124" width="10" height="32" rx="2" fill="#ffd600"/>
+  <text x="90" y="136" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Ketone</text>
+  <text x="90" y="150" text-anchor="middle" fill="#333" font-size="9">C=O (in chain)</text>
+  <rect x="140" y="126" width="78" height="28" rx="3" fill="#ffd600" opacity="0.2"/>
+  <text x="179" y="138" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">–CO–</text>
+  <text x="179" y="150" text-anchor="middle" fill="#333" font-size="8">in middle of chain</text>
+  <text x="275" y="136" text-anchor="middle" fill="#333" font-size="10">Propanone</text>
+  <text x="275" y="150" text-anchor="middle" fill="#333" font-size="9">nail polish remover</text>
+  <text x="380" y="136" text-anchor="middle" fill="#333" font-size="10">CH₃COCH₃</text>
+  <!-- Carboxylic acid -->
+  <rect x="8" y="160" width="404" height="36" rx="0" fill="#e65100" opacity="0.07"/>
+  <rect x="10" y="162" width="10" height="32" rx="2" fill="#1565c0"/>
+  <text x="90" y="174" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Carboxylic acid</text>
+  <text x="90" y="188" text-anchor="middle" fill="#333" font-size="9">–COOH</text>
+  <rect x="140" y="164" width="78" height="28" rx="3" fill="#1565c0" opacity="0.15"/>
+  <text x="179" y="176" text-anchor="middle" fill="#1565c0" font-size="13" font-weight="bold">–COOH</text>
+  <text x="179" y="188" text-anchor="middle" fill="#333" font-size="8">carboxyl group</text>
+  <text x="275" y="174" text-anchor="middle" fill="#333" font-size="10">Ethanoic acid</text>
+  <text x="275" y="188" text-anchor="middle" fill="#333" font-size="9">in vinegar</text>
+  <text x="380" y="174" text-anchor="middle" fill="#333" font-size="10">CH₃COOH</text>
+  <!-- Ester -->
+  <rect x="8" y="198" width="404" height="36" rx="0" fill="#fff"/>
+  <rect x="10" y="200" width="10" height="32" rx="2" fill="#2e7d32"/>
+  <text x="90" y="212" text-anchor="middle" fill="#333" font-size="11" font-weight="bold">Ester</text>
+  <text x="90" y="226" text-anchor="middle" fill="#333" font-size="9">–COO– (ester link)</text>
+  <rect x="140" y="202" width="78" height="28" rx="3" fill="#2e7d32" opacity="0.15"/>
+  <text x="179" y="214" text-anchor="middle" fill="#2e7d32" font-size="13" font-weight="bold">–COO–</text>
+  <text x="179" y="226" text-anchor="middle" fill="#333" font-size="8">ester linkage</text>
+  <text x="275" y="212" text-anchor="middle" fill="#333" font-size="10">Ethyl ethanoate</text>
+  <text x="275" y="226" text-anchor="middle" fill="#333" font-size="9">fruit flavours</text>
+  <text x="380" y="212" text-anchor="middle" fill="#333" font-size="10">CH₃COOC₂H₅</text>
+  <!-- Column dividers -->
+  <line x1="145" y1="26" x2="145" y2="236" stroke="#e65100" stroke-width="0.8" opacity="0.4"/>
+  <line x1="230" y1="26" x2="230" y2="236" stroke="#e65100" stroke-width="0.8" opacity="0.4"/>
+  <line x1="328" y1="26" x2="328" y2="236" stroke="#e65100" stroke-width="0.8" opacity="0.4"/>
+  <!-- Ester formation note -->
+  <rect x="8" y="240" width="404" height="44" rx="5" fill="#e65100" opacity="0.12" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="256" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Ester formation (esterification):</text>
+  <text x="210" y="270" text-anchor="middle" fill="#333" font-size="10">Alcohol + Carboxylic acid ⇌ Ester + Water</text>
+  <text x="210" y="282" text-anchor="middle" fill="#333" font-size="10">(acid catalyst, heat; reversible reaction)</text>
+</svg>`
+  },
+  {
+    q:'Combustion Products — Complete vs Incomplete',
+    content:`<h3>Combustion of Hydrocarbons — Complete vs Incomplete</h3><p>When hydrocarbons burn, the products depend entirely on the oxygen supply. Complete combustion (excess oxygen) is clean and produces only carbon dioxide and water. Incomplete combustion (limited oxygen) is dangerous and produces toxic and polluting by-products.</p><ul><li>Complete combustion: CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O — blue flame, all carbon fully oxidised; used when fuels burn efficiently in engines and boilers</li><li>Incomplete combustion: limited O₂ produces CO (carbon monoxide) and/or C (soot) + H₂O — yellow/orange smoky flame indicating inefficient burning</li><li>Carbon monoxide is particularly dangerous because it is colourless, odourless, and binds irreversibly to haemoglobin in red blood cells, preventing oxygen transport</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="270" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Combustion of Hydrocarbons</text>
+  <!-- Complete combustion: left panel -->
+  <rect x="8" y="28" width="195" height="175" rx="6" fill="#fff" stroke="#2e7d32" stroke-width="2"/>
+  <text x="105" y="46" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">Complete Combustion</text>
+  <text x="105" y="59" text-anchor="middle" fill="#333" font-size="9">Excess oxygen (O₂) present</text>
+  <!-- Blue flame -->
+  <ellipse cx="105" cy="115" rx="18" ry="28" fill="#42a5f5" opacity="0.8"/>
+  <ellipse cx="105" cy="110" rx="12" ry="20" fill="#90caf9" opacity="0.9"/>
+  <text x="105" y="90" text-anchor="middle" fill="#1565c0" font-size="20">🔵</text>
+  <text x="105" y="158" text-anchor="middle" fill="#333" font-size="9">Blue flame</text>
+  <!-- Equation -->
+  <text x="105" y="172" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">CH₄ + 2O₂ →</text>
+  <text x="105" y="185" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">CO₂ + 2H₂O</text>
+  <text x="105" y="198" text-anchor="middle" fill="#333" font-size="9">Products: CO₂ + H₂O only</text>
+  <!-- Incomplete combustion: right panel -->
+  <rect x="217" y="28" width="195" height="175" rx="6" fill="#fff" stroke="#c62828" stroke-width="2"/>
+  <text x="314" y="46" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">Incomplete Combustion</text>
+  <text x="314" y="59" text-anchor="middle" fill="#333" font-size="9">Limited oxygen supply</text>
+  <!-- Yellow/smoky flame -->
+  <ellipse cx="314" cy="115" rx="18" ry="28" fill="#ffd54f" opacity="0.8"/>
+  <ellipse cx="314" cy="110" rx="12" ry="20" fill="#ff8f00" opacity="0.7"/>
+  <text x="314" y="90" text-anchor="middle" fill="#ff6f00" font-size="20">🔴</text>
+  <!-- Soot particles -->
+  <circle cx="298" cy="70" r="4" fill="#333" opacity="0.7"/>
+  <circle cx="320" cy="62" r="3" fill="#333" opacity="0.7"/>
+  <circle cx="308" cy="55" r="4" fill="#333" opacity="0.6"/>
+  <circle cx="330" cy="58" r="3" fill="#333" opacity="0.5"/>
+  <text x="314" y="158" text-anchor="middle" fill="#333" font-size="9">Yellow/smoky flame</text>
+  <text x="314" y="172" text-anchor="middle" fill="#c62828" font-size="10" font-weight="bold">Products include:</text>
+  <text x="314" y="185" text-anchor="middle" fill="#333" font-size="9">CO (carbon monoxide)</text>
+  <text x="314" y="198" text-anchor="middle" fill="#333" font-size="9">C (soot) + H₂O</text>
+  <!-- Comparison table -->
+  <rect x="8" y="210" width="404" height="52" rx="6" fill="#e65100" opacity="0.1" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="226" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Why incomplete combustion is dangerous:</text>
+  <text x="210" y="241" text-anchor="middle" fill="#333" font-size="10">CO (carbon monoxide) is colourless, odourless, TOXIC — bonds to haemoglobin</text>
+  <text x="210" y="256" text-anchor="middle" fill="#333" font-size="10">Soot (carbon particles) causes breathing problems and climate effects</text>
+</svg>`
+  },
+  {
+    q:'Polymerisation — Monomer to Polymer (Addition)',
+    content:`<h3>Addition Polymerisation: Ethene → Poly(ethene)</h3><p>Addition polymerisation occurs when many small monomer molecules containing a C=C double bond join together to form a long polymer chain. The double bond opens and each monomer links to the next, with no atoms lost in the process.</p><ul><li>Monomer: ethene (CH₂=CH₂) — each molecule has a reactive C=C double bond that acts as the joining point</li><li>Conditions: high pressure, moderate temperature, and a catalyst; n represents thousands of repeat units joining to form the polymer</li><li>Polymer: poly(ethene) or polyethylene — repeat unit (–CH₂–CH₂–)ₙ; flexible, waterproof, chemically unreactive — used in plastic bags, bottles, and food packaging</li></ul>`,
+    visual:`<svg viewBox="0 0 420 275" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="275" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Addition Polymerisation: Ethene → Poly(ethene)</text>
+  <!-- Step 1: monomers -->
+  <text x="210" y="38" text-anchor="middle" fill="#333" font-size="11">Many ethene monomers (each has a C=C double bond):</text>
+  <!-- Ethene molecule 1 -->
+  <rect x="8" y="45" width="88" height="55" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="32" cy="73" r="11" fill="#555"/><text x="32" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <circle cx="64" cy="73" r="11" fill="#555"/><text x="64" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <line x1="43" y1="70" x2="53" y2="70" stroke="#ffd600" stroke-width="2.5"/>
+  <line x1="43" y1="76" x2="53" y2="76" stroke="#ffd600" stroke-width="2.5"/>
+  <circle cx="18" cy="58" r="7" fill="#90caf9"/><text x="18" y="62" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="18" cy="88" r="7" fill="#90caf9"/><text x="18" y="92" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="78" cy="58" r="7" fill="#90caf9"/><text x="78" y="62" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <circle cx="78" cy="88" r="7" fill="#90caf9"/><text x="78" y="92" text-anchor="middle" fill="#fff" font-size="8">H</text>
+  <text x="48" y="93" text-anchor="middle" fill="#e65100" font-size="8">C=C</text>
+  <!-- Plus -->
+  <text x="103" y="76" text-anchor="middle" fill="#333" font-size="16" font-weight="bold">+</text>
+  <!-- Ethene molecule 2 (same) -->
+  <rect x="112" y="45" width="88" height="55" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="136" cy="73" r="11" fill="#555"/><text x="136" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <circle cx="168" cy="73" r="11" fill="#555"/><text x="168" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <line x1="147" y1="70" x2="157" y2="70" stroke="#ffd600" stroke-width="2.5"/>
+  <line x1="147" y1="76" x2="157" y2="76" stroke="#ffd600" stroke-width="2.5"/>
+  <circle cx="122" cy="58" r="7" fill="#90caf9"/><circle cx="122" cy="88" r="7" fill="#90caf9"/>
+  <circle cx="182" cy="58" r="7" fill="#90caf9"/><circle cx="182" cy="88" r="7" fill="#90caf9"/>
+  <text x="207" y="76" text-anchor="middle" fill="#333" font-size="16" font-weight="bold">+</text>
+  <!-- Ethene molecule 3 -->
+  <rect x="216" y="45" width="88" height="55" rx="5" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <circle cx="240" cy="73" r="11" fill="#555"/><text x="240" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <circle cx="272" cy="73" r="11" fill="#555"/><text x="272" y="77" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">C</text>
+  <line x1="251" y1="70" x2="261" y2="70" stroke="#ffd600" stroke-width="2.5"/>
+  <line x1="251" y1="76" x2="261" y2="76" stroke="#ffd600" stroke-width="2.5"/>
+  <circle cx="226" cy="58" r="7" fill="#90caf9"/><circle cx="226" cy="88" r="7" fill="#90caf9"/>
+  <circle cx="282" cy="58" r="7" fill="#90caf9"/><circle cx="282" cy="88" r="7" fill="#90caf9"/>
+  <text x="310" y="76" text-anchor="middle" fill="#333" font-size="14">n</text>
+  <text x="335" y="76" text-anchor="middle" fill="#e65100" font-size="14" font-weight="bold">→</text>
+  <!-- Arrow down -->
+  <line x1="210" y1="108" x2="210" y2="126" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="240" y="120" fill="#333" font-size="9">catalyst, high P/T</text>
+  <!-- Polymer chain -->
+  <rect x="30" y="130" width="360" height="60" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="147" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Poly(ethene) — long chain, all single bonds</text>
+  <!-- Chain repeating units -->
+  <line x1="40" y1="170" x2="380" y2="170" stroke="#555" stroke-width="3"/>
+  <circle cx="75" cy="170" r="9" fill="#555"/><circle cx="115" cy="170" r="9" fill="#555"/>
+  <circle cx="175" cy="170" r="9" fill="#555"/><circle cx="215" cy="170" r="9" fill="#555"/>
+  <circle cx="275" cy="170" r="9" fill="#555"/><circle cx="315" cy="170" r="9" fill="#555"/>
+  <circle cx="75" cy="155" r="6" fill="#90caf9"/><circle cx="75" cy="185" r="6" fill="#90caf9"/>
+  <circle cx="115" cy="155" r="6" fill="#90caf9"/><circle cx="115" cy="185" r="6" fill="#90caf9"/>
+  <circle cx="175" cy="155" r="6" fill="#90caf9"/><circle cx="175" cy="185" r="6" fill="#90caf9"/>
+  <circle cx="215" cy="155" r="6" fill="#90caf9"/><circle cx="215" cy="185" r="6" fill="#90caf9"/>
+  <circle cx="275" cy="155" r="6" fill="#90caf9"/><circle cx="275" cy="185" r="6" fill="#90caf9"/>
+  <circle cx="315" cy="155" r="6" fill="#90caf9"/><circle cx="315" cy="185" r="6" fill="#90caf9"/>
+  <!-- Bracket notation -->
+  <text x="210" y="215" text-anchor="middle" fill="#333" font-size="13" font-weight="bold">( –CH₂–CH₂– )ₙ</text>
+  <text x="210" y="232" text-anchor="middle" fill="#333" font-size="10">n = thousands of repeat units</text>
+  <!-- Properties note -->
+  <rect x="10" y="244" width="400" height="24" rx="4" fill="#e65100" opacity="0.12"/>
+  <text x="210" y="260" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Poly(ethene): flexible, waterproof, non-reactive → bags, bottles, packaging</text>
+</svg>`
+  },
+  {
+    q:'Fermentation — Glucose to Ethanol (Conditions)',
+    content:`<h3>Fermentation: Glucose → Ethanol</h3><p>Fermentation is an anaerobic (without oxygen) biological process in which yeast converts glucose into ethanol and carbon dioxide. The enzyme zymase in the yeast catalyses this reaction and is highly sensitive to temperature and oxygen levels.</p><ul><li>Equation: C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ — glucose is broken down into two molecules each of ethanol and carbon dioxide</li><li>Conditions: yeast (contains zymase enzyme), warm temperature 25–35°C (too hot denatures the enzyme; too cold slows it), anaerobic (no oxygen — oxygen kills the yeast), and slightly acidic pH 4–6</li><li>Ethanol concentration is limited to about 14–15% because higher concentrations kill the yeast; distillation is used to concentrate the ethanol further for fuel or industrial applications</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="280" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Fermentation: Glucose → Ethanol</text>
+  <!-- Fermentation vessel -->
+  <rect x="130" y="50" width="160" height="130" rx="8" fill="#a5d6a7" opacity="0.4" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Bubbles of CO2 -->
+  <circle cx="175" cy="130" r="6" fill="#fff" stroke="#333" stroke-width="1" opacity="0.7"/>
+  <circle cx="200" cy="110" r="5" fill="#fff" stroke="#333" stroke-width="1" opacity="0.7"/>
+  <circle cx="230" cy="125" r="7" fill="#fff" stroke="#333" stroke-width="1" opacity="0.7"/>
+  <circle cx="210" cy="90" r="5" fill="#fff" stroke="#333" stroke-width="1" opacity="0.6"/>
+  <circle cx="185" cy="75" r="4" fill="#fff" stroke="#333" stroke-width="1" opacity="0.5"/>
+  <!-- Yeast particles -->
+  <ellipse cx="170" cy="150" rx="8" ry="5" fill="#ffa726" opacity="0.8"/>
+  <ellipse cx="210" cy="158" rx="8" ry="5" fill="#ffa726" opacity="0.8"/>
+  <ellipse cx="250" cy="148" rx="8" ry="5" fill="#ffa726" opacity="0.8"/>
+  <text x="210" y="172" text-anchor="middle" fill="#1b5e20" font-size="9" font-weight="bold">Yeast (enzyme: zymase)</text>
+  <!-- Labels around vessel -->
+  <text x="210" y="46" text-anchor="middle" fill="#333" font-size="10">Glucose solution</text>
+  <text x="96" y="100" text-anchor="end" fill="#333" font-size="10">Warm</text>
+  <text x="96" y="112" text-anchor="end" fill="#333" font-size="10">25–35°C</text>
+  <line x1="100" y1="107" x2="130" y2="115" stroke="#e65100" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- CO2 escaping -->
+  <line x1="210" y1="50" x2="210" y2="28" stroke="#546e7a" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="270" y="40" fill="#546e7a" font-size="9">CO₂ gas</text>
+  <text x="270" y="52" fill="#546e7a" font-size="9">escapes</text>
+  <!-- Airlock / no air -->
+  <rect x="330" y="60" width="80" height="45" rx="4" fill="#fff" stroke="#c62828" stroke-width="1.5"/>
+  <text x="370" y="75" text-anchor="middle" fill="#c62828" font-size="9" font-weight="bold">Anaerobic</text>
+  <text x="370" y="88" text-anchor="middle" fill="#c62828" font-size="9">(no oxygen)</text>
+  <text x="370" y="100" text-anchor="middle" fill="#c62828" font-size="9">O₂ kills yeast</text>
+  <!-- Equation banner -->
+  <rect x="8" y="192" width="404" height="38" rx="6" fill="#2e7d32" opacity="0.85"/>
+  <text x="210" y="207" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂</text>
+  <text x="210" y="222" text-anchor="middle" fill="#fff" font-size="9">Glucose → Ethanol + Carbon dioxide</text>
+  <!-- Conditions box -->
+  <rect x="8" y="238" width="404" height="35" rx="5" fill="#e65100" opacity="0.12" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="253" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Conditions:</text>
+  <text x="210" y="267" text-anchor="middle" fill="#333" font-size="10">Yeast (contains enzyme zymase) | 25–35°C | Anaerobic | pH ~4–6</text>
+  <!-- Industrial vs lab note -->
+  <text x="8" y="196" text-anchor="start" fill="#fff" font-size="8">enzyme: zymase</text>
+</svg>`
+  },
+  {
+    title:'Alkenes — Unsaturated Hydrocarbons',
+    body:`<strong>Alkenes</strong> contain a C=C <em>double</em> bond — they are <strong>unsaturated</strong>.
+    <br><br>
+    General formula: <strong>CₙH₂ₙ</strong>
+    <br><br>
+    Examples:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Ethene (C₂H₄) — used to make poly(ethene)/polyethylene</li>
+      <li>Propene (C₃H₆)</li>
+    </ul>
+    Key reaction: <strong>Addition reactions</strong> — the C=C double bond opens and new atoms add across it.
+    <br><br>
+    Test for alkenes: add <strong>bromine water</strong>. Orange → colourless = alkene present (bromine adds across the double bond).`,
+    draw:(sk)=>{
+      bg(sk,[10,14,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ethene structure
+      const cx=W/2,cy=H*0.38;
+      const carbons=[[cx-28,cy],[cx+28,cy]];
+      carbons.forEach((c,i)=>{
+        sk.fill(80,80,80,200);sk.noStroke();sk.circle(...c,30);
+        sk.fill(255);sk.textSize(12);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('C',...c);
+        [[-1,0],[0,-1],[0,1]].forEach(([dx,dy])=>{
+          if(i===0&&dx>0||i===1&&dx<0)return;
+          const hx=c[0]+dx*30,hy=c[1]+dy*28;
+          sk.stroke(180,180,255,150);sk.strokeWeight(1.5);sk.noFill();
+          sk.line(c[0]+dx*15,c[1]+dy*15,hx-dx*11,hy-dy*11);
+          sk.fill(180,180,255,180);sk.noStroke();sk.circle(hx,hy,18);
+          sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('H',hx,hy);
+        });
+      });
+      // Double bond
+      sk.stroke(255,220,50,200);sk.strokeWeight(3);sk.noFill();
+      sk.line(carbons[0][0]+15,cy-3,carbons[1][0]-15,cy-3);
+      sk.line(carbons[0][0]+15,cy+3,carbons[1][0]-15,cy+3);
+      sk.fill(255,220,50);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('C=C double bond',cx,H*0.56);
+      // Bromine test
+      const testProg=Math.min(1,t/8);
+      sk.fill(230,130,0,180*(1-testProg));sk.noStroke();
+      sk.circle(W*0.5,H*0.75,40);
+      sk.fill(testProg>0.5?[200,220,200]:[230,130,0]);
+      sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(testProg>0.7?'Colourless\n(alkene!)':'Br₂\norange',W*0.5,H*0.75);
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Bromine water test',W*0.5,H*0.9);
+    }
+  },
+  {
+    title:'🎮 Check — Alkanes vs Alkenes',
+    body:'Test your knowledge of the two key hydrocarbon families.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the general formula for alkanes?',opts:['CₙH₂ₙ','CₙH₂ₙ₊₂','CₙH₂ₙ₋₂','CₙHₙ'],ans:1,exp:'Alkanes follow CₙH₂ₙ₊₂. Example: methane (n=1) → CH₄ = C₁H₄ ✓. Ethane (n=2) → C₂H₆ ✓.'},
+      {q:'Which compound contains a C=C double bond?',opts:['Methane','Ethane','Ethene','Ethanol'],ans:2,exp:'Ethene (C₂H₄) is an alkene — it has a C=C double bond. This makes it unsaturated and reactive (addition reactions).'},
+      {q:'Bromine water turns from orange to colourless when added to:',opts:['An alkane','An alkene','Water only','Ethanol'],ans:1,exp:'Bromine adds across the C=C double bond of an alkene (addition reaction). The orange bromine is used up → solution turns colourless. Alkanes don\'t react with bromine water.'},
+      {q:'Which of these is a property of ALL alkanes?',opts:['They contain a C=C double bond','They decolourise bromine water','They are saturated hydrocarbons','They react with steam'],ans:2,exp:'Alkanes are SATURATED — they only have single C–C and C–H bonds. They do not react with bromine water and are relatively unreactive.'},
+    ]}
+  },
+  {
+    title:'Functional Groups — Alcohols & Acids',
+    body:`A <strong>functional group</strong> determines the chemical behaviour of an organic compound.
+    <br><br>
+    <strong>Alcohols</strong> — contain –OH group:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>General formula: CₙH₂ₙ₊₁OH</li>
+      <li>Ethanol (C₂H₅OH) — in drinks, used as fuel/solvent</li>
+      <li>React with sodium, combust in air, oxidise to acids</li>
+    </ul>
+    <strong>Carboxylic acids</strong> — contain –COOH group:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Ethanoic acid (CH₃COOH) — in vinegar</li>
+      <li>React with bases/carbonates, react with alcohols to make esters</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ethanol
+      sk.fill(52,152,219,50);sk.noStroke();sk.rect(0,0,W/2,H);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('ALCOHOL',W*0.25,H*0.1);sk.textStyle(sk.NORMAL);
+      // CH3CH2OH diagram (simplified)
+      [[W*0.1,'C',[80,80,80]],[W*0.2,'C',[80,80,80]],[W*0.32,'O',[231,76,60]],[W*0.4,'H',[180,180,255]]].forEach(([x,s,c])=>{
+        sk.fill(...c,200);sk.noStroke();sk.circle(x,H*0.42,22);
+        sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(s,x,H*0.42);
+      });
+      // Single bonds
+      [[W*0.1,W*0.2],[W*0.2,W*0.32],[W*0.32,W*0.4]].forEach(([x1,x2])=>{
+        sk.stroke(255,255,255,80);sk.strokeWeight(2);sk.noFill();sk.line(x1+11,H*0.42,x2-11,H*0.42);
+      });
+      sk.fill(231,76,60);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('–OH (hydroxyl\nfunctional group)',W*0.35,H*0.6);
+      sk.fill(255);sk.text('C₂H₅OH\nEthanol',W*0.22,H*0.78);
+      // Ethanoic acid
+      sk.fill(46,204,113,50);sk.noStroke();sk.rect(W/2,0,W/2,H);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('CARBOXYLIC ACID',W*0.75,H*0.1);sk.textStyle(sk.NORMAL);
+      [[W*0.58,'C',[80,80,80]],[W*0.72,'C',[80,80,80]],[W*0.86,'O',[231,76,60]],[W*0.94,'OH',[231,76,60]]].forEach(([x,s,c])=>{
+        sk.fill(...c,200);sk.noStroke();sk.circle(x,H*0.42,22);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(s,x,H*0.42);
+      });
+      sk.fill(46,204,113);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('–COOH\n(carboxyl group)',W*0.9,H*0.62);
+      sk.fill(255);sk.text('CH₃COOH\nEthanoic acid',W*0.75,H*0.78);
+    }
+  },
+  {
+    title:'Fractional Distillation & Polymers',
+    body:`<strong>Fractional distillation of crude oil</strong> separates mixtures of hydrocarbons by their boiling points:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Top (coolest): petrol, naphtha (short chains, low bp)</li>
+      <li>Middle: kerosene/jet fuel, diesel</li>
+      <li>Bottom (hottest): lubricating oil, bitumen (long chains, high bp)</li>
+    </ul>
+    <strong>Cracking</strong> — breaks large hydrocarbons into smaller, more useful ones using heat and catalyst.
+    <br><br>
+    <strong>Polymers</strong> — small monomers join to form long chains:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Poly(ethene): nCH₂=CH₂ → (–CH₂–CH₂–)ₙ</li>
+      <li>Poly(propene), PVC, nylon — used in packaging, clothing, pipes</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,12,22]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Fractionating column
+      sk.fill(60,80,100,150);sk.noStroke();sk.rect(W*0.35,H*0.05,W*0.3,H*0.85,4);
+      const fractions=[
+        {label:'Petrol\n(bp <40°C)',y:0.12,c:[241,196,15]},
+        {label:'Kerosene\n(150–250°C)',y:0.35,c:[255,165,50]},
+        {label:'Diesel\n(220–350°C)',y:0.55,c:[231,100,60]},
+        {label:'Fuel oil\n(>350°C)',y:0.78,c:[150,80,30]},
+      ];
+      fractions.forEach(f=>{
+        sk.fill(...f.c,200);sk.noStroke();
+        sk.rect(W*0.35,f.y*H,W*0.3,H*0.16);
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(f.label,W*0.5,f.y*H+H*0.08);
+        // Output arrows
+        sk.stroke(...f.c,180);sk.strokeWeight(1.5);sk.noFill();
+        const dir=fractions.indexOf(f)%2===0?1:-1;
+        const ox=dir===1?W*0.65:W*0.35;
+        sk.line(W*0.35+(dir===1?W*0.3:0),f.y*H+H*0.08,ox+dir*W*0.1,f.y*H+H*0.08);
+      });
+      // Temperature gradient arrow
+      sk.stroke(255,255,255,40);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.3,H*0.05,W*0.3,H*0.9);
+      sk.fill(255,255,255,80);sk.textSize(8.5);sk.textAlign(sk.RIGHT);
+      sk.push();sk.translate(W*0.28,H*0.5);sk.rotate(-sk.HALF_PI);
+      sk.text('Temperature ↑',0,0);sk.pop();
+    }
+  },
+  {
+    title:'🎮 Final — Organic Chemistry',
+    body:'Apply everything you know about hydrocarbons, functional groups and polymers.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What functional group do alcohols contain?',opts:['–COOH','–NH₂','–OH','C=C'],ans:2,exp:'Alcohols contain the –OH (hydroxyl) functional group. Example: ethanol (C₂H₅OH) is used in drinks and as a fuel.'},
+      {q:'Ethene undergoes addition polymerisation to form:',opts:['Poly(propene)','Poly(ethene) / polyethylene','Nylon','PVC'],ans:1,exp:'nCH₂=CH₂ → (–CH₂–CH₂–)ₙ. Ethene monomers join to form poly(ethene), also called polyethylene. The C=C double bond opens and the monomers link together.'},
+      {q:'Which fraction comes from the TOP of a fractionating column?',opts:['Heavy fuel oil','Bitumen','Petrol and naphtha','Diesel'],ans:2,exp:'Fractions with the LOWEST boiling points (shortest chains) rise to the top of the column where it is coolest. Petrol and gases come off the top.'},
+      {q:'Cracking is used to:',opts:['Separate crude oil fractions','Join monomers into polymers','Break large hydrocarbon molecules into smaller more useful ones','Test for alkenes'],ans:2,exp:'Cracking breaks large, less useful hydrocarbon molecules (e.g. heavy fuel oil) into smaller, more useful ones (e.g. petrol, alkenes for making polymers).'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#33691e',dark:'#003300',light:'#f1f8e9',
+  title:'Organic Chemistry — Hydrocarbons, Functional Groups & Polymers',
+});
+</script></body></html>

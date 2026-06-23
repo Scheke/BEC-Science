@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human Circulatory System — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#c62828; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#ef9a9a; color:#b71c1c; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #ffcdd2; }
+    #controls { display:flex; gap:10px; margin-top:14px; align-items:center; }
+    .btn { padding:9px 20px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-slow  { border-color:#1976d2; color:#1976d2; background:#fff; }
+    .btn-slow.on  { background:#1976d2; color:#fff; }
+    .btn-norm  { border-color:#2e7d32; color:#2e7d32; background:#fff; }
+    .btn-norm.on  { background:#2e7d32; color:#fff; }
+    .btn-fast  { border-color:#c62828; color:#c62828; background:#fff; }
+    .btn-fast.on  { background:#c62828; color:#fff; }
+    .info-strip { margin-top:14px; background:#ffebee; border:1px solid #ffcdd2; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#b71c1c; max-width:880px; width:100%; line-height:1.5; }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html">&#8592; All Topics</a>
+  <button style="margin-left:auto;background:#ef9a9a;color:#b71c1c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button>
+</div>
+<div class="topic-header">
+  <span class="label">JCE · Form 3 Biology</span>
+  <h1>Human Circulatory System</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <span style="font-size:0.85rem;color:#555;font-weight:600;">Heart rate:</span>
+  <button class="btn btn-slow" id="b-slow" onclick="setRate('slow')">&#9664;&#9664; Slow</button>
+  <button class="btn btn-norm on" id="b-norm" onclick="setRate('norm')">&#9654; Normal</button>
+  <button class="btn btn-fast" id="b-fast" onclick="setRate('fast')">&#9654;&#9654; Fast</button>
+  <button class="btn btn-slow" id="b-prac-c" onclick="setCircPractice(!circMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Blood Flow Quiz</button>
+</div>
+<div class="info-strip">
+  <strong>Double circulation:</strong>
+  <strong style="color:#1565c0">Pulmonary loop</strong> — heart &rarr; lungs (picks up O&#8322;) &rarr; heart.
+  &nbsp; <strong style="color:#c62828">Systemic loop</strong> — heart &rarr; body (delivers O&#8322;) &rarr; heart.
+  &nbsp; Blue = deoxygenated blood &nbsp;|&nbsp; Red = oxygenated blood.
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Circulatory System Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#c62828;border-bottom:2px solid #c62828;padding-bottom:8px}h2{color:#b71c1c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Human Circulatory System — Study Notes</h1>';
+  html+='<h2>Double Circulation</h2><ul><li><strong>Pulmonary circuit:</strong> Heart → Lungs (picks up O₂) → Heart</li><li><strong>Systemic circuit:</strong> Heart → Body (delivers O₂) → Heart</li></ul>';
+  html+='<h2>The Heart</h2><ul><li>Right atrium: receives deoxygenated blood from body (via vena cava)</li><li>Right ventricle: pumps deoxygenated blood to lungs (via pulmonary artery)</li><li>Left atrium: receives oxygenated blood from lungs (via pulmonary vein)</li><li>Left ventricle: pumps oxygenated blood to body (via aorta)</li></ul>';
+  html+='<h2>Blood Vessels</h2><ul><li>Arteries: carry blood AWAY from heart (usually oxygenated, thick walls, high pressure)</li><li>Veins: carry blood TO heart (usually deoxygenated, valves, lower pressure)</li><li>Capillaries: tiny vessels for gas/nutrient exchange with tissues</li></ul>';
+  html+='<h2>Components of Blood</h2><ul><li>Red blood cells: carry O₂ (contain haemoglobin)</li><li>White blood cells: fight infection (immune response)</li><li>Platelets: blood clotting</li><li>Plasma: liquid component, carries nutrients and CO₂</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let circMcq=false;
+const CIRC_MCQ=[
+  {q:'Which chamber receives DEOXYGENATED blood from the body?',opts:['Right atrium','Left atrium','Right ventricle','Left ventricle'],c:0,tip:'Blood from the body enters the right atrium via the vena cava.'},
+  {q:'Which vessel carries oxygenated blood from the lungs to the heart?',opts:['Pulmonary vein','Pulmonary artery','Aorta','Vena cava'],c:0,tip:'The pulmonary veins are unusual — they carry oxygenated blood BACK to the left atrium.'},
+  {q:'What is the function of the LEFT VENTRICLE?',opts:['Pump oxygenated blood to the whole body','Pump blood to the lungs','Receive blood from the lungs','Receive blood from the body'],c:0,tip:'The left ventricle has the thickest wall because it must pump blood to the entire body.'},
+  {q:'Which type of blood vessel has VALVES?',opts:['Veins','Arteries','Capillaries','All blood vessels'],c:0,tip:'Veins have valves to prevent backflow of blood as it travels at lower pressure back to the heart.'},
+  {q:'What does haemoglobin in red blood cells do?',opts:['Carries oxygen (O₂)','Fights bacteria','Clots blood','Carries glucose'],c:0,tip:'Haemoglobin combines with O₂ in the lungs to form oxyhaemoglobin.'},
+  {q:'Which circulation is called "double circulation"?',opts:['Two separate loops: pulmonary (heart-lungs) and systemic (heart-body)','Two hearts pumping simultaneously','Blood circulating twice per beat','A figure-8 circuit'],c:0,tip:'Double circulation means blood passes through the heart TWICE per complete circuit of the body.'},
+  {q:'Capillaries function is to:',opts:['Exchange gases and nutrients with body tissues','Carry blood at high pressure from the heart','Return blood to the heart','Produce red blood cells'],c:0,tip:'Capillaries have walls one cell thick, allowing O₂, glucose and CO₂ to diffuse in and out.'},
+];
+let circMcqIdx=0,circMcqSel=-1,circMcqScore=0,circMcqDone=false,circMcqFeedback=null;
+function setCircPractice(on){ circMcq=on; let b=document.getElementById('b-prac-c'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){circMcqIdx=0;circMcqSel=-1;circMcqScore=0;circMcqDone=false;circMcqFeedback=null;} }
+function drawCircMCQ(s){
+  s.background(255,240,240);
+  if(circMcqDone){
+    s.fill(198,40,40);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+circMcqScore+'/'+CIRC_MCQ.length,440,210);
+    s.text(circMcqScore>=6?'Heart expert!':circMcqScore>=4?'Good work!':'Review the heart anatomy!',440,240);
+    s.fill(198,40,40);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=CIRC_MCQ[circMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(198,40,40);s.rect(30,18,820*(circMcqIdx/CIRC_MCQ.length),10,5);
+  s.fill(198,40,40);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(circMcqIdx+1)+' of '+CIRC_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=circMcqSel===i,correct=circMcqFeedback!==null&&i===q.c,wrong=circMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[255,244,244]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[220]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(circMcqFeedback){
+    s.fill(circMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(circMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(255,180,180);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function circMcqClick(mx,my){
+  if(circMcqDone){if(mx>310&&mx<570&&my>265&&my<309){circMcqIdx=0;circMcqSel=-1;circMcqScore=0;circMcqDone=false;circMcqFeedback=null;}return;}
+  let q=CIRC_MCQ[circMcqIdx];
+  if(circMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){circMcqFeedback=null;circMcqSel=-1;circMcqIdx++;if(circMcqIdx>=CIRC_MCQ.length)circMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&circMcqFeedback===null){circMcqSel=i;circMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)circMcqScore++;}});
+}
+let heartRate = 1.0; // multiplier
+function setRate(r) {
+  heartRate = r==='slow' ? 0.45 : r==='fast' ? 2.2 : 1.0;
+  ['slow','norm','fast'].forEach(id => document.getElementById('b-'+id).classList.remove('on'));
+  document.getElementById('b-'+r).classList.add('on');
+}
+
+new p5(function(p) {
+  const W = 880, H = 500;
+  let tick = 0;
+
+  // Key positions
+  const HX = 440, HY = 255;      // heart centre
+  const LLX = 195, LLY = 175;    // left lung
+  const RLX = 685, RLY = 175;    // right lung
+  const BODYX = 440, BODYY = 430; // body tissues
+
+  let bloodCells = [];
+  let frameTimer = 0;
+
+  // Path definitions: array of waypoints, oxygenated flag changes along route
+  const PATHS = {
+    // Pulmonary: right ventricle → right lung → left atrium
+    pulRight: [
+      { x:HX+30,  y:HY-30 },  // RV exit
+      { x:HX+80,  y:HY-100 },
+      { x:RLX,    y:RLY+40 },
+      { x:RLX,    y:RLY },     // lung — turns red here
+      { x:RLX,    y:RLY-40 },
+      { x:HX+60,  y:HY-130 },
+      { x:HX+20,  y:HY-60 },  // LA entry
+    ],
+    // Pulmonary: right ventricle → left lung → left atrium
+    pulLeft: [
+      { x:HX-30,  y:HY-30 },
+      { x:HX-80,  y:HY-100 },
+      { x:LLX,    y:LLY+40 },
+      { x:LLX,    y:LLY },
+      { x:LLX,    y:LLY-40 },
+      { x:HX-60,  y:HY-130 },
+      { x:HX-20,  y:HY-60 },
+    ],
+    // Systemic: left ventricle → body → right atrium
+    systemic: [
+      { x:HX-30,  y:HY+30 },
+      { x:HX-60,  y:HY+100 },
+      { x:HX,     y:BODYY-20 },  // body tissues — turns blue here
+      { x:HX+60,  y:HY+100 },
+      { x:HX+30,  y:HY+30 },    // RA entry
+    ],
+  };
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+    spawnBlood();
+  };
+
+  function spawnBlood() {
+    // Spawn initial blood cells on each path
+    for (let pathKey of ['pulRight','pulLeft','systemic']) {
+      for (let i = 0; i < 4; i++) {
+        let progress = i / 4;
+        bloodCells.push({ pathKey, progress, speed: p.random(0.003, 0.006) });
+      }
+    }
+  }
+
+  p.draw = function() {
+    if(circMcq){ drawCircMCQ(p); return; }
+    tick += 0.05 * heartRate;
+    p.background(250, 245, 245);
+
+    drawBody();
+    drawLungs();
+    drawVessels();
+    drawHeart();
+    updateAndDrawBlood();
+    drawLegend();
+    drawLabels();
+  };
+
+  function drawBody() {
+    // Simple body torso silhouette
+    p.fill(255, 228, 196, 160);
+    p.stroke(220, 180, 140, 120); p.strokeWeight(1.5);
+    // Head
+    p.ellipse(440, 52, 54, 60);
+    // Neck
+    p.rect(427, 70, 26, 22);
+    // Torso
+    p.rect(380, 90, 120, 200, 8);
+    // Arms
+    p.rect(330, 90, 52, 140, 10);
+    p.rect(498, 90, 52, 140, 10);
+    // Legs
+    p.rect(390, 285, 44, 130, 8);
+    p.rect(446, 285, 44, 130, 8);
+    p.noStroke();
+  }
+
+  function drawLungs() {
+    // Right lung
+    p.fill(255, 182, 193, 190);
+    p.stroke(220, 100, 100, 140); p.strokeWeight(2);
+    p.ellipse(RLX, RLY, 80, 100);
+    // Left lung
+    p.ellipse(LLX, LLY, 80, 100);
+    p.noStroke();
+
+    // Lung labels
+    p.fill(160, 40, 60); p.textSize(11); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('Right Lung', RLX, RLY+65);
+    p.text('Left Lung',  LLX, LLY+65);
+    p.textStyle(p.NORMAL);
+
+    // O2/CO2 labels on lungs
+    p.fill(20, 130, 20); p.textSize(10);
+    p.text('O₂ absorbed', RLX, RLY-62);
+    p.fill(100, 100, 100);
+    p.text('CO₂ released', RLX, RLY-48);
+    p.fill(20, 130, 20);
+    p.text('O₂ absorbed', LLX, LLY-62);
+    p.fill(100, 100, 100);
+    p.text('CO₂ released', LLX, LLY-48);
+  }
+
+  function drawVessels() {
+    // Draw the major blood vessel paths
+    // Pulmonary arteries (blue - deoxygenated going to lungs)
+    drawVesselPath([
+      {x:HX+35, y:HY-25}, {x:HX+90, y:HY-100}, {x:RLX, y:RLY+45}
+    ], [30,80,200], 4);
+    drawVesselPath([
+      {x:HX-35, y:HY-25}, {x:HX-90, y:HY-100}, {x:LLX, y:LLY+45}
+    ], [30,80,200], 4);
+
+    // Pulmonary veins (red - oxygenated from lungs)
+    drawVesselPath([
+      {x:RLX, y:RLY-45}, {x:HX+70, y:HY-135}, {x:HX+22, y:HY-62}
+    ], [200,30,30], 4);
+    drawVesselPath([
+      {x:LLX, y:LLY-45}, {x:HX-70, y:HY-135}, {x:HX-22, y:HY-62}
+    ], [200,30,30], 4);
+
+    // Aorta (red - going to body)
+    drawVesselPath([
+      {x:HX-32, y:HY+28}, {x:HX-70, y:HY+110}, {x:HX-30, y:BODYY-30}, {x:HX+30, y:BODYY-30}, {x:HX+70, y:HY+110}, {x:HX+32, y:HY+28}
+    ], [200,30,30], 5);
+
+    // Vena cava (blue from body back to heart)
+    drawVesselPath([
+      {x:HX+32, y:HY+28}, {x:HX+72, y:HY+115}, {x:HX+32, y:BODYY-26}, {x:HX-32, y:BODYY-26}, {x:HX-72, y:HY+115}, {x:HX-32, y:HY+28}
+    ], [30,80,200], 3);
+
+    // Body tissues label
+    p.fill(80, 40, 20, 200); p.noStroke();
+    p.textSize(10); p.textAlign(p.CENTER);
+    p.text('Body tissues', BODYX, BODYY+10);
+    p.text('(O₂ delivered, CO₂ picked up)', BODYX, BODYY+24);
+  }
+
+  function drawVesselPath(waypoints, col, weight) {
+    p.stroke(col[0],col[1],col[2], 160); p.strokeWeight(weight); p.noFill();
+    p.beginShape();
+    for (let wp of waypoints) p.curveVertex(wp.x, wp.y);
+    // Repeat first and last for curveVertex
+    p.curveVertex(waypoints[waypoints.length-1].x, waypoints[waypoints.length-1].y);
+    // Need to repeat first vertex for the curve to start properly
+    p.endShape();
+    p.noStroke();
+  }
+
+  function drawHeart() {
+    let beat = p.abs(p.sin(tick * 1.8)) * 10;
+
+    // Heart shape (two overlapping ellipses + triangle)
+    p.push();
+    p.translate(HX, HY);
+    p.scale(1 + beat*0.005, 1 + beat*0.005);
+
+    // Background fill
+    p.noStroke();
+    p.fill(200, 30, 30, 240);
+
+    // Draw heart as combination shape
+    p.beginShape();
+    // Approximate heart shape with vertices
+    for (let a = 0; a < p.TWO_PI; a += 0.1) {
+      let r = 52;
+      let hx = r * 16 * p.pow(p.sin(a), 3) / 16;
+      let hy = -r * (13*p.cos(a) - 5*p.cos(2*a) - 2*p.cos(3*a) - p.cos(4*a)) / 16;
+      p.vertex(hx, hy);
+    }
+    p.endShape(p.CLOSE);
+
+    // Heart dividing line (left = red/oxygenated, right = blue/deoxygenated)
+    p.stroke(255,255,255,120); p.strokeWeight(2);
+    p.line(0, -38, 0, 42);
+    p.noStroke();
+
+    // Chamber labels
+    p.fill(255,255,255,200); p.textSize(8); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('LA', -18, -20);  // Left atrium
+    p.text('LV', -18, 18);   // Left ventricle
+    p.text('RA', 18, -20);   // Right atrium
+    p.text('RV', 18, 18);    // Right ventricle
+    p.textStyle(p.NORMAL);
+
+    // Pulse ring
+    if (beat > 4) {
+      p.noFill(); p.stroke(220, 60, 60, beat*8);
+      p.strokeWeight(2);
+      p.ellipse(0, 0, 100+beat*3, 90+beat*3);
+    }
+    p.pop();
+
+    // Heart label
+    p.noStroke(); p.fill(150,20,20); p.textSize(11); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('HEART', HX, HY + 62);
+    p.textStyle(p.NORMAL);
+  }
+
+  function updateAndDrawBlood() {
+    // Spawn new cells periodically
+    frameTimer++;
+    let spawnInterval = Math.round(p.map(heartRate, 0.45, 2.2, 60, 14));
+    if (frameTimer % spawnInterval === 0) {
+      let pathKeys = ['pulRight','pulLeft','systemic'];
+      let key = pathKeys[p.floor(p.random(pathKeys.length))];
+      bloodCells.push({ pathKey: key, progress: 0, speed: p.random(0.004, 0.008) * heartRate });
+    }
+
+    bloodCells = bloodCells.filter(c => c.progress <= 1.0);
+
+    for (let cell of bloodCells) {
+      cell.progress += cell.speed * heartRate;
+      let path = PATHS[cell.pathKey];
+      let pos = interpolatePath(path, cell.progress);
+      if (!pos) continue;
+
+      // Determine oxygenation based on position along path
+      let isOxy = false;
+      if (cell.pathKey === 'systemic') {
+        isOxy = cell.progress < 0.5; // red going out, blue coming back
+      } else {
+        isOxy = cell.progress > 0.45; // blue going to lung, red coming back
+      }
+
+      let r = isOxy ? 210 : 50;
+      let g = isOxy ? 30  : 80;
+      let b = isOxy ? 30  : 200;
+
+      p.noStroke();
+      p.fill(r,g,b, 230);
+      p.ellipse(pos.x, pos.y, 10, 10);
+      p.fill(255,255,255,100); p.ellipse(pos.x-2, pos.y-2, 3, 3);
+    }
+  }
+
+  function interpolatePath(waypoints, t) {
+    if (waypoints.length < 2) return null;
+    t = p.constrain(t, 0, 1);
+    let segCount = waypoints.length - 1;
+    let seg = p.floor(t * segCount);
+    if (seg >= segCount) seg = segCount - 1;
+    let segT = (t * segCount) - seg;
+    let a = waypoints[seg], b = waypoints[seg+1];
+    return { x: p.lerp(a.x, b.x, segT), y: p.lerp(a.y, b.y, segT) };
+  }
+
+  function drawLegend() {
+    let lx = 10, ly = H - 72, lw = 210, lh = 62;
+    p.fill(255,255,255,220); p.stroke(200,200,200); p.strokeWeight(1);
+    p.rect(lx, ly, lw, lh, 6); p.noStroke();
+
+    p.textSize(10); p.textAlign(p.LEFT); p.textStyle(p.BOLD);
+    p.fill(80); p.text('Blood colour key', lx+10, ly+14); p.textStyle(p.NORMAL);
+
+    p.fill(210,30,30); p.ellipse(lx+14, ly+30, 11, 11);
+    p.fill(40); p.text('Oxygenated blood (arteries)', lx+24, ly+34);
+
+    p.fill(50,80,200); p.ellipse(lx+14, ly+50, 11, 11);
+    p.fill(40); p.text('Deoxygenated blood (veins)', lx+24, ly+54);
+  }
+
+  function drawLabels() {
+    function lbl(txt, x, y, col) {
+      p.noStroke(); p.textSize(9.5); p.textAlign(p.CENTER);
+      let tw = p.textWidth(txt);
+      p.fill(255,255,255,200); p.rect(x-tw/2-3, y-11, tw+6, 14, 3);
+      p.fill(col[0],col[1],col[2]); p.text(txt, x, y);
+    }
+    lbl('Pulmonary artery', HX+130, HY-82, [30,80,200]);
+    lbl('Pulmonary vein', HX+100, HY-145, [180,30,30]);
+    lbl('Aorta', HX-110, HY+80, [180,30,30]);
+    lbl('Vena cava', HX+110, HY+80, [30,80,200]);
+  }
+  p.mouseClicked=function(){ if(circMcq){ circMcqClick(p.mouseX,p.mouseY); return; } };
+});
+</script>
+</body>
+</html>

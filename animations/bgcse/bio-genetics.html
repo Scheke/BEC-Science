@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genetics — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#1565c0;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#90caf9;color:#0d47a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #bbdefb}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #1565c0;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#1565c0;transition:all .15s}
+    .btn.on{background:#1565c0;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Genetics &amp; Inheritance</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🧬 DNA Structure</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">📐 Punnett Square</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🔬 Mitosis</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔀 Meiosis</button>
+  <button class="btn" id="b-prac" onclick="setGenPractice(!genMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;let traitA='B',traitB='b';
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Genetics</h2><ul><li><b>DNA</b>: Double helix made of nucleotides. Base pairs: A-T, G-C.</li><li><b>Dominant allele</b>: Always expressed when present (capital letter). <b>Recessive</b>: Only expressed when homozygous.</li><li><b>Homozygous</b>: Two identical alleles (BB or bb). <b>Heterozygous</b>: Two different alleles (Bb).</li><li><b>Mitosis</b>: Cell division for growth/repair — produces 2 identical diploid cells.</li><li><b>Meiosis</b>: Cell division for gametes — produces 4 haploid cells with genetic variation.</li><li><b>RNA base</b>: Uses Uracil (U) instead of Thymine (T).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let genMcq=false;
+const GEN_MCQ=[
+  {q:'DNA is made up of repeating units called:',opts:['Nucleotides','Amino acids','Fatty acids','Monosaccharides'],c:0,tip:'DNA nucleotides each contain a sugar, phosphate, and a base (A, T, G or C).'},
+  {q:'Which base pairs are found in DNA?',opts:['A-T and G-C','A-G and T-C','A-C and G-T','A-U and G-C'],c:0,tip:'Adenine pairs with Thymine; Guanine pairs with Cytosine.'},
+  {q:'A dominant allele is one that:',opts:['Is always expressed when present','Is only expressed when homozygous','Is always recessive','Causes genetic disorders'],c:0,tip:'Dominant alleles are expressed even when paired with a recessive allele.'},
+  {q:'Heterozygous means:',opts:['Two different alleles for a gene','Two identical alleles','No alleles present','Three alleles present'],c:0,tip:'Heterozygous = one dominant + one recessive allele (e.g., Bb).'},
+  {q:'What is the purpose of meiosis?',opts:['Produce gametes (sex cells)','Repair damaged tissue','Produce identical body cells','Replicate chromosomes only'],c:0,tip:'Meiosis produces 4 haploid gametes with unique genetic combinations.'},
+  {q:'In a Bb × Bb cross, what fraction of offspring is bb?',opts:['1/4 (25%)','1/2 (50%)','3/4 (75%)','0%'],c:0,tip:'Punnett square gives BB:Bb:bb = 1:2:1, so 25% bb.'},
+  {q:'RNA uses which base instead of thymine?',opts:['Uracil (U)','Adenine (A)','Cytosine (C)','Guanine (G)'],c:0,tip:'RNA replaces thymine with uracil in its nucleotides.'}
+];
+let genMcqIdx=0,genMcqSel=-1,genMcqScore=0,genMcqDone=false,genMcqFeedback=null;
+function setGenPractice(on){genMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){genMcqIdx=0;genMcqSel=-1;genMcqScore=0;genMcqDone=false;genMcqFeedback=null;}}
+function drawGenMCQ(s){s.background(252,252,240);if(genMcqDone){s.fill(21,101,192);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+genMcqScore+'/'+GEN_MCQ.length,440,215);let msg=genMcqScore===GEN_MCQ.length?'Perfect! You know Genetics!':genMcqScore>=5?'Great job!':'Review DNA, alleles & cell division.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=GEN_MCQ[genMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(genMcqIdx/GEN_MCQ.length),10,5);s.fill(21,101,192);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(genMcqIdx+1)+' of '+GEN_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=genMcqSel===i,correct=genMcqFeedback!==null&&i===q.c,wrong=genMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(genMcqFeedback){s.fill(genMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(genMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function genMcqClick(mx,my){if(genMcqDone){if(mx>310&&mx<570&&my>290&&my<334){genMcqIdx=0;genMcqSel=-1;genMcqScore=0;genMcqDone=false;genMcqFeedback=null;}return;}if(genMcqFeedback!==null){genMcqIdx++;genMcqSel=-1;genMcqFeedback=null;if(genMcqIdx>=GEN_MCQ.length)genMcqDone=true;return;}GEN_MCQ[genMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){genMcqSel=i;genMcqFeedback=i===GEN_MCQ[genMcqIdx].c?'correct':'wrong';if(i===GEN_MCQ[genMcqIdx].c)genMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let mitoPhase=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    if(genMcq){ drawGenMCQ(sk); return; }
+    tick+=0.025;
+    sk.background(248,252,255);
+    if(tab===0) drawDNA();
+    else if(tab===1) drawPunnett();
+    else if(tab===2) drawMitosis();
+    else drawMeiosis();
+    drawInfoPanel();
+  };
+  sk.mouseClicked=()=>{
+    if(genMcq){ genMcqClick(sk.mouseX,sk.mouseY); return; }
+    if(tab===2) mitoPhase=(mitoPhase+1)%5;
+  };
+
+  function drawDNA(){
+    let cx=248,cy=270,helixH=440;
+    let t2=tick*0.7;
+    // Draw double helix
+    for(let i=0;i<40;i++){
+      let y=cy-helixH/2+i*(helixH/40);
+      let x1=cx+Math.cos(t2+i*0.35)*45;
+      let x2=cx+Math.cos(t2+i*0.35+sk.PI)*45;
+      // Base pairs in middle
+      if(i%2===0){
+        let bx1=cx+Math.cos(t2+i*0.35)*40;
+        let bx2=cx+Math.cos(t2+i*0.35+sk.PI)*40;
+        let bases=['AT','TA','GC','CG'];let bp=bases[(i/2)%4];
+        sk.stroke(200,180,60,180);sk.strokeWeight(1.5);sk.line(bx1,y,bx2,y);
+        sk.fill(bp[0]==='A'?[255,100,100]:[100,150,255]); // A=red, T=blue
+        sk.noStroke();sk.ellipse(bx1,y,9);
+        sk.fill(bp[1]==='T'?[100,180,255]:[100,220,100]); // T=blue, G=green
+        sk.ellipse(bx2,y,9);
+      }
+    }
+    // Backbone curves
+    sk.noFill();sk.strokeWeight(5);
+    sk.stroke(30,80,200,200);
+    sk.beginShape();for(let i=0;i<=40;i++){let y=cy-helixH/2+i*(helixH/40);let x=cx+Math.cos(t2+i*0.35)*45;sk.vertex(x,y);}sk.endShape();
+    sk.stroke(200,60,60,200);
+    sk.beginShape();for(let i=0;i<=40;i++){let y=cy-helixH/2+i*(helixH/40);let x=cx+Math.cos(t2+i*0.35+sk.PI)*45;sk.vertex(x,y);}sk.endShape();
+
+    // Labels
+    sk.noStroke();sk.fill(30,80,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Sugar-phosphate\nbackbone',cx+60,cy-60);
+    sk.text('(one strand)',cx+60,cy-38);
+    sk.fill(180,140,0);sk.text('Base pairs (rungs)',cx+60,cy+20);
+    sk.fill(30);sk.textStyle(sk.NORMAL);
+
+    // Base pair key
+    let ky=420;
+    sk.fill(240,240,255,200);sk.stroke(30,80,200,80);sk.strokeWeight(1);sk.rect(14,ky,462,70,7);sk.noStroke();
+    sk.fill(30,80,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Base Pairing Rules (Chargaff\'s Rules):',20,ky+14);sk.textStyle(sk.NORMAL);sk.fill(30);
+    const pairs=[['A (Adenine) always pairs with T (Thymine)','→ 2 hydrogen bonds'],['G (Guanine) always pairs with C (Cytosine)','→ 3 hydrogen bonds']];
+    pairs.forEach((p,i)=>{
+      sk.fill(180,30,30);sk.textSize(10.5);sk.text(p[0],20,ky+30+i*18);
+      sk.fill(100,100,100);sk.text(p[1],250,ky+30+i*18);
+    });
+    // DNA → Gene → Chromosome hierarchy
+    let hy=cy-80;
+    sk.fill(60,30,160,200);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);
+    sk.text('DNA → gene → chromosome → nucleus',cx-55,hy);
+    sk.textStyle(sk.NORMAL);
+  }
+
+  function drawPunnett(){
+    // Monohybrid cross for flower colour: B=purple, b=white
+    let parents=['B','b','B','b'];// Bb × Bb
+    let p1='Bb',p2='Bb';
+    let gs1=['B','b'],gs2=['B','b'];
+    let cx=170,cy=180,cw=80;
+    // Heading
+    sk.fill(20,60,180);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Monohybrid Cross: Purple flower (Bb) × Purple flower (Bb)',248,40);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.textAlign(sk.CENTER);
+    sk.text('Gametes of Parent 1:',cx-90,cy-50);
+    // Gamete headers
+    gs1.forEach((g,i)=>{
+      sk.fill(g==='B'?[100,30,180,200]:[180,180,180,200]);sk.noStroke();sk.ellipse(cx+i*cw,cy-20,28,28);
+      sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.text(g,cx+i*cw,cy-15);sk.textStyle(sk.NORMAL);
+    });
+    gs2.forEach((g,i)=>{
+      sk.fill(g==='B'?[100,30,180,200]:[180,180,180,200]);sk.noStroke();sk.ellipse(cx-36,cy+i*cw+cw/2,28,28);
+      sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.text(g,cx-36,cy+i*cw+cw/2+5);sk.textStyle(sk.NORMAL);
+    });
+    sk.fill(30);sk.textSize(9);sk.textAlign(sk.LEFT);sk.text('Parent 2\nGametes:',cx-76,cy+40);
+    // Grid
+    let outcomes=[['BB','Bb'],['Bb','bb']];
+    let phenoCols=[[100,30,180],[100,30,180],[100,30,180],[180,180,180]];
+    let pi=0;
+    outcomes.forEach((row,ri)=>{row.forEach((cell,ci)=>{
+      let rx=cx+ci*cw-cw/2,ry=cy+ri*cw,rw=cw-4,rh=cw-4;
+      let isB=cell.includes('B');
+      sk.fill(isB?[220,200,255,200]:[240,240,240,200]);sk.stroke(120,80,200);sk.strokeWeight(1.5);
+      sk.rect(rx,ry,rw,rh,5);
+      sk.noStroke();sk.fill(isB?[80,20,160]:[100,100,100]);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(cell,rx+rw/2,ry+rh/2+5);sk.textStyle(sk.NORMAL);pi++;
+    });});
+    // Ratio
+    let rsy=cy+2*cw+20;
+    sk.fill(60,20,140,180);sk.rect(cx-cw/2,rsy,2*cw-4,18,4);sk.noStroke();
+    sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Genotype ratio: 1 BB : 2 Bb : 1 bb',cx+cw/2-2,rsy+12);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Phenotype ratio: 3 Purple : 1 White',cx+cw/2-2,rsy+30);
+    // Flower visuals
+    let fy=rsy+50;
+    for(let i=0;i<4;i++){
+      let fc=i<3?[120,40,200]:[200,200,200];
+      sk.fill(fc[0],fc[1],fc[2],180);sk.noStroke();
+      for(let p2=0;p2<6;p2++){let a=p2*sk.TWO_PI/6;sk.ellipse(cx-cw/2+8+i*50+Math.cos(a)*12,fy+Math.sin(a)*12,14,20);}
+      sk.fill(255,220,0);sk.ellipse(cx-cw/2+8+i*50,fy,12,12);
+    }
+    sk.fill(30);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+    sk.text('BB  Bb  Bb  bb',cx+cw/2-2,fy+30);
+
+    // Terms
+    let ty=300;
+    const terms=[['Genotype','The genetic makeup of an organism (e.g. Bb)'],['Phenotype','The observable characteristics (e.g. purple flower)'],['Allele','Different forms of a gene (B = dominant, b = recessive)'],['Heterozygous','Two different alleles (Bb) — carrier'],['Homozygous','Two same alleles (BB or bb)']];
+    sk.fill(240,245,255,220);sk.stroke(60,80,200,80);sk.strokeWeight(1);sk.rect(14,ty,462,200,7);sk.noStroke();
+    sk.fill(20,40,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text('KEY TERMS:',20,ty+14);sk.textStyle(sk.NORMAL);
+    terms.forEach((r,i)=>{
+      sk.fill(60,30,160);sk.textStyle(sk.BOLD);sk.text(r[0]+':',20,ty+30+i*34);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],80,ty+30+i*34);
+    });
+  }
+
+  function drawMitosis(){
+    const phases=['Interphase','Prophase','Metaphase','Anaphase','Telophase'];
+    const descs=['Cell grows, DNA replicates.\nCell prepares to divide.','Chromosomes condense,\nbecome visible. Spindle forms.','Chromosomes align\nalong the EQUATOR of cell.','Chromatids pulled apart\nto opposite poles.','2 new identical cells form.\nSame as parent (2n).'];
+    sk.fill(30,100,30);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('MITOSIS — Click to advance phases',248,22);
+    sk.text('Phase '+(mitoPhase+1)+'/5: '+phases[mitoPhase],248,40);sk.textStyle(sk.NORMAL);
+    // Click prompt
+    sk.fill(0,100,200,160);sk.textSize(9.5);sk.textAlign(sk.CENTER);sk.text('Click animation to advance',248,58);
+
+    let cx=248,cy=260,r=120;
+    // Cell outline
+    sk.noFill();sk.stroke(60,160,60,180);sk.strokeWeight(3);sk.ellipse(cx,cy,r*2,r*2);
+    let phase=mitoPhase;
+    if(phase===0){// Interphase — nucleus visible
+      sk.fill(100,180,255,120);sk.stroke(30,80,200);sk.strokeWeight(2);sk.ellipse(cx,cy,90,90);
+      sk.noStroke();sk.fill(20,80,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Nucleus',cx,cy+4);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(9);sk.text('DNA replicating...',cx,cy+60+r-80);
+    } else if(phase===1){// Prophase — chromosomes appear
+      for(let i=0;i<4;i++){let a=i*sk.PI/2;let x=cx+Math.cos(a)*25,y=cy+Math.sin(a)*25;
+        sk.fill(200,40,40,220);sk.stroke(150,20,20);sk.strokeWeight(1.5);
+        sk.ellipse(x,y,24,40);}
+    } else if(phase===2){// Metaphase — aligned at equator
+      sk.stroke(100,200,100,160);sk.strokeWeight(1);sk.setLineDash([4,3]);
+      sk.line(cx-r,cy,cx+r,cy);sk.setLineDash([]);
+      for(let i=0;i<4;i++){let x=cx-60+i*40;
+        sk.fill(200,40,40,220);sk.stroke(150,20,20);sk.strokeWeight(1.5);sk.ellipse(x,cy,22,38);}
+    } else if(phase===3){// Anaphase — pulled apart
+      for(let i=0;i<4;i++){let x=cx-60+i*40;
+        sk.fill(200,40,40,220);sk.stroke(150,20,20);sk.strokeWeight(1.5);
+        sk.ellipse(x,cy-42,20,32);sk.ellipse(x,cy+42,20,32);}
+    } else {// Telophase — 2 cells
+      sk.noFill();sk.stroke(60,160,60);sk.strokeWeight(2);
+      sk.ellipse(cx,cy-50,r*1.6,r*0.85);sk.ellipse(cx,cy+50,r*1.6,r*0.85);
+      sk.fill(100,180,255,100);sk.stroke(30,80,200,150);sk.strokeWeight(1.5);
+      sk.ellipse(cx,cy-50,55,45);sk.ellipse(cx,cy+50,55,45);
+      sk.noStroke();sk.fill(30,80,200);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('IDENTICAL',cx,cy-48);sk.text('DAUGHTER CELLS',cx,cy+53);}
+    // Phase desc
+    let dy=410;
+    sk.fill(240,255,240,220);sk.stroke(30,140,30,100);sk.strokeWeight(1);sk.rect(14,dy,462,85,7);sk.noStroke();
+    sk.fill(20,100,20);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text(phases[mitoPhase]+':',20,dy+16);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);descs[mitoPhase].split('\n').forEach((l,i)=>sk.text(l,20,dy+32+i*16));
+    sk.fill(20,80,160);sk.textSize(9);sk.text('Result: 2 identical diploid (2n) daughter cells',20,dy+72);
+  }
+
+  function drawMeiosis(){
+    sk.fill(160,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('MEIOSIS — produces 4 genetically different haploid gametes',248,20);sk.textStyle(sk.NORMAL);
+    // Four stages shown side by side
+    const stages=[
+      {ph:'Meiosis I',desc:'Homologous\npairs separate',col:[180,40,40]},
+      {ph:'Meiosis II',desc:'Chromatids\npull apart',col:[180,100,0]},
+    ];
+    let sy=80,sh=200;
+    // Parent cell
+    sk.fill(240,200,255,200);sk.stroke(100,40,160);sk.strokeWeight(2);sk.ellipse(248,sy+sh/2,100,100);
+    for(let i=0;i<4;i++){let a=i*sk.PI/2;sk.fill(200,40,40,200);sk.noStroke();sk.ellipse(248+Math.cos(a)*22,sy+sh/2+Math.sin(a)*22,16,28);}
+    sk.noStroke();sk.fill(100,40,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Parent cell (2n=4)',248,sy+sh+14);sk.textStyle(sk.NORMAL);
+    // Arrow down
+    sk.stroke(100,100,100);sk.strokeWeight(2);sk.line(248,sy+sh+20,248,sy+sh+40);
+    sk.fill(100,100,100);sk.noStroke();sk.triangle(244,sy+sh+40,252,sy+sh+40,248,sy+sh+50);
+    // After meiosis I: 2 cells
+    let m1y=320;
+    [160,336].forEach((x,i)=>{
+      sk.fill(255,220,200,200);sk.stroke(180,60,0);sk.strokeWeight(1.5);sk.ellipse(x,m1y,80,80);
+      for(let j=0;j<2;j++){let a=j*sk.PI;sk.fill(200,40,40,180);sk.noStroke();sk.ellipse(x+Math.cos(a)*16,m1y+Math.sin(a)*16,14,24);}
+    });
+    sk.noStroke();sk.fill(180,60,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('After Meiosis I (2 cells, n=2)',248,m1y+50);sk.textStyle(sk.NORMAL);
+    sk.stroke(100,100,100);sk.strokeWeight(2);
+    sk.line(248,m1y+55,248,m1y+70);
+    sk.noStroke();sk.fill(100,100,100);sk.triangle(244,m1y+70,252,m1y+70,248,m1y+80);
+    // After Meiosis II: 4 gametes
+    let m2y=445;let gxs=[90,176,262,348];
+    gxs.forEach((x,i)=>{
+      let cols=[[200,40,40],[200,80,0],[0,100,200],[0,140,80]];let c=cols[i];
+      sk.fill(c[0],c[1],c[2],60);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(1.5);sk.ellipse(x,m2y,60,60);
+      sk.noStroke();sk.fill(c[0],c[1],c[2]);sk.ellipse(x,m2y,16,28);
+    });
+    sk.noStroke();sk.fill(0,80,40);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('After Meiosis II → 4 gametes (n=2), each GENETICALLY DIFFERENT',248,m2y+40);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    let c=[20,80,180];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['DNA & Genetic Code','Mendelian Genetics','Mitosis','Meiosis'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'DNA Structure',b:'Double helix — two antiparallel strands.\nSugar-phosphate backbone.\nBases pair: A-T, G-C.'},{t:'Gene',b:'A section of DNA that codes for ONE protein.\nLocated on a chromosome.\nHumans have ~20,000 genes.'},{t:'Protein Synthesis',b:'1. TRANSCRIPTION: DNA → mRNA in nucleus.\n2. TRANSLATION: mRNA → protein at ribosome.'},{t:'Mutations',b:'Change in DNA base sequence.\nCan be caused by UV light, X-rays, chemicals.\nMay be harmful, neutral, or rarely beneficial.'}],
+      [{t:'Dominant vs Recessive',b:'Dominant allele (capital letter) always expressed.\nRecessive only expressed if BOTH copies present.\nHeterozygous shows dominant phenotype.'},{t:'Sex-linked inheritance',b:'Genes on X chromosome (e.g. colour blindness).\nMales (XY) more often affected — only one X.\nFemales (XX) can be carriers.'},{t:'Codominance',b:'Both alleles expressed equally.\nExample: blood group AB — both A and B shown.\nNeither is dominant over the other.'},{t:'Variation',b:'Continuous: range of values (e.g. height).\nDiscontinuous: distinct groups (e.g. blood group).\nCaused by genes AND environment.'}],
+      [{t:'Purpose of Mitosis',b:'Growth, repair, and asexual reproduction.\nProduces 2 IDENTICAL diploid cells.\nKeeps chromosome number constant (2n).'},{t:'Phases',b:'Interphase → Prophase → Metaphase\n→ Anaphase → Telophase → Cytokinesis'},{t:'Key Points',b:'DNA replicates BEFORE mitosis (S phase).\nSpindle fibres pull chromatids apart.\nResult: clones of the parent cell.'},{t:'Cancer & Mitosis',b:'Uncontrolled mitosis causes tumours.\nMutagens (radiation, chemicals) trigger.\nChemotherapy targets rapidly dividing cells.'}],
+      [{t:'Purpose of Meiosis',b:'Sexual reproduction — produces gametes.\nReduces chromosome number from 2n to n.\nCreates genetic VARIATION.'},{t:'Meiosis I vs Meiosis II',b:'Meiosis I: homologous pairs separate (2n→n).\nMeiosis II: chromatids separate (like mitosis).\nResult: 4 haploid cells.'},{t:'Crossing Over',b:'Chromatids exchange segments (Prophase I).\nCreates NEW combinations of alleles.\nMajor source of genetic variation.'},{t:'Mitosis vs Meiosis',b:'Mitosis: 2 identical cells (2n → 2n).\nMeiosis: 4 different cells (2n → 4n).\nMeiosis has 2 divisions, mitosis has 1.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

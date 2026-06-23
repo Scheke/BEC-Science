@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sound — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,12,22]))}
+
+const STEPS=[
+  {
+    title:'What is Sound?',
+    body:`<strong>Sound</strong> is a form of energy that travels as a <strong>longitudinal wave</strong> — a series of compressions and rarefactions (expansions) through a medium.
+    <br><br>
+    Key facts:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li>Sound requires a <strong>medium</strong> (solid, liquid, or gas) to travel — cannot travel through a vacuum</li>
+      <li>Sound travels fastest through <strong>solids</strong> (particles closer together), slowest through gases</li>
+      <li>Speed in air ≈ <strong>340 m/s</strong> (at room temperature)</li>
+      <li>Sound is produced by <strong>vibrations</strong></li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Speaker (source of vibration)
+      const vibrate=Math.sin(t*6)*8;
+      sk.fill(100,100,100,200);sk.noStroke();
+      sk.rect(W*0.06,H*0.34,W*0.1,H*0.32,4);
+      sk.fill(80,80,80,220);
+      sk.ellipse(W*0.16+vibrate,H*0.5,44+vibrate,H*0.28);
+      // Compression/rarefaction waves
+      for(let i=0;i<8;i++){
+        const waveProg=(i/8+t*0.08)%1;
+        const waveX=W*0.2+waveProg*(W*0.72);
+        const compress=1+Math.sin(waveProg*sk.PI)*0.4;
+        const alpha=220*(1-waveProg*0.6);
+        const dotSpacing=12*compress;
+        // Draw particles at this wave position
+        for(let d=0;d<3;d++){
+          const dx=waveX+(d-1)*dotSpacing;
+          sk.fill(100,200,255,alpha);sk.noStroke();sk.circle(dx,H*0.5,8);
+        }
+      }
+      // Labels
+      sk.fill(255,220,50);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Compression (dense)',W*0.5,H*0.22);
+      sk.fill(100,200,255);sk.text('Rarefaction (sparse)',W*0.5,H*0.82);
+      // Ear
+      sk.fill(200,150,100,200);sk.noStroke();
+      sk.arc(W*0.93,H*0.5,30,50,sk.HALF_PI,sk.HALF_PI+sk.PI);
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('Sound wave travels\nas longitudinal wave',W*0.5,H*0.93);
+    }
+  },
+  {
+    title:'Properties of Sound Waves',
+    body:`Sound waves have measurable properties:
+    <br><br>
+    <ul style="margin:6px 0 0 18px;line-height:2.3">
+      <li><strong>Frequency (f)</strong> — number of vibrations per second. Unit: <strong>Hertz (Hz)</strong>. Higher frequency = higher pitch.</li>
+      <li><strong>Amplitude</strong> — size of the vibration (maximum displacement). Larger amplitude = louder sound.</li>
+      <li><strong>Wavelength (λ)</strong> — distance between successive compressions. Unit: metres.</li>
+      <li><strong>Wave speed (v)</strong> — v = f × λ</li>
+    </ul>
+    <br>
+    Human hearing range: <strong>20 Hz to 20 000 Hz (20 kHz)</strong>
+    <br>
+    Below 20 Hz = infrasound | Above 20 kHz = ultrasound`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Two waveforms comparison
+      const drawWave=(cx,cy,w,h,f,A,col,label)=>{
+        sk.stroke(...col,200);sk.strokeWeight(2.5);sk.noFill();
+        sk.beginShape();
+        for(let x=0;x<=w;x+=2){
+          const nx=x/w;
+          const y=cy+Math.sin(nx*f*sk.TWO_PI+t*f*0.5)*A;
+          sk.vertex(cx+x,y);
+        }
+        sk.endShape();
+        sk.fill(...col);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);sk.text(label,cx+w/2,cy+A+16);
+      };
+      const gW=W*0.42,gH=H*0.35;
+      // High frequency, low amplitude
+      drawWave(W*0.04,H*0.3,gW,H*0.08,3,H*0.07,[231,76,60],'High frequency\n(high pitch, short λ)');
+      // Low frequency, high amplitude
+      drawWave(W*0.04,H*0.65,gW,H*0.08,1.5,H*0.13,[52,152,219],'Low frequency\n(low pitch, long λ)');
+      // Right side: amplitude comparison
+      drawWave(W*0.52,H*0.3,gW,H*0.04,2,H*0.04,[46,204,113],'Small amplitude\n(quiet sound)');
+      drawWave(W*0.52,H*0.65,gW,H*0.14,2,H*0.14,[241,196,15],'Large amplitude\n(loud sound)');
+      // Labels
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Frequency → Pitch',W*0.25,H*0.08);
+      sk.text('Amplitude → Volume',W*0.74,H*0.08);
+    }
+  },
+  {
+    title:'Speed of Sound in Different Media',
+    body:`Sound travels at different speeds depending on the medium:
+    <br><br>
+    <table style="width:100%;border-collapse:collapse;font-size:.8rem;margin-top:8px">
+      <thead><tr style="background:#1a237e;color:#fff"><th style="padding:6px 10px;border:1px solid #333">Medium</th><th style="padding:6px 10px;border:1px solid #333">Speed (m/s)</th><th style="padding:6px 10px;border:1px solid #333">Why?</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:5px 10px;border:1px solid #ddd;font-weight:700">Air (gas)</td><td style="padding:5px 10px;border:1px solid #ddd">~340</td><td style="padding:5px 10px;border:1px solid #ddd">Particles far apart, weak forces</td></tr>
+        <tr style="background:#0a0a1a"><td style="padding:5px 10px;border:1px solid #ddd;font-weight:700">Water (liquid)</td><td style="padding:5px 10px;border:1px solid #ddd">~1500</td><td style="padding:5px 10px;border:1px solid #ddd">Denser, particles closer</td></tr>
+        <tr><td style="padding:5px 10px;border:1px solid #ddd;font-weight:700">Steel (solid)</td><td style="padding:5px 10px;border:1px solid #ddd">~5000</td><td style="padding:5px 10px;border:1px solid #ddd">Rigid, strongly bonded particles</td></tr>
+      </tbody>
+    </table>
+    <br>
+    Sound travels FASTER in denser materials because the particles are closer together and pass vibrations more quickly.
+    <br><br>
+    <strong>Echo</strong> = reflection of sound. Used in echolocation (bats, dolphins) and SONAR (submarine navigation, depth measurement).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Three speed bars
+      const bars=[
+        {n:'Air',speed:340,max:5000,c:[52,152,219]},
+        {n:'Water',speed:1500,max:5000,c:[46,204,113]},
+        {n:'Steel',speed:5000,max:5000,c:[231,76,60]},
+      ];
+      bars.forEach((b,i)=>{
+        const cy=H*(0.28+i*0.22);
+        const barLen=W*0.65*(b.speed/b.max);
+        // Animated sound pulse
+        const pulseX=W*0.2+(barLen)*((t*0.15+i*0.33)%1);
+        sk.fill(50,50,50,80);sk.noStroke();sk.rect(W*0.2,cy-14,W*0.65,28,4);
+        sk.fill(...b.c,180);sk.noStroke();sk.rect(W*0.2,cy-14,barLen,28,4);
+        sk.fill(255,255,255,220);sk.circle(pulseX,cy,14);
+        sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT,sk.CENTER);
+        sk.text(b.n,W*0.04,cy);
+        sk.textAlign(sk.RIGHT,sk.CENTER);
+        sk.text(b.speed+' m/s',W*0.92,cy);
+      });
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Speed of Sound in Different Media',W*0.5,H*0.1);
+      // Echo diagram
+      sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('Echo (Reflection)',W*0.5,H*0.82);
+      const echoProg=(t*0.1)%1;
+      const goBack=echoProg>0.5;
+      const eX=goBack?W*0.15+W*0.55*(1-(echoProg-0.5)*2):W*0.15+W*0.55*echoProg*2;
+      sk.fill(255,220,50,200);sk.noStroke();sk.circle(eX,H*0.9,10);
+      // Source
+      sk.fill(100,200,255,180);sk.noStroke();sk.circle(W*0.15,H*0.9,18);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER);sk.text('Source',W*0.15,H*0.96);
+      // Reflector
+      sk.stroke(200,200,200,160);sk.strokeWeight(3);sk.line(W*0.7,H*0.85,W*0.7,H*0.96);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER);sk.text('Wall',W*0.7,H*0.83);
+    }
+  },
+  {
+    q:'Sound Wave — Compression and Rarefaction',
+    content:`<h3>Sound Wave — Compression and Rarefaction</h3><p>Sound is a longitudinal wave — particles vibrate back and forth in the same direction as the wave travels. Sound requires a medium (solid, liquid, or gas) to travel; it cannot travel through a vacuum.</p><ul><li>Compression: a region where particles are pushed together, creating high pressure</li><li>Rarefaction: a region where particles are spread apart, creating low pressure</li><li>One wavelength (λ) is the distance from one compression to the next compression (or one rarefaction to the next)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="255" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Sound Wave — Longitudinal Wave</text>
+  <!-- Speaker -->
+  <rect x="10" y="70" width="30" height="80" fill="#9e9e9e" stroke="#2e7d32" stroke-width="2" rx="3"/>
+  <ellipse cx="50" cy="110" rx="20" ry="35" fill="#757575" stroke="#2e7d32" stroke-width="2"/>
+  <text x="30" y="170" text-anchor="middle" font-size="8" fill="#333">Speaker</text>
+  <!-- Particle positions (compressions and rarefactions) -->
+  <!-- Compression 1 (dense particles) -->
+  <circle cx="100" cy="110" r="5" fill="#1565c0"/><circle cx="110" cy="110" r="5" fill="#1565c0"/><circle cx="120" cy="110" r="5" fill="#1565c0"/>
+  <circle cx="105" cy="95" r="5" fill="#1565c0"/><circle cx="115" cy="95" r="5" fill="#1565c0"/>
+  <circle cx="105" cy="125" r="5" fill="#1565c0"/><circle cx="115" cy="125" r="5" fill="#1565c0"/>
+  <!-- Rarefaction 1 (sparse particles) -->
+  <circle cx="160" cy="110" r="5" fill="#90caf9"/>
+  <circle cx="185" cy="97" r="5" fill="#90caf9"/>
+  <circle cx="185" cy="123" r="5" fill="#90caf9"/>
+  <!-- Compression 2 -->
+  <circle cx="220" cy="110" r="5" fill="#1565c0"/><circle cx="230" cy="110" r="5" fill="#1565c0"/><circle cx="240" cy="110" r="5" fill="#1565c0"/>
+  <circle cx="225" cy="96" r="5" fill="#1565c0"/><circle cx="235" cy="96" r="5" fill="#1565c0"/>
+  <circle cx="225" cy="124" r="5" fill="#1565c0"/><circle cx="235" cy="124" r="5" fill="#1565c0"/>
+  <!-- Rarefaction 2 -->
+  <circle cx="280" cy="110" r="5" fill="#90caf9"/>
+  <circle cx="305" cy="97" r="5" fill="#90caf9"/>
+  <circle cx="305" cy="123" r="5" fill="#90caf9"/>
+  <!-- Compression 3 -->
+  <circle cx="340" cy="110" r="5" fill="#1565c0"/><circle cx="350" cy="110" r="5" fill="#1565c0"/><circle cx="360" cy="110" r="5" fill="#1565c0"/>
+  <circle cx="345" cy="96" r="5" fill="#1565c0"/><circle cx="355" cy="96" r="5" fill="#1565c0"/>
+  <circle cx="345" cy="124" r="5" fill="#1565c0"/><circle cx="355" cy="124" r="5" fill="#1565c0"/>
+  <!-- Ear at right -->
+  <path d="M390,80 Q410,100 410,110 Q410,120 390,140 Q380,130 380,110 Q380,90 390,80 Z" fill="#f8bbd0" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="395" y="158" text-anchor="middle" font-size="8" fill="#333">Ear</text>
+  <!-- Labels -->
+  <rect x="88" y="52" width="52" height="22" fill="#1565c0" rx="3"/>
+  <text x="114" y="67" text-anchor="middle" font-size="9" fill="#fff">Compression</text>
+  <line x1="114" y1="74" x2="114" y2="88" stroke="#1565c0" stroke-width="1.5" marker-end="url(#arr)"/>
+  <rect x="145" y="52" width="52" height="22" fill="#90caf9" stroke="#1565c0" stroke-width="1" rx="3"/>
+  <text x="171" y="67" text-anchor="middle" font-size="9" fill="#1565c0">Rarefaction</text>
+  <line x1="171" y1="74" x2="171" y2="92" stroke="#1565c0" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Wavelength bracket -->
+  <line x1="100" y1="148" x2="220" y2="148" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="220" y1="148" x2="100" y2="148" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="160" y="162" text-anchor="middle" font-size="9" fill="#2e7d32">← one wavelength (λ) →</text>
+  <!-- Travelling direction -->
+  <line x1="65" y1="110" x2="375" y2="110" stroke="none"/>
+  <line x1="380" y1="185" x2="410" y2="185" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="375" y="197" text-anchor="end" font-size="9" fill="#2e7d32">Direction of wave travel</text>
+  <!-- Key box -->
+  <rect x="10" y="200" width="400" height="48" fill="#2e7d32" rx="5"/>
+  <text x="210" y="215" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">LONGITUDINAL WAVE: particles vibrate PARALLEL to the direction of travel</text>
+  <text x="210" y="230" text-anchor="middle" font-size="9" fill="#c8e6c9">Compression = particles pushed together (HIGH pressure region)</text>
+  <text x="210" y="243" text-anchor="middle" font-size="9" fill="#c8e6c9">Rarefaction = particles spread apart (LOW pressure region)</text>
+</svg>`
+  },
+  {
+    q:'Frequency vs Pitch — Wave Comparison',
+    content:`<h3>Frequency vs Pitch — Wave Comparison</h3><p>Frequency is the number of complete wave cycles per second, measured in Hertz (Hz). Pitch is the human perception of frequency — a high-frequency sound is heard as a high-pitched note.</p><ul><li>High frequency → short wavelength → high pitch (e.g. whistle ~1000 Hz)</li><li>Low frequency → long wavelength → low pitch (e.g. bass drum ~100 Hz)</li><li>Humans can hear frequencies from about 20 Hz to 20,000 Hz — sounds above this range are ultrasound</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Frequency → Pitch Relationship</text>
+  <!-- High Frequency wave -->
+  <rect x="10" y="28" width="400" height="100" fill="#fce4ec" stroke="#c62828" stroke-width="1.5" rx="6"/>
+  <text x="210" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">HIGH Frequency → HIGH Pitch (thin, squeaky)</text>
+  <!-- Draw high-freq wave (many cycles) -->
+  <polyline fill="none" stroke="#e53935" stroke-width="2.5"
+    points="30,78 45,48 60,78 75,108 90,78 105,48 120,78 135,108 150,78 165,48 180,78 195,108 210,78 225,48 240,78 255,108 270,78 285,48 300,78 315,108 330,78 345,48 360,78 375,108 390,78"/>
+  <text x="210" y="120" text-anchor="middle" font-size="9" fill="#c62828">Many vibrations per second — SHORT wavelength — HIGH frequency (e.g. 1000 Hz)</text>
+  <!-- Low Frequency wave -->
+  <rect x="10" y="138" width="400" height="100" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="6"/>
+  <text x="210" y="154" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">LOW Frequency → LOW Pitch (deep, rumbling)</text>
+  <!-- Draw low-freq wave (few cycles) -->
+  <polyline fill="none" stroke="#1565c0" stroke-width="2.5"
+    points="30,188 90,148 150,188 210,228 270,188 330,148 390,188"/>
+  <text x="210" y="230" text-anchor="middle" font-size="9" fill="#1565c0">Few vibrations per second — LONG wavelength — LOW frequency (e.g. 100 Hz)</text>
+  <!-- Key summary -->
+  <rect x="10" y="242" width="400" height="0" fill="#2e7d32" rx="3"/>
+  <!-- Human range note at bottom (fits within viewBox) -->
+  <text x="210" y="248" text-anchor="middle" font-size="9" fill="#2e7d32">Human hearing range: 20 Hz (lowest) → 20 000 Hz (highest)</text>
+</svg>`
+  },
+  {
+    q:'Amplitude vs Loudness — Wave Comparison',
+    content:`<h3>Amplitude vs Loudness — Wave Comparison</h3><p>Amplitude is the maximum displacement of particles from their rest position. Loudness is the human perception of amplitude — a larger amplitude wave carries more energy and sounds louder.</p><ul><li>Large amplitude → more particle displacement → more energy → louder sound (higher dB reading)</li><li>Small amplitude → less particle displacement → less energy → quieter sound</li><li>Amplitude and frequency are independent — you can have a high-pitched quiet sound (high frequency, small amplitude) or a low-pitched loud sound</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Amplitude → Loudness Relationship</text>
+  <!-- Small amplitude (quiet) -->
+  <rect x="10" y="28" width="400" height="95" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5" rx="6"/>
+  <text x="210" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b1fa2">SMALL Amplitude → QUIET sound</text>
+  <!-- Small amplitude wave -->
+  <line x1="30" y1="78" x2="390" y2="78" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="3,3"/>
+  <polyline fill="none" stroke="#9c27b0" stroke-width="2.5"
+    points="30,78 60,65 90,78 120,91 150,78 180,65 210,78 240,91 270,78 300,65 330,78 360,91 390,78"/>
+  <!-- Amplitude marker -->
+  <line x1="44" y1="65" x2="44" y2="78" stroke="#7b1fa2" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="10" y="72" font-size="8" fill="#7b1fa2">A</text>
+  <text x="210" y="115" text-anchor="middle" font-size="9" fill="#7b1fa2">Small displacement — less energy — quieter sound — measured in decibels (dB)</text>
+  <!-- Large amplitude (loud) -->
+  <rect x="10" y="135" width="400" height="105" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="151" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">LARGE Amplitude → LOUD sound</text>
+  <!-- Large amplitude wave -->
+  <line x1="30" y1="188" x2="390" y2="188" stroke="#2e7d32" stroke-width="1" stroke-dasharray="3,3"/>
+  <polyline fill="none" stroke="#2e7d32" stroke-width="2.5"
+    points="30,188 60,155 90,188 120,221 150,188 180,155 210,188 240,221 270,188 300,155 330,188 360,221 390,188"/>
+  <!-- Amplitude marker (large) -->
+  <line x1="44" y1="155" x2="44" y2="188" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="10" y="172" font-size="8" fill="#2e7d32">A</text>
+  <text x="210" y="232" text-anchor="middle" font-size="9" fill="#2e7d32">Large displacement — more energy — louder sound</text>
+  <text x="210" y="245" text-anchor="middle" font-size="9" fill="#555">Same FREQUENCY (pitch) — only amplitude (loudness) differs</text>
+</svg>`
+  },
+  {
+    q:'The Ear — Labeled Diagram',
+    content:`<h3>The Ear — Labeled Diagram</h3><p>The human ear converts sound waves (pressure variations in air) into electrical nerve impulses that the brain interprets as sound. It has three sections: outer, middle, and inner ear.</p><ul><li>Outer ear: pinna collects sound; ear canal channels it to the eardrum (tympanic membrane) which vibrates</li><li>Middle ear: three tiny bones (ossicles — malleus, incus, stapes) amplify the vibrations and transmit them to the oval window</li><li>Inner ear: the cochlea (fluid-filled, snail-shaped) converts vibrations into electrical signals that travel along the auditory nerve to the brain</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Structure of the Human Ear</text>
+  <!-- Pinna (outer ear) -->
+  <path d="M30,80 Q15,100 18,130 Q22,165 38,180 Q48,190 55,175 Q45,155 48,130 Q52,105 45,85 Z" fill="#f8bbd0" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Ear canal -->
+  <rect x="55" y="115" width="60" height="22" fill="#ffe0b2" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Eardrum (tympanic membrane) -->
+  <ellipse cx="117" cy="126" rx="10" ry="24" fill="#ef9a9a" stroke="#c62828" stroke-width="2"/>
+  <!-- Middle ear -->
+  <rect x="127" y="100" width="60" height="50" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="4"/>
+  <!-- Ossicles (3 tiny bones) -->
+  <circle cx="138" cy="126" r="7" fill="#f9a825" stroke="#e65100" stroke-width="1.5"/>
+  <text x="138" y="130" text-anchor="middle" font-size="7" fill="#fff">M</text>
+  <circle cx="154" cy="120" r="6" fill="#f9a825" stroke="#e65100" stroke-width="1.5"/>
+  <text x="154" y="124" text-anchor="middle" font-size="7" fill="#fff">I</text>
+  <circle cx="168" cy="126" r="6" fill="#f9a825" stroke="#e65100" stroke-width="1.5"/>
+  <text x="168" y="130" text-anchor="middle" font-size="7" fill="#fff">S</text>
+  <!-- Oval window -->
+  <ellipse cx="190" cy="126" rx="8" ry="16" fill="#ffccbc" stroke="#e65100" stroke-width="1.5"/>
+  <!-- Cochlea (spiral) -->
+  <path d="M202,100 Q240,85 260,115 Q270,140 255,160 Q235,178 208,165 Q190,152 195,133 Q200,118 215,115 Q230,112 232,128 Q232,142 220,145 Q210,144 210,133" fill="none" stroke="#1565c0" stroke-width="3"/>
+  <!-- Auditory nerve -->
+  <line x1="255" y1="135" x2="310" y2="135" stroke="#7b1fa2" stroke-width="3"/>
+  <!-- Brain -->
+  <ellipse cx="345" cy="135" rx="40" ry="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="345" y="130" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">Brain</text>
+  <text x="345" y="143" text-anchor="middle" font-size="8" fill="#555">interprets</text>
+  <text x="345" y="155" text-anchor="middle" font-size="8" fill="#555">sound</text>
+  <!-- Labels with arrows -->
+  <line x1="30" y1="80" x2="30" y2="40" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="30" y="36" text-anchor="middle" font-size="9" fill="#333">Pinna</text>
+  <line x1="85" y1="115" x2="85" y2="60" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="85" y="56" text-anchor="middle" font-size="9" fill="#333">Ear canal</text>
+  <line x1="117" y1="102" x2="117" y2="60" stroke="#c62828" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="117" y="56" text-anchor="middle" font-size="9" fill="#c62828">Eardrum</text>
+  <line x1="154" y1="100" x2="154" y2="60" stroke="#f57f17" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="154" y="56" text-anchor="middle" font-size="9" fill="#f57f17">Ossicles</text>
+  <line x1="228" y1="100" x2="228" y2="60" stroke="#1565c0" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="228" y="56" text-anchor="middle" font-size="9" fill="#1565c0">Cochlea</text>
+  <line x1="285" y1="135" x2="285" y2="190" stroke="#7b1fa2" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="285" y="202" text-anchor="middle" font-size="9" fill="#7b1fa2">Auditory nerve</text>
+  <!-- Key flow -->
+  <rect x="10" y="220" width="400" height="34" fill="#2e7d32" rx="5"/>
+  <text x="210" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Sound path: Pinna → Ear canal → Eardrum vibrates → Ossicles amplify</text>
+  <text x="210" y="248" text-anchor="middle" font-size="9" fill="#c8e6c9">→ Cochlea converts to nerve impulses → Auditory nerve → Brain → Heard!</text>
+</svg>`
+  },
+  {
+    q:'Reflection of Sound — Echo Diagram',
+    content:`<h3>Reflection of Sound — Echo Diagram</h3><p>Sound waves reflect off hard, smooth surfaces just like light reflects off a mirror. A reflected sound is called an echo. The time delay between the original sound and the echo depends on the distance to the reflecting surface.</p><ul><li>Echo calculation: distance = (speed of sound × time) ÷ 2 — divide by 2 because sound travels to the wall AND back</li><li>Speed of sound in air ≈ 340 m/s at room temperature — it travels faster in solids and liquids than in gases</li><li>Applications: sonar (ships detecting ocean depth), ultrasound scanning (medical imaging), echolocation in bats</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e53935"/></marker></defs>
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Reflection of Sound — Echo</text>
+  <!-- Source person -->
+  <circle cx="60" cy="100" r="16" fill="#f8bbd0" stroke="#2e7d32" stroke-width="2"/>
+  <text x="60" y="96" text-anchor="middle" font-size="12">👤</text>
+  <text x="60" y="130" text-anchor="middle" font-size="9" fill="#333">Source</text>
+  <text x="60" y="142" text-anchor="middle" font-size="8" fill="#555">(person shouting)</text>
+  <!-- Outgoing sound wave arcs -->
+  <path d="M80,100 Q180,60 280,100" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="0"/>
+  <polygon points="278,99 288,95 286,107" fill="#2e7d32"/>
+  <text x="180" y="75" text-anchor="middle" font-size="9" fill="#2e7d32">Sound travels → →</text>
+  <!-- Reflecting wall -->
+  <rect x="340" y="60" width="20" height="90" fill="#9e9e9e" stroke="#424242" stroke-width="2.5" rx="3"/>
+  <!-- Hatching for wall -->
+  <line x1="340" y1="70" x2="325" y2="85" stroke="#757575" stroke-width="1"/>
+  <line x1="340" y1="85" x2="325" y2="100" stroke="#757575" stroke-width="1"/>
+  <line x1="340" y1="100" x2="325" y2="115" stroke="#757575" stroke-width="1"/>
+  <line x1="340" y1="115" x2="325" y2="130" stroke="#757575" stroke-width="1"/>
+  <text x="375" y="105" text-anchor="middle" font-size="9" font-weight="bold" fill="#424242">Wall</text>
+  <text x="375" y="116" text-anchor="middle" font-size="8" fill="#555">(reflects</text>
+  <text x="375" y="127" text-anchor="middle" font-size="8" fill="#555">sound)</text>
+  <!-- Returning echo wave (red, below) -->
+  <path d="M340,120 Q215,155 80,120" fill="none" stroke="#e53935" stroke-width="2.5"/>
+  <polygon points="82,119 72,123 74,111" fill="#e53935"/>
+  <text x="210" y="152" text-anchor="middle" font-size="9" fill="#e53935">← ← Echo returns</text>
+  <!-- Time label -->
+  <rect x="10" y="170" width="400" height="70" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="186" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Echo Calculation:</text>
+  <text x="210" y="200" text-anchor="middle" font-size="10" fill="#333">Total distance = speed × total time &nbsp;→&nbsp; Distance to wall = ½ × speed × time</text>
+  <rect x="60" y="208" width="300" height="24" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="210" y="220" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">d = (v × t) ÷ 2</text>
+  <text x="210" y="232" text-anchor="middle" font-size="9" fill="#333">e.g. echo in 0.6 s, v = 340 m/s → d = (340 × 0.6) ÷ 2 = 102 m</text>
+  <!-- Human hearing delay note -->
+  <text x="210" y="248" text-anchor="middle" font-size="8" fill="#555">Echo heard separately only if time delay ≥ 0.1 s (wall must be ≥ 17 m away)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Sound Basics',
+    body:'Test your understanding of what sound is and its wave properties.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Can sound travel through a vacuum (space)?',opts:['Yes — light and sound travel together','No — sound needs a medium (particles) to travel','Yes — at 340 m/s like in air','Only high frequency sounds can'],ans:1,exp:'Sound CANNOT travel through a vacuum — it needs a MEDIUM (particles) to travel through. This is why space is "silent." Sound travels as a longitudinal wave: particles vibrate and pass energy to neighbouring particles. No particles = no sound.'},
+      {q:'What property of a sound wave determines its PITCH?',opts:['Amplitude','Wavelength','Frequency','Speed'],ans:2,exp:'FREQUENCY determines pitch. HIGH frequency = HIGH pitch (thin, squeaky sound). LOW frequency = LOW pitch (deep, rumbling sound). Frequency is measured in Hertz (Hz). Human hearing: 20 Hz to 20,000 Hz.'},
+      {q:'In which medium does sound travel FASTEST?',opts:['Air','Water','Vacuum','Steel'],ans:3,exp:'Sound travels FASTEST in STEEL (solid) — about 5000 m/s, compared to ~1500 m/s in water and ~340 m/s in air. Solids have particles that are tightly packed and strongly bonded, so vibrations are passed very quickly between particles.'},
+      {q:'What is an echo?',opts:['An absorption of sound','A reflection of sound off a surface','A change in the frequency of sound','A very loud sound'],ans:1,exp:'An ECHO is the REFLECTION of sound off a surface. For the ear to distinguish an echo from the original sound, there must be a delay of at least 0.1 seconds, requiring a distance of about 17 m or more from the reflecting surface.'},
+    ]}
+  },
+  {
+    title:'Hearing & Ultrasound',
+    body:`The ear converts sound waves into electrical signals sent to the brain:
+    <ol style="margin:6px 0 0 18px;line-height:2">
+      <li>Sound waves enter the ear canal</li>
+      <li>Strike the <strong>eardrum (tympanic membrane)</strong> — causes vibration</li>
+      <li>Three tiny bones (<strong>ossicles</strong>: malleus, incus, stapes) amplify vibrations</li>
+      <li><strong>Cochlea</strong> — fluid-filled structure that converts vibrations into nerve impulses</li>
+      <li>Auditory nerve carries impulses to brain</li>
+    </ol>
+    <br>
+    <strong>Ultrasound (>20 kHz)</strong>: Too high frequency for humans to hear.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Medical imaging (scans of babies, organs)</li>
+      <li>Cleaning instruments, breaking kidney stones</li>
+      <li>SONAR (ships finding depth/objects underwater)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[8,12,18]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ear canal
+      sk.fill(180,130,100,160);sk.noStroke();sk.rect(W*0.05,H*0.38,W*0.14,H*0.24,3,0,0,3);
+      // Eardrum
+      sk.fill(220,160,100,200);sk.noStroke();
+      const drumVib=Math.sin(t*4)*4;
+      sk.ellipse(W*0.19+drumVib/2,H*0.5,12,H*0.24);
+      // Ossicles (simplified)
+      sk.stroke(200,200,200,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.22,H*0.4+drumVib,W*0.28,H*0.38);
+      sk.line(W*0.28,H*0.38,W*0.32,H*0.45+drumVib*0.5);
+      sk.line(W*0.32,H*0.45,W*0.36,H*0.42);
+      // Cochlea (spiral)
+      sk.stroke(100,200,100,180);sk.strokeWeight(2);sk.noFill();
+      for(let r=8;r<=28;r+=4){
+        sk.arc(W*0.44,H*0.5,r*2,r*2,0,sk.PI*1.8);
+      }
+      // Auditory nerve
+      sk.stroke(52,152,219,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.5,H*0.5,W*0.65,H*0.5);
+      // Brain
+      sk.fill(180,100,150,160);sk.noStroke();sk.circle(W*0.72,H*0.5,40);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Brain',W*0.72,H*0.5);
+      // Labels
+      const labels=[
+        {n:'Ear canal',x:0.12,y:0.28},{n:'Eardrum',x:0.19,y:0.26},
+        {n:'Ossicles',x:0.27,y:0.28},{n:'Cochlea',x:0.44,y:0.28},
+        {n:'Nerve',x:0.56,y:0.38},
+      ];
+      labels.forEach(lv=>{
+        sk.fill(200,220,255);sk.textSize(8);sk.textAlign(sk.CENTER);
+        sk.text(lv.n,lv.x*W,lv.y*H);
+        sk.stroke(200,220,255,60);sk.strokeWeight(1);
+        sk.line(lv.x*W,lv.y*H+10,lv.x*W,H*0.38);
+      });
+      // Ultrasound uses
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Ultrasound (> 20 kHz) uses:',W*0.5,H*0.73);
+      ['Medical imaging (foetal scans)','SONAR (submarine/depth finding)','Cleaning & medical treatments'].forEach((u,i)=>{
+        sk.fill(255,220,50);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+        sk.text('• '+u,W*0.5,H*0.8+i*H*0.065);
+      });
+    }
+  },
+  {
+    title:'Musical Notes & Sound Calculations',
+    body:`Musical notes are produced by regular, periodic vibrations:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>String instruments</strong>: shorter/tighter strings → higher frequency</li>
+      <li><strong>Wind instruments</strong>: shorter air column → higher frequency</li>
+      <li><strong>Resonance</strong>: when an object vibrates at its natural frequency</li>
+    </ul>
+    <br>
+    Key equation: <strong>v = f × λ</strong>
+    <br><br>
+    <strong>Example</strong>: A sound wave has frequency 440 Hz (note A) and travels at 340 m/s.
+    <br>λ = v/f = 340/440 = <strong>0.77 m</strong>
+    <br><br>
+    <strong>Example 2 — Calculating distance using echo</strong>:
+    <br>Echo heard after 0.6 s, speed = 340 m/s.
+    <br>Distance = (v × t) ÷ 2 = (340 × 0.6) ÷ 2 = <strong>102 m</strong>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Guitar string vibrating
+      const strings=[{f:1,c:[231,76,60],len:0.7},{f:2,c:[46,204,113],len:0.5},{f:3,c:[52,152,219],len:0.35}];
+      strings.forEach((s,i)=>{
+        const x1=W*0.06,x2=x1+W*s.len;
+        const cy=H*(0.25+i*0.2);
+        sk.stroke(...s.c,180);sk.strokeWeight(2.5);sk.noFill();
+        sk.beginShape();
+        for(let x=x1;x<=x2;x+=3){
+          const nx=(x-x1)/(x2-x1);
+          const y=cy+Math.sin(nx*sk.PI)*Math.sin(t*s.f*4)*H*0.04;
+          sk.vertex(x,y);
+        }
+        sk.endShape();
+        // Pegs
+        sk.fill(...s.c,200);sk.noStroke();sk.circle(x1,cy,8);sk.circle(x2,cy,8);
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.LEFT);
+        const labels=['Low pitch (long)','Medium pitch','High pitch (short)'];
+        sk.text(labels[i],x2+8,cy+4);
+      });
+      // Echo calculation diagram
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Echo calculation: distance = v×t ÷ 2',W*0.5,H*0.76);
+      // Person and wall
+      sk.fill(200,150,100,180);sk.noStroke();sk.circle(W*0.1,H*0.88,14);
+      sk.stroke(200,150,100,180);sk.strokeWeight(2);
+      sk.line(W*0.1,H*0.88+7,W*0.1,H*0.95);
+      sk.stroke(200,200,200,160);sk.strokeWeight(3);sk.noFill();
+      sk.line(W*0.85,H*0.82,W*0.85,H*0.97);
+      // Echo pulse going and coming back
+      const echoProg=(t*0.08)%1;
+      const eX=echoProg<0.5?W*0.1+W*0.75*echoProg*2:W*0.85-W*0.75*(echoProg-0.5)*2;
+      sk.fill(255,220,50,220);sk.noStroke();sk.circle(eX,H*0.9,9);
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('d = 340 × 0.6 ÷ 2 = 102 m',W*0.5,H*0.97);
+    }
+  },
+  {
+    title:'🎮 Final — Sound Applications & Calculations',
+    body:'Final challenge applying sound knowledge to real situations.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'A sound wave has a frequency of 680 Hz and a speed of 340 m/s. What is its wavelength?',opts:['0.25 m','0.5 m','2000 m','680 m'],ans:1,exp:'Using v = f × λ: λ = v/f = 340/680 = 0.5 m. The wavelength is 0.5 metres. Higher frequency = shorter wavelength for the same wave speed.'},
+      {q:'Why can astronauts NOT hear an explosion in space?',opts:['Space is too cold','Light travels faster than sound so the explosion is silent','Sound requires a medium to travel and space is a vacuum','Explosions in space produce no sound energy'],ans:2,exp:'Sound is a MECHANICAL WAVE that requires a MEDIUM (particles) to travel. Space is a near-perfect VACUUM with no particles. Without particles to vibrate, sound waves cannot propagate. Therefore, no sound can travel through space.'},
+      {q:'Ultrasound scans are used in hospitals mainly because:',opts:['They are faster than X-rays','Sound waves can create images of internal organs and babies safely without ionising radiation','They are cheaper than all other imaging methods','Patients cannot feel ultrasound waves'],ans:1,exp:'Ultrasound imaging uses HIGH FREQUENCY sound waves that reflect off boundaries between different tissues. Unlike X-rays, ultrasound is NON-IONISING — it doesn\'t damage DNA. This makes it safe for imaging fetuses and soft tissues. It also distinguishes between tissue types that X-rays cannot.'},
+      {q:'A ship sends a sonar pulse and receives an echo after 3 seconds. The speed of sound in water is 1500 m/s. How deep is the ocean floor?',opts:['4500 m','2250 m','500 m','1500 m'],ans:1,exp:'Distance = (v × t) ÷ 2 = (1500 × 3) ÷ 2 = 4500 ÷ 2 = 2250 m. We divide by 2 because the sound travels DOWN to the bottom and then BACK UP — so the total time covers twice the depth.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#00695c',dark:'#003d33',light:'#e0f2f1',
+  title:'Sound — Waves, Properties & Applications',
+});
+</script></body></html>

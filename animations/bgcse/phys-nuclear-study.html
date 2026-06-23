@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nuclear Physics — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[8,10,20]))}
+
+const STEPS=[
+  {
+    title:'The Nucleus — Protons & Neutrons',
+    body:`The nucleus is made of <strong>protons</strong> (positive) and <strong>neutrons</strong> (no charge).
+    <br><br>
+    <strong>Atomic number (Z)</strong> = number of protons (defines the element)
+    <br><br>
+    <strong>Mass number (A)</strong> = protons + neutrons
+    <br><br>
+    An atom is written as: <strong>ᴬ_Z X</strong>
+    <br>Example: ²⁷₁₃Al has 13 protons, 14 neutrons
+    <br><br>
+    <strong>Radioactivity</strong> is when an <em>unstable</em> nucleus spontaneously emits radiation to become more stable. It is random and unaffected by temperature, pressure, or chemical state.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.03;
+      const cx=W/2,cy=H*0.46;
+      // Nucleus with protons and neutrons
+      const n=12;
+      for(let i=0;i<n;i++){
+        const ang=t*0.3+(i/n)*sk.TWO_PI;
+        const r=i%2===0?H*0.12:H*0.07;
+        const jitter=Math.sin(t*2+i)*3;
+        const px=cx+Math.cos(ang)*r+jitter;
+        const py=cy+Math.sin(ang)*r+jitter;
+        const isProton=i<6;
+        sk.fill(isProton?[231,76,60]:[150,150,170]);
+        sk.noStroke();sk.circle(px,py,16);
+        sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(isProton?'p⁺':'n⁰',px,py);
+      }
+      // Electrons orbiting
+      const shells=[2,8];
+      [[H*0.22,shells[0]],[H*0.34,shells[1]]].forEach(([r,ne])=>{
+        sk.noFill();sk.stroke(100,180,255,30);sk.strokeWeight(1);sk.circle(cx,cy,r*2);
+        for(let i=0;i<ne;i++){
+          const ang=t*(r<H*0.25?1:-0.7)+(i/ne)*sk.TWO_PI;
+          sk.fill(100,180,255,200);sk.noStroke();
+          sk.circle(cx+Math.cos(ang)*r,cy+Math.sin(ang)*r,8);
+        }
+      });
+      // Labels
+      sk.fill(231,76,60);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('■ Proton (p⁺)',W*0.04,H*0.12);
+      sk.fill(150,150,170);sk.text('■ Neutron (n⁰)',W*0.04,H*0.22);
+      sk.fill(100,180,255);sk.text('● Electron (e⁻)',W*0.04,H*0.32);
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('¹³⁶C — 6 protons, 7 neutrons',W/2,H*0.9);
+    }
+  },
+  {
+    title:'Types of Radiation — α, β, γ',
+    body:`Three types of nuclear radiation:
+    <br><br>
+    <strong>Alpha (α)</strong>:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>2 protons + 2 neutrons (helium nucleus)</li>
+      <li>Stopped by paper or a few cm of air</li>
+      <li>Highly ionising</li>
+    </ul>
+    <strong>Beta (β)</strong>:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>High-speed electron emitted when neutron → proton</li>
+      <li>Stopped by aluminium or a few mm</li>
+      <li>Moderately ionising</li>
+    </ul>
+    <strong>Gamma (γ)</strong>:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>High-energy electromagnetic wave (no mass, no charge)</li>
+      <li>Needs thick lead or metres of concrete to stop</li>
+      <li>Least ionising, most penetrating</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,12,24]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const source={x:W*0.1,y:H*0.5};
+      // Alpha
+      const aX=Math.min(source.x+((t*30)%120),source.x+80);
+      sk.fill(231,76,60,220);sk.noStroke();sk.circle(aX,H*0.3,16);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('α',aX,H*0.3);
+      // Paper barrier
+      sk.fill(220,200,150,180);sk.noStroke();sk.rect(source.x+82,H*0.15,8,H*0.7,2);
+      sk.fill(255,255,255,80);sk.textSize(8);sk.textAlign(sk.LEFT);
+      sk.text('Paper',source.x+94,H*0.17);
+      // Beta
+      const bX=Math.min(source.x+((t*40)%220),source.x+180);
+      sk.fill(52,152,219,200);sk.noStroke();sk.circle(bX,H*0.5,10);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('β',bX,H*0.5);
+      // Al barrier
+      sk.fill(200,200,210,180);sk.noStroke();sk.rect(source.x+182,H*0.15,10,H*0.7,2);
+      sk.fill(255,255,255,80);sk.textSize(8);sk.textAlign(sk.LEFT);sk.text('Al',source.x+196,H*0.3);
+      // Gamma ray (wiggly)
+      sk.stroke(241,196,15,200);sk.strokeWeight(2);sk.noFill();
+      sk.beginShape();
+      for(let x=source.x;x<W*0.92;x+=3){
+        sk.vertex(x,H*0.72+Math.sin(x*0.3)*12);
+      }sk.endShape();
+      sk.fill(241,196,15);sk.noStroke();sk.textSize(8.5);sk.textAlign(sk.RIGHT);
+      sk.text('γ',W*0.92,H*0.7);
+      // Thick concrete needed for gamma
+      sk.fill(100,80,60,60);sk.noStroke();sk.rect(W*0.84,H*0.15,W*0.1,H*0.7);
+      sk.fill(255,255,255,60);sk.textSize(7.5);sk.textAlign(sk.CENTER);
+      sk.text('Lead/\nConcrete',W*0.89,H*0.28);
+      // Source
+      sk.fill(255,165,50,200);sk.noStroke();sk.circle(source.x,source.y,22);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('☢',source.x,source.y);
+    }
+  },
+  {
+    title:'Nuclear Equations',
+    body:`Nuclear equations must balance: <strong>mass numbers</strong> and <strong>atomic numbers</strong> must be equal on both sides.
+    <br><br>
+    <strong>Alpha decay</strong> (loses ⁴₂He):
+    <br>²³⁸₉₂U → ²³⁴₉₀Th + ⁴₂He
+    <br>Mass: 238 = 234 + 4 ✓ &emsp; Atomic: 92 = 90 + 2 ✓
+    <br><br>
+    <strong>Beta decay</strong> (neutron → proton + electron):
+    <br>¹⁴₆C → ¹⁴₇N + ⁰₋₁e
+    <br>Mass: 14 = 14 + 0 ✓ &emsp; Atomic: 6 = 7 + (−1) ✓
+    <br><br>
+    Gamma decay does NOT change mass or atomic number — only releases energy.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Alpha decay animation
+      const decayT=(t*0.5)%sk.TWO_PI;
+      const phase=decayT<sk.PI?'before':'after';
+      if(phase==='before'){
+        // Uranium nucleus
+        sk.fill(100,50,150,200);sk.noStroke();sk.circle(W*0.5,H*0.42,60);
+        sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text('²³⁸U',W*0.5,H*0.42);sk.textStyle(sk.NORMAL);
+      }else{
+        const sep=((decayT-sk.PI)/sk.PI)*W*0.3;
+        // Thorium
+        sk.fill(70,120,200,200);sk.noStroke();sk.circle(W*0.4-sep,H*0.42,52);
+        sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text('²³⁴Th',W*0.4-sep,H*0.42);
+        // Alpha particle
+        sk.fill(231,76,60,220);sk.noStroke();sk.circle(W*0.6+sep,H*0.38,24);
+        sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text('⁴He\n(α)',W*0.6+sep,H*0.38);sk.textStyle(sk.NORMAL);
+      }
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Alpha decay:',W/2,H*0.15);sk.textStyle(sk.NORMAL);
+      sk.fill(255,255,255,80);sk.textSize(9);sk.text('²³⁸₉₂U → ²³⁴₉₀Th + ⁴₂He',W/2,H*0.22);
+      // Balance check
+      sk.fill(46,204,113);sk.textSize(9);
+      sk.text('Mass: 238 = 234 + 4 ✓',W/2,H*0.72);
+      sk.text('Atomic: 92 = 90 + 2 ✓',W/2,H*0.8);
+    }
+  },
+  {
+    title:'🎮 Check — Radiation Types',
+    body:'Test your knowledge of alpha, beta and gamma radiation.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which type of radiation has the greatest penetrating power?',opts:['Alpha','Beta','Gamma','All the same'],ans:2,exp:'Gamma rays are the MOST penetrating — they need thick lead or metres of concrete to stop them. Alpha is the least penetrating (stopped by paper).'},
+      {q:'In beta decay, which particle is emitted?',opts:['A helium nucleus','A high-speed electron','A gamma ray photon','A proton'],ans:1,exp:'In beta decay, a neutron in the nucleus converts to a proton and emits a high-speed electron (beta particle). The atomic number increases by 1.'},
+      {q:'Which type of radiation is deflected by both electric and magnetic fields?',opts:['Gamma only','Alpha and beta','Gamma and alpha','All three'],ans:1,exp:'Alpha (charged +2) and beta (charged −1) are deflected by electric and magnetic fields. Gamma has no charge so is NOT deflected.'},
+      {q:'Radon-222 emits an alpha particle. What is the new atomic number? (Rn: Z=86)',opts:['84','88','87','82'],ans:0,exp:'Alpha decay removes 2 protons. New Z = 86 − 2 = 84. The element with Z=84 is Polonium (Po).'},
+    ]}
+  },
+  {
+    title:'Half-Life',
+    body:`<strong>Half-life</strong> is the time taken for <em>half</em> the radioactive nuclei in a sample to decay.
+    <br><br>
+    Half-life is <strong>constant</strong> for a given isotope — unaffected by temperature or pressure.
+    <br><br>
+    After n half-lives, the fraction remaining = (½)ⁿ:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>After 1 half-life → ½ remaining</li>
+      <li>After 2 half-lives → ¼ remaining</li>
+      <li>After 3 half-lives → ⅛ remaining</li>
+    </ul>
+    Uses of half-life:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Carbon-14 dating (t½ = 5730 years)</li>
+      <li>Medical tracers need short half-lives (minutes/hours)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,14,22]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Decay curve
+      const ax=W*0.1,ay=H*0.88,gw=W*0.82,gh=H*0.72;
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);sk.noFill();
+      sk.line(ax,ay-gh,ax,ay);sk.line(ax,ay,ax+gw,ay);
+      sk.stroke(231,76,60,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.beginShape();
+      for(let x=0;x<gw;x+=3){
+        sk.vertex(ax+x,ay-gh*Math.exp(-x*0.012));
+      }sk.endShape();
+      // Half-life markers
+      const hl=gw*0.21;
+      [[0,'N₀'],[1,'N₀/2'],[2,'N₀/4'],[3,'N₀/8']].forEach(([n,lbl])=>{
+        const x=ax+n*hl;
+        const y=ay-gh*Math.exp(-n*hl*0.012);
+        sk.stroke(255,220,50,100);sk.strokeWeight(1);sk.noFill();
+        sk.line(x,y,x,ay);
+        sk.fill(255,220,50);sk.noStroke();sk.textSize(8);sk.textAlign(sk.CENTER);
+        sk.text(lbl,ax,y-6);sk.text(n?n+'t½':'0',x,ay+12);
+        sk.fill(255,220,50,180);sk.noStroke();sk.circle(x,y,8);
+      });
+      sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Each half-life, half the remaining nuclei decay',W/2,H*0.06);
+    }
+  },
+  {
+    title:'Nuclear Fission & Fusion',
+    body:`<strong>Nuclear fission</strong>: a large, unstable nucleus splits into two smaller nuclei when struck by a neutron, releasing huge energy + more neutrons (chain reaction).
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Example: ²³⁵U → ¹⁴¹Ba + ⁹²Kr + 3n + energy</li>
+      <li>Used in nuclear power stations</li>
+    </ul>
+    <strong>Nuclear fusion</strong>: two small nuclei join to form a larger nucleus, releasing even more energy.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Example: ²H + ³H → ⁴He + n + energy</li>
+      <li>Powers the Sun and stars</li>
+      <li>Requires extremely high temperature — not yet practical on Earth</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[8,10,20]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // FISSION (top)
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('FISSION',W/2,H*0.08);sk.textStyle(sk.NORMAL);
+      const fT=(t*0.5)%sk.TWO_PI;
+      if(fT<sk.PI){
+        // Before - big nucleus + incoming neutron
+        sk.fill(100,50,180,200);sk.noStroke();sk.circle(W*0.45,H*0.24,44);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('²³⁵U',W*0.45,H*0.24);
+        const nx=sk.lerp(W*0.82,W*0.5,(fT/sk.PI));
+        sk.fill(150,150,170);sk.noStroke();sk.circle(nx,H*0.24,10);
+        sk.fill(255);sk.textSize(6.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('n',nx,H*0.24);
+      }else{
+        const sp=((fT-sk.PI)/sk.PI)*W*0.22;
+        [[W*0.35-sp,'¹⁴¹Ba',[231,76,60]],[W*0.55+sp,'⁹²Kr',[52,152,219]]].forEach(([x,l,c])=>{
+          sk.fill(...c,200);sk.noStroke();sk.circle(x,H*0.24,28);
+          sk.fill(255);sk.textSize(8);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(l,x,H*0.24);
+        });
+        // Neutrons flying out
+        for(let i=-1;i<=1;i+=1){
+          const nx2=W*0.45+i*sp*1.5,ny=H*0.24-sp*(1+i*0.3);
+          sk.fill(150,150,170,200);sk.noStroke();sk.circle(nx2,ny,8);
+        }
+      }
+      // FUSION (bottom)
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('FUSION',W/2,H*0.52);sk.textStyle(sk.NORMAL);
+      const fuT=(t*0.4+sk.PI)%sk.TWO_PI;
+      const sep2=Math.abs(Math.cos(fuT))*W*0.22;
+      [[W*0.5-sep2,'²H',[52,152,219]],[W*0.5+sep2,'³H',[46,204,113]]].forEach(([x,l,c])=>{
+        sk.fill(...c,200);sk.noStroke();sk.circle(x,H*0.72,22);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(l,x,H*0.72);
+      });
+      if(sep2<12){
+        // Flash!
+        sk.fill(255,220,50,200);sk.noStroke();sk.circle(W*0.5,H*0.72,60);
+        sk.fill(255,220,50,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text('ENERGY!',W*0.5,H*0.72);sk.textStyle(sk.NORMAL);
+      }
+    }
+  },
+  {
+    q:'Atomic Nucleus — Protons &amp; Neutrons',
+    content:`<h3>Atomic Structure — Nucleus, Protons and Neutrons</h3><p>All matter is made of atoms. At the centre of every atom is a tiny, dense nucleus containing protons and neutrons, surrounded by electrons in shells. The number of protons (atomic number Z) defines which element the atom is, while the mass number A gives the total number of nucleons.</p><ul><li>Protons carry a +1 charge and have mass ≈ 1 u; they determine the element's identity.</li><li>Neutrons carry no charge and have mass ≈ 1 u; varying the neutron count gives different isotopes of the same element.</li><li>Electrons (−1 charge, negligible mass) orbit in shells; their number equals the proton count in a neutral atom.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Atomic Structure</text>
+  <!-- Electron shells -->
+  <ellipse cx="210" cy="135" rx="90" ry="90" fill="none" stroke="#7986cb" stroke-width="1" stroke-dasharray="4,3"/>
+  <ellipse cx="210" cy="135" rx="58" ry="58" fill="none" stroke="#9fa8da" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- Nucleus -->
+  <circle cx="210" cy="135" r="32" fill="#c5cae9" stroke="#283593" stroke-width="2.5"/>
+  <!-- Protons (red) and Neutrons (grey) in nucleus -->
+  <circle cx="200" cy="128" r="9" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="200" y="132" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">p⁺</text>
+  <circle cx="220" cy="128" r="9" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="220" y="132" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">p⁺</text>
+  <circle cx="210" cy="143" r="9" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="210" y="147" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">n⁰</text>
+  <circle cx="200" cy="118" r="8" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="200" y="122" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">n⁰</text>
+  <!-- Electrons on shells -->
+  <!-- Shell 1 electrons (2 electrons) -->
+  <circle cx="210" cy="77" r="8" fill="#42a5f5" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="81" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">e⁻</text>
+  <circle cx="210" cy="193" r="8" fill="#42a5f5" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="197" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff">e⁻</text>
+  <!-- Shell 2 electrons (4 shown) -->
+  <circle cx="152" cy="100" r="8" fill="#64b5f6" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="152" y="104" text-anchor="middle" font-size="7" fill="#fff">e⁻</text>
+  <circle cx="268" cy="100" r="8" fill="#64b5f6" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="268" y="104" text-anchor="middle" font-size="7" fill="#fff">e⁻</text>
+  <circle cx="152" cy="170" r="8" fill="#64b5f6" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="152" y="174" text-anchor="middle" font-size="7" fill="#fff">e⁻</text>
+  <circle cx="268" cy="170" r="8" fill="#64b5f6" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="268" y="174" text-anchor="middle" font-size="7" fill="#fff">e⁻</text>
+  <!-- Labels panel right side -->
+  <rect x="318" y="55" width="92" height="78" rx="4" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="364" y="72" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#283593">Nucleus</text>
+  <circle cx="332" cy="87" r="6" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="348" y="91" font-size="9" fill="#c62828">Proton (p⁺)</text>
+  <text x="348" y="103" font-size="8.5" fill="#333">+1 charge, mass ≈1u</text>
+  <circle cx="332" cy="115" r="6" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="348" y="119" font-size="9" fill="#546e7a">Neutron (n⁰)</text>
+  <text x="348" y="130" font-size="8.5" fill="#333">0 charge, mass ≈1u</text>
+  <!-- Label panel right - electron -->
+  <rect x="318" y="148" width="92" height="54" rx="4" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="364" y="164" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#283593">Electrons</text>
+  <circle cx="332" cy="178" r="6" fill="#42a5f5" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="348" y="182" font-size="9" fill="#1565c0">Electron (e⁻)</text>
+  <text x="348" y="194" font-size="8.5" fill="#333">−1 charge, negligible mass</text>
+  <!-- Notation example -->
+  <rect x="10" y="230" width="295" height="28" rx="4" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="152" y="244" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#283593">⁴₂He: Mass number (A) = 4, Atomic number (Z) = 2</text>
+  <text x="152" y="256" text-anchor="middle" font-size="9.5" fill="#333">Neutrons = A − Z = 4 − 2 = 2</text>
+  <!-- Nucleus label -->
+  <text x="210" y="178" text-anchor="middle" font-size="8.5" fill="#283593" font-weight="bold">Nucleus</text>
+</svg>`
+  },
+  {
+    q:'Alpha, Beta &amp; Gamma — Comparison Table',
+    content:`<h3>Alpha, Beta and Gamma Radiation — Comparison</h3><p>Unstable nuclei emit one (or more) of three types of nuclear radiation as they decay toward stability. The three types differ in nature, charge, mass, penetrating power, and ionising ability — all of which are examinable comparisons at BGCSE level.</p><ul><li><strong>Alpha (α):</strong> helium nucleus (2p + 2n); charge +2; stopped by paper; highest ionising power.</li><li><strong>Beta (β):</strong> fast electron; charge −1; stopped by a few mm of aluminium; moderate ionising power.</li><li><strong>Gamma (γ):</strong> electromagnetic wave; no charge or mass; needs thick lead or concrete to attenuate; lowest ionising power but most penetrating.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Types of Nuclear Radiation</text>
+  <!-- Table header -->
+  <rect x="10" y="25" width="400" height="28" rx="4" fill="#283593"/>
+  <text x="90" y="44" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Property</text>
+  <text x="210" y="44" text-anchor="middle" font-size="11" fill="#ef9a9a" font-weight="bold">α Alpha</text>
+  <text x="314" y="44" text-anchor="middle" font-size="11" fill="#90caf9" font-weight="bold">β Beta</text>
+  <text x="392" y="44" text-anchor="middle" font-size="11" fill="#ffe082" font-weight="bold">γ Gamma</text>
+  <!-- Row: Nature -->
+  <rect x="10" y="53" width="400" height="26" rx="0" fill="#e8eaf6"/>
+  <text x="90" y="70" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Nature</text>
+  <text x="210" y="70" text-anchor="middle" font-size="9" fill="#333">Helium nucleus (⁴₂He)</text>
+  <text x="314" y="70" text-anchor="middle" font-size="9" fill="#333">Fast electron (e⁻)</text>
+  <text x="392" y="70" text-anchor="middle" font-size="9" fill="#333">EM wave photon</text>
+  <!-- Row: Charge -->
+  <rect x="10" y="79" width="400" height="26" rx="0" fill="#fff"/>
+  <text x="90" y="96" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Charge</text>
+  <text x="210" y="96" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">+2</text>
+  <text x="314" y="96" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">−1</text>
+  <text x="392" y="96" text-anchor="middle" font-size="10" fill="#333">0 (none)</text>
+  <!-- Row: Mass -->
+  <rect x="10" y="105" width="400" height="26" rx="0" fill="#e8eaf6"/>
+  <text x="90" y="122" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Mass (u)</text>
+  <text x="210" y="122" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">4</text>
+  <text x="314" y="122" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">≈ 0</text>
+  <text x="392" y="122" text-anchor="middle" font-size="10" fill="#333">0</text>
+  <!-- Row: Penetration -->
+  <rect x="10" y="131" width="400" height="26" rx="0" fill="#fff"/>
+  <text x="90" y="148" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Penetration</text>
+  <text x="210" y="148" text-anchor="middle" font-size="9" fill="#c62828">Paper / a few cm air</text>
+  <text x="314" y="148" text-anchor="middle" font-size="9" fill="#1565c0">Few mm aluminium</text>
+  <text x="392" y="148" text-anchor="middle" font-size="9" fill="#333">Thick lead/concrete</text>
+  <!-- Row: Ionisation -->
+  <rect x="10" y="157" width="400" height="26" rx="0" fill="#e8eaf6"/>
+  <text x="90" y="174" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Ionising power</text>
+  <text x="210" y="174" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">HIGHEST</text>
+  <text x="314" y="174" text-anchor="middle" font-size="9" fill="#1565c0">Medium</text>
+  <text x="392" y="174" text-anchor="middle" font-size="9" fill="#333">LOWEST</text>
+  <!-- Row: Deflection -->
+  <rect x="10" y="183" width="400" height="26" rx="0" fill="#fff"/>
+  <text x="90" y="200" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Field deflection</text>
+  <text x="210" y="200" text-anchor="middle" font-size="9" fill="#c62828">Yes (+2 charge)</text>
+  <text x="314" y="200" text-anchor="middle" font-size="9" fill="#1565c0">Yes (−1 charge)</text>
+  <text x="392" y="200" text-anchor="middle" font-size="9" fill="#333">NO (neutral)</text>
+  <!-- Table border -->
+  <rect x="10" y="53" width="400" height="156" fill="none" stroke="#283593" stroke-width="1.5"/>
+  <line x1="143" y1="53" x2="143" y2="209" stroke="#283593" stroke-width="1"/>
+  <line x1="267" y1="53" x2="267" y2="209" stroke="#283593" stroke-width="1"/>
+  <line x1="344" y1="53" x2="344" y2="209" stroke="#283593" stroke-width="1"/>
+  <line x1="10" y1="79" x2="410" y2="79" stroke="#90a4ae" stroke-width="0.8"/>
+  <line x1="10" y1="105" x2="410" y2="105" stroke="#90a4ae" stroke-width="0.8"/>
+  <line x1="10" y1="131" x2="410" y2="131" stroke="#90a4ae" stroke-width="0.8"/>
+  <line x1="10" y1="157" x2="410" y2="157" stroke="#90a4ae" stroke-width="0.8"/>
+  <line x1="10" y1="183" x2="410" y2="183" stroke="#90a4ae" stroke-width="0.8"/>
+  <!-- Visual penetration diagram -->
+  <rect x="10" y="215" width="400" height="44" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="12" y="228" font-size="8.5" fill="#c62828">α ——→ |paper| stopped</text>
+  <rect x="68" y="218" width="6" height="22" rx="1" fill="#f5f5dc" stroke="#333" stroke-width="1"/>
+  <text x="12" y="245" font-size="8.5" fill="#1565c0">β ————————→ |  Al  | stopped</text>
+  <rect x="130" y="218" width="8" height="22" rx="1" fill="#90a4ae" stroke="#333" stroke-width="1"/>
+  <text x="12" y="255" font-size="8.5" fill="#555">γ ——————————————————→ needs thick lead/concrete</text>
+  <rect x="300" y="218" width="18" height="22" rx="1" fill="#607d8b" stroke="#333" stroke-width="1"/>
+</svg>`
+  },
+  {
+    q:'Radioactive Decay Equation — Alpha &amp; Beta',
+    content:`<h3>Nuclear Decay Equations — Alpha and Beta</h3><p>Nuclear equations represent radioactive decay processes. They must be balanced: the total mass number (top) and total atomic number (bottom) must be the same on both sides of the equation. Each decay type changes the identity of the element.</p><ul><li><strong>Alpha decay:</strong> the parent nucleus loses 4 in mass number and 2 in atomic number (emits ⁴₂He); e.g. ²³⁸₉₂U → ²³⁴₉₀Th + ⁴₂He.</li><li><strong>Beta decay:</strong> a neutron converts to a proton, emitting an electron; mass number unchanged, atomic number increases by 1; e.g. ¹⁴₆C → ¹⁴₇N + ⁰₋₁e.</li><li><strong>Gamma emission:</strong> accompanies other decays; no change to mass or atomic number — only energy is released.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Nuclear Decay Equations</text>
+  <!-- ALPHA DECAY section -->
+  <rect x="10" y="26" width="400" height="108" rx="6" fill="#fff" stroke="#c62828" stroke-width="2"/>
+  <text x="210" y="43" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">Alpha (α) Decay — loses ⁴₂He nucleus</text>
+  <!-- Equation -->
+  <text x="210" y="68" text-anchor="middle" font-size="16" fill="#283593" font-weight="bold">²³⁸₉₂U</text>
+  <line x1="238" y1="66" x2="270" y2="66" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="255" y="61" text-anchor="middle" font-size="9" fill="#555">α decay</text>
+  <text x="290" y="68" text-anchor="middle" font-size="16" fill="#283593" font-weight="bold">²³⁴₉₀Th</text>
+  <text x="330" y="70" text-anchor="middle" font-size="14" fill="#333">+</text>
+  <text x="360" y="68" text-anchor="middle" font-size="14" fill="#c62828" font-weight="bold">⁴₂He</text>
+  <text x="395" y="61" font-size="9" fill="#c62828">(α)</text>
+  <!-- Balance check -->
+  <text x="210" y="86" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Checking balance:</text>
+  <text x="210" y="100" text-anchor="middle" font-size="9.5" fill="#333">Mass numbers: 238 = 234 + 4 ✓</text>
+  <text x="210" y="114" text-anchor="middle" font-size="9.5" fill="#333">Atomic numbers: 92 = 90 + 2 ✓</text>
+  <text x="210" y="126" text-anchor="middle" font-size="9" fill="#c62828">Z decreases by 2, A decreases by 4 — new element formed!</text>
+  <!-- BETA DECAY section -->
+  <rect x="10" y="142" width="400" height="108" rx="6" fill="#fff" stroke="#1565c0" stroke-width="2"/>
+  <text x="210" y="159" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Beta (β) Decay — neutron → proton + electron</text>
+  <!-- Equation -->
+  <text x="130" y="184" text-anchor="middle" font-size="16" fill="#283593" font-weight="bold">¹⁴₆C</text>
+  <line x1="152" y1="182" x2="184" y2="182" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="168" y="177" text-anchor="middle" font-size="9" fill="#555">β decay</text>
+  <text x="204" y="184" text-anchor="middle" font-size="16" fill="#283593" font-weight="bold">¹⁴₇N</text>
+  <text x="230" y="186" text-anchor="middle" font-size="14" fill="#333">+</text>
+  <text x="268" y="184" text-anchor="middle" font-size="14" fill="#1565c0" font-weight="bold">⁰₋₁e</text>
+  <text x="305" y="178" font-size="9" fill="#1565c0">(β)</text>
+  <!-- Balance check -->
+  <text x="210" y="202" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">Checking balance:</text>
+  <text x="210" y="216" text-anchor="middle" font-size="9.5" fill="#333">Mass numbers: 14 = 14 + 0 ✓</text>
+  <text x="210" y="230" text-anchor="middle" font-size="9.5" fill="#333">Atomic numbers: 6 = 7 + (−1) ✓</text>
+  <text x="210" y="244" text-anchor="middle" font-size="9" fill="#1565c0">Z increases by 1 — neutron converts to proton, new element!</text>
+  <!-- Note on gamma -->
+  <rect x="10" y="255" width="400" height="6" rx="3" fill="#c5cae9" stroke="#283593" stroke-width="1"/>
+  <text x="210" y="261" text-anchor="middle" font-size="9" fill="#283593">γ emission: no change to A or Z — energy only (⁰₀γ)</text>
+</svg>`
+  },
+  {
+    q:'Half-Life Graph — Exponential Decay',
+    content:`<h3>Half-Life Graph — Exponential Decay</h3><p>Half-life is the time taken for half the radioactive nuclei in a sample to decay. The decay follows an exponential curve — each successive half-life halves the remaining activity. Half-life is constant for a given isotope and is unaffected by external conditions such as temperature or pressure.</p><ul><li>After n half-lives, the fraction remaining = (½)ⁿ: 1 → ½ → ¼ → ⅛ → …</li><li>Activity (counts per second) also halves each half-life, so the graph shape is identical.</li><li>Half-life determines suitability for applications: short half-lives (minutes/hours) for medical tracers; long half-lives (thousands of years) for carbon-14 dating.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Half-Life Graph (Exponential Decay)</text>
+  <!-- Graph axes -->
+  <line x1="55" y1="32" x2="55" y2="210" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="55" y1="210" x2="410" y2="210" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="46" y="30" font-size="10" fill="#283593" text-anchor="end">N₀</text>
+  <text x="415" y="213" font-size="10" fill="#283593">t</text>
+  <text x="30" y="180" font-size="9" fill="#283593" text-anchor="middle" transform="rotate(-90,30,120)">Number of nuclei remaining</text>
+  <text x="230" y="226" text-anchor="middle" font-size="9.5" fill="#283593">Time →</text>
+  <!-- Y-axis values and dashed lines -->
+  <!-- N₀ = 160 atoms (at y=42), half-life interval = 88px, so x positions at 55, 143, 231, 319, 407 -->
+  <!-- N₀ at y=42 -->
+  <line x1="50" y1="42" x2="60" y2="42" stroke="#283593" stroke-width="1.5"/>
+  <text x="46" y="46" font-size="9" fill="#283593" text-anchor="end">N₀</text>
+  <!-- N₀/2 at y=126 -->
+  <line x1="50" y1="126" x2="60" y2="126" stroke="#283593" stroke-width="1.5"/>
+  <text x="46" y="130" font-size="9" fill="#283593" text-anchor="end">N₀/2</text>
+  <!-- N₀/4 at y=168 -->
+  <line x1="50" y1="168" x2="60" y2="168" stroke="#283593" stroke-width="1.5"/>
+  <text x="46" y="172" font-size="9" fill="#283593" text-anchor="end">N₀/4</text>
+  <!-- N₀/8 at y=189 -->
+  <line x1="50" y1="189" x2="60" y2="189" stroke="#283593" stroke-width="1.5"/>
+  <text x="46" y="193" font-size="9" fill="#283593" text-anchor="end">N₀/8</text>
+  <!-- X axis ticks at 0, t½, 2t½, 3t½ -->
+  <!-- x positions: 55, 143, 231, 319 -->
+  <line x1="55" y1="206" x2="55" y2="214" stroke="#283593" stroke-width="1.5"/>
+  <text x="55" y="222" text-anchor="middle" font-size="9" fill="#283593">0</text>
+  <line x1="143" y1="206" x2="143" y2="214" stroke="#283593" stroke-width="1.5"/>
+  <text x="143" y="222" text-anchor="middle" font-size="9" fill="#283593">t½</text>
+  <line x1="231" y1="206" x2="231" y2="214" stroke="#283593" stroke-width="1.5"/>
+  <text x="231" y="222" text-anchor="middle" font-size="9" fill="#283593">2t½</text>
+  <line x1="319" y1="206" x2="319" y2="214" stroke="#283593" stroke-width="1.5"/>
+  <text x="319" y="222" text-anchor="middle" font-size="9" fill="#283593">3t½</text>
+  <!-- Dashed lines for half-life readings -->
+  <line x1="55" y1="126" x2="143" y2="126" stroke="#c62828" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="143" y1="126" x2="143" y2="210" stroke="#c62828" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="55" y1="168" x2="231" y2="168" stroke="#1565c0" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="231" y1="168" x2="231" y2="210" stroke="#1565c0" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="55" y1="189" x2="319" y2="189" stroke="#2e7d32" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="319" y1="189" x2="319" y2="210" stroke="#2e7d32" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- Exponential decay curve: smooth path through points -->
+  <path d="M55,42 C90,42 110,80 143,126 C176,168 196,182 231,189 C266,196 285,200 319,201 C353,202 375,203 405,204" fill="none" stroke="#c62828" stroke-width="3"/>
+  <!-- Dots at half-life points -->
+  <circle cx="55" cy="42" r="6" fill="#c62828" stroke="#283593" stroke-width="1.5"/>
+  <circle cx="143" cy="126" r="6" fill="#c62828" stroke="#283593" stroke-width="1.5"/>
+  <circle cx="231" cy="168" r="6" fill="#c62828" stroke="#283593" stroke-width="1.5"/>
+  <circle cx="319" cy="189" r="6" fill="#c62828" stroke="#283593" stroke-width="1.5"/>
+  <!-- Label annotations -->
+  <text x="155" y="120" font-size="9" fill="#c62828">½ remaining after 1 t½</text>
+  <text x="243" y="162" font-size="9" fill="#1565c0">¼ after 2 t½</text>
+  <text x="330" y="185" font-size="9" fill="#2e7d32">⅛ after 3 t½</text>
+  <!-- Formula box -->
+  <rect x="8" y="232" width="404" height="28" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">After n half-lives: Fraction remaining = (½)ⁿ &nbsp;|&nbsp; Activity also halves each t½</text>
+  <text x="210" y="258" text-anchor="middle" font-size="9.5" fill="#333">Carbon-14: t½ = 5730 years (used in radiocarbon dating)</text>
+</svg>`
+  },
+  {
+    q:'Nuclear Fission — U-235 Splitting',
+    content:`<h3>Nuclear Fission — U-235 Chain Reaction</h3><p>Nuclear fission occurs when a large, unstable nucleus absorbs a slow neutron and splits into two smaller nuclei, releasing a large amount of energy and two or three additional neutrons. These neutrons can trigger further fissions, creating a self-sustaining chain reaction — the basis of both nuclear power stations and atomic bombs.</p><ul><li>Example equation: ²³⁵₉₂U + ¹₀n → ¹⁴¹₅₆Ba + ⁹²₃₆Kr + 3¹₀n + energy.</li><li>In a nuclear reactor, control rods absorb excess neutrons to maintain a controlled, steady chain reaction for power generation.</li><li>Mass numbers and atomic numbers must balance on both sides of every fission equation.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+  <marker id="arrY" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f9a825"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Nuclear Fission — Chain Reaction (U-235)</text>
+  <!-- Incoming neutron -->
+  <circle cx="32" cy="105" r="8" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="32" y="109" text-anchor="middle" font-size="7" fill="#fff" font-weight="bold">n</text>
+  <line x1="40" y1="105" x2="82" y2="105" stroke="#546e7a" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="60" y="98" text-anchor="middle" font-size="9" fill="#546e7a">slow neutron</text>
+  <!-- U-235 nucleus -->
+  <circle cx="108" cy="105" r="26" fill="#7e57c2" stroke="#4527a0" stroke-width="2"/>
+  <text x="108" y="100" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#fff">²³⁵</text>
+  <text x="108" y="113" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#fff">U</text>
+  <!-- Unstable compound -->
+  <text x="155" y="100" text-anchor="middle" font-size="10" fill="#283593">→</text>
+  <circle cx="190" cy="105" r="28" fill="#ab47bc" stroke="#6a1b9a" stroke-width="2" stroke-dasharray="4,2"/>
+  <text x="190" y="100" text-anchor="middle" font-size="8.5" fill="#fff" font-weight="bold">²³⁶U*</text>
+  <text x="190" y="113" text-anchor="middle" font-size="8" fill="#ffe0b2">unstable</text>
+  <text x="222" y="100" text-anchor="middle" font-size="10" fill="#283593">→</text>
+  <!-- Products: Ba + Kr + 3n -->
+  <!-- Ba-141 -->
+  <circle cx="260" cy="78" r="20" fill="#ef5350" stroke="#c62828" stroke-width="2"/>
+  <text x="260" y="73" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">¹⁴¹</text>
+  <text x="260" y="84" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">Ba</text>
+  <!-- Kr-92 -->
+  <circle cx="260" cy="132" r="18" fill="#1565c0" stroke="#0d47a1" stroke-width="2"/>
+  <text x="260" y="127" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">⁹²</text>
+  <text x="260" y="138" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">Kr</text>
+  <!-- 3 neutrons flying out -->
+  <circle cx="295" cy="58" r="7" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="295" y="62" text-anchor="middle" font-size="7" fill="#fff">n</text>
+  <circle cx="305" cy="105" r="7" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="305" y="109" text-anchor="middle" font-size="7" fill="#fff">n</text>
+  <circle cx="295" cy="152" r="7" fill="#78909c" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="295" y="156" text-anchor="middle" font-size="7" fill="#fff">n</text>
+  <!-- Neutrons spread to trigger more fissions -->
+  <line x1="302" y1="58" x2="352" y2="44" stroke="#546e7a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="312" y1="105" x2="365" y2="105" stroke="#546e7a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="302" y1="152" x2="352" y2="166" stroke="#546e7a" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Second generation U-235 nuclei (small) -->
+  <circle cx="375" cy="44" r="14" fill="#7e57c2" opacity="0.8" stroke="#4527a0" stroke-width="1.5"/>
+  <text x="375" y="49" text-anchor="middle" font-size="7.5" fill="#fff">²³⁵U</text>
+  <circle cx="383" cy="105" r="14" fill="#7e57c2" opacity="0.8" stroke="#4527a0" stroke-width="1.5"/>
+  <text x="383" y="110" text-anchor="middle" font-size="7.5" fill="#fff">²³⁵U</text>
+  <circle cx="375" cy="166" r="14" fill="#7e57c2" opacity="0.8" stroke="#4527a0" stroke-width="1.5"/>
+  <text x="375" y="171" text-anchor="middle" font-size="7.5" fill="#fff">²³⁵U</text>
+  <!-- Energy release label -->
+  <rect x="220" y="175" width="120" height="26" rx="4" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="280" y="187" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">ENERGY released!</text>
+  <text x="280" y="198" text-anchor="middle" font-size="8.5" fill="#333">Kinetic energy + γ rays</text>
+  <!-- Equation -->
+  <rect x="10" y="205" width="400" height="54" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="222" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Fission equation:</text>
+  <text x="210" y="237" text-anchor="middle" font-size="10" fill="#283593">²³⁵₉₂U + ¹₀n → ¹⁴¹₅₆Ba + ⁹²₃₆Kr + 3¹₀n + ENERGY</text>
+  <text x="210" y="252" text-anchor="middle" font-size="9" fill="#333">3 neutrons released → can trigger 3 more fissions → chain reaction</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Nuclear Physics',
+    body:'Apply your knowledge of half-life, decay equations, and nuclear reactions.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'After 3 half-lives, what fraction of a sample remains?',opts:['1/2','1/4','1/8','1/16'],ans:2,exp:'After each half-life, half remains: 1 → ½ → ¼ → ⅛. After 3 half-lives, (½)³ = ⅛ of the original sample remains.'},
+      {q:'Nuclear fission involves:',opts:['Two small nuclei joining','A large nucleus splitting','A neutron changing to a proton','Gamma ray emission only'],ans:1,exp:'Fission = SPLITTING. A large unstable nucleus (like ²³⁵U) is struck by a neutron and splits into smaller nuclei + energy + more neutrons (chain reaction).'},
+      {q:'Carbon-14 dating works because:',opts:['Carbon-14 is stable forever','Living organisms absorb carbon-14, which decays after death at a known rate','Carbon-14 emits gamma radiation','Carbon-14 has no neutrons'],ans:1,exp:'Living organisms constantly take in C-14. After death, no more is absorbed and C-14 decays (t½ = 5730 years). By measuring remaining C-14, scientists can date when the organism died.'},
+      {q:'Which statement about gamma radiation is CORRECT?',opts:['It has a positive charge','It has mass','It is an electromagnetic wave with no charge or mass','It is deflected by magnetic fields'],ans:2,exp:'Gamma radiation is an electromagnetic wave (like light, but much higher energy). It has NO mass and NO charge, so it is NOT deflected by electric or magnetic fields.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#4a148c',dark:'#12005e',light:'#f3e5f5',
+  title:'Nuclear Physics — Radiation, Half-Life & Nuclear Reactions',
+});
+</script></body></html>

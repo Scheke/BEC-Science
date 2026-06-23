@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forces &amp; Motion — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#1565c0; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#90caf9; color:#0d47a1; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #bbdefb; }
+    #controls { display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap; justify-content:center; }
+    .btn { padding:8px 18px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.85rem; font-weight:700; transition:all 0.15s; }
+    .btn-push   { border-color:#1976d2; color:#1976d2; background:#fff; }
+    .btn-push.on { background:#1976d2; color:#fff; }
+    .btn-fric   { border-color:#e65100; color:#e65100; background:#fff; }
+    .btn-fric.on { background:#e65100; color:#fff; }
+    .btn-grav   { border-color:#c62828; color:#c62828; background:#fff; }
+    .btn-grav.on { background:#c62828; color:#fff; }
+    .btn-rst    { border-color:#555; color:#555; background:#fff; }
+    .btn-rst:hover { background:#555; color:#fff; }
+    .scenario-row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; justify-content:center; }
+    .scen-btn { padding:7px 14px; border:1.5px solid #bbb; border-radius:20px; cursor:pointer; font-size:0.8rem; background:#fff; color:#555; transition:all 0.12s; }
+    .scen-btn:hover { border-color:#1565c0; color:#1565c0; }
+    .info-strip { margin-top:12px; background:#e3f2fd; border:1px solid #bbdefb; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#1565c0; max-width:880px; width:100%; line-height:1.5; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 2 Physics</span>
+  <h1>Forces &amp; Motion — Newton's Laws</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-push" id="b-push" onclick="tog('push')">&#9654; Apply Force (F)</button>
+  <button class="btn btn-fric" id="b-fric" onclick="tog('fric')">&#9664; Add Friction (f)</button>
+  <button class="btn btn-grav" id="b-grav" onclick="tog('grav')">&#8595; Free Fall (no floor)</button>
+  <button class="btn btn-rst"  onclick="reset()">&#8635; Reset</button>
+  <button class="btn btn-push" id="b-prac-f" onclick="setForcePractice(!forceMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Newton's Quiz</button>
+</div>
+<div class="scenario-row">
+  <button class="scen-btn" onclick="scenario(0)">&#9654; Newton&apos;s 1st Law (Inertia)</button>
+  <button class="scen-btn" onclick="scenario(1)">&#9654; Newton&apos;s 2nd Law (F=ma)</button>
+  <button class="scen-btn" onclick="scenario(2)">&#9654; Newton&apos;s 3rd Law (Action-Reaction)</button>
+  <button class="scen-btn" onclick="scenario(3)">&#9654; Balanced Forces</button>
+</div>
+<div class="info-strip" id="law-text">
+  <strong>Newton's Laws:</strong>
+  1st: An object at rest stays at rest, and an object in motion stays in motion, unless acted upon by a net force.
+  &nbsp; 2nd: F = ma (net force = mass × acceleration). &nbsp; 3rd: Every action has an equal and opposite reaction.
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Forces Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#1976d2;margin-top:14px}p{margin:4px 0 8px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Forces &amp; Motion — Study Notes</h1><h2>Newton\'s Three Laws of Motion</h2>';
+  html+=SCENARIO_TEXT.map((t,i)=>`<p>${t.replace(/<[^>]+>/g,'')}</p>`).join('');
+  html+='<h2>Key Formulas</h2><ul><li>F = ma (Force = mass × acceleration)</li><li>W = mg (Weight = mass × gravitational field strength)</li><li>Net force = Applied force − Friction</li></ul>';
+  html+='<h2>Types of Forces</h2><ul><li>Friction: opposes relative motion between surfaces</li><li>Gravity: attractive force between masses (g ≈ 10 N/kg on Earth)</li><li>Normal force (N): perpendicular reaction from surface</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let forceMcq=false;
+const FORCE_MCQ=[
+  {q:'Newton\'s 1st Law (Inertia) states that:',opts:['An object continues at rest or constant velocity unless a net force acts on it','F = ma','Every action has an equal and opposite reaction','Friction always stops motion'],c:0,tip:'Inertia means objects resist changes to their state of motion.'},
+  {q:'The formula for Newton\'s 2nd Law is:',opts:['F = ma','F = mv','F = m/a','F = a/m'],c:0,tip:'Net Force (N) = mass (kg) × acceleration (m/s²).'},
+  {q:'If you push a book with 20 N and friction is 20 N, the box will:',opts:['Stay still or move at constant velocity (net force = 0)','Accelerate forward','Decelerate rapidly','Fall through the floor'],c:0,tip:'Balanced forces (net force = 0) mean no acceleration — Newton\'s 1st Law.'},
+  {q:'Which best describes friction?',opts:['A force that opposes relative motion between surfaces','A force that always accelerates objects','The same as gravity','A force that only acts on liquids'],c:0,tip:'Friction acts opposite to the direction of motion and depends on surface roughness and normal force.'},
+  {q:'Newton\'s 3rd Law states:',opts:['Every action has an equal and opposite reaction','F = ma','Objects at rest stay at rest','Friction = normal force'],c:0,tip:'When a rocket pushes gas backward, the gas pushes the rocket forward with equal force.'},
+  {q:'A 2 kg object is accelerated at 5 m/s². What is the net force?',opts:['10 N','7 N','2.5 N','25 N'],c:0,tip:'F = ma = 2 × 5 = 10 N'},
+  {q:'In free fall (no air resistance), all objects:',opts:['Fall at the same acceleration (g ≈ 10 m/s²)','Fall at different rates based on mass','Don\'t fall at all','Float'],c:0,tip:'Galileo showed that without air resistance, all objects fall with the same acceleration due to gravity.'},
+];
+let forceMcqIdx=0,forceMcqSel=-1,forceMcqScore=0,forceMcqDone=false,forceMcqFeedback=null;
+function setForcePractice(on){ forceMcq=on; let b=document.getElementById('b-prac-f'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){forceMcqIdx=0;forceMcqSel=-1;forceMcqScore=0;forceMcqDone=false;forceMcqFeedback=null;} }
+function drawForceMCQ(s){
+  s.background(240,246,255);
+  if(forceMcqDone){
+    s.fill(21,101,192);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+forceMcqScore+'/'+FORCE_MCQ.length,440,210);
+    s.text(forceMcqScore>=6?'Excellent! Newton would be proud!':forceMcqScore>=4?'Good work!':'Review Newton\'s laws!',440,240);
+    s.fill(30,100,200);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=FORCE_MCQ[forceMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(30,100,200);s.rect(30,18,820*(forceMcqIdx/FORCE_MCQ.length),10,5);
+  s.fill(21,101,192);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(forceMcqIdx+1)+' of '+FORCE_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=forceMcqSel===i,correct=forceMcqFeedback!==null&&i===q.c,wrong=forceMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[240,246,255]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(forceMcqFeedback){
+    s.fill(forceMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(forceMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(150,200,255);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function forceMcqClick(mx,my){
+  if(forceMcqDone){if(mx>310&&mx<570&&my>265&&my<309){forceMcqIdx=0;forceMcqSel=-1;forceMcqScore=0;forceMcqDone=false;forceMcqFeedback=null;}return;}
+  let q=FORCE_MCQ[forceMcqIdx];
+  if(forceMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){forceMcqFeedback=null;forceMcqSel=-1;forceMcqIdx++;if(forceMcqIdx>=FORCE_MCQ.length)forceMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&forceMcqFeedback===null){forceMcqSel=i;forceMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)forceMcqScore++;}});
+}
+const S = { push: false, fric: false, grav: false };
+function tog(k) {
+  S[k] = !S[k];
+  document.getElementById('b-'+k).classList.toggle('on', S[k]);
+  if (k==='grav') { S.push=false; S.fric=false; document.getElementById('b-push').classList.remove('on'); document.getElementById('b-fric').classList.remove('on'); }
+}
+function reset() { needReset = true; }
+
+const SCENARIO_TEXT = [
+  '<strong>Newton\'s 1st Law — Inertia:</strong> The box sits at rest with no net force. A net force is needed to start or stop motion. Toggle "Apply Force" to accelerate it!',
+  '<strong>Newton\'s 2nd Law — F=ma:</strong> Net force (F) = mass (m) × acceleration (a). More force = more acceleration. The box accelerates proportionally to the applied net force.',
+  '<strong>Newton\'s 3rd Law — Action-Reaction:</strong> When the box pushes on the floor, the floor pushes back with an equal Normal force (N). Applied force pushes box right; reaction pushes pusher left.',
+  '<strong>Balanced Forces:</strong> When Applied Force (F) equals Friction (f), the net force is zero. The box either stays still or moves at constant velocity — no acceleration!',
+];
+
+function scenario(n) {
+  reset();
+  document.getElementById('law-text').innerHTML = SCENARIO_TEXT[n];
+  if (n===0) { S.push=false; S.fric=false; S.grav=false; }
+  if (n===1) { S.push=true;  S.fric=false; S.grav=false; }
+  if (n===2) { S.push=true;  S.fric=false; S.grav=false; }
+  if (n===3) { S.push=true;  S.fric=true;  S.grav=false; }
+  ['push','fric','grav'].forEach(k => document.getElementById('b-'+k).classList.toggle('on', S[k]));
+}
+
+let needReset = false;
+
+new p5(function(p) {
+  const W = 880, H = 490;
+  const FLOOR_Y = 340;
+  const MASS = 5;          // kg
+  const BOX_W = 60, BOX_H = 60;
+  const F_APPLIED = 40;    // N (applied force)
+  const F_FRICTION = 25;   // N (friction force)
+  const F_GRAVITY  = MASS * 10; // N (W = mg, g≈10)
+  const F_NORMAL   = F_GRAVITY; // N (equal and opposite to gravity)
+
+  let bx = 180, by = FLOOR_Y - BOX_H; // box position
+  let vx = 0, vy = 0;
+  let trail = [];
+  let tick = 0;
+  const INFO_X = 500;
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+  };
+
+  p.draw = function() {
+    if(forceMcq){ drawForceMCQ(p); return; }
+    tick += 0.05;
+
+    if (needReset) { bx=180; by=FLOOR_Y-BOX_H; vx=0; vy=0; trail=[]; needReset=false; }
+
+    // Physics
+    let fNet_x = 0, fNet_y = 0;
+    let onGround = !S.grav;
+
+    if (onGround) {
+      fNet_y = 0; // Normal balances gravity
+      by = FLOOR_Y - BOX_H;
+      if (S.push) fNet_x += F_APPLIED;
+      if (S.fric && S.push) fNet_x -= F_FRICTION;
+    } else {
+      // Free fall
+      fNet_y = F_GRAVITY;
+    }
+
+    let ax = fNet_x / MASS;
+    let ay = fNet_y / MASS;
+
+    vx += ax * 0.016; // integrate (1/60 s per frame)
+    vy += ay * 0.016;
+    vx *= 0.995; // tiny air resistance to show realistic decel
+
+    bx += vx * 0.9; // scale for visuals
+    by += vy * 0.9;
+
+    // Wrap x, floor bounce
+    if (bx > W + BOX_W) bx = -BOX_W;
+    if (by > FLOOR_Y - BOX_H) { by = FLOOR_Y - BOX_H; vy = -vy * 0.4; }
+
+    trail.push({ x: bx + BOX_W/2, y: by + BOX_H/2 });
+    if (trail.length > 40) trail.shift();
+
+    // Draw
+    p.background(240, 248, 255);
+    drawScene(onGround);
+    drawTrail();
+    drawBox();
+    drawForceArrows(onGround, fNet_x, fNet_y, ax);
+    drawInfoPanel(fNet_x, fNet_y, ax, vx);
+    drawNewtonCard();
+  };
+
+  function drawScene(onGround) {
+    if (onGround) {
+      // Sky gradient
+      let ctx = p.drawingContext;
+      let g = ctx.createLinearGradient(0,0,0,FLOOR_Y);
+      g.addColorStop(0,'#cfe8fc'); g.addColorStop(1,'#e8f4fd');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, FLOOR_Y);
+      // Ground
+      p.noStroke();
+      p.fill(180,155,100); p.rect(0, FLOOR_Y, W, H - FLOOR_Y);
+      p.fill(200,175,120); p.rect(0, FLOOR_Y, W, 8);
+      // Floor surface hatching
+      p.stroke(160,135,80, 80); p.strokeWeight(1);
+      for (let gx = 0; gx < W; gx += 22) p.line(gx, FLOOR_Y, gx+10, FLOOR_Y+10);
+      p.noStroke();
+    } else {
+      // Free-fall: space-ish background
+      let ctx = p.drawingContext;
+      let g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#e3f2fd'); g.addColorStop(1,'#bbdefb');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    }
+    // "Pusher" when push is on
+    if (S.push && !S.grav) {
+      p.fill(70, 130, 200); p.noStroke();
+      p.rect(bx - 32, by + 5, 28, BOX_H - 10, 4);
+      p.triangle(bx - 4, by + BOX_H/2, bx - 14, by + BOX_H/2 - 10, bx - 14, by + BOX_H/2 + 10);
+      p.fill(40, 100, 170); p.textSize(9); p.textAlign(p.CENTER);
+      p.text('F', bx - 18, by + BOX_H/2 + 4);
+    }
+  }
+
+  function drawTrail() {
+    for (let i = 0; i < trail.length - 1; i++) {
+      let a = trail[i + 1].x - trail[i].x;
+      if (p.abs(a) < 30) {
+        p.stroke(100, 160, 220, i * 4);
+        p.strokeWeight(2);
+        p.line(trail[i].x, trail[i].y, trail[i+1].x, trail[i+1].y);
+      }
+    }
+    p.noStroke();
+  }
+
+  function drawBox() {
+    // Shadow
+    p.fill(0,0,0,20); p.noStroke(); p.ellipse(bx+BOX_W/2+3, FLOOR_Y+4, BOX_W*0.9, 12);
+    // Box
+    p.fill(70, 130, 200); p.noStroke();
+    p.rect(bx, by, BOX_W, BOX_H, 5);
+    // Highlight
+    p.fill(255,255,255,50); p.rect(bx+4, by+4, BOX_W-8, 10, 3);
+    // Label
+    p.fill(255,255,255,220); p.textSize(12); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text(MASS+'kg', bx+BOX_W/2, by+BOX_H/2+5);
+    p.textStyle(p.NORMAL);
+    // Border
+    p.stroke(40,90,160,160); p.strokeWeight(1.5); p.noFill();
+    p.rect(bx, by, BOX_W, BOX_H, 5); p.noStroke();
+  }
+
+  function arrow(x1, y1, x2, y2, col, label, tipSize) {
+    tipSize = tipSize || 10;
+    let dx = x2-x1, dy = y2-y1;
+    let len = p.sqrt(dx*dx+dy*dy);
+    if (len < 4) return;
+    let ux = dx/len, uy = dy/len;
+    p.stroke(col[0],col[1],col[2],220); p.strokeWeight(3);
+    p.line(x1, y1, x2-ux*tipSize, y2-uy*tipSize);
+    p.noStroke(); p.fill(col[0],col[1],col[2],220);
+    p.push(); p.translate(x2,y2); p.rotate(p.atan2(dy,dx));
+    p.triangle(0,0,-tipSize,-tipSize*0.45,-tipSize,tipSize*0.45);
+    p.pop();
+    if (label) {
+      p.noStroke(); p.fill(col[0],col[1],col[2]);
+      p.textSize(11); p.textStyle(p.BOLD); p.textAlign(p.CENTER);
+      let lx = x1+(x2-x1)*0.5 + (dy>0?-18:18);
+      let ly = y1+(y2-y1)*0.5 + (dx>0?-14:14);
+      // White bg
+      let tw = p.textWidth(label)+6;
+      p.fill(255,255,255,200); p.rect(lx-tw/2-1, ly-13, tw+2, 16, 3);
+      p.fill(col[0],col[1],col[2]); p.text(label, lx, ly);
+      p.textStyle(p.NORMAL);
+    }
+  }
+
+  function drawForceArrows(onGround, fNet_x, fNet_y, ax) {
+    let cx = bx + BOX_W/2, cy = by + BOX_H/2;
+    let scale = 1.8;
+
+    // Weight (always shown)
+    arrow(cx, cy, cx, cy + F_GRAVITY*scale*0.5, [200,30,30], 'W='+F_GRAVITY+'N');
+
+    if (onGround) {
+      // Normal force
+      arrow(cx, cy, cx, cy - F_NORMAL*scale*0.5, [30,160,30], 'N='+F_NORMAL+'N');
+      // Applied force
+      if (S.push) arrow(cx, cy, cx + F_APPLIED*scale, cy, [20,100,200], 'F='+F_APPLIED+'N');
+      // Friction
+      if (S.fric && S.push) arrow(cx, cy, cx - F_FRICTION*scale, cy, [200,100,20], 'f='+F_FRICTION+'N');
+      // Net force
+      if (p.abs(fNet_x) > 1) {
+        p.drawingContext.setLineDash([5,4]);
+        arrow(cx, cy+5, cx + fNet_x*scale*0.7, cy+5, [100,20,160], 'Fnet='+fNet_x+'N', 8);
+        p.drawingContext.setLineDash([]);
+      }
+    } else {
+      // Free fall: only gravity
+      arrow(cx, cy, cx, cy + F_GRAVITY*scale*0.8, [200,30,30], 'W='+F_GRAVITY+'N');
+    }
+  }
+
+  function drawInfoPanel(fNet_x, fNet_y, ax, vx) {
+    let px = INFO_X, py = 30, pw = 360, ph = 200;
+    // Already drawn on right side? Let's draw a white panel
+    p.fill(255,255,255,200); p.stroke(180,200,220); p.strokeWeight(1.5);
+    p.rect(px, py, pw, ph, 8); p.noStroke();
+
+    p.textAlign(p.LEFT); p.fill(40);
+    p.textSize(12); p.textStyle(p.BOLD);
+    p.text('Force Summary', px+14, py+18);
+    p.textStyle(p.NORMAL);
+
+    let rows = [
+      { label:'Applied force (F)',  val: S.push && !S.grav ? F_APPLIED+'N →' : '0N',      col:[20,100,200] },
+      { label:'Friction (f)',        val: S.fric && S.push && !S.grav ? F_FRICTION+'N ←' : '0N', col:[200,100,20] },
+      { label:'Weight (W = mg)',     val: F_GRAVITY+'N ↓',  col:[200,30,30] },
+      { label:'Normal force (N)',    val: S.grav ? '0N (no floor)' : F_NORMAL+'N ↑', col:[30,160,30] },
+    ];
+    for (let i=0; i<rows.length; i++) {
+      let r = rows[i], ry = py+36+i*24;
+      p.fill(r.col[0],r.col[1],r.col[2],180); p.noStroke();
+      p.rect(px+10, ry-10, 8, 16, 2);
+      p.fill(60); p.textSize(10.5);
+      p.text(r.label+':', px+24, ry);
+      p.fill(r.col[0],r.col[1],r.col[2]); p.textStyle(p.BOLD);
+      p.text(r.val, px+185, ry);
+      p.textStyle(p.NORMAL);
+    }
+
+    // Divider
+    p.stroke(200,220,230); p.strokeWeight(1);
+    p.line(px+10, py+138, px+pw-10, py+138); p.noStroke();
+
+    let fNet = S.grav ? F_GRAVITY : (S.push ? F_APPLIED - (S.fric ? F_FRICTION : 0) : 0);
+    let accel = (fNet / MASS).toFixed(1);
+    let velDisplay = (p.abs(vx) * 60).toFixed(1);
+
+    p.fill(40); p.textSize(10.5); p.textStyle(p.BOLD);
+    p.text('Net Force  (Fnet):', px+14, py+158);
+    let netCol = fNet===0 ? [100,100,100] : fNet>0 ? [20,120,20] : [200,30,30];
+    p.fill(...netCol); p.text(fNet+'N', px+185, py+158); p.textStyle(p.NORMAL);
+
+    p.fill(40); p.textStyle(p.BOLD);
+    p.text('Acceleration (a = F/m):', px+14, py+176);
+    p.fill(80,20,160); p.text(accel+' m/s²', px+185, py+176); p.textStyle(p.NORMAL);
+
+    p.fill(40); p.textStyle(p.BOLD);
+    p.text('Velocity:', px+14, py+194);
+    p.fill(20,100,180); p.text(velDisplay+' units/s', px+185, py+194); p.textStyle(p.NORMAL);
+  }
+
+  function drawNewtonCard() {
+    let cx = INFO_X, cy = 250, cw = 360, ch = 200;
+    p.fill(232,244,255,220); p.stroke(180,210,240); p.strokeWeight(1.5);
+    p.rect(cx, cy, cw, ch, 8); p.noStroke();
+
+    p.textAlign(p.LEFT); p.textSize(11); p.textStyle(p.BOLD);
+    p.fill(20,80,160); p.text("Newton's Laws of Motion", cx+14, cy+18);
+    p.textStyle(p.NORMAL);
+
+    let laws = [
+      { n:'1st', txt:'An object stays at rest\nor in motion unless a\nnet force acts on it.' },
+      { n:'2nd', txt:'F = m × a\nMore force → more acceleration\nMore mass → less acceleration.' },
+      { n:'3rd', txt:'Every action has an equal\nand opposite reaction.\n(Floor pushes box up as\nbox pushes floor down.)' },
+    ];
+    let ly = cy+32;
+    for (let law of laws) {
+      p.fill(20,80,160,200); p.textStyle(p.BOLD); p.textSize(10);
+      p.text(law.n+' Law:', cx+14, ly);
+      p.textStyle(p.NORMAL); p.fill(50);
+      let lines = law.txt.split('\n');
+      for (let l of lines) { ly+=13; p.text(l, cx+28, ly); }
+      ly+=16;
+    }
+  }
+  p.mouseClicked=function(){ if(forceMcq){ forceMcqClick(p.mouseX,p.mouseY); return; } };
+});
+</script>
+</body>
+</html>

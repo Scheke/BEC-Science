@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Body Systems — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#37474f;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#b0bec5;color:#263238;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #b0bec5}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #37474f;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#37474f;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#37474f;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%207">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 7 Science</span>
+  <h1>Advanced Body Systems</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Excretion</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">The Kidneys</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Sensory Organs</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Nervous System</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Label the Body</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [
+    {t:'What is Excretion?', b:['Excretion: removal of metabolic waste products from the body','NOT the same as egestion (removing undigested food = faeces)','Key metabolic wastes: urea (from protein breakdown), CO₂ (from respiration), water, excess salts']},
+    {t:'Organs of Excretion', b:['Kidneys: main excretory organ — remove urea, excess salts, water → urine','Lungs: excrete CO₂ and water vapour during exhalation','Skin: sweat glands excrete water, salts, and small amounts of urea','Liver: converts harmful ammonia → less toxic urea (urea then excreted by kidneys)']},
+    {t:'The Urinary System', b:['Kidneys → Ureters → Bladder → Urethra','Kidneys filter ~180 litres of blood per day','About 1.5 litres of urine produced daily (rest reabsorbed)','Urine = water + urea + excess salts + uric acid']},
+    {t:'Why is Excretion Important?', b:['Build-up of urea is TOXIC — causes kidney failure if untreated','Regulation of water content in blood (osmoregulation)','Maintains correct blood pH and ion balance','Kidneys also produce hormones that regulate blood pressure and red blood cell production']},
+  ],
+  [
+    {t:'Kidney Structure', b:['Two bean-shaped organs, each about the size of a fist','Located on either side of the spine, just below the rib cage','Renal artery brings blood with waste; renal vein takes clean blood away','Ureter drains urine to the bladder']},
+    {t:'Filtration & Reabsorption', b:['Step 1 — Filtration: blood pressure forces water, urea, glucose, salts out of blood into the nephron (tubule)','Step 2 — Selective reabsorption: all glucose + useful water + salts are reabsorbed back into blood','Step 3 — Tubular secretion: additional waste transferred from blood to tubule','Remaining fluid (urine) flows to the collecting duct → ureter → bladder']},
+    {t:'Kidney Disease & Dialysis', b:['Kidney failure: kidneys stop filtering blood properly','Causes: diabetes, high blood pressure, infections, inherited conditions','Dialysis machine: filters blood artificially (replaces kidney function)','Kidney transplant: a donated kidney replaces the failed one — permanent solution']},
+    {t:'Healthy Kidneys', b:['Drink 6–8 glasses of water daily to help kidneys flush waste','Limit salt intake — excess salt makes kidneys work harder','Reduce sugar and fatty foods — linked to diabetes which damages kidneys','Do not hold urine for long periods — risk of infection']},
+  ],
+  [
+    {t:'The Five Senses & Their Organs', b:['Sight (vision) — Eyes','Hearing (audition) — Ears','Smell (olfaction) — Nose','Taste (gustation) — Tongue','Touch (tactition) — Skin']},
+    {t:'The Eye', b:['Cornea: transparent front surface, refracts light','Lens: focuses light onto the retina','Retina: contains rod cells (dim light) and cone cells (colour)','Optic nerve: sends electrical signals to brain','Pupil widens in dim light (more light in); narrows in bright light']},
+    {t:'The Ear', b:['Outer ear (pinna): collects sound waves','Eardrum (tympanic membrane): vibrates with sound','Middle ear bones (ossicles): amplify vibration → cochlea','Cochlea (inner ear): fluid-filled; converts vibration to nerve signals','Semicircular canals: detect balance and head movement']},
+    {t:'Sensory Receptors in Skin', b:['Touch receptors: detect pressure, texture','Pain receptors: detect damage — protective function','Temperature receptors: warm and cold receptors','Proprioceptors: detect body position and movement','Skin receptors send signals via nerves to the brain for interpretation']},
+  ],
+  [
+    {t:'The Nervous System', b:['Central nervous system (CNS): brain + spinal cord — processes all information','Peripheral nervous system: all nerves outside the CNS','Neurons (nerve cells): basic unit; carry electrical impulses','Sensory neurons: skin/organs → brain; Motor neurons: brain → muscles']},
+    {t:'The Brain', b:['Cerebrum (largest part): thinking, memory, language, voluntary movement','Cerebellum: balance, coordination of movement','Medulla oblongata: controls automatic actions (heartbeat, breathing, swallowing)','Hypothalamus: regulates body temperature, thirst, hunger']},
+    {t:'Reflex Arc (Automatic Responses)', b:['Reflex: fast, automatic response to stimulus — does NOT require conscious thought','Path: Receptor → Sensory neuron → Relay neuron (spinal cord) → Motor neuron → Effector','Example: touching a hot plate → hand withdraws BEFORE you feel pain','Reflexes protect the body by bypassing the slow processing of the brain']},
+    {t:'Synapse & Nerve Impulse', b:['Nerve impulse: electrical signal travelling along a neuron at up to 120 m/s','Synapse: gap between two neurons — impulse crosses via chemical neurotransmitters','Drugs and toxins can interfere with synaptic transmission — affects behaviour']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Excretion','The Kidneys','Sensory Organs','Nervous System'];
+  let h=`<html><head><title>Advanced Body Systems Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #37474f;padding-bottom:8px;color:#37474f}
+    h2{font-size:1rem;color:#455a64;margin:22px 0 6px;border-left:4px solid #455a64;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 7 Science — Advanced Body Systems</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── LABEL THE BODY GAME ─────────────────────────────────
+// Drag labels to correct body positions
+const LABELS=[
+  {text:'Brain',    correctX:248, correctY:68,  x:0,y:0, sx:0,sy:0, placed:false, col:[180,130,220]},
+  {text:'Lungs',    correctX:248, correctY:170, x:0,y:0, sx:0,sy:0, placed:false, col:[220,150,150]},
+  {text:'Kidneys',  correctX:248, correctY:238, x:0,y:0, sx:0,sy:0, placed:false, col:[220,120,100]},
+  {text:'Bladder',  correctX:248, correctY:308, x:0,y:0, sx:0,sy:0, placed:false, col:[200,200,100]},
+  {text:'Skin',     correctX:130, correctY:200, x:0,y:0, sx:0,sy:0, placed:false, col:[240,200,160]},
+  {text:'Eyes',     correctX:248, correctY:92,  x:0,y:0, sx:0,sy:0, placed:false, col:[100,160,220]},
+];
+
+const SNAP_R=30;
+let gameDrags, activeDrag2, gameScore;
+
+function resetGame(){
+  let shuffled=[...LABELS].sort(()=>Math.random()-0.5);
+  gameDrags=shuffled.map((L,i)=>({
+    ...L, x:30+i%3*130, y:400+Math.floor(i/3)*40,
+    sx:30+i%3*130, sy:400+Math.floor(i/3)*40,
+    placed:false, ox:0,oy:0
+  }));
+  activeDrag2=null; gameScore=0;
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880, H=510;
+  let tick=0;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    tick++;
+    sk.background(248,252,250);
+    if(tab<4){ drawBodySystems(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(248,250,250); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b,bh=16+lines.length*14+8;
+      sk.fill(55,71,79); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawBodySystems(){
+    if(tab===0) drawExcretionDiagram();
+    else if(tab===1) drawKidneyDiagram();
+    else if(tab===2) drawSensoryDiagram();
+    else drawNervousDiagram();
+  }
+
+  function drawExcretionDiagram(){
+    let organs=[
+      {x:200,y:80,w:100,h:50,label:'Lungs',waste:'CO₂ + H₂O',col:[220,150,150]},
+      {x:140,y:180,w:100,h:50,label:'Kidneys',waste:'Urea → urine',col:[220,120,100]},
+      {x:240,y:280,w:100,h:50,label:'Skin',waste:'Sweat\n(water+salts)',col:[240,200,160]},
+    ];
+    organs.forEach(o=>{
+      sk.fill(o.col[0],o.col[1],o.col[2]); sk.stroke(o.col[0]*0.6,o.col[1]*0.6,o.col[2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(o.x,o.y,o.w,o.h,8);
+      sk.fill(30); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(o.label, o.x+o.w/2, o.y+18);
+      sk.textSize(9); sk.textStyle(sk.NORMAL); sk.fill(60);
+      sk.text('Excretes:\n'+o.waste, o.x+o.w+70, o.y+o.h/2);
+      // Arrow
+      sk.stroke(100); sk.strokeWeight(1.5); sk.line(o.x+o.w,o.y+o.h/2,o.x+o.w+40,o.y+o.h/2);
+      sk.fill(100); sk.noStroke(); sk.triangle(o.x+o.w+40,o.y+o.h/2,o.x+o.w+28,o.y+o.h/2-5,o.x+o.w+28,o.y+o.h/2+5);
+    });
+    sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Excretion removes metabolic WASTE from the body', 248, 380);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawKidneyDiagram(){
+    let t=(tick*0.006)%1;
+    // Left kidney shape (bean)
+    sk.fill(220,120,100); sk.stroke(160,60,50); sk.strokeWeight(1.5);
+    sk.ellipse(180,220,60,90);
+    sk.fill(255,250,240); sk.ellipse(192,220,30,60);
+    // Labels
+    sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Renal artery (blood IN)',240,195);
+    sk.text('Renal vein (blood OUT)',240,225);
+    sk.text('Ureter (urine out)',240,255);
+    // Arrows animated (urine flowing out)
+    let uy=220+t*120;
+    sk.stroke(255,220,100); sk.strokeWeight(2.5); sk.noFill();
+    sk.line(180,270,180,uy+20);
+    sk.fill(255,220,100); sk.noStroke(); sk.ellipse(180,uy+24,8,8);
+    sk.fill(60); sk.textSize(9); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER); sk.text('urine',190,uy+24);
+    sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Kidney cross-section', 248,400);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawSensoryDiagram(){
+    let senses=[{icon:'👁',name:'Sight',organ:'Eye',y:80},{icon:'👂',name:'Hearing',organ:'Ear',y:148},
+      {icon:'👃',name:'Smell',organ:'Nose',y:216},{icon:'👅',name:'Taste',organ:'Tongue',y:284},{icon:'✋',name:'Touch',organ:'Skin',y:352}];
+    senses.forEach(s=>{
+      sk.fill(200,220,240); sk.noStroke(); sk.rect(60,s.y-20,360,50,8);
+      sk.fill(30); sk.textSize(22); sk.textAlign(sk.LEFT,sk.CENTER); sk.text(s.icon,80,s.y+5);
+      sk.textSize(12); sk.textStyle(sk.BOLD); sk.text(s.name,120,s.y+5);
+      sk.fill(60); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.text('Organ: '+s.organ,240,s.y+5);
+    });
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawNervousDiagram(){
+    // Brain → spinal cord → nerves
+    // Brain
+    sk.fill(200,170,220); sk.stroke(140,100,160); sk.strokeWeight(1.5); sk.ellipse(248,100,100,80);
+    sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('Brain',248,100);
+    // Spinal cord
+    sk.fill(180,220,180); sk.stroke(100,160,100); sk.strokeWeight(1.5); sk.rect(230,140,36,220,4);
+    sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('Spinal\nCord',248,240);
+    // Nerve branches
+    sk.stroke(100,140,200); sk.strokeWeight(2);
+    [155,195,235,275,315].forEach(y=>{ sk.line(230,y,160,y); sk.line(266,y,340,y); });
+    sk.fill(60); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('← Peripheral nerves →',100,420);
+    sk.text('Sensory: body → brain',100,438); sk.text('Motor: brain → muscles',100,456);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  // ── GAME ─────────────────────────────────────────────
+  function drawGame(){
+    sk.background(248,252,250);
+    sk.fill(55,71,79); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Label the Body — drag each label to the correct body position', W/2,22);
+    sk.fill(100); sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('Score: '+gameScore+'/'+LABELS.length, W/2,38);
+
+    // Simple body outline
+    // Head
+    sk.fill(240,200,160); sk.stroke(180,140,110); sk.strokeWeight(1.5);
+    sk.ellipse(248,75,70,80);
+    // Body
+    sk.rect(210,115,76,180,6);
+    // Arms
+    sk.rect(160,115,50,130,6); sk.rect(286,115,50,130,6);
+    // Legs
+    sk.rect(215,295,46,130,6); sk.rect(265,295,46,130,6);
+
+    // Eyes on face
+    sk.fill(255); sk.stroke(100); sk.strokeWeight(1);
+    sk.ellipse(234,68,14,14); sk.ellipse(262,68,14,14);
+    sk.fill(50); sk.noStroke(); sk.ellipse(234,68,7,7); sk.ellipse(262,68,7,7);
+
+    // Target circles
+    LABELS.forEach(L=>{
+      let placed=gameDrags.find(d=>d.text===L.text&&d.placed);
+      sk.noFill(); sk.stroke(placed?[0,150,0]:[180,180,180]); sk.strokeWeight(placed?2:1);
+      sk.drawingContext.setLineDash([4,4]);
+      sk.ellipse(L.correctX,L.correctY,50,30);
+      sk.drawingContext.setLineDash([]);
+    });
+
+    // Palette
+    sk.fill(230,240,235); sk.noStroke(); sk.rect(22,375,450,120,8);
+    sk.fill(55,71,79); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Drag labels to the correct body part:', 30,392);
+
+    gameDrags.forEach(d=>{
+      if(d.placed||d===activeDrag2) return;
+      sk.fill(d.col[0],d.col[1],d.col[2]); sk.stroke(d.col[0]*0.6,d.col[1]*0.6,d.col[2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(d.sx,d.sy,100,30,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(d.text, d.sx+50, d.sy+15);
+    });
+
+    if(activeDrag2){
+      sk.fill(activeDrag2.col[0],activeDrag2.col[1],activeDrag2.col[2]); sk.stroke(activeDrag2.col[0]*0.6,activeDrag2.col[1]*0.6,activeDrag2.col[2]*0.6); sk.strokeWeight(1.5);
+      sk.rect(activeDrag2.x,activeDrag2.y,100,30,6);
+      sk.fill(30); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(activeDrag2.text, activeDrag2.x+50, activeDrag2.y+15);
+    }
+
+    // Placed labels on body
+    gameDrags.filter(d=>d.placed).forEach(d=>{
+      let L=LABELS.find(l=>l.text===d.text);
+      sk.fill(0,150,0,200); sk.noStroke(); sk.rect(L.correctX-50,L.correctY-13,100,26,5);
+      sk.fill(255); sk.textSize(8); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('✓ '+d.text, L.correctX, L.correctY);
+    });
+
+    if(gameScore===LABELS.length){
+      sk.fill(0,0,0,140); sk.noStroke(); sk.rect(80,150,310,140,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('All Labelled! ✓', 235,200);
+      sk.fill(200,255,220); sk.textSize(11); sk.textStyle(sk.NORMAL);
+      sk.text('You know all the major body systems!',235,228);
+      sk.fill(200,255,200); sk.rect(175,244,120,34,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',235,261);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    if(gameScore===LABELS.length&&mx>175&&mx<295&&my>244&&my<278){ resetGame(); return; }
+    for(let d of gameDrags){
+      if(d.placed) continue;
+      if(mx>d.sx&&mx<d.sx+100&&my>d.sy&&my<d.sy+30){ activeDrag2=d; d.ox=d.sx-mx; d.oy=d.sy-my; return; }
+    }
+  };
+  sk.mouseDragged=()=>{
+    if(tab!==4||!activeDrag2) return;
+    activeDrag2.x=sk.mouseX+activeDrag2.ox; activeDrag2.y=sk.mouseY+activeDrag2.oy;
+  };
+  sk.mouseReleased=()=>{
+    if(tab!==4||!activeDrag2) return;
+    let L=LABELS.find(l=>l.text===activeDrag2.text);
+    if(sk.dist(activeDrag2.x+50,activeDrag2.y+15,L.correctX,L.correctY)<SNAP_R){
+      activeDrag2.placed=true; gameScore++;
+    } else { activeDrag2.x=activeDrag2.sx; activeDrag2.y=activeDrag2.sy; }
+    activeDrag2=null;
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

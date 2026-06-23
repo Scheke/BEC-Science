@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thermal Physics — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#bf360c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ffab91;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffab91}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #bf360c;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#bf360c;transition:all .15s}
+    .btn.on{background:#bf360c;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Thermal Physics</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🔥 Heat Transfer</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">💧 Specific Heat</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">❄️ Latent Heat</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🌡️ Thermal Properties</button>
+  <button class="btn" id="b-prac" onclick="setThermalPractice(!thermalMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Thermal Physics</h2><ul><li><b>Conduction</b>: Heat transfer through solids via vibrating particles and free electrons.</li><li><b>Convection</b>: Heat transfer in fluids — warm fluid rises, cool fluid sinks (convection currents).</li><li><b>Radiation</b>: Heat transfer by infrared waves — can travel through vacuum.</li><li><b>Thermal energy</b>: Q = mcΔT (m=mass, c=specific heat capacity, ΔT=temperature change).</li><li><b>Specific heat of water</b>: 4200 J/(kg·°C).</li><li><b>Latent heat</b>: Energy absorbed/released during change of state (no temperature change).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let thermalMcq=false;
+const THERMAL_MCQ=[
+  {q:'Heat transfer through a vacuum occurs by:',opts:['Radiation','Conduction','Convection','All three equally'],c:0,tip:'Only radiation (infrared waves) can travel through a vacuum — conduction and convection need matter.'},
+  {q:'The formula for thermal energy (heat) is Q = ?',opts:['mcΔT','mv²','mgh','F×d'],c:0,tip:'Q = mcΔT: m = mass, c = specific heat capacity, ΔT = temperature change.'},
+  {q:'The specific heat capacity of water is approximately:',opts:['4200 J/(kg·°C)','400 J/(kg·°C)','42000 J/(kg·°C)','420 J/(kg·°C)'],c:0,tip:'Water has a very high specific heat capacity of ~4200 J per kg per degree Celsius.'},
+  {q:'Latent heat is the energy needed for:',opts:['Changing state without temperature change','Raising temperature','Boiling only','Melting only'],c:0,tip:'During a change of state, energy is absorbed/released but temperature stays constant.'},
+  {q:'Convection currents occur because:',opts:['Warm fluid is less dense and rises','Warm fluid is denser and sinks','Cold fluid rises','Radiation heats the fluid'],c:0,tip:'Warm fluid expands → becomes less dense → rises. Cool fluid sinks. This creates convection currents.'},
+  {q:'Which surface is the best emitter and absorber of radiation?',opts:['Dull black surface','Shiny silver surface','White surface','Transparent surface'],c:0,tip:'Dull black surfaces are the best emitters and absorbers of infrared radiation.'},
+  {q:'Heat transfer through a metal rod is mainly by:',opts:['Conduction via free electrons','Convection','Radiation','All equally'],c:0,tip:'Metals are good conductors because they have free electrons that transfer energy rapidly.'}
+];
+let thermalMcqIdx=0,thermalMcqSel=-1,thermalMcqScore=0,thermalMcqDone=false,thermalMcqFeedback=null;
+function setThermalPractice(on){thermalMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){thermalMcqIdx=0;thermalMcqSel=-1;thermalMcqScore=0;thermalMcqDone=false;thermalMcqFeedback=null;}}
+function drawThermalMCQ(s){s.background(252,252,240);if(thermalMcqDone){s.fill(191,54,12);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+thermalMcqScore+'/'+THERMAL_MCQ.length,440,215);let msg=thermalMcqScore===THERMAL_MCQ.length?'Perfect! You know Thermal Physics!':thermalMcqScore>=5?'Great job!':'Review conduction, convection & radiation.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=THERMAL_MCQ[thermalMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(thermalMcqIdx/THERMAL_MCQ.length),10,5);s.fill(191,54,12);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(thermalMcqIdx+1)+' of '+THERMAL_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=thermalMcqSel===i,correct=thermalMcqFeedback!==null&&i===q.c,wrong=thermalMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(thermalMcqFeedback){s.fill(thermalMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(thermalMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function thermalMcqClick(mx,my){if(thermalMcqDone){if(mx>310&&mx<570&&my>290&&my<334){thermalMcqIdx=0;thermalMcqSel=-1;thermalMcqScore=0;thermalMcqDone=false;thermalMcqFeedback=null;}return;}if(thermalMcqFeedback!==null){thermalMcqIdx++;thermalMcqSel=-1;thermalMcqFeedback=null;if(thermalMcqIdx>=THERMAL_MCQ.length)thermalMcqDone=true;return;}THERMAL_MCQ[thermalMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){thermalMcqSel=i;thermalMcqFeedback=i===THERMAL_MCQ[thermalMcqIdx].c?'correct':'wrong';if(i===THERMAL_MCQ[thermalMcqIdx].c)thermalMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(thermalMcq){ drawThermalMCQ(sk); return; }tick+=0.025;sk.background(255,248,245);
+    if(tab===0) drawHeatTransfer();
+    else if(tab===1) drawSpecificHeat();
+    else if(tab===2) drawLatentHeat();
+    else drawThermalProps();
+    drawInfoPanel();
+  };
+
+  function drawHeatTransfer(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Methods of Heat Transfer',248,22);sk.textStyle(sk.NORMAL);
+    // Conduction
+    let c1y=72;
+    sk.fill(255,240,220,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,c1y,462,110,7);sk.noStroke();
+    sk.fill(200,80,0);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('CONDUCTION (solids)',20,c1y+16);sk.textStyle(sk.NORMAL);
+    // Metal rod with vibrating atoms
+    let ry=c1y+55;
+    sk.fill(180,160,140,200);sk.noStroke();sk.rect(40,ry-8,300,16,3);
+    for(let i=0;i<10;i++){
+      let ax=50+i*30;let amp=Math.sin(tick*4-i*0.7)*Math.max(0.2,1-i/10)*6;
+      sk.fill(200,100,30,180);sk.noStroke();sk.ellipse(ax,ry+amp,11);
+    }
+    sk.fill(255,60,0,200);sk.noStroke();sk.ellipse(35,ry,18);sk.textSize(18);sk.textAlign(sk.CENTER);sk.text('🔥',35,ry+7);
+    sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.LEFT);
+    sk.text('Heat travels along the rod by vibrating atoms passing energy to neighbours',40,ry+26);sk.textStyle(sk.NORMAL);
+    sk.fill(200,80,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Metals: excellent conductors (free electrons also carry heat)',40,ry+44);sk.text('Non-metals, wood, plastic: poor conductors (insulators)',40,ry+60);sk.textStyle(sk.NORMAL);
+    // Convection
+    let c2y=192;
+    sk.fill(255,245,220,220);sk.stroke(200,120,0,80);sk.strokeWeight(1);sk.rect(14,c2y,462,110,7);sk.noStroke();
+    sk.fill(180,100,0);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('CONVECTION (liquids and gases)',20,c2y+16);sk.textStyle(sk.NORMAL);
+    // Convection cell arrows
+    let cx2=248,ccy=c2y+65,cr=50;
+    let t2=tick*0.5;
+    for(let i=0;i<12;i++){
+      let a=i*sk.TWO_PI/12+t2;
+      let ax=cx2+Math.cos(a)*cr,ay=ccy+Math.sin(a)*cr*0.6;
+      sk.fill(200,100,30,180);sk.noStroke();sk.ellipse(ax,ay,12);
+    }
+    sk.stroke(200,100,30,200);sk.strokeWeight(2);sk.noFill();
+    sk.arc(cx2,ccy,cr*2,cr*1.2,0,sk.PI);
+    sk.arc(cx2,ccy,cr*2,cr*1.2,sk.PI,sk.TWO_PI);
+    sk.noStroke();sk.fill(180,100,0);sk.textSize(9.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('Hot fluid rises → spreads → cools → sinks (convection current)',248,c2y+100);sk.textStyle(sk.NORMAL);
+    sk.fill(255,60,0,200);sk.noStroke();sk.ellipse(cx2,ccy+40,18);sk.textSize(18);sk.textAlign(sk.CENTER);sk.text('🔥',cx2,ccy+47);
+    // Radiation
+    let c3y=312;
+    sk.fill(255,235,215,220);sk.stroke(180,60,0,80);sk.strokeWeight(1);sk.rect(14,c3y,462,130,7);sk.noStroke();
+    sk.fill(160,40,0);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('RADIATION (electromagnetic waves, no medium needed)',20,c3y+16);sk.textStyle(sk.NORMAL);
+    // Infrared rays from sun
+    let sx=60,sy=c3y+70;
+    sk.textSize(26);sk.textAlign(sk.CENTER);sk.text('☀️',sx,sy);
+    for(let i=0;i<5;i++){
+      let a=-0.4+i*0.2;let len=80+Math.sin(tick*3+i)*12;
+      sk.stroke(200,100,0,180);sk.strokeWeight(2);sk.setLineDash([6,4]);
+      sk.line(sx+20,sy-4,sx+20+Math.cos(a)*len,sy-4+Math.sin(a)*len);sk.setLineDash([]);
+    }
+    sk.fill(160,40,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('• Travels through vacuum (e.g. Sun → Earth)',40,c3y+106);
+    sk.text('• Black/dark surfaces: best absorbers AND emitters',40,c3y+122);
+    sk.text('• White/shiny surfaces: best reflectors, worst absorbers',40,c3y+138);sk.textStyle(sk.NORMAL);
+    // Comparison
+    let cpy=452;sk.fill(245,240,235,220);sk.stroke(120,60,0,80);sk.strokeWeight(1);sk.rect(14,cpy,462,52,7);sk.noStroke();
+    sk.fill(100,40,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Comparison:',20,cpy+14);sk.textStyle(sk.NORMAL);sk.fill(30);sk.textSize(9.5);
+    sk.text('Conduction: solids, contact required, slow (unless metals)',20,cpy+30);
+    sk.text('Convection: liquids & gases, currents, medium needed. Radiation: EM waves, no medium.',20,cpy+46);
+  }
+
+  function drawSpecificHeat(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Specific Heat Capacity',248,22);sk.textStyle(sk.NORMAL);
+    // Formula
+    let fy=40;sk.fill(255,240,220,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,fy,462,60,7);sk.noStroke();
+    sk.fill(180,40,0);sk.textSize(16);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Q = mcΔT',248,fy+26);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Q = heat energy (J),  m = mass (kg),  c = specific heat capacity (J/kg°C),  ΔT = temperature change (°C)',248,fy+46);
+    // Visual: beaker being heated
+    let bx=80,by=140;
+    sk.fill(200,240,255,180);sk.stroke(30,80,180);sk.strokeWeight(2);
+    sk.rect(bx,by,100,100,4);sk.line(bx-6,by,bx,by);sk.line(bx+100,by,bx+106,by);
+    // Water particles
+    let nParticles=18;
+    for(let i=0;i<nParticles;i++){
+      let px=bx+8+(tick*0.6+i*20)%(84);
+      let py=by+12+(i*17+tick*0.4)%78;
+      let speed=Math.sin(tick*2+i)*3;
+      sk.fill(30,80,200,180);sk.noStroke();sk.ellipse(px,py,10);
+    }
+    // Thermometer
+    sk.fill(220,60,30,200);sk.stroke(180,40,0);sk.strokeWeight(1.5);
+    sk.rect(bx+116,by+10,10,90,4);
+    let fillH=40+Math.sin(tick)*15;
+    sk.fill(220,60,30,200);sk.noStroke();sk.rect(bx+117,by+100-fillH,8,fillH,2);
+    sk.fill(180,40,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Thermometer',bx+121,by+114);sk.textStyle(sk.NORMAL);
+    sk.textSize(26);sk.text('🔥',bx+50,by+136);
+    // c values table
+    let ty=260;
+    sk.fill(255,245,230,220);sk.stroke(180,80,0,80);sk.strokeWeight(1);sk.rect(14,ty,462,120,7);sk.noStroke();
+    sk.fill(140,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('SPECIFIC HEAT CAPACITIES:',20,ty+14);sk.textStyle(sk.NORMAL);
+    [['Water','4200 J/kg°C','Highest — why oceans moderate climate'],
+     ['Ice / Iron','2100 / 450','Ice less than liquid water'],
+     ['Aluminium','900 J/kg°C','Much lower than water'],
+     ['Copper','385 J/kg°C','Metals have low c → heat up quickly'],
+    ].forEach((r,i)=>{
+      sk.fill(140,60,0);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(r[0]+':',20,ty+32+i*22);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],100,ty+32+i*22);sk.fill(80);sk.textSize(9);sk.text(r[2],230,ty+32+i*22);
+    });
+    // Worked examples
+    let we=392;
+    sk.fill(240,250,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,we,462,110,7);sk.noStroke();
+    sk.fill(0,100,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLES:',20,we+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Ex 1: Q = 2kg × 4200 × 50°C = 420,000 J  (water heated by 50°C)',
+     'Ex 2: ΔT = Q/(mc) = 9000/(2×4200) = 1.07°C',
+     'Ex 3: c = Q/(mΔT) = 3000/(1.5×20) = 100 J/kg°C  → identify metal',
+     'Ex 4: Comparing materials: same Q, higher c → smaller ΔT'].forEach((e,i)=>sk.text(e,20,we+30+i*20));
+  }
+
+  function drawLatentHeat(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Latent Heat — heat absorbed/released during phase change',248,22);sk.textStyle(sk.NORMAL);
+    // Formula
+    let fy=40;sk.fill(255,240,220,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,fy,462,50,7);sk.noStroke();
+    sk.fill(180,40,0);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Q = mL',248,fy+22);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Q = energy (J),  m = mass (kg),  L = specific latent heat (J/kg)',248,fy+40);
+    // Heating curve
+    let gx=14,gy=370,gw=462,gh=220;
+    sk.noFill();sk.stroke(180,180,200);sk.strokeWeight(1);
+    for(let i=0;i<=4;i++)sk.line(gx,gy-i*gh/4,gx+gw,gy-i*gh/4);
+    sk.stroke(80,80,100);sk.strokeWeight(2);sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    // Curve segments
+    const pts=[[0,0],[60,80],[120,80],[220,180],[280,180],[370,220]];
+    sk.stroke(200,60,30,220);sk.strokeWeight(3);sk.noFill();sk.beginShape();
+    pts.forEach(p=>sk.vertex(gx+p[0],gy-p[1]));sk.endShape();
+    // Labels
+    const seglbls=[{x:30,y:100,l:'Solid\nheating'},{x:90,y:48,l:'Melting\n(latent heat\nof fusion)'},{x:170,y:120,l:'Liquid\nheating'},{x:250,y:148,l:'Boiling\n(latent heat\nof vapourisation)'},{x:325,y:184,l:'Gas\nheating'}];
+    seglbls.forEach(sl=>{
+      sk.noStroke();sk.fill(160,40,0);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+      sl.l.split('\n').forEach((l,i)=>sk.text(l,gx+sl.x,gy-sl.y+i*10));sk.textStyle(sk.NORMAL);
+    });
+    // Axes labels
+    sk.noStroke();sk.fill(60);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.text('Time (energy added) →',gx+gw/2,gy+16);
+    sk.push();sk.translate(gx-16,gy-gh/2);sk.rotate(-sk.PI/2);sk.text('Temperature →',0,0);sk.pop();
+    // Phase labels
+    sk.fill(30,80,200);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('0°C',gx+120,gy+26);sk.text('100°C',gx+220,gy+26);sk.textStyle(sk.NORMAL);
+    // L values
+    let ly=100;
+    sk.fill(255,240,220,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,ly,462,110,7);sk.noStroke();
+    sk.fill(140,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('LATENT HEAT VALUES for water:',20,ly+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Specific latent heat of FUSION (melting/freezing): 334,000 J/kg = 334 kJ/kg',20,ly+32);
+    sk.text('Specific latent heat of VAPORISATION (boiling/condensing): 2,260,000 J/kg = 2.26 MJ/kg',20,ly+52);
+    sk.text('Why does cooking take so long? L(vap) is HUGE — most energy goes into phase change',20,ly+72);
+    sk.text('Refrigerators: liquid refrigerant evaporates inside → absorbs latent heat → cools',20,ly+92);
+  }
+
+  function drawThermalProps(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Thermal Properties of Materials',248,22);sk.textStyle(sk.NORMAL);
+    // Expansion
+    let ey=44;
+    sk.fill(255,240,225,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,ey,462,90,7);sk.noStroke();
+    sk.fill(180,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('THERMAL EXPANSION:',20,ey+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Solids/liquids/gases expand when heated (atoms vibrate more, take more space).',20,ey+30);
+    sk.text('Gases expand most, solids least. Liquids intermediate.',20,ey+48);
+    sk.text('Applications: bimetallic strip (thermostat), gaps in rail tracks, expansion joints in bridges.',20,ey+66);
+    // Bimetallic strip animation
+    let bsx=60,bsy=ey+54;let flex=Math.sin(tick)*8;
+    sk.fill(200,160,60,200);sk.stroke(160,120,0);sk.strokeWeight(1.5);
+    sk.beginShape();sk.vertex(bsx,bsy);sk.vertex(bsx+200,bsy+flex);sk.vertex(bsx+200,bsy+flex+8);sk.vertex(bsx,bsy+8);sk.endShape(sk.CLOSE);
+    sk.fill(120,120,200,200);sk.stroke(80,80,160);
+    sk.beginShape();sk.vertex(bsx,bsy+8);sk.vertex(bsx+200,bsy+flex+8);sk.vertex(bsx+200,bsy+flex+16);sk.vertex(bsx,bsy+16);sk.endShape(sk.CLOSE);
+    // Thermometers
+    let ty=144;
+    sk.fill(255,245,230,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,ty,462,88,7);sk.noStroke();
+    sk.fill(180,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('TEMPERATURE SCALES:',20,ty+14);sk.textStyle(sk.NORMAL);
+    const scales=[['Celsius (°C)','Water freezes at 0°C, boils at 100°C'],['Kelvin (K)','Absolute scale: 0K = absolute zero (−273°C)'],['Conversion','T(K) = T(°C) + 273   |   T(°C) = T(K) − 273'],['Absolute zero','No kinetic energy, particles at rest (−273°C)']];
+    scales.forEach((s,i)=>{
+      sk.fill(180,60,0);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(s[0]+':',20,ty+32+i*16);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(s[1],120,ty+32+i*16);
+    });
+    // Gas laws
+    let gy=242;
+    sk.fill(240,248,255,220);sk.stroke(30,80,200,80);sk.strokeWeight(1);sk.rect(14,gy,462,120,7);sk.noStroke();
+    sk.fill(20,60,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('GAS LAWS (ideal gas):',20,gy+14);sk.textStyle(sk.NORMAL);
+    const glaws=[['Boyle\'s Law','P₁V₁ = P₂V₂  (constant T): pressure × volume = constant'],['Charles\' Law','V₁/T₁ = V₂/T₂  (constant P): volume ∝ absolute temperature'],['Pressure Law','P₁/T₁ = P₂/T₂  (constant V): pressure ∝ absolute temperature'],['Ideal Gas','pV = nRT  (R = 8.31 J/mol·K, n = moles)']];
+    glaws.forEach((g,i)=>{
+      sk.fill(20,60,180);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(g[0]+':',20,gy+32+i*22);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(g[1],130,gy+32+i*22);
+    });
+    // Worked examples
+    let we=372;
+    sk.fill(240,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,we,462,130,7);sk.noStroke();
+    sk.fill(0,80,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLES:',20,we+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Q = mcΔT: Q = 2 × 4200 × 10 = 84,000 J  to heat 2kg water by 10°C',
+     'Q = mL: Q = 0.5 × 334,000 = 167,000 J  to melt 0.5kg ice',
+     'Boyle: P₁=100kPa, V₁=4L → at P₂=200kPa: V₂ = 100×4/200 = 2L',
+     'Temperature: 25°C = 298 K;  0 K = −273°C (absolute zero)',
+     'Efficiency of heater = useful heat output / electrical energy input'].forEach((e,i)=>sk.text(e,20,we+32+i*20));
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[180,40,0];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Heat Transfer','Specific Heat','Latent Heat','Thermal Properties'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Conduction',b:'Heat transfer through vibrating atoms.\nBest in solids, especially metals.\nFree electrons also conduct heat in metals.'},{t:'Convection',b:'Heat transferred by movement of fluid.\nHot fluid less dense → rises.\nCool fluid denser → sinks → current.'},{t:'Radiation',b:'Infrared electromagnetic waves.\nNo medium needed (travels through vacuum).\nBlack surfaces absorb and emit most radiation.'},{t:'Applications',b:'Conduction: cooking pots, heat sinks.\nConvection: central heating, sea breezes.\nRadiation: solar panels, thermos flask, greenhouse.'}],
+      [{t:'Specific Heat Capacity (c)',b:'Energy needed to raise 1 kg of substance by 1°C.\nHigh c → heats up slowly, cools slowly.\nWater has unusually high c (4200 J/kg°C).'},{t:'Why water moderates climate',b:'Oceans have huge thermal capacity.\nAbsorb large amounts of heat in summer.\nRelease slowly in winter → moderate temperatures.'},{t:'Q = mcΔT rearrangements',b:'ΔT = Q / (mc)  → find temperature change.\nm = Q / (cΔT)  → find mass.\nc = Q / (mΔT)  → identify material.'},{t:'Measuring c in lab',b:'Immersion heater in known mass of liquid.\nMeasure energy (E=VIt or joulemeter).\nPlot temperature vs time or use Q=VIt=mcΔT.'}],
+      [{t:'What is Latent Heat?',b:'Energy absorbed or released during phase change.\nTemperature does NOT change during phase change.\nEnergy used to break/form intermolecular bonds.'},{t:'Latent Heat of Fusion',b:'Energy to melt (or freeze) a substance.\nWater: L_f = 334,000 J/kg\nIce at 0°C → water at 0°C uses 334kJ/kg.'},{t:'Latent Heat of Vaporisation',b:'Energy to vaporise (or condense) a substance.\nWater: L_v = 2,260,000 J/kg\nMuch larger than fusion (more bonds broken).'},{t:'Practical Applications',b:'Cooking: most energy in boiling goes to vaporisation.\nRefrigerators: evaporation absorbs latent heat.\nSweating: evaporation cools the body (latent heat).'}],
+      [{t:'Kinetic Theory',b:'All matter made of tiny moving particles.\nTemperature ∝ average kinetic energy.\nHigher temp → faster particles → more energetic.'},{t:'States of Matter',b:'Solid: particles vibrate in fixed positions.\nLiquid: particles move freely, still touching.\nGas: particles move rapidly, far apart, random.'},{t:'Internal Energy',b:'Total kinetic + potential energy of all particles.\nHeating increases internal energy.\nPhase change: potential energy increases (bonds stretch/break).'},{t:'Pressure in Gases',b:'Gas pressure from particles hitting container walls.\nMore particles or higher T → more collisions → higher P.\nBoyle\'s Law: compress gas → more collisions per area → higher P.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(thermalMcq){ thermalMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

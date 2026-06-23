@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Force &amp; Motion — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#4a148c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ce93d8;color:#4a148c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ce93d8}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #4a148c;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#4a148c;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#4a148c;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%206">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 6 Science</span>
+  <h1>Force &amp; Motion</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Types of Force</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Friction</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Gravity</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Forces &amp; Motion</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Friction Slider</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [
+    {t:'What is a Force?', b:['A force is a push or a pull on an object','Forces can change: speed, direction of motion, shape of an object','Unit of force: Newton (N) — measured with a spring balance (newtonmeter)','Forces always act in pairs (Newton\'s 3rd Law — BGCSE level)']},
+    {t:'Types of Force', b:['Contact forces: act through physical touching','  • Friction: opposes relative motion between surfaces','  • Normal (support) force: surface pushes back on object','  • Applied force: deliberate push or pull by a person or machine','Non-contact forces: act at a distance','  • Gravity: pulls objects toward Earth (or any massive body)','  • Magnetism: attraction/repulsion between magnets','  • Electrostatics: attraction between charged objects']},
+    {t:'Balanced vs Unbalanced Forces', b:['Balanced forces: equal in size, opposite in direction → NO change in motion','Unbalanced forces: one force is larger → object accelerates in that direction','Book on table: gravity DOWN = normal force UP → balanced (book stays still)','Kicked football: kick force > air resistance + friction → accelerates (unbalanced)']},
+    {t:'Measuring Force', b:['Spring balance (newtonmeter): spring stretches more under larger force','Weight = mass × gravitational field strength (g = 10 N/kg on Earth)','Mass is constant (kilograms); weight changes with gravity (Newtons)','On the Moon: same mass, but weight is 6× less (weaker gravity)']},
+  ],
+  [
+    {t:'What is Friction?', b:['Friction is a contact force that opposes motion between surfaces','Acts in the OPPOSITE direction to motion (or attempted motion)','Caused by microscopic bumps and ridges on surfaces','Rougher surfaces → MORE friction; smoother surfaces → LESS friction']},
+    {t:'Effects of Friction', b:['Slows moving objects down (e.g., braking a bicycle)','Generates heat (rubbing hands together, brake pads, meteors in atmosphere)','Allows grip: car tyres, shoe soles, sandpaper use high friction','Friction allows walking — without it, shoes would slip on the floor']},
+    {t:'Reducing Friction', b:['Lubricants: oil, grease reduce friction in engines and moving parts','Smooth surfaces: polished ice has less friction than rough concrete','Ball bearings: convert sliding friction to rolling friction (much less)','Streamlining (aerodynamics): smooth shape reduces air resistance']},
+    {t:'Investigating Friction', b:['Measure force needed to slide a block on different surfaces','Rough sandpaper > rough carpet > smooth wood > smooth plastic','Variables: keep mass of block CONSTANT; change surface only (fair test)','Repeat each surface 3× and take average to improve reliability']},
+  ],
+  [
+    {t:'Gravity', b:['A non-contact force that attracts all objects with mass toward each other','On Earth: pulls everything toward the centre of the Earth','Gravitational acceleration (g) on Earth = 10 m/s² (or 10 N/kg)','The larger the mass, the stronger its gravitational pull']},
+    {t:'Weight vs Mass', b:['Mass: amount of matter in an object — measured in kg — does NOT change','Weight: force of gravity on an object — measured in N — changes with location','Weight (N) = Mass (kg) × g (N/kg)','Example: 50 kg person on Earth = 500 N; on Moon (g≈1.6) = 80 N']},
+    {t:'Free Fall & Air Resistance', b:['Free fall: only gravity acts on the object (no air resistance)','In free fall, all objects fall at the SAME rate (proved by Galileo)','Air resistance (drag) slows falling objects — more surface area = more drag','Terminal velocity: when air resistance = weight → constant speed (e.g., parachute)']},
+    {t:'Gravity in Space', b:['Satellites orbit Earth because gravity constantly "pulls" them into a curved path','The Moon orbits Earth; Earth orbits the Sun — all held by gravity','Gravity decreases with distance (further away = weaker pull)','Astronauts in orbit feel weightless — they are in continuous free fall around Earth']},
+  ],
+  [
+    {t:'Newton\'s Laws of Motion', b:['1st Law (Inertia): an object stays at rest or constant velocity unless acted on by an unbalanced force','2nd Law: Force = mass × acceleration (F = ma); more force → more acceleration','3rd Law: every action has an equal and opposite reaction','These are BGCSE-level detail; Std 6 focuses on concepts only']},
+    {t:'Speed and Distance', b:['Speed = distance ÷ time (v = d/t)','Measured in m/s, km/h','Average speed of walking: ~1.4 m/s; running: ~4–6 m/s','Faster speed = more distance covered in the same time']},
+    {t:'Forces on a Moving Object', b:['Moving car: engine force FORWARD, friction + air resistance BACKWARD','Constant speed: forward force = backward forces (balanced)','Accelerating: engine force > resistance (unbalanced → speeds up)','Decelerating (braking): brake friction > engine force → slows down']},
+    {t:'Spring Balance Investigations', b:['Spring balance measures the force applied to it in Newtons','To measure friction: pull block across surface; read force when moving at constant speed','When v=constant: pulling force = friction force (balanced forces)','Heavier objects (more mass) generally have more friction']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Types of Force','Friction','Gravity','Forces & Motion'];
+  let h=`<html><head><title>Force & Motion Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #4a148c;padding-bottom:8px;color:#4a148c}
+    h2{font-size:1rem;color:#6a1b9a;margin:22px 0 6px;border-left:4px solid #6a1b9a;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 6 Science — Force &amp; Motion</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── FRICTION SLIDER GAME ─────────────────────────────────
+const SURFACES=[
+  {name:'Ice',        friction:0.04, col:[200,230,255], textCol:[50,80,120]},
+  {name:'Wet tiles',  friction:0.12, col:[200,220,200], textCol:[30,80,30]},
+  {name:'Carpet',     friction:0.35, col:[180,120,80],  textCol:[80,40,20]},
+  {name:'Sandpaper',  friction:0.65, col:[220,180,100], textCol:[100,70,20]},
+  {name:'Rough rock', friction:0.85, col:[150,140,120], textCol:[60,50,40]},
+];
+let selectedSurface, blockX, blockVx, blockPushed, pushForce, gamePhase, result;
+
+function resetGame(){
+  selectedSurface=0; blockX=80; blockVx=0; blockPushed=false; pushForce=8; gamePhase='choose'; result='';
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880, H=510;
+  let tick=0;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    tick++;
+    sk.background(248,245,255);
+    if(tab<4){ drawForceAnim(); drawInfoPanel(); }
+    else { drawGame(); updateGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(245,240,255); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b,bh=16+lines.length*14+8;
+      sk.fill(74,20,140); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawForceAnim(){
+    if(tab===0) drawForceDiagram();
+    else if(tab===1) drawFrictionAnim();
+    else if(tab===2) drawGravityAnim();
+    else drawMotionAnim();
+  }
+
+  function drawForceDiagram(){
+    // Object with force arrows
+    sk.fill(100,60,200,40); sk.noStroke(); sk.rect(30,30,460,450,8);
+    let cx=248, cy=280;
+    sk.fill(180,120,80); sk.stroke(100); sk.strokeWeight(1); sk.rect(cx-35,cy-25,70,50,5);
+    sk.fill(60); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.CENTER);
+    sk.text('Box\n(object)',cx,cy);
+    // Arrows
+    function arrow(fx,fy,tx,ty,label,col){
+      sk.stroke(col[0],col[1],col[2]); sk.strokeWeight(3);
+      sk.line(fx,fy,tx,ty);
+      sk.fill(col[0],col[1],col[2]); sk.noStroke();
+      sk.push(); sk.translate(tx,ty); sk.rotate(sk.atan2(ty-fy,tx-fx));
+      sk.triangle(0,0,-12,-5,-12,5); sk.pop();
+      sk.fill(col[0],col[1],col[2]); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(label,tx+(tx-fx>0?18:tx-fx<0?-18:0),ty+(ty-fy>0?14:ty-fy<0?-14:0));
+    }
+    arrow(cx+35,cy,cx+140,cy,'Applied\nForce →',[0,100,180]);
+    arrow(cx-35,cy,cx-140,cy,'← Friction',[180,60,0]);
+    arrow(cx,cy-25,cx,cy-120,'Normal\nForce ↑',[0,140,60]);
+    arrow(cx,cy+25,cx,cy+120,'↓ Weight\n(gravity)',[160,20,20]);
+    sk.fill(50); sk.textSize(11); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER);
+    sk.text('Four main forces on an object on a surface',248,430);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawFrictionAnim(){
+    let surfY=320;
+    // Surface
+    sk.fill(180,140,100); sk.noStroke(); sk.rect(30,surfY,440,60,0,0,6,6);
+    // Animated block sliding
+    let bx=60+((tick*1.5)%350);
+    sk.fill(100,60,200); sk.rect(bx,surfY-40,50,40,4);
+    sk.fill(255); sk.textSize(9); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('Block',bx+25,surfY-20);
+    // Friction arrow (backward)
+    sk.stroke(220,60,60); sk.strokeWeight(2.5); sk.line(bx-10,surfY-20,bx-60,surfY-20);
+    sk.fill(220,60,60); sk.noStroke(); sk.triangle(bx-60,surfY-20,bx-48,surfY-25,bx-48,surfY-15);
+    sk.fill(220,60,60); sk.textSize(10); sk.textAlign(sk.CENTER); sk.text('Friction',bx-35,surfY-28);
+    // Motion arrow (forward)
+    sk.stroke(0,120,200); sk.strokeWeight(2.5); sk.line(bx+60,surfY-20,bx+110,surfY-20);
+    sk.fill(0,120,200); sk.noStroke(); sk.triangle(bx+110,surfY-20,bx+98,surfY-25,bx+98,surfY-15);
+    sk.fill(0,120,200); sk.textSize(10); sk.textAlign(sk.CENTER); sk.text('Motion →',bx+85,surfY-28);
+    // Heat particles
+    for(let i=0;i<5;i++){
+      let hx=bx+i*10-20, hy=surfY-5-Math.abs(Math.sin(tick*0.15+i))*20;
+      sk.fill(255,100+i*20,0,160); sk.noStroke(); sk.ellipse(hx,hy,6,6);
+    }
+    sk.fill(60); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('Friction acts OPPOSITE to direction of motion', 40, 410);
+    sk.text('Friction between surfaces generates HEAT', 40, 428);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawGravityAnim(){
+    // Ball falling
+    let fy=60+((tick*1.2)%380);
+    sk.fill(255,160,0); sk.noStroke(); sk.ellipse(248,fy,30,30);
+    sk.fill(60); sk.textSize(10); sk.textAlign(sk.CENTER,sk.BASELINE); sk.text('Ball (falling)',248,fy-18);
+    // Ground
+    sk.fill(100,80,60); sk.rect(30,440,440,30,0,0,6,6);
+    // Gravity arrow
+    sk.stroke(200,30,30); sk.strokeWeight(3); sk.line(278,fy,278,fy+50);
+    sk.fill(200,30,30); sk.noStroke(); sk.triangle(278,fy+50,272,fy+38,284,fy+38);
+    sk.fill(200,30,30); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER); sk.text('g = 10 m/s²',285,fy+25);
+    // Weight formula
+    sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Weight (N) = Mass (kg) × 10', 248, 370);
+    sk.textSize(10); sk.textStyle(sk.NORMAL);
+    sk.text('On Moon (g≈1.6): same mass, less weight', 248, 390);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawMotionAnim(){
+    // Car with forces
+    let carX=80+Math.sin(tick*0.02)*30;
+    sk.fill(220,60,60); sk.stroke(150,30,30); sk.strokeWeight(1.5); sk.rect(carX,250,120,50,8);
+    sk.fill(100,150,220); sk.rect(carX+10,240,100,30,4);
+    sk.fill(50); sk.noStroke(); sk.ellipse(carX+20,300,22,22); sk.ellipse(carX+100,300,22,22);
+    // Engine force
+    sk.stroke(0,120,200); sk.strokeWeight(3); sk.line(carX+120,275,carX+170,275);
+    sk.fill(0,120,200); sk.noStroke(); sk.triangle(carX+170,275,carX+158,268,carX+158,282);
+    sk.fill(0,120,200); sk.textSize(9); sk.textAlign(sk.CENTER); sk.text('Engine',carX+145,265);
+    // Friction + air resist
+    sk.stroke(200,60,60); sk.strokeWeight(3); sk.line(carX,275,carX-60,275);
+    sk.fill(200,60,60); sk.noStroke(); sk.triangle(carX-60,275,carX-48,268,carX-48,282);
+    sk.fill(200,60,60); sk.textSize(9); sk.textAlign(sk.CENTER); sk.text('Friction + Air',carX-30,265);
+    sk.fill(50); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('Engine > Friction → car accelerates (speed increases)', 40,370);
+    sk.text('Engine = Friction → car moves at constant speed', 40,388);
+    sk.text('Engine < Friction (braking) → car decelerates', 40,406);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  // ── GAME ─────────────────────────────────────────────
+  function updateGame(){
+    if(gamePhase==='sliding'){
+      let surf=SURFACES[selectedSurface];
+      blockVx=Math.max(0,blockVx-surf.friction*0.4);
+      blockX+=blockVx;
+      if(blockVx<=0||blockX>430){
+        gamePhase='stopped';
+        let dist=Math.round(blockX-80);
+        result='The block slid '+dist+' px. '+surf.name+' friction = '+surf.friction+' — '+(surf.friction<0.2?'Very slippery!':surf.friction<0.5?'Moderate grip.':'Lots of friction — stops quickly!');
+      }
+    }
+  }
+
+  function drawGame(){
+    sk.background(245,240,255);
+    sk.fill(74,20,140); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Friction Slider — choose a surface, give the block a push, see how friction stops it!', W/2,22);
+
+    // Surface buttons (left panel)
+    sk.fill(50); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Choose a surface:', 30,55);
+    SURFACES.forEach((s,i)=>{
+      let sel=i===selectedSurface;
+      sk.fill(sel?[74,20,140]:[240,235,255]); sk.stroke(74,20,140); sk.strokeWeight(sel?2:1);
+      sk.rect(30,65+i*56,190,46,8);
+      sk.fill(sel?255:[30,0,60]); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(s.name,50,88+i*56);
+      sk.textStyle(sk.NORMAL); sk.textSize(9);
+      sk.text('μ = '+s.friction,50,103+i*56);
+    });
+
+    // Playing field
+    let surf=SURFACES[selectedSurface];
+    let fieldY=280, fieldH=50;
+    sk.fill(surf.col[0],surf.col[1],surf.col[2]); sk.stroke(surf.textCol[0],surf.textCol[1],surf.textCol[2]); sk.strokeWeight(2);
+    sk.rect(230,fieldY,200,fieldH,4);
+    sk.fill(surf.textCol[0],surf.textCol[1],surf.textCol[2]); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+    sk.text(surf.name,330,305);
+
+    // Block
+    let bx=Math.min(blockX,440);
+    sk.fill(100,60,200); sk.noStroke(); sk.rect(bx,fieldY-35,36,36,4);
+    sk.fill(255); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('Block',bx+18,fieldY-17);
+
+    // Push button
+    if(gamePhase==='choose'){
+      sk.fill(0,150,0); sk.noStroke(); sk.rect(240,340,180,40,8);
+      sk.fill(255); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('PUSH! →',330,360);
+    } else if(gamePhase==='stopped'){
+      sk.fill(74,20,140,220); sk.noStroke(); sk.rect(230,340,200,40,8);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('↺ Try another surface',330,360);
+    }
+
+    // Friction arrow while sliding
+    if(gamePhase==='sliding'&&blockVx>0){
+      sk.stroke(220,60,60); sk.strokeWeight(2.5); sk.line(bx,fieldY-17,bx-50,fieldY-17);
+      sk.fill(220,60,60); sk.noStroke(); sk.triangle(bx-50,fieldY-17,bx-38,fieldY-23,bx-38,fieldY-11);
+      sk.fill(220,60,60); sk.textSize(9); sk.textAlign(sk.CENTER); sk.text('Friction',bx-25,fieldY-26);
+    }
+
+    // Result panel
+    if(result){
+      sk.fill(240,235,255); sk.noStroke(); sk.rect(30,420,460,60,8);
+      sk.fill(74,20,140); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(result,42,440,430,40);
+    }
+
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    // Surface buttons
+    SURFACES.forEach((s,i)=>{
+      if(mx>30&&mx<220&&my>65+i*56&&my<111+i*56){ selectedSurface=i; resetGame(); }
+    });
+    // Push button
+    if(gamePhase==='choose'&&mx>240&&mx<420&&my>340&&my<380){
+      blockX=80; blockVx=pushForce; gamePhase='sliding'; result='';
+    }
+    if(gamePhase==='stopped'&&mx>230&&mx<430&&my>340&&my<380){ resetGame(); }
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

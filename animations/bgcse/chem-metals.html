@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metals — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#37474f;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#b0bec5;color:#263238;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #b0bec5}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #37474f;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#37474f;transition:all .15s}
+    .btn.on{background:#37474f;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Metals, Reactivity &amp; Extraction</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">📊 Reactivity Series</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">⚗️ Displacement</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🏭 Extraction</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔧 Uses of Metals</button>
+  <button class="btn" id="b-prac" onclick="setMetalsPractice(!metalsMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Metals</h2><ul><li><b>Reactivity series</b> (most → least): K, Na, Ca, Mg, Al, (C), Zn, Fe, (H), Cu, Ag, Au.</li><li><b>Extraction</b>: Metals above carbon extracted by electrolysis (Al, Na). Metals below C extracted by reduction with carbon (Fe).</li><li><b>Displacement</b>: More reactive metal displaces less reactive from its salt solution (Mg + CuSO₄ → MgSO₄ + Cu).</li><li><b>Rusting</b>: Requires both water AND oxygen. Prevented by galvanising (zinc coating), painting, or alloying.</li><li><b>Galvanising</b>: Coating iron with zinc — zinc acts as sacrificial anode.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let metalsMcq=false;
+const METALS_MCQ=[
+  {q:'Which metal is MOST reactive in the reactivity series?',opts:['Potassium (K)','Sodium (Na)','Iron (Fe)','Gold (Au)'],c:0,tip:'Potassium is at the top of the reactivity series — most reactive metal.'},
+  {q:'Iron is extracted from its ore by:',opts:['Reduction with carbon in a blast furnace','Electrolysis','Displacement with zinc','Heating alone'],c:0,tip:'Iron is below carbon in reactivity, so it is reduced by carbon in the blast furnace.'},
+  {q:'Aluminium is extracted by:',opts:['Electrolysis of molten bauxite','Reduction with carbon','Displacement with iron','Heating in air'],c:0,tip:'Aluminium is above carbon so it cannot be reduced by carbon — electrolysis is used.'},
+  {q:'Which metal does NOT react with dilute hydrochloric acid?',opts:['Copper (Cu)','Magnesium (Mg)','Zinc (Zn)','Iron (Fe)'],c:0,tip:'Copper is below hydrogen in reactivity — it does not displace H from acids.'},
+  {q:'Rusting of iron requires:',opts:['Both water AND oxygen','Only water','Only oxygen','Heat alone'],c:0,tip:'Rusting (oxidation of iron) needs both water and oxygen present simultaneously.'},
+  {q:'Galvanising protects iron by:',opts:['Coating it with zinc','Painting with oil','Converting it to steel','Adding carbon'],c:0,tip:'Zinc is more reactive than iron — it acts as a sacrificial anode, protecting the iron.'},
+  {q:'In Mg + CuSO₄ → MgSO₄ + Cu, magnesium displaces copper because:',opts:['Mg is more reactive than Cu','Cu is more reactive than Mg','Mg is less reactive','They have the same reactivity'],c:0,tip:'A more reactive metal displaces a less reactive one from its salt solution.'}
+];
+let metalsMcqIdx=0,metalsMcqSel=-1,metalsMcqScore=0,metalsMcqDone=false,metalsMcqFeedback=null;
+function setMetalsPractice(on){metalsMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){metalsMcqIdx=0;metalsMcqSel=-1;metalsMcqScore=0;metalsMcqDone=false;metalsMcqFeedback=null;}}
+function drawMetalsMCQ(s){s.background(252,252,240);if(metalsMcqDone){s.fill(55,71,79);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+metalsMcqScore+'/'+METALS_MCQ.length,440,215);let msg=metalsMcqScore===METALS_MCQ.length?'Perfect! You know Metals!':metalsMcqScore>=5?'Great job!':'Review reactivity series & extraction methods.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=METALS_MCQ[metalsMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(metalsMcqIdx/METALS_MCQ.length),10,5);s.fill(55,71,79);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(metalsMcqIdx+1)+' of '+METALS_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=metalsMcqSel===i,correct=metalsMcqFeedback!==null&&i===q.c,wrong=metalsMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(metalsMcqFeedback){s.fill(metalsMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(metalsMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function metalsMcqClick(mx,my){if(metalsMcqDone){if(mx>310&&mx<570&&my>290&&my<334){metalsMcqIdx=0;metalsMcqSel=-1;metalsMcqScore=0;metalsMcqDone=false;metalsMcqFeedback=null;}return;}if(metalsMcqFeedback!==null){metalsMcqIdx++;metalsMcqSel=-1;metalsMcqFeedback=null;if(metalsMcqIdx>=METALS_MCQ.length)metalsMcqDone=true;return;}METALS_MCQ[metalsMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){metalsMcqSel=i;metalsMcqFeedback=i===METALS_MCQ[metalsMcqIdx].c?'correct':'wrong';if(i===METALS_MCQ[metalsMcqIdx].c)metalsMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  const METALS=[
+    {n:'Potassium',sym:'K',col:[160,60,200]},
+    {n:'Sodium',sym:'Na',col:[200,80,0]},
+    {n:'Calcium',sym:'Ca',col:[100,60,0]},
+    {n:'Magnesium',sym:'Mg',col:[0,140,80]},
+    {n:'Aluminium',sym:'Al',col:[0,100,200]},
+    {n:'Carbon (non-metal)',sym:'C',col:[60,60,60]},
+    {n:'Zinc',sym:'Zn',col:[80,120,180]},
+    {n:'Iron',sym:'Fe',col:[120,60,0]},
+    {n:'Hydrogen (non-metal)',sym:'H',col:[30,120,30]},
+    {n:'Copper',sym:'Cu',col:[180,100,30]},
+    {n:'Silver',sym:'Ag',col:[140,140,140]},
+    {n:'Gold',sym:'Au',col:[200,160,0]},
+  ];
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(metalsMcq){ drawMetalsMCQ(sk); return; }tick+=0.025;sk.background(250,250,248);
+    if(tab===0) drawReactivity();
+    else if(tab===1) drawDisplacement();
+    else if(tab===2) drawExtraction();
+    else drawUses();
+    drawInfoPanel();
+  };
+
+  function drawReactivity(){
+    sk.fill(40,40,60);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Reactivity Series of Metals',248,22);sk.textStyle(sk.NORMAL);
+    let sy=38;
+    METALS.forEach((m,i)=>{
+      let y=sy+i*37;let barW=400-i*24;
+      sk.fill(m.col[0],m.col[1],m.col[2],180);sk.noStroke();sk.rect(14,y,barW,30,5);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(m.sym,22,y+20);sk.textStyle(sk.NORMAL);sk.textSize(10);sk.text(m.n,46,y+20);
+      // Reactions with water / acid
+      let water=i<2?'✓✓ (vigorously)':i<4?'✓ (slowly)':i<6?'✗ (no)':'✗';
+      let acid=i<5?'✓✓':i<9?'✓':m.sym==='H'?'—':'✗';
+      sk.fill(30);sk.textSize(9);sk.textAlign(sk.LEFT);
+      if(m.sym!=='C'&&m.sym!=='H'){
+        sk.text('Water: '+water,280,y+14);sk.text('Dilute acid: '+acid,380,y+14);
+      } else {
+        sk.text(i===5?'Reduces metal oxides above C':'Extracted from acids',280,y+14);
+      }
+    });
+    // Reactivity label
+    sk.fill(40,40,60,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Most reactive →',462,80);sk.text('Least reactive →',462,400);sk.textStyle(sk.NORMAL);
+    // Arrow
+    sk.stroke(80,80,100,180);sk.strokeWeight(2);
+    sk.line(455,65,455,460);sk.noStroke();sk.fill(80,80,100,200);sk.triangle(451,460,459,460,455,470);
+  }
+
+  function drawDisplacement(){
+    sk.fill(40,40,60);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Displacement Reactions — More reactive metal displaces less reactive',248,22);sk.textStyle(sk.NORMAL);
+    // Demo: Zinc + Copper Sulfate
+    let bx=80,by=100;
+    // Beaker before
+    sk.fill(200,230,255,180);sk.stroke(30,80,180);sk.strokeWeight(2);
+    sk.rect(bx,by+20,100,110,4);sk.line(bx-6,by+20,bx,by+20);sk.line(bx+100,by+20,bx+106,by+20);
+    // Blue copper sulfate solution
+    sk.fill(30,100,200,150);sk.noStroke();sk.rect(bx+2,by+60,96,68);
+    sk.fill(30,80,200);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('CuSO₄\n(blue)',bx+50,by+96);sk.textStyle(sk.NORMAL);
+    // Zinc strip going in
+    sk.fill(180,200,220,220);sk.stroke(80,120,160);sk.strokeWeight(2);
+    sk.rect(bx+42,by-10,16,80,2);sk.noStroke();
+    sk.fill(60,100,140);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Zn',bx+50,by-16);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('BEFORE',bx+50,by+152);sk.textStyle(sk.NORMAL);
+    // Arrow
+    sk.stroke(40,80,40,200);sk.strokeWeight(2);sk.line(200,by+75,240,by+75);
+    sk.noStroke();sk.fill(40,80,40,200);sk.triangle(240,by+70,240,by+80,252,by+75);
+    sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);sk.text('reaction',224,by+65);sk.textStyle(sk.NORMAL);
+    // Beaker after
+    let bx2=270;
+    sk.fill(240,255,240,180);sk.stroke(30,80,180);sk.strokeWeight(2);
+    sk.rect(bx2,by+20,100,110,4);sk.line(bx2-6,by+20,bx2,by+20);sk.line(bx2+100,by+20,bx2+106,by+20);
+    sk.fill(200,220,240,100);sk.noStroke();sk.rect(bx2+2,by+60,96,68);
+    sk.fill(80);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('ZnSO₄\n(colourless)',bx2+50,by+96);sk.textStyle(sk.NORMAL);
+    // Copper deposit on strip
+    let stripX=bx2+42;
+    sk.fill(180,100,30,230);sk.noStroke();sk.rect(stripX,by+60,16,68);
+    sk.fill(160,80,20);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Cu\ndep.',stripX+8,by+90);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('AFTER',bx2+50,by+152);sk.textStyle(sk.NORMAL);
+    // Equations
+    let ey=260;
+    sk.fill(240,250,240,220);sk.stroke(40,120,40,80);sk.strokeWeight(1);sk.rect(14,ey,462,80,7);sk.noStroke();
+    sk.fill(20,100,40);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Zn  +  CuSO₄  →  ZnSO₄  +  Cu',248,ey+22);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Zinc + Copper sulfate → Zinc sulfate + Copper',248,ey+44);
+    sk.fill(140,80,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('Zinc is MORE reactive than copper → displaces it from solution',248,ey+64);sk.textStyle(sk.NORMAL);
+    // More examples table
+    let ty=354;
+    sk.fill(248,248,248,220);sk.stroke(80,80,100,80);sk.strokeWeight(1);sk.rect(14,ty,462,148,7);sk.noStroke();
+    sk.fill(40,40,80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('More Displacement Examples:',20,ty+14);sk.textStyle(sk.NORMAL);
+    [['Mg + FeSO₄ →','MgSO₄ + Fe','(Mg more reactive than Fe)'],
+     ['Fe + CuSO₄ →','FeSO₄ + Cu','(Fe more reactive than Cu)'],
+     ['Cu + ZnSO₄ →','NO REACTION','(Cu less reactive than Zn)'],
+     ['C + ZnO →','Zn + CO₂','(C reduces ZnO at high temp)'],
+     ['Thermite: Fe₂O₃ + Al →','Al₂O₃ + Fe','(Al more reactive than Fe)']
+    ].forEach((r,i)=>{
+      sk.fill(40,40,80);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(r[0],20,ty+32+i*24);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],168,ty+32+i*24);
+      sk.fill(100,60,0);sk.textSize(8.5);sk.text(r[2],308,ty+32+i*24);
+    });
+  }
+
+  function drawExtraction(){
+    sk.fill(40,40,60);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Extraction of Metals — depends on position in reactivity series',248,22);sk.textStyle(sk.NORMAL);
+    const methods=[
+      {metals:'Potassium, Sodium, Calcium,\nMagnesium, Aluminium',method:'ELECTROLYSIS\n(very reactive, can\'t use\ncarbon reduction)',col:[160,60,200],ex:'Na from NaCl(l)\nAl from Al₂O₃ (bauxite)'},
+      {metals:'Zinc, Iron, Tin, Lead',method:'REDUCTION with\nCarbon (coke)\nin a blast furnace',col:[80,120,180],ex:'Fe from Fe₂O₃\nin blast furnace'},
+      {metals:'Copper (borderline)',method:'REDUCTION or\nMining (native copper)\n+ electrolytic refining',col:[180,100,30],ex:'Cu₂S roasted in air\nthen electrolysis'},
+      {metals:'Silver, Gold, Platinum',method:'FOUND NATIVE\n(already uncombined\nin earth\'s crust)',col:[140,140,0],ex:'Gold panned\nfrom rivers/rocks'},
+    ];
+    let sy=44;
+    methods.forEach((m,i)=>{
+      let y=sy+i*114;
+      sk.fill(m.col[0],m.col[1],m.col[2],30);sk.stroke(m.col[0],m.col[1],m.col[2]);sk.strokeWeight(1.5);
+      sk.rect(14,y,462,106,7);sk.noStroke();
+      sk.fill(m.col[0],m.col[1],m.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('Metals: '+m.metals.split('\n')[0],20,y+14);
+      if(m.metals.includes('\n')) sk.text(m.metals.split('\n')[1],86,y+26);
+      sk.text('Method: '+m.method.split('\n')[0],20,y+42);
+      m.method.split('\n').slice(1).forEach((l,li)=>sk.text(l,76,y+54+li*13));sk.textStyle(sk.NORMAL);
+      sk.fill(m.col[0],m.col[1],m.col[2],140);sk.textSize(9);sk.textStyle(sk.ITALIC);
+      sk.text('Example: '+m.ex.replace('\n',' | '),20,y+90);sk.textStyle(sk.NORMAL);
+    });
+  }
+
+  function drawUses(){
+    const metals=[
+      {n:'Iron & Steel',uses:'Construction, vehicles, tools',prop:'Strong, cheap, tough',sym:'Fe',col:[120,80,60]},
+      {n:'Aluminium',uses:'Aircraft, cans, cooking foil',prop:'Low density, corrosion-resistant',sym:'Al',col:[100,120,180]},
+      {n:'Copper',uses:'Electrical wiring, pipes',prop:'Excellent conductor, ductile',sym:'Cu',col:[180,100,30]},
+      {n:'Gold',uses:'Jewellery, electronics (contacts)',prop:'Non-reactive, shiny, ductile',sym:'Au',col:[200,160,0]},
+      {n:'Zinc',uses:'Galvanising steel, batteries',prop:'Protects iron from rusting',sym:'Zn',col:[80,120,160]},
+      {n:'Titanium',uses:'Aircraft, implants, bikes',prop:'Very strong, low density',sym:'Ti',col:[100,100,120]},
+    ];
+    sk.fill(40,40,60);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Metals: Properties and Uses',248,22);sk.textStyle(sk.NORMAL);
+    metals.forEach((m,i)=>{
+      let x=14+(i%3)*152,y=42+Math.floor(i/3)*130;
+      sk.fill(m.col[0],m.col[1],m.col[2],40);sk.stroke(m.col[0],m.col[1],m.col[2]);sk.strokeWeight(1.5);
+      sk.rect(x,y,146,120,7);sk.noStroke();
+      // Metal symbol circle
+      sk.fill(m.col[0],m.col[1],m.col[2],200);sk.ellipse(x+22,y+22,34);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text(m.sym,x+22,y+26);sk.textStyle(sk.NORMAL);
+      sk.fill(m.col[0],m.col[1],m.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(m.n,x+44,y+18);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(8.5);sk.text('Uses: '+m.uses,x+8,y+48,130,60);
+      sk.fill(80);sk.text('Prop: '+m.prop,x+8,y+90,130,35);
+    });
+    // Alloys section
+    let ay=310;
+    sk.fill(245,245,240,220);sk.stroke(80,80,60,80);sk.strokeWeight(1);sk.rect(14,ay,462,190,7);sk.noStroke();
+    sk.fill(60,50,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ALLOYS — Why mix metals?',20,ay+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9.5);
+    ['Alloys are MIXTURES of metals (or metal + non-metal)','Different sized atoms disrupt regular arrangement → harder, stronger','','Examples:'].forEach((l,i)=>sk.text(l,20,ay+30+i*16));
+    const alloys=[['Steel','Iron + carbon (0.1-1.5%)','Harder and stronger than iron, cheaper'],['Stainless steel','Iron + chromium + nickel','Does not rust, used in cutlery, medical'],['Brass','Copper + zinc (30%)','Harder than copper, musical instruments'],['Bronze','Copper + tin','Harder, good for coins, sculptures'],['Duralumin','Aluminium + copper + manganese','Strong and light for aircraft']];
+    alloys.forEach((a,i)=>{
+      sk.fill(80,60,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(a[0]+':',20,ay+90+i*20);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(a[1]+' — '+a[2],88,ay+90+i*20);
+    });
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[50,60,80];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Reactivity Series','Displacement Reactions','Metal Extraction','Metal Uses & Alloys'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'What does reactivity mean?',b:'How eagerly a metal reacts with others.\nMore reactive → loses electrons more readily.\nDetermined by ionisation energy and atomic size.'},{t:'Reactions with water',b:'K, Na: violent reaction with cold water.\nCa, Mg: react slowly with cold water.\nAl, Zn, Fe: react with steam only.\nCu, Ag, Au: no reaction with water.'},{t:'Reactions with dilute acid',b:'Metals above H₂ react with dilute acid.\nH₂ gas produced (test: squeaky pop).\nMetals below H₂ (Cu, Ag, Au): no reaction.'},{t:'Reactions with oxygen',b:'All metals react with O₂ to form oxides.\nMore reactive → reacts faster/at lower temp.\nGold does NOT tarnish (unreactive).'}],
+      [{t:'Displacement Rule',b:'A more reactive metal DISPLACES\na less reactive metal from its salt solution.\nThis is because it can "push out" the other.'},{t:'Ionic equation',b:'Zn + Cu²⁺ → Zn²⁺ + Cu\nZinc loses 2 electrons → oxidised.\nCopper ions gain 2 electrons → reduced.'},{t:'REDOX',b:'OIL RIG: Oxidation Is Loss, Reduction Is Gain.\nThe displacing metal is OXIDISED (loses e⁻).\nThe displaced ion is REDUCED (gains e⁻).'},{t:'Testing displacement',b:'Place metal strip in salt solution.\nObserve: colour change of solution?\nMetal deposit on strip?\nTemperature change?'}],
+      [{t:'Electrolysis (reactive metals)',b:'Used for K, Na, Ca, Mg, Al.\nMolten salt (not solution — water reacts).\nCathode (−): metal deposited.\nAnode (+): non-metal released.'},{t:'Blast Furnace (iron)',b:'Iron ore (haematite, Fe₂O₃) + coke + limestone.\nC reduces Fe₂O₃: Fe₂O₃ + 3C → 2Fe + 3CO₂\nMolten iron sinks, slag floats.'},{t:'Aluminium Extraction',b:'Al from bauxite (Al₂O₃) by electrolysis.\nBauxite dissolved in cryolite → lower MP.\nVery expensive (high electrical energy).'},{t:'Recycling Metals',b:'Recycling saves energy and raw materials.\nRecycling Al uses only 5% of energy of extraction.\nAlso reduces mining damage to environment.'}],
+      [{t:'Iron & Steel',b:'Pure iron is soft, steel is harder.\n0.1% C = mild steel (car bodies).\n1.5% C = high-carbon steel (cutting tools).'},{t:'Rusting',b:'Iron rusts in presence of O₂ AND water.\nFe → Fe₂O₃.xH₂O (hydrated iron oxide).\nPrevented by: painting, galvanising, oiling, sacrificial Zn.'},{t:'Galvanising',b:'Coating iron/steel with a layer of zinc.\nZinc is more reactive → acts as sacrificial anode.\nEven if coating scratched, iron is still protected.'},{t:'Electroplating',b:'Depositing a thin metal layer using electrolysis.\nCoating cheaper metal with expensive metal.\nChromium plating for decorative or protective use.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(metalsMcq){ metalsMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

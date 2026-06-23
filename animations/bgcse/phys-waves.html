@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waves — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#004d40;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#80cbc4;color:#004d40;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #80cbc4}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #004d40;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#004d40;transition:all .15s}
+    .btn.on{background:#004d40;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Waves &amp; the Electromagnetic Spectrum</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">〰️ Wave Types</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🌈 EM Spectrum</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">↩️ Reflection</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔭 Refraction</button>
+  <button class="btn" id="b-prac" onclick="setWavesPractice(!wavesMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Waves</h2><ul><li><b>Wave speed</b> = frequency × wavelength (v = fλ). Unit: m/s.</li><li><b>Transverse waves</b>: Oscillation ⊥ direction of travel (e.g., light, water waves).</li><li><b>Longitudinal waves</b>: Oscillation ∥ direction of travel (e.g., sound).</li><li><b>Reflection</b>: Angle of incidence = angle of reflection.</li><li><b>Refraction</b>: Wave bends as speed changes (e.g., light slows in glass).</li><li><b>Total internal reflection</b>: When angle of incidence > critical angle in a denser medium.</li><li><b>EM spectrum</b> (lowest to highest frequency): Radio, Microwave, IR, Visible, UV, X-ray, Gamma.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let wavesMcq=false;
+const WAVES_MCQ=[
+  {q:'Wave speed is calculated by:',opts:['frequency × wavelength','amplitude × frequency','wavelength ÷ frequency','frequency ÷ wavelength'],c:0,tip:'v = fλ: wave speed = frequency × wavelength.'},
+  {q:'In a transverse wave, particle displacement is:',opts:['Perpendicular to the direction of wave travel','Parallel to the direction of wave travel','In the same direction as wave travel','Random'],c:0,tip:'Transverse waves: oscillation is at 90° to the direction of travel (e.g., light, water).'},
+  {q:'Light is what type of wave?',opts:['Transverse electromagnetic wave','Longitudinal mechanical wave','Sound wave','Water wave'],c:0,tip:'Light is a transverse electromagnetic wave that can travel through a vacuum.'},
+  {q:'Total internal reflection occurs when the angle of incidence:',opts:['Exceeds the critical angle inside a denser medium','Is less than the critical angle','Is exactly 90°','Is 0°'],c:0,tip:'When angle of incidence > critical angle in glass, light is totally internally reflected.'},
+  {q:'In the EM spectrum, which wave has the HIGHEST frequency?',opts:['Gamma rays','X-rays','UV rays','Radio waves'],c:0,tip:'Gamma rays have the highest frequency and shortest wavelength in the EM spectrum.'},
+  {q:'Sound travels fastest through:',opts:['Solid','Liquid','Gas','Vacuum'],c:0,tip:'Sound is a mechanical wave — it travels faster in denser/stiffer media: solid > liquid > gas.'},
+  {q:'Refraction of light occurs because:',opts:['The speed of light changes as it crosses media','The wavelength stays constant','The frequency changes','Light is absorbed'],c:0,tip:'Light slows down in denser media, causing the wave to bend (refract).'}
+];
+let wavesMcqIdx=0,wavesMcqSel=-1,wavesMcqScore=0,wavesMcqDone=false,wavesMcqFeedback=null;
+function setWavesPractice(on){wavesMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){wavesMcqIdx=0;wavesMcqSel=-1;wavesMcqScore=0;wavesMcqDone=false;wavesMcqFeedback=null;}}
+function drawWavesMCQ(s){s.background(252,252,240);if(wavesMcqDone){s.fill(0,77,64);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+wavesMcqScore+'/'+WAVES_MCQ.length,440,215);let msg=wavesMcqScore===WAVES_MCQ.length?'Perfect! You know Waves!':wavesMcqScore>=5?'Great job!':'Review wave types, EM spectrum & optics.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=WAVES_MCQ[wavesMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(wavesMcqIdx/WAVES_MCQ.length),10,5);s.fill(0,77,64);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(wavesMcqIdx+1)+' of '+WAVES_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=wavesMcqSel===i,correct=wavesMcqFeedback!==null&&i===q.c,wrong=wavesMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(wavesMcqFeedback){s.fill(wavesMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(wavesMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function wavesMcqClick(mx,my){if(wavesMcqDone){if(mx>310&&mx<570&&my>290&&my<334){wavesMcqIdx=0;wavesMcqSel=-1;wavesMcqScore=0;wavesMcqDone=false;wavesMcqFeedback=null;}return;}if(wavesMcqFeedback!==null){wavesMcqIdx++;wavesMcqSel=-1;wavesMcqFeedback=null;if(wavesMcqIdx>=WAVES_MCQ.length)wavesMcqDone=true;return;}WAVES_MCQ[wavesMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){wavesMcqSel=i;wavesMcqFeedback=i===WAVES_MCQ[wavesMcqIdx].c?'correct':'wrong';if(i===WAVES_MCQ[wavesMcqIdx].c)wavesMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(wavesMcq){ drawWavesMCQ(sk); return; }tick+=0.04;sk.background(245,255,255);
+    if(tab===0) drawWaveTypes();
+    else if(tab===1) drawEMSpectrum();
+    else if(tab===2) drawReflection();
+    else drawRefraction();
+    drawInfoPanel();
+  };
+
+  function drawWaveTypes(){
+    sk.fill(0,80,80);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Transverse vs Longitudinal Waves',248,22);sk.textStyle(sk.NORMAL);
+    // Transverse wave
+    let ty=110,tw=440;
+    sk.fill(0,100,120);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('TRANSVERSE WAVE (e.g. light, water surface, EM waves)',14,ty-20);sk.textStyle(sk.NORMAL);
+    sk.stroke(30,120,180,220);sk.strokeWeight(3);sk.noFill();sk.beginShape();
+    for(let i=0;i<=tw;i++){
+      let x=14+i,y2=ty+Math.sin((i/tw)*4*sk.PI-tick)*50;sk.vertex(x,y2);
+    }sk.endShape();
+    // Annotations
+    let aWave=tick%(4*sk.PI/(tw/440));
+    sk.stroke(200,60,30,180);sk.strokeWeight(1.5);sk.setLineDash([4,3]);
+    sk.line(150,ty-55,150,ty+55);sk.line(260,ty-55,260,ty+55);sk.setLineDash([]);
+    sk.noStroke();sk.fill(200,60,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('λ (wavelength)',205,ty-62);sk.textStyle(sk.NORMAL);
+    sk.stroke(0,160,80,180);sk.strokeWeight(1.5);sk.line(310,ty,310,ty-50);
+    sk.noStroke();sk.fill(0,160,80);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('A (amplitude)',344,ty-38);sk.textStyle(sk.NORMAL);
+    // Direction arrows
+    sk.stroke(30,120,180);sk.strokeWeight(2);sk.line(14,ty,454,ty);
+    sk.noStroke();sk.fill(30,120,180);sk.triangle(454,ty-4,454,ty+4,462,ty);
+    sk.fill(30,120,180);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text('Wave travels →',14,ty+68);sk.textStyle(sk.NORMAL);
+    // Particle motion arrow
+    sk.stroke(200,100,200);sk.strokeWeight(2);sk.line(24,ty-55,24,ty+55);
+    sk.noStroke();sk.fill(200,100,200);sk.triangle(20,ty+55,28,ty+55,24,ty+65);sk.triangle(20,ty-55,28,ty-55,24,ty-65);
+    sk.fill(200,100,200);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Particle\nvibrates ↕',14,ty+80);sk.textStyle(sk.NORMAL);
+    // Longitudinal wave
+    let lty=270;
+    sk.fill(0,100,120);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('LONGITUDINAL WAVE (e.g. sound, seismic P-waves)',14,lty-20);sk.textStyle(sk.NORMAL);
+    let nDots=24,dotSpacing=18;
+    for(let i=0;i<nDots;i++){
+      let phase2=i/nDots;
+      let disp=Math.sin(phase2*4*sk.PI-tick)*10;
+      let dx=14+i*dotSpacing+disp;
+      let density=nDots/(Math.abs(disp)+4);
+      let col=Math.min(255,60+density*12);
+      sk.fill(30,80,col,220);sk.noStroke();sk.ellipse(dx,lty,disp>0?11:9);
+    }
+    sk.stroke(30,120,180);sk.strokeWeight(2);sk.line(14,lty+28,454,lty+28);
+    sk.noStroke();sk.fill(30,120,180);sk.triangle(454,lty+24,454,lty+32,462,lty+28);
+    sk.fill(30,120,180);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text('Wave travels →',14,lty+44);sk.textStyle(sk.NORMAL);
+    sk.fill(200,80,30);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Particles vibrate in SAME direction as wave travel (compressions & rarefactions)',248,lty+60);sk.textStyle(sk.NORMAL);
+    // Wave equation
+    let weq=360;
+    sk.fill(240,255,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,weq,462,80,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(16);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('v = fλ',248,weq+28);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('v = wave speed (m/s),  f = frequency (Hz),  λ = wavelength (m)',248,weq+48);
+    sk.text('Period T = 1/f   |   f = 1/T',248,weq+64);
+    // Properties table
+    let ty2=450;
+    sk.fill(245,255,255,220);sk.stroke(0,80,100,80);sk.strokeWeight(1);sk.rect(14,ty2,462,52,7);sk.noStroke();
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.text('Both types: reflect, refract, diffract, interfere.',248,ty2+16);
+    sk.text('Transverse: can be polarised. Longitudinal: cannot be polarised.',248,ty2+34);
+  }
+
+  function drawEMSpectrum(){
+    sk.fill(0,80,80);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('The Electromagnetic Spectrum',248,22);sk.textStyle(sk.NORMAL);
+    const waves=[
+      {n:'Radio',λ:'>1m',use:'Broadcasting,\nwireless comm.',col:[160,0,200]},
+      {n:'Microwave',λ:'1m–1mm',use:'Cooking, mobile\nphones, radar',col:[80,0,200]},
+      {n:'Infrared',λ:'1mm–700nm',use:'Remote controls,\nheat, night vision',col:[200,60,0]},
+      {n:'Visible',λ:'700–400nm',use:'Sight, photography,\nfibre optics',col:[255,140,0]},
+      {n:'UV',λ:'400–10nm',use:'Sterilisation,\nfluorescence, tanning',col:[100,0,200]},
+      {n:'X-rays',λ:'10nm–0.01nm',use:'Medical imaging,\nsecurity scans',col:[30,30,200]},
+      {n:'Gamma',λ:'<0.01nm',use:'Cancer treatment,\nsterilisation',col:[180,0,0]},
+    ];
+    const nw=waves.length;
+    let gx=14,gy=62,gh=54,barH=20;
+    // Rainbow bar
+    for(let i=0;i<nw;i++){
+      let x=gx+i*(462/nw),w=462/nw;
+      let c=waves[i].col;
+      sk.fill(c[0],c[1],c[2],180);sk.noStroke();sk.rect(x,gy,w,barH);
+    }
+    // Vertical dividers + labels
+    waves.forEach((w,i)=>{
+      let x=gx+i*(462/nw),bw=462/nw;
+      sk.noStroke();sk.fill(w.col[0],w.col[1],w.col[2]);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(w.n,x+bw/2,gy+barH+14);sk.textStyle(sk.NORMAL);
+      sk.fill(60);sk.textSize(7.5);
+      w.λ.split('\n').forEach((l,li)=>sk.text(l,x+bw/2,gy+barH+27+li*10));
+      sk.fill(40);sk.textSize(8);
+      w.use.split('\n').forEach((l,li)=>sk.text(l,x+bw/2,gy+barH+46+li*10));
+    });
+    // Frequency arrow
+    let ay=gy+112;
+    sk.stroke(30,80,180);sk.strokeWeight(2);sk.line(gx,ay,gx+462,ay);
+    sk.noStroke();sk.fill(30,80,180);sk.triangle(gx+462,ay-4,gx+462,ay+4,gx+474,ay);
+    sk.fill(30,80,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);sk.text('Increasing frequency →',gx+440,ay+16);sk.textStyle(sk.NORMAL);
+    // Wavelength arrow (other direction)
+    sk.stroke(200,60,30);sk.strokeWeight(2);sk.line(gx+462,ay+30,gx,ay+30);
+    sk.noStroke();sk.fill(200,60,30);sk.triangle(gx,ay+26,gx,ay+34,gx-12,ay+30);
+    sk.fill(200,60,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text('← Increasing wavelength',gx,ay+46);sk.textStyle(sk.NORMAL);
+    // All same speed in vacuum
+    sk.fill(0,100,80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('All EM waves travel at c = 3 × 10⁸ m/s in a vacuum',248,ay+64);sk.textStyle(sk.NORMAL);
+    // Detailed facts
+    let dy=ay+80;
+    const facts=[
+      {w:'Radio',f:'Long wavelength, low frequency. TV, AM/FM radio. Reflect off ionosphere.',col:[120,0,180]},
+      {w:'Microwave',f:'Can penetrate clouds. Water molecules absorb → cooking. 4G/5G signals.',col:[60,0,180]},
+      {w:'Infrared',f:'Given off by warm objects. Thermal cameras. Greenhouse effect (trapped by CO₂).',col:[200,60,0]},
+      {w:'Visible',f:'Only part we can see. ROYGBIV. White light = all colours. Dispersed by prisms.',col:[200,120,0]},
+      {w:'UV',f:'Causes skin cancer (high energy). Bees can see UV. Sunscreen blocks UV.',col:[80,0,180]},
+      {w:'X-rays',f:'Penetrate soft tissue, stopped by bone/metal. Doctors use for medical imaging.',col:[30,30,180]},
+      {w:'Gamma',f:'Most energetic. Ionising radiation. Used to kill cancer cells and sterilise equipment.',col:[160,0,0]},
+    ];
+    facts.forEach((f,i)=>{
+      let y=dy+i*48;
+      sk.fill(f.col[0],f.col[1],f.col[2],30);sk.stroke(f.col[0],f.col[1],f.col[2],100);sk.strokeWeight(1);sk.rect(14,y,462,42,5);sk.noStroke();
+      sk.fill(f.col[0],f.col[1],f.col[2]);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(f.w+':',20,y+14);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(9.5);sk.text(f.f,76,y+14,390,24);
+    });
+  }
+
+  function drawReflection(){
+    sk.fill(0,80,80);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Reflection of Light',248,22);sk.textStyle(sk.NORMAL);
+    // Mirror
+    let mx=240,my=80,mh=350;
+    sk.fill(200,220,240,200);sk.stroke(30,80,180);sk.strokeWeight(3);sk.line(mx,my,mx,my+mh);
+    sk.fill(180,200,220);sk.noStroke();sk.rect(mx,my,10,mh);
+    sk.fill(30,80,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Mirror',mx+30,my+mh/2);sk.textStyle(sk.NORMAL);
+    // Normal (dashed)
+    sk.stroke(100,100,100,160);sk.strokeWeight(1.5);sk.setLineDash([5,4]);sk.line(mx,my+mh/2,mx-120,my+mh/2);sk.line(mx,my+mh/2,mx+120,my+mh/2);sk.setLineDash([]);
+    sk.noStroke();sk.fill(80);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);sk.text('Normal',mx+130,my+mh/2+4);sk.textStyle(sk.NORMAL);
+    // Incident ray
+    let angle=Math.PI/4+Math.sin(tick*0.3)*0.2;
+    let ix=-Math.cos(angle)*120,iy=-Math.sin(angle)*120;
+    sk.stroke(200,180,0,220);sk.strokeWeight(2.5);sk.line(mx,my+mh/2,mx+ix,my+mh/2+iy);
+    sk.noStroke();sk.fill(200,160,0);sk.triangle(mx+3,my+mh/2-3,mx-3,my+mh/2+3,mx+ix+Math.cos(angle)*5,my+mh/2+iy+Math.sin(angle)*5);
+    sk.fill(200,140,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Incident ray',mx+ix/2-10,my+mh/2+iy/2+16);sk.textStyle(sk.NORMAL);
+    // Reflected ray
+    let rx=Math.cos(angle)*120,ry=-Math.sin(angle)*120;
+    sk.stroke(200,80,200,220);sk.strokeWeight(2.5);sk.line(mx,my+mh/2,mx+rx,my+mh/2+ry);
+    sk.noStroke();sk.fill(200,80,200);
+    let ra=Math.atan2(ry,rx);sk.push();sk.translate(mx+rx,my+mh/2+ry);sk.rotate(ra);sk.triangle(0,-4,0,4,10,0);sk.pop();
+    sk.fill(180,0,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Reflected ray',mx+rx/2+10,my+mh/2+ry/2+16);sk.textStyle(sk.NORMAL);
+    // Angle labels
+    sk.noStroke();sk.fill(200,140,0,200);
+    sk.arc(mx,my+mh/2,50,50,sk.PI,sk.PI+angle);
+    sk.fill(200,140,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);
+    sk.text('i = '+(angle*180/sk.PI).toFixed(0)+'°',mx-30,my+mh/2+30);sk.textStyle(sk.NORMAL);
+    sk.fill(180,0,180,200);sk.noStroke();
+    sk.arc(mx,my+mh/2,50,50,sk.TWO_PI-angle,sk.TWO_PI);
+    sk.fill(180,0,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('r = '+(angle*180/sk.PI).toFixed(0)+'°',mx+30,my+mh/2+30);sk.textStyle(sk.NORMAL);
+    // Law of reflection
+    let ly=440;
+    sk.fill(240,255,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,ly,462,62,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Law of Reflection: Angle of incidence (i) = Angle of reflection (r)',248,ly+20);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Both angles measured from the NORMAL to the mirror surface.',248,ly+40);
+    sk.text('Plane mirror forms a virtual, upright, same-size image behind the mirror.',248,ly+54);
+  }
+
+  function drawRefraction(){
+    sk.fill(0,80,80);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Refraction of Light',248,22);sk.textStyle(sk.NORMAL);
+    // Interface
+    let iy=240;
+    sk.fill(200,230,255,100);sk.noStroke();sk.rect(14,iy,462,270);
+    sk.fill(220,240,255,60);sk.noStroke();sk.rect(14,40,462,iy-40);
+    sk.stroke(30,80,180);sk.strokeWeight(2);sk.setLineDash([8,4]);sk.line(14,iy,476,iy);sk.setLineDash([]);
+    sk.noStroke();sk.fill(30,80,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('AIR (less dense) — faster',20,iy-14);sk.text('GLASS (more dense) — slower',20,iy+14);sk.textStyle(sk.NORMAL);
+    // Normal
+    let nx=248;sk.stroke(100,100,100,160);sk.strokeWeight(1.5);sk.setLineDash([4,4]);
+    sk.line(nx,40,nx,iy+270);sk.setLineDash([]);
+    sk.noStroke();sk.fill(80);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);sk.text('Normal',nx+40,54);sk.textStyle(sk.NORMAL);
+    // Incident ray
+    let incAngle=sk.PI/4+Math.sin(tick*0.3)*0.1;
+    sk.stroke(200,160,0,220);sk.strokeWeight(2.5);sk.line(nx,iy,nx-Math.cos(incAngle)*140,iy-Math.sin(incAngle)*140);
+    sk.noStroke();sk.fill(200,140,0);sk.triangle(nx-2,iy-3,nx+2,iy+3,nx-Math.cos(incAngle)*145+Math.cos(incAngle+sk.PI/2)*3,iy-Math.sin(incAngle)*145);
+    sk.fill(200,140,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Incident ray',nx-Math.cos(incAngle)*80,iy-Math.sin(incAngle)*80+16);sk.textStyle(sk.NORMAL);
+    // Refracted ray (bends toward normal in denser medium)
+    let refAngle=Math.asin(Math.sin(incAngle)*0.65);
+    sk.stroke(100,200,100,220);sk.strokeWeight(2.5);sk.line(nx,iy,nx+Math.sin(refAngle)*180,iy+Math.cos(refAngle)*180);
+    sk.noStroke();sk.fill(0,160,60);
+    sk.push();sk.translate(nx+Math.sin(refAngle)*180,iy+Math.cos(refAngle)*180);sk.rotate(sk.PI/2-refAngle);sk.triangle(-4,0,4,0,0,10);sk.pop();
+    sk.fill(0,140,60);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Refracted ray',nx+Math.sin(refAngle)*120+30,iy+Math.cos(refAngle)*120);sk.textStyle(sk.NORMAL);
+    // Angle labels
+    sk.noStroke();sk.fill(200,140,0,200);sk.arc(nx,iy,40,40,sk.PI*1.5-incAngle,sk.PI*1.5+0.02);
+    sk.fill(200,140,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);
+    sk.text('i='+(incAngle*180/sk.PI).toFixed(0)+'°',nx-20,iy-10);sk.textStyle(sk.NORMAL);
+    sk.fill(0,140,60,200);sk.noStroke();sk.arc(nx,iy,40,40,0,refAngle+0.02);
+    sk.fill(0,140,60);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('r='+(refAngle*180/sk.PI).toFixed(0)+'°',nx+20,iy+18);sk.textStyle(sk.NORMAL);
+    // TIR note
+    let ty=430;
+    sk.fill(240,255,245,220);sk.stroke(0,100,60,80);sk.strokeWeight(1);sk.rect(14,ty,462,72,7);sk.noStroke();
+    sk.fill(0,80,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Total Internal Reflection (TIR):',20,ty+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);
+    sk.text('When light travels from dense → less dense medium at angle > critical angle.',20,ty+30);
+    sk.text('Light REFLECTS inside (does not refract out). Used in: optical fibres, diamonds.',20,ty+48);
+    sk.text('n = sin i / sin r  (Snell\'s Law)',20,ty+64);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[0,80,80];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Wave Types','EM Spectrum','Reflection','Refraction'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Wave Properties',b:'Amplitude (A): max displacement from rest.\nWavelength (λ): distance of one full cycle.\nFrequency (f): cycles per second (Hz).'},{t:'Wave Equation',b:'v = fλ\nSpeed = frequency × wavelength\nT = 1/f (period in seconds).'},{t:'Transverse vs Longitudinal',b:'Transverse: oscillation ⊥ to wave direction.\nLongitudinal: oscillation ∥ to wave direction.\nSound is longitudinal; light is transverse.'},{t:'Wave Phenomena',b:'Reflection: bouncing off surface.\nRefraction: bending when speed changes.\nDiffraction: spreading through gaps.\nInterference: overlapping waves.'}],
+      [{t:'EM Spectrum',b:'All EM waves travel at c = 3×10⁸ m/s in vacuum.\nOrdered by frequency/wavelength.\nHigher f = higher energy = more dangerous.'},{t:'Ionising Radiation',b:'UV, X-rays, gamma rays carry enough energy\nto remove electrons from atoms → ionise.\nCan damage DNA → cancer risk.'},{t:'Uses of EM Waves',b:'Radio: broadcasting.\nMicrowave: cooking, mobile phones.\nIR: remote controls, heat sensors.\nVisible: photography, optical fibres.\nUV: sterilisation, tanning.\nX-ray: medical imaging.\nGamma: cancer treatment.'},{t:'Electromagnetic Induction',b:'Changing magnetic field creates EMF.\nBasis of generators and transformers.\nFaraday\'s Law: EMF ∝ rate of change of flux.'}],
+      [{t:'Law of Reflection',b:'Angle of incidence = angle of reflection.\nBoth angles measured from the NORMAL.\nApplies to all types of waves.'},{t:'Types of Reflection',b:'Specular: smooth surface, clear image (mirrors).\nDiffuse: rough surface, scattered rays.\nNo image formed in diffuse reflection.'},{t:'Mirrors',b:'Plane mirror: virtual, upright, same-size image.\nConcave (converging): real or virtual image.\nConvex (diverging): always virtual, smaller image.'},{t:'Applications',b:'CCTV mirrors (convex), satellite dishes (concave),\ntelescopes, periscopes, rear-view mirrors.'}],
+      [{t:'Refraction',b:'Light bends when it changes speed (at interface).\nSlows down → bends toward normal.\nSpeeds up → bends away from normal.'},{t:'Refractive Index (n)',b:'n = speed in vacuum / speed in medium\nn = sin(i) / sin(r)  (Snell\'s Law)\nGlass n ≈ 1.5. Water n ≈ 1.33.'},{t:'Total Internal Reflection',b:'Only when going dense → less dense medium.\nCritical angle: angle where refracted ray = 90°.\nAbove critical angle: TIR occurs (no refraction).'},{t:'Applications of TIR',b:'Optical fibres: data transmission, endoscopes.\nDiamonds: high n → sparkle.\nPeriscopes, binoculars (prisms).'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(wavesMcq){ wavesMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

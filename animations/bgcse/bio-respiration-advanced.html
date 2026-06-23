@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Respiration — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#880e4f;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#f48fb1;color:#880e4f;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #f8bbd0}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #880e4f;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#880e4f;transition:all .15s}
+    .btn.on{background:#880e4f;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Advanced Respiration</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">⚡ Overview</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🔬 Glycolysis</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🔄 Krebs Cycle</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔋 ETC & ATP Yield</button>
+  <button class="btn" id="b-prac" onclick="setRespAdvPractice(!respAdvMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Advanced Respiration</h2><ul><li><b>Glycolysis</b>: In cytoplasm. Glucose → 2 pyruvate + 2 ATP (net).</li><li><b>Link reaction</b>: Pyruvate → Acetyl-CoA + CO₂. Occurs in mitochondrial matrix.</li><li><b>Krebs cycle</b>: In mitochondrial matrix. Produces CO₂, NADH, FADH₂, and 2 ATP per cycle.</li><li><b>Oxidative phosphorylation</b>: On inner mitochondrial membrane. NADH/FADH₂ → ~34 ATP via electron transport chain.</li><li><b>Total ATP yield</b>: ~36–38 ATP per glucose (aerobic).</li><li><b>Anaerobic</b>: In animals → lactate; in yeast → ethanol + CO₂. Only 2 ATP.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let respAdvMcq=false;
+const RESP_ADV_MCQ=[
+  {q:'Where does glycolysis take place in the cell?',opts:['Cytoplasm','Mitochondrial matrix','Inner mitochondrial membrane','Nucleus'],c:0,tip:'Glycolysis occurs in the cytoplasm — it does not require mitochondria.'},
+  {q:'What is the net ATP gain from glycolysis?',opts:['2 ATP','4 ATP','36 ATP','38 ATP'],c:0,tip:'Glycolysis produces 4 ATP but uses 2, giving a net of 2 ATP.'},
+  {q:'Where does the Krebs cycle occur?',opts:['Mitochondrial matrix','Cytoplasm','Inner mitochondrial membrane','Cell membrane'],c:0,tip:'The Krebs (citric acid) cycle takes place in the mitochondrial matrix.'},
+  {q:'Which molecules are produced by the Krebs cycle?',opts:['CO₂, NADH, FADH₂ and ATP','Only ATP','Glucose and water','Pyruvate and lactate'],c:0,tip:'Each turn of the Krebs cycle produces CO₂, NADH, FADH₂, and 1 ATP.'},
+  {q:'Where does oxidative phosphorylation (electron transport chain) occur?',opts:['Inner mitochondrial membrane','Outer membrane','Matrix','Cytoplasm'],c:0,tip:'The electron transport chain is embedded in the inner mitochondrial membrane.'},
+  {q:'Approximately how many ATP molecules are produced per glucose in aerobic respiration?',opts:['36–38 ATP','2 ATP','4 ATP','10 ATP'],c:0,tip:'Aerobic respiration yields ~36–38 ATP total from glycolysis, Krebs, and oxidative phosphorylation.'},
+  {q:'In animals, anaerobic respiration produces:',opts:['Lactate (lactic acid)','Ethanol and CO₂','Glucose','Pyruvate and water'],c:0,tip:'Animal cells produce lactate during anaerobic respiration; yeast produces ethanol + CO₂.'}
+];
+let respAdvMcqIdx=0,respAdvMcqSel=-1,respAdvMcqScore=0,respAdvMcqDone=false,respAdvMcqFeedback=null;
+function setRespAdvPractice(on){respAdvMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){respAdvMcqIdx=0;respAdvMcqSel=-1;respAdvMcqScore=0;respAdvMcqDone=false;respAdvMcqFeedback=null;}}
+function drawRespAdvMCQ(s){s.background(252,252,240);if(respAdvMcqDone){s.fill(136,14,79);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+respAdvMcqScore+'/'+RESP_ADV_MCQ.length,440,215);let msg=respAdvMcqScore===RESP_ADV_MCQ.length?'Perfect! You know Advanced Respiration!':respAdvMcqScore>=5?'Great job!':'Review glycolysis, Krebs cycle & ATP yield.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=RESP_ADV_MCQ[respAdvMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(respAdvMcqIdx/RESP_ADV_MCQ.length),10,5);s.fill(136,14,79);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(respAdvMcqIdx+1)+' of '+RESP_ADV_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=respAdvMcqSel===i,correct=respAdvMcqFeedback!==null&&i===q.c,wrong=respAdvMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(respAdvMcqFeedback){s.fill(respAdvMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(respAdvMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function respAdvMcqClick(mx,my){if(respAdvMcqDone){if(mx>310&&mx<570&&my>290&&my<334){respAdvMcqIdx=0;respAdvMcqSel=-1;respAdvMcqScore=0;respAdvMcqDone=false;respAdvMcqFeedback=null;}return;}if(respAdvMcqFeedback!==null){respAdvMcqIdx++;respAdvMcqSel=-1;respAdvMcqFeedback=null;if(respAdvMcqIdx>=RESP_ADV_MCQ.length)respAdvMcqDone=true;return;}RESP_ADV_MCQ[respAdvMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){respAdvMcqSel=i;respAdvMcqFeedback=i===RESP_ADV_MCQ[respAdvMcqIdx].c?'correct':'wrong';if(i===RESP_ADV_MCQ[respAdvMcqIdx].c)respAdvMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let atpParticles=[];
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');for(let i=0;i<30;i++) atpParticles.push({x:200+Math.random()*200,y:200+Math.random()*200,vx:(Math.random()-0.5)*1.5,vy:(Math.random()-0.5)*1.5,a:Math.random()*255});};
+  sk.draw=()=>{if(respAdvMcq){ drawRespAdvMCQ(sk); return; }tick+=0.03;sk.background(255,248,252);
+    if(tab===0) drawOverview();
+    else if(tab===1) drawGlycolysis();
+    else if(tab===2) drawKrebs();
+    else drawETC();
+    drawInfoPanel();};
+
+  function drawOverview(){
+    // Big pathway overview
+    const stages=[
+      {n:'Glucose (C₆H₁₂O₆)',x:248,y:55,col:[180,60,0],atp:0,w:160,h:38},
+      {n:'GLYCOLYSIS\n(cytoplasm)',x:248,y:140,col:[200,80,0],atp:2,w:150,h:48},
+      {n:'PYRUVATE (×2)\n(C₃H₄O₃)',x:248,y:220,col:[180,80,180],atp:0,w:150,h:44},
+      {n:'LINK REACTION\n(mitochondria)',x:248,y:300,col:[120,0,160],atp:0,w:150,h:44},
+      {n:'ACETYL CoA (×2)',x:248,y:368,col:[80,0,200],atp:0,w:130,h:38},
+      {n:'KREBS CYCLE\n(matrix)',x:248,y:440,col:[0,80,200],atp:2,w:140,h:44},
+    ];
+    stages.forEach((s,i)=>{
+      sk.fill(s.col[0],s.col[1],s.col[2],35);sk.stroke(s.col[0],s.col[1],s.col[2]);sk.strokeWeight(2);
+      sk.rect(s.x-s.w/2,s.y-s.h/2,s.w,s.h,8);sk.noStroke();
+      sk.fill(s.col[0],s.col[1],s.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      s.n.split('\n').forEach((l,li)=>sk.text(l,s.x,s.y+(li-s.n.split('\n').length/2+0.7)*13));sk.textStyle(sk.NORMAL);
+      if(i<stages.length-1){
+        sk.stroke(120,80,180,160);sk.strokeWeight(2);
+        sk.line(s.x,s.y+s.h/2,stages[i+1].x,stages[i+1].y-stages[i+1].h/2-4);
+      }
+      if(s.atp>0){
+        sk.noStroke();sk.fill(255,200,30,200);sk.ellipse(s.x+s.w/2+18,s.y,26,26);
+        sk.fill(160,120,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text('+'+s.atp+'\nATP',s.x+s.w/2+18,s.y+4);sk.textStyle(sk.NORMAL);
+      }
+    });
+    // ETC — separate box on right
+    let etcX=380,etcY=360;
+    sk.fill(0,80,120,35);sk.stroke(0,80,120);sk.strokeWeight(2);
+    sk.rect(etcX-75,etcY-28,150,56,8);sk.noStroke();
+    sk.fill(0,80,120);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('ETC (inner\nmitochondrial\nmembrane)',etcX,etcY+4);sk.textStyle(sk.NORMAL);
+    sk.noStroke();sk.fill(255,200,30,200);sk.ellipse(etcX+90,etcY,30,30);
+    sk.fill(160,120,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.text('+32\nATP',etcX+90,etcY+5);sk.textStyle(sk.NORMAL);
+    // Arrow from Krebs to ETC
+    sk.stroke(0,80,120,160);sk.strokeWeight(1.5);sk.setLineDash([5,3]);
+    sk.line(322,440,etcX-75,etcY);sk.setLineDash([]);
+    sk.fill(100,50,150,160);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('NADH, FADH₂',360,395);sk.textStyle(sk.NORMAL);
+    // Grand total
+    let tx=etcX+8;let ty=460;
+    sk.fill(200,150,0,220);sk.noStroke();sk.rect(tx-68,ty-22,136,34,7);
+    sk.fill(80,50,0);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('TOTAL: ~36 ATP per glucose',tx,ty+5);sk.textStyle(sk.NORMAL);
+    // Where
+    sk.fill(60,0,120);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Glycolysis: cytoplasm',14,470);sk.text('Link + Krebs + ETC: mitochondria',14,484);
+    sk.textStyle(sk.NORMAL);
+  }
+
+  function drawGlycolysis(){
+    sk.fill(180,60,0);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('GLYCOLYSIS — occurs in the cytoplasm',248,22);sk.textStyle(sk.NORMAL);
+    // Glucose
+    let gx=248,gy=70;
+    sk.fill(255,200,100,200);sk.stroke(180,100,0);sk.strokeWeight(2);sk.ellipse(gx,gy,90,40);
+    sk.noStroke();sk.fill(150,70,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Glucose (6C)',gx,gy+4);sk.textStyle(sk.NORMAL);
+    // Arrow down
+    sk.stroke(160,80,0);sk.strokeWeight(2);sk.line(gx,gy+20,gx,gy+50);
+    // ATP cost label
+    sk.noStroke();sk.fill(200,50,50,200);sk.ellipse(gx+60,gy+35,30,22);
+    sk.fill(255);sk.textSize(8);sk.textStyle(sk.BOLD);sk.text('-2 ATP',gx+60,gy+39);sk.textStyle(sk.NORMAL);
+    // Activation
+    let ax=248,ay=132;
+    sk.fill(255,180,80,180);sk.stroke(180,120,0);sk.strokeWeight(1.5);sk.ellipse(ax,ay,80,36);
+    sk.noStroke();sk.fill(140,80,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Fructose-1,6-\nbisphosphate',ax,ay+3);sk.textStyle(sk.NORMAL);
+    // Split
+    sk.stroke(160,80,0);sk.strokeWeight(2);sk.line(ax,ay+18,ax,ay+46);
+    sk.line(ax,ay+64,ax-60,ay+85);sk.line(ax,ay+64,ax+60,ay+85);
+    let tx1=ax-60,ty1=ay+96,tx2=ax+60,ty2=ay+96;
+    sk.fill(255,220,150,180);sk.stroke(160,100,0);sk.strokeWeight(1.5);
+    sk.ellipse(tx1,ty1,70,30);sk.ellipse(tx2,ty2,70,30);
+    sk.noStroke();sk.fill(130,70,0);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('PGAL (3C)',tx1,ty1+4);sk.text('PGAL (3C)',tx2,ty2+4);sk.textStyle(sk.NORMAL);
+    // Arrow down from each
+    sk.stroke(160,80,0);sk.strokeWeight(2);sk.line(tx1,ty1+15,tx1,ty1+45);sk.line(tx2,ty2+15,tx2,ty2+45);
+    // Products from each
+    [tx1,tx2].forEach((x,i)=>{
+      sk.fill(255,140,60,200);sk.stroke(180,80,0);sk.strokeWeight(1.5);sk.ellipse(x,ty1+56,70,30);
+      sk.noStroke();sk.fill(140,50,0);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Pyruvate (3C)',x,ty1+60);sk.textStyle(sk.NORMAL);
+    });
+    // Gain labels
+    [tx1,tx2].forEach(x=>{
+      sk.noStroke();sk.fill(30,180,30,200);sk.ellipse(x+50,ty1+56,26,20);
+      sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.text('+1ATP\n+1NADH',x+50,ty1+55);sk.textStyle(sk.NORMAL);
+    });
+    // Net gain
+    let ny=330;
+    sk.fill(240,250,220,220);sk.stroke(30,120,30,100);sk.strokeWeight(1);sk.rect(14,ny,462,100,7);sk.noStroke();
+    sk.fill(20,100,20);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('GLYCOLYSIS SUMMARY:',20,ny+14);sk.textStyle(sk.NORMAL);
+    const summ=['Input: 1 Glucose + 2 ATP (activation energy)','Output: 2 Pyruvate + 4 ATP + 2 NADH','NET GAIN: 2 ATP + 2 NADH per glucose molecule','Location: Cytoplasm (no oxygen needed)','Both aerobic and anaerobic respiration start with glycolysis'];
+    summ.forEach((s,i)=>{sk.fill(30);sk.textSize(10);sk.text(s,20,ny+28+i*16);});
+    // Fate of pyruvate
+    let fy=435;
+    sk.fill(200,180,255,180);sk.stroke(80,0,160,100);sk.strokeWeight(1);sk.rect(14,fy,462,65,7);sk.noStroke();
+    sk.fill(80,0,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('FATE OF PYRUVATE:',20,fy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('If O₂ present: → Krebs cycle (aerobic, mitochondria) → 36 ATP total',20,fy+30);
+    sk.text('If NO O₂: → Lactic acid (animals) or Ethanol + CO₂ (plants, yeast) → only 2 ATP',20,fy+48);
+  }
+
+  function drawKrebs(){
+    sk.fill(0,80,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('KREBS CYCLE (Citric Acid Cycle) — in mitochondrial matrix',248,22);sk.textStyle(sk.NORMAL);
+    // Circular diagram
+    let cx=200,cy=270,r=115;
+    const steps=[
+      {l:'Acetyl CoA\n(2C)',a:270},{l:'Citrate\n(6C)',a:330},{l:'Isocitrate\n(6C)',a:30},{l:'α-Ketoglutarate\n(5C)',a:90},
+      {l:'Succinyl CoA\n(4C)',a:150},{l:'Succinate\n(4C)',a:210},{l:'Fumarate\n(4C)',a:250},{l:'Oxaloacetate\n(4C)',a:270},
+    ];
+    const stepCols=[[180,60,0],[200,100,0],[200,140,0],[0,160,60],[0,120,180],[0,80,200],[0,60,180],[160,0,120]];
+    // Draw circular arrows
+    for(let i=0;i<8;i++){
+      let a1=(steps[i].a)*sk.PI/180,a2=(steps[(i+1)%8].a)*sk.PI/180;
+      sk.noFill();sk.stroke(stepCols[i][0],stepCols[i][1],stepCols[i][2],150);sk.strokeWeight(3);
+      sk.arc(cx,cy,r*2,r*2,a1,a2);
+    }
+    // Draw nodes
+    steps.forEach((s,i)=>{
+      let a=s.a*sk.PI/180;
+      let x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+      sk.fill(stepCols[i][0],stepCols[i][1],stepCols[i][2],40);
+      sk.stroke(stepCols[i][0],stepCols[i][1],stepCols[i][2]);sk.strokeWeight(1.5);
+      sk.rect(x-32,y-16,64,32,5);sk.noStroke();
+      sk.fill(stepCols[i][0],stepCols[i][1],stepCols[i][2]);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      s.l.split('\n').forEach((l,li)=>sk.text(l,x,y+(li-s.l.split('\n').length/2+0.7)*10));sk.textStyle(sk.NORMAL);
+    });
+    // Outputs per turn
+    const outputs=[{l:'+2CO₂ released',x:cx+r+26,y:cy-70,col:[180,30,30]},{l:'+3NADH',x:cx+r+22,y:cy,col:[0,100,180]},{l:'+1FADH₂',x:cx+r+22,y:cy+24,col:[0,140,80]},{l:'+1 GTP (≈ATP)',x:cx+r+22,y:cy+48,col:[200,160,0]}];
+    outputs.forEach(o=>{
+      sk.fill(o.col[0],o.col[1],o.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(o.l,o.x,o.y);sk.textStyle(sk.NORMAL);
+    });
+    sk.fill(30);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.LEFT);sk.text('(per turn × 2 = per glucose)',cx+r+22,cy+68);sk.textStyle(sk.NORMAL);
+    // Link reaction box
+    let ly=430;
+    sk.fill(220,200,255,200);sk.stroke(80,0,160,100);sk.strokeWeight(1);sk.rect(14,ly,462,65,7);sk.noStroke();
+    sk.fill(60,0,140);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('LINK REACTION (pyruvate → Acetyl CoA):',20,ly+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Pyruvate (3C) → Acetyl CoA (2C) + CO₂ + NADH',20,ly+30);
+    sk.text('Happens TWICE per glucose (2 pyruvate) in mitochondrial matrix',20,ly+48);
+  }
+
+  function drawETC(){
+    sk.fill(0,80,140);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('ELECTRON TRANSPORT CHAIN (ETC) — inner mitochondrial membrane',248,22);sk.textStyle(sk.NORMAL);
+    // Membrane
+    let my=200,mw=440,mh=14;
+    sk.fill(180,220,255,200);sk.stroke(0,80,180);sk.strokeWeight(2);sk.rect(14,my,mw,mh,3);
+    sk.noStroke();sk.fill(0,80,180);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Inner mitochondrial membrane',14,my-6);sk.textStyle(sk.NORMAL);
+    // Protein complexes
+    const complexes=[{n:'Complex I',x:70,y:my,col:[200,80,0]},{n:'Complex II',x:160,y:my,col:[180,100,0]},{n:'Complex III',x:250,y:my,col:[0,100,200]},{n:'Complex IV',x:340,y:my,col:[0,140,60]},{n:'ATP\nSynthase',x:420,y:my,col:[200,160,0]}];
+    complexes.forEach(c=>{
+      sk.fill(c.col[0],c.col[1],c.col[2],60);sk.stroke(c.col[0],c.col[1],c.col[2]);sk.strokeWeight(2);
+      sk.rect(c.x-28,c.y-20,56,mh+40,5);sk.noStroke();
+      sk.fill(c.col[0],c.col[1],c.col[2]);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      c.n.split('\n').forEach((l,li)=>sk.text(l,c.x,c.y+li*10+4));sk.textStyle(sk.NORMAL);
+    });
+    // NADH → electrons flowing
+    let eY=my-35;
+    for(let i=0;i<4;i++){
+      let t2=(tick*0.4+i*0.25)%1;
+      let ex=70+t2*(340-70);
+      sk.fill(0,80,200,220);sk.noStroke();sk.ellipse(ex,eY,12);
+      sk.fill(0,60,160);sk.textSize(7);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('e⁻',ex,eY+3);sk.textStyle(sk.NORMAL);
+    }
+    sk.fill(30);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.LEFT);sk.text('Electrons from NADH/FADH₂ flowing →',14,eY-10);sk.textStyle(sk.NORMAL);
+    // H+ pumping (show arrows upward from membrane)
+    for(let i=0;i<4;i++){
+      let hx=[70,160,250,340][i];
+      sk.stroke(200,80,30,180);sk.strokeWeight(2);sk.line(hx,my,hx,my-50);
+      sk.noStroke();sk.fill(200,80,30,200);sk.triangle(hx-4,my-50,hx+4,my-50,hx,my-62);
+      sk.fill(200,60,0);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('H⁺',hx,my-70);sk.textStyle(sk.NORMAL);
+    }
+    sk.fill(200,60,0);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('H⁺ pumped into intermembrane space → flows back through ATP synthase',248,my-84);sk.textStyle(sk.NORMAL);
+    // O2 acceptance
+    sk.fill(200,30,30);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('O₂ + 4H⁺ + 4e⁻ → 2H₂O',350,my+50);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9);sk.text('(Final electron acceptor)',350,my+64);
+    // ATP yield table
+    let ty=300;
+    sk.fill(240,250,220,220);sk.stroke(30,100,30,80);sk.strokeWeight(1);sk.rect(14,ty,462,190,7);sk.noStroke();
+    sk.fill(20,80,20);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ATP YIELD SUMMARY (per glucose, aerobic):',20,ty+14);sk.textStyle(sk.NORMAL);
+    const rows=[['Stage','NADH','FADH₂','GTP','ATP'],['Glycolysis','2','0','0','2'],['Link Reaction','2','0','0','0'],['Krebs Cycle','6','2','2','2'],['ETC (NADH×2.5, FADH₂×1.5)','→20','→3','',''],['TOTAL','','','','~30–32']];
+    rows.forEach((r,i)=>{
+      if(i===0){sk.fill(20,80,20);sk.textStyle(sk.BOLD);}else if(i===rows.length-1){sk.fill(180,120,0);sk.textStyle(sk.BOLD);}else{sk.fill(30);sk.textStyle(sk.NORMAL);}
+      [0,1,2,3,4].forEach((col,ci)=>{
+        sk.textSize(9.5);sk.textAlign(ci===0?sk.LEFT:sk.CENTER);
+        sk.text(r[ci],ci===0?20:130+ci*70,ty+28+i*26);
+      });
+    });sk.textStyle(sk.NORMAL);
+    sk.fill(180,30,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Anaerobic respiration yields only 2 ATP (glycolysis only).',14,500);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[120,0,80];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Respiration Overview','Glycolysis','Krebs Cycle','Electron Transport Chain'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Aerobic Respiration Equation',b:'C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ~36 ATP\nGlucose + Oxygen → Carbon dioxide + Water + Energy'},{t:'Anaerobic Respiration',b:'Animals: Glucose → Lactic acid + 2 ATP\nPlants/yeast: Glucose → Ethanol + CO₂ + 2 ATP\n(Used when oxygen is unavailable)'},{t:'Mitochondria',b:'Site of aerobic respiration.\nInner membrane = site of ETC and ATP synthesis.\nMatrix = site of Krebs cycle and link reaction.'},{t:'Why so much ATP?',b:'Aerobic respiration is 18× more efficient than anaerobic.\nNADH and FADH₂ carry electrons to ETC.\nETC uses O₂ to release large amounts of energy.'}],
+      [{t:'What is Glycolysis?',b:'First stage of BOTH aerobic and anaerobic.\nOccurs in CYTOPLASM — no oxygen needed.\nBreaks 6-carbon glucose into two 3-carbon pyruvates.'},{t:'ATP Investments & Returns',b:'INVESTS 2 ATP to activate glucose.\nPRODUCES 4 ATP and 2 NADH.\nNET GAIN: 2 ATP + 2 NADH per glucose.'},{t:'NADH Carrier',b:'NADH = electron carrier.\nCarries high-energy electrons to the ETC.\nEach NADH yields ~2.5 ATP in ETC.'},{t:'Fate of Products',b:'Pyruvate: enters Krebs via link reaction (aerobic).\nPyruvate: becomes lactic acid (animal anaerobic).\nPyruvate: becomes ethanol + CO₂ (yeast/plant).'}],
+      [{t:'Krebs Cycle Location',b:'Occurs in mitochondrial MATRIX.\nRequires oxygen (aerobic only).\nCompletes breakdown of glucose carbon skeleton.'},{t:'Inputs per Turn',b:'1 Acetyl CoA (2C) + Oxaloacetate (4C)\n= Citrate (6C) formed.'},{t:'Outputs per Turn',b:'2CO₂ released.\n3 NADH, 1 FADH₂ (electron carriers).\n1 GTP (≡ 1 ATP).\n× 2 per glucose = 2 turns of cycle.'},{t:'NADH & FADH₂',b:'These are REDUCED coenzymes.\nThey carry electrons to the ETC.\nRe-oxidised in ETC to release energy for ATP.'}],
+      [{t:'What is the ETC?',b:'Series of protein complexes in inner mitochondrial membrane.\nElectrons from NADH/FADH₂ pass along chain.\nEnergy released used to pump H⁺ ions.'},{t:'Chemiosmosis',b:'H⁺ ions accumulate in intermembrane space.\nFlow back through ATP synthase (like a turbine).\nThis drives synthesis of ATP from ADP + Pi.'},{t:'Oxygen Role',b:'O₂ is the FINAL electron acceptor.\nCombines with electrons and H⁺ to form water.\nWithout O₂, chain stops → no aerobic ATP.'},{t:'ATP Yield from ETC',b:'Each NADH → ~2.5 ATP.\nEach FADH₂ → ~1.5 ATP.\n10 NADH + 2 FADH₂ = 25+3 = 28 ATP from ETC alone.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(respAdvMcq){ respAdvMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

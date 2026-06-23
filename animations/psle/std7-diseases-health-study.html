@@ -1,0 +1,488 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Diseases and Health — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Types of Disease',
+content:`<h2>Communicable vs Non-Communicable</h2>
+<p>Diseases fall into two main categories:</p>
+<p>🦠 <strong>Communicable (Infectious) diseases</strong> — caused by pathogens, can SPREAD from person to person:</p>
+<ul>
+<li>Bacterial: TB, cholera, food poisoning</li>
+<li>Viral: flu, HIV/AIDS, COVID-19, measles</li>
+<li>Parasitic: malaria (Plasmodium), tapeworm</li>
+<li>Fungal: ringworm, athlete's foot</li>
+</ul>
+<p>💔 <strong>Non-communicable diseases</strong> — CANNOT spread between people:</p>
+<ul>
+<li>Diabetes, cancer, heart disease</li>
+<li>Asthma, arthritis, depression</li>
+<li>Genetic conditions</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,spreading=false;
+  const people=Array.from({length:8},(_,i)=>({x:50+i*50,y:140,infected:i===0}));
+  p.draw=()=>{
+    p.background(245);
+    spreading=Math.floor(t/100)%2===0;
+    if(spreading&&t%20===0){
+      const infected=people.filter(p=>p.infected);
+      const healthy=people.filter(p=>!p.infected);
+      if(healthy.length>0){const target=healthy[Math.floor(Math.random()*healthy.length)];target.infected=true;}
+    }
+    if(!spreading)people.forEach(p=>{p.infected=false;});if(!spreading)people[0].infected=true;
+    people.forEach((person,i)=>{
+      p.fill(person.infected?'#ef5350':'#42a5f5');p.noStroke();p.ellipse(person.x,person.y,36,36);
+      p.fill(255);p.textSize(16);p.text(person.infected?'🤒':'😊',person.x,person.y);
+    });
+    p.fill('#333');p.noStroke();p.textSize(11);p.text(spreading?'Communicable disease SPREADING...':'Diseases that cannot spread',210,240);
+    t++;
+  };
+}},
+{title:'Pathogens and Transmission',
+content:`<h2>How Diseases Spread</h2>
+<p>A <strong>pathogen</strong> is any microorganism that causes disease. <strong>Transmission</strong> is how it spreads:</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#b71c1c;color:#fff;padding:5px">Route</th><th style="background:#b71c1c;color:#fff;padding:5px">Example</th><th style="background:#b71c1c;color:#fff;padding:5px">Disease</th></tr>
+<tr style="background:#ffebee"><td style="padding:5px">Airborne droplets</td><td style="padding:5px">Coughing, sneezing</td><td style="padding:5px">Flu, TB, COVID-19</td></tr>
+<tr><td style="padding:5px">Contaminated water</td><td style="padding:5px">Drinking dirty water</td><td style="padding:5px">Cholera, typhoid</td></tr>
+<tr style="background:#ffebee"><td style="padding:5px">Direct contact</td><td style="padding:5px">Skin touching</td><td style="padding:5px">Ringworm, STIs</td></tr>
+<tr><td style="padding:5px">Vector (mosquito)</td><td style="padding:5px">Mosquito bite</td><td style="padding:5px">Malaria, dengue</td></tr>
+<tr style="background:#ffebee"><td style="padding:5px">Blood/body fluids</td><td style="padding:5px">Sharing needles</td><td style="padding:5px">HIV, hepatitis B</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const routes=[{n:'Air 💨',c:'#1e88e5'},{n:'Water 💧',c:'#00897b'},{n:'Contact 👋',c:'#f4511e'},{n:'Vector 🦟',c:'#8e24aa'},{n:'Blood 🩸',c:'#e53935'}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%90===0)active=(active+1)%5;
+    p.fill('#b71c1c');p.noStroke();p.ellipse(210,135,70,70);p.fill(255);p.textSize(9);p.text('PATHOGEN\n🦠',210,130);
+    routes.forEach((r,i)=>{
+      const a=p.TWO_PI*(i/5)-p.HALF_PI;
+      const x=210+120*p.cos(a),y=135+100*p.sin(a);
+      const isA=active===i;
+      p.fill(isA?r.c:'#ddd');p.noStroke();p.ellipse(x,y,isA?90:72,isA?46:36);
+      p.fill(isA?255:'#555');p.textSize(isA?12:10);p.text(r.n,x,y);
+      p.stroke(isA?r.c:'#ccc');p.strokeWeight(isA?3:1);p.line(210,135,x,y);
+    });
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('5 routes of disease transmission',210,258);
+    t++;
+  };
+}},
+{title:"The Body's Defence System",
+content:`<h2>How We Fight Disease</h2>
+<p><strong>First Line of Defence</strong> — physical and chemical barriers:</p>
+<ul>
+<li>🛡️ <strong>Skin</strong> — physical barrier (unbroken skin blocks pathogens)</li>
+<li>💧 <strong>Mucus</strong> — traps pathogens in nose/throat</li>
+<li>🌊 <strong>Cilia</strong> — tiny hairs that sweep mucus and pathogens upward</li>
+<li>🍋 <strong>Stomach acid</strong> — kills pathogens in swallowed food</li>
+</ul>
+<p><strong>Second Line of Defence</strong> — immune system:</p>
+<ul>
+<li>🔴 <strong>Phagocytes</strong> (white blood cells) — engulf and digest pathogens</li>
+<li>💉 <strong>Lymphocytes</strong> — produce ANTIBODIES specific to each pathogen</li>
+<li>🧠 <strong>Memory cells</strong> — remember pathogens for faster future response</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  const pathogens=Array.from({length:5},(_,i)=>({x:60+i*70,y:20,eaten:false,vy:1+Math.random()}));
+  const barriers=[{y:70,lbl:'Skin / Mucus / Cilia',stops:true},{y:140,lbl:'Stomach acid',stops:true},{y:210,lbl:'Phagocytes + Antibodies',stops:true}];
+  p.draw=()=>{
+    p.background(245);
+    barriers.forEach(b=>{p.fill('#fff176');p.stroke('#f57f17');p.strokeWeight(2);p.rect(30,b.y,360,22,4);p.noStroke();p.fill('#555');p.textSize(10);p.text(b.lbl,210,b.y+12);});
+    pathogens.forEach((pt,i)=>{
+      if(!pt.eaten){pt.y+=pt.vy;const hit=barriers.find(b=>pt.y>b.y&&pt.y<b.y+22);if(hit&&t%30===0){pt.eaten=true;}}
+      if(pt.eaten)return;
+      p.fill('#e53935');p.noStroke();p.ellipse(pt.x,pt.y,16,16);p.fill(255);p.textSize(9);p.text('🦠',pt.x,pt.y);
+      if(pt.y>260){pt.y=20;pt.eaten=false;}
+    });
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Pathogens stopped at each line of defence',210,258);
+    t++;
+  };
+}},
+{title:'Vaccines and Immunity',
+content:`<h2>Training the Immune System</h2>
+<p>A <strong>vaccine</strong> contains a weakened, killed, or part of a pathogen. It trains your immune system WITHOUT you getting ill.</p>
+<p><strong>How vaccines work:</strong></p>
+<ol>
+<li>🔬 Vaccine introduced (injection, drops)</li>
+<li>🤔 Immune system detects it and produces ANTIBODIES</li>
+<li>🧠 MEMORY CELLS form and remain for years</li>
+<li>🦠 If real pathogen arrives later → immune system responds FAST</li>
+<li>✅ Disease prevented before it takes hold</li>
+</ol>
+<p><strong>Herd immunity</strong>: when most of the population is vaccinated, the disease cannot spread widely — protecting even unvaccinated people (e.g., babies too young to vaccinate).</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  const wbc=Array.from({length:6},(_,i)=>({x:60+i*60,y:180,trained:false}));
+  let pathogen={x:210,y:20,speed:0.8,defeated:false};
+  p.draw=()=>{
+    p.background(245);
+    // step indicator
+    const step=Math.floor(t/80)%5;
+    const steps=['1. Vaccine injected','2. Antibodies formed','3. Memory cells created','4. Real pathogen arrives','5. Defeated quickly!'];
+    p.fill('#4caf50');p.noStroke();p.textSize(12);p.text(steps[step],210,40);
+    if(step>=1)wbc.forEach(w=>{w.trained=true;});
+    if(step>=3){pathogen.y+=pathogen.speed;if(pathogen.y>190)pathogen.defeated=true;}
+    if(step<3){pathogen.y=20;pathogen.defeated=false;}
+    // WBCs
+    wbc.forEach(w=>{
+      p.fill(w.trained?'#43a047':'#90caf9');p.noStroke();p.ellipse(w.x,w.y,40,40);
+      p.fill(255);p.textSize(w.trained?14:10);p.text(w.trained?'💪':'🟦',w.x,w.y);
+    });
+    // pathogen
+    if(!pathogen.defeated&&step>=3){p.fill('#e53935');p.noStroke();p.ellipse(pathogen.x,pathogen.y,22,22);p.fill(255);p.textSize(12);p.text('🦠',pathogen.x,pathogen.y);}
+    else if(pathogen.defeated){p.fill('#43a047');p.textSize(20);p.text('✅ Defeated!',210,150);}
+    t++;
+  };
+}},
+{title:'HIV/AIDS and Prevention',
+content:`<h2>Understanding HIV/AIDS</h2>
+<p><strong>HIV</strong> (Human Immunodeficiency Virus) attacks Helper T cells (CD4+ cells) — key immune cells. As CD4 count falls, the body cannot fight ordinary infections.</p>
+<p><strong>AIDS</strong> is the advanced stage — when the immune system is too weak to prevent serious "opportunistic" infections.</p>
+<p><strong>How HIV is transmitted:</strong></p>
+<ul>
+<li>🩸 Blood contact (sharing needles, transfusions)</li>
+<li>💧 Unprotected sexual contact</li>
+<li>🤱 Mother to child (pregnancy, birth, breastfeeding)</li>
+</ul>
+<p><strong>Prevention:</strong></p>
+<ul>
+<li>Abstinence or mutual faithfulness</li>
+<li>Condom use</li>
+<li>Never share needles</li>
+<li>Testing and ARV treatment (reduces viral load)</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,260);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const cd4=Math.max(5,50-Math.floor(t/8));
+    // CD4 cell bar
+    p.fill('#e3f2fd');p.stroke('#1565c0');p.strokeWeight(2);p.rect(60,80,300,30,6);
+    const barW=(cd4/50)*300;
+    p.fill(barW>150?'#43a047':'#e53935');p.noStroke();p.rect(60,80,barW,30,6);
+    p.fill(255);p.textSize(11);p.text('CD4 count: '+cd4+'%',210,98);
+    // immune status
+    const status=cd4>30?'Healthy immune system':cd4>15?'Weakened — HIV positive':'AIDS — very weak immunity';
+    const statusCol=cd4>30?'#43a047':cd4>15?'#f57f17':'#e53935';
+    p.fill(statusCol);p.noStroke();p.textSize(12);p.text(status,210,150);
+    // HIV particle
+    if(t>50){
+      const hx=100+Math.sin(t*0.06)*60;
+      p.fill('#e53935');p.noStroke();p.ellipse(hx,180,24,24);p.fill(255);p.textSize(10);p.text('HIV',hx,180);
+    }
+    p.fill('#333');p.textSize(10);p.text('HIV reduces CD4 cells over time without treatment',210,240);
+    if(t>400)t=0;t++;
+  };
+}},
+{q:'Disease Transmission Pathways',
+content:`<h3>Disease Transmission Pathways</h3><p>Pathogens can enter the body through five main routes. Knowing how a disease spreads is the first step in stopping it — we can block each pathway with the right prevention measure.</p><ul><li><strong>Airborne</strong> — TB, flu, and COVID spread through tiny droplets when an infected person coughs or sneezes</li><li><strong>Direct contact</strong> — touching an infected person or surface can transfer pathogens like ringworm</li><li><strong>Vector</strong> — mosquitoes carry malaria parasites and inject them when they bite</li><li><strong>Water/food</strong> — drinking dirty water spreads cholera and typhoid</li><li><strong>Blood/body fluids</strong> — sharing needles or unprotected contact spreads HIV and hepatitis B</li></ul>`,
+visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Disease Transmission Pathways</text>
+  <!-- Central pathogen -->
+  <circle cx="210" cy="130" r="32" fill="#c62828" stroke="#b71c1c" stroke-width="2.5"/>
+  <text x="210" y="126" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">PATHOGEN</text>
+  <text x="210" y="140" text-anchor="middle" font-size="11">🦠</text>
+  <!-- Route 1: Airborne (top-left) -->
+  <circle cx="68" cy="60" r="36" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="68" y="52" text-anchor="middle" font-size="16">💨</text>
+  <text x="68" y="67" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">AIRBORNE</text>
+  <text x="68" y="79" text-anchor="middle" font-size="8" fill="#333">Coughing/sneezing</text>
+  <text x="68" y="89" text-anchor="middle" font-size="8" fill="#555">TB, Flu, COVID</text>
+  <line x1="100" y1="78" x2="183" y2="110" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Route 2: Direct Contact (top-right) -->
+  <circle cx="352" cy="60" r="36" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+  <text x="352" y="52" text-anchor="middle" font-size="16">👋</text>
+  <text x="352" y="67" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">DIRECT</text>
+  <text x="352" y="79" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">CONTACT</text>
+  <text x="352" y="89" text-anchor="middle" font-size="8" fill="#555">Skin touching</text>
+  <line x1="322" y1="78" x2="237" y2="110" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Route 3: Vector (bottom-left) -->
+  <circle cx="68" cy="200" r="36" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="68" y="192" text-anchor="middle" font-size="16">🦟</text>
+  <text x="68" y="207" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">VECTOR</text>
+  <text x="68" y="219" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">(Mosquito)</text>
+  <text x="68" y="229" text-anchor="middle" font-size="8" fill="#555">Malaria, Dengue</text>
+  <line x1="100" y1="182" x2="183" y2="150" stroke="#7b1fa2" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Route 4: Contaminated Water (bottom-right) -->
+  <circle cx="352" cy="200" r="36" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="352" y="192" text-anchor="middle" font-size="16">💧</text>
+  <text x="352" y="207" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">WATER /</text>
+  <text x="352" y="219" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">FOOD</text>
+  <text x="352" y="229" text-anchor="middle" font-size="8" fill="#555">Cholera, Typhoid</text>
+  <line x1="322" y1="182" x2="237" y2="150" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Route 5: Blood (bottom centre) -->
+  <circle cx="210" cy="230" r="28" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+  <text x="210" y="224" text-anchor="middle" font-size="12">🩸</text>
+  <text x="210" y="238" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">BLOOD/FLUIDS</text>
+  <text x="210" y="250" text-anchor="middle" font-size="7" fill="#555">HIV, Hepatitis B</text>
+  <line x1="210" y1="202" x2="210" y2="163" stroke="#f9a825" stroke-width="2" marker-end="url(#arr)"/>
+</svg>`},
+{q:'Immune Response — Antigen to Antibody',
+content:`<h3>Immune Response: Antigen to Antibody</h3><p>When a pathogen enters your body, the immune system launches a targeted attack. White blood cells called lymphocytes recognise the pathogen's antigens and produce matching antibodies to neutralise it.</p><ul><li><strong>Antigens</strong> are proteins on the surface of the pathogen — they act like a fingerprint that identifies the invader</li><li><strong>Antibodies</strong> are Y-shaped proteins made by lymphocytes — each antibody fits one specific antigen like a lock and key</li><li><strong>Memory cells</strong> remain in your body after the infection clears, so the response is much faster if the same pathogen attacks again</li></ul>`,
+visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="265" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Immune Response: Antigen → Antibody</text>
+  <!-- Step 1: Pathogen enters -->
+  <rect x="10" y="28" width="90" height="60" fill="#fce4ec" stroke="#c62828" stroke-width="2" rx="6"/>
+  <text x="55" y="46" text-anchor="middle" font-size="20">🦠</text>
+  <text x="55" y="62" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">Pathogen</text>
+  <text x="55" y="74" text-anchor="middle" font-size="8" fill="#333">enters body</text>
+  <text x="55" y="84" text-anchor="middle" font-size="7" fill="#555">(has antigens)</text>
+  <line x1="102" y1="58" x2="128" y2="58" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="115" y="52" text-anchor="middle" font-size="8" fill="#2e7d32">Step 1</text>
+  <!-- Step 2: Lymphocyte detects -->
+  <rect x="130" y="28" width="90" height="60" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" rx="6"/>
+  <text x="175" y="46" text-anchor="middle" font-size="20">🔬</text>
+  <text x="175" y="62" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">Lymphocyte</text>
+  <text x="175" y="74" text-anchor="middle" font-size="8" fill="#333">detects antigen</text>
+  <text x="175" y="84" text-anchor="middle" font-size="7" fill="#555">WBC activated</text>
+  <line x1="222" y1="58" x2="248" y2="58" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="235" y="52" text-anchor="middle" font-size="8" fill="#2e7d32">Step 2</text>
+  <!-- Step 3: Antibody production -->
+  <rect x="250" y="28" width="90" height="60" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="295" y="46" text-anchor="middle" font-size="20">💉</text>
+  <text x="295" y="62" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Antibodies</text>
+  <text x="295" y="74" text-anchor="middle" font-size="8" fill="#333">produced</text>
+  <text x="295" y="84" text-anchor="middle" font-size="7" fill="#555">(specific to antigen)</text>
+  <!-- Antibody structure diagram -->
+  <rect x="20" y="102" width="380" height="72" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="118" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">How Antibodies Work:</text>
+  <!-- Antigen (pathogen surface) -->
+  <circle cx="100" cy="148" r="22" fill="#ffcdd2" stroke="#e53935" stroke-width="2"/>
+  <text x="100" y="145" text-anchor="middle" font-size="8" fill="#c62828">Antigen</text>
+  <text x="100" y="157" text-anchor="middle" font-size="8" fill="#c62828">(pathogen)</text>
+  <!-- Y-shaped antibody -->
+  <line x1="195" y1="160" x2="195" y2="130" stroke="#2e7d32" stroke-width="3"/>
+  <line x1="195" y1="130" x2="178" y2="115" stroke="#2e7d32" stroke-width="3"/>
+  <line x1="195" y1="130" x2="212" y2="115" stroke="#2e7d32" stroke-width="3"/>
+  <text x="195" y="170" text-anchor="middle" font-size="8" fill="#2e7d32">Antibody (Y-shape)</text>
+  <!-- Lock and key fit -->
+  <line x1="130" y1="148" x2="175" y2="148" stroke="#f9a825" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+  <text x="152" y="142" text-anchor="middle" font-size="8" fill="#f57f17">binds</text>
+  <!-- Neutralised pathogen -->
+  <circle cx="300" cy="148" r="22" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="300" y="145" text-anchor="middle" font-size="8" fill="#2e7d32">Pathogen</text>
+  <text x="300" y="157" text-anchor="middle" font-size="8" fill="#2e7d32">neutralised</text>
+  <line x1="220" y1="148" x2="276" y2="148" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Memory cells -->
+  <rect x="10" y="182" width="400" height="76" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="198" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Memory Cells — Long-term Protection</text>
+  <text x="210" y="213" text-anchor="middle" font-size="9" fill="#333">After infection, MEMORY CELLS remain in the body for years</text>
+  <text x="210" y="227" text-anchor="middle" font-size="9" fill="#333">If the SAME pathogen attacks again → immune system responds MUCH FASTER</text>
+  <text x="210" y="241" text-anchor="middle" font-size="9" fill="#2e7d32">→ Disease prevented or made much milder (IMMUNITY)</text>
+  <text x="210" y="254" text-anchor="middle" font-size="8" fill="#555">This is the basis of VACCINATION</text>
+</svg>`},
+{q:'Vaccination Mechanism',
+content:`<h3>How Vaccination Works</h3><p>A vaccine trains your immune system to recognise and fight a specific pathogen — without you ever becoming seriously ill. It gives you protection (immunity) before you are exposed to the real disease.</p><ul><li><strong>Step 1 — Vaccine injected:</strong> a weakened, killed, or partial form of the pathogen is introduced into the body</li><li><strong>Step 2 — Immune response:</strong> the body produces antibodies and memory cells just as it would for a real infection</li><li><strong>Step 3 — Protected:</strong> if the real pathogen enters later, memory cells respond immediately — the disease is defeated quickly</li><li><strong>Herd immunity:</strong> when most people are vaccinated, the pathogen cannot spread through the population, protecting even those who cannot be vaccinated</li></ul>`,
+visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">How Vaccination Works</text>
+  <!-- Step 1 -->
+  <rect x="10" y="28" width="86" height="80" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" rx="6"/>
+  <text x="53" y="46" text-anchor="middle" font-size="8" font-weight="bold" fill="#1565c0">1. VACCINE</text>
+  <text x="53" y="58" text-anchor="middle" font-size="16">💉</text>
+  <text x="53" y="76" text-anchor="middle" font-size="8" fill="#333">Weakened/dead</text>
+  <text x="53" y="87" text-anchor="middle" font-size="8" fill="#333">pathogen injected</text>
+  <text x="53" y="100" text-anchor="middle" font-size="8" fill="#555">or oral drops</text>
+  <line x1="98" y1="68" x2="116" y2="68" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 2 -->
+  <rect x="118" y="28" width="86" height="80" fill="#fff9c4" stroke="#f9a825" stroke-width="2" rx="6"/>
+  <text x="161" y="46" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">2. IMMUNE</text>
+  <text x="161" y="57" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">RESPONSE</text>
+  <text x="161" y="70" text-anchor="middle" font-size="16">🛡️</text>
+  <text x="161" y="85" text-anchor="middle" font-size="8" fill="#333">Antibodies made</text>
+  <text x="161" y="97" text-anchor="middle" font-size="8" fill="#333">Memory cells form</text>
+  <line x1="206" y1="68" x2="224" y2="68" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 3 -->
+  <rect x="226" y="28" width="86" height="80" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="269" y="46" text-anchor="middle" font-size="8" font-weight="bold" fill="#2e7d32">3. PROTECTED</text>
+  <text x="269" y="60" text-anchor="middle" font-size="16">🧠</text>
+  <text x="269" y="76" text-anchor="middle" font-size="8" fill="#333">Memory cells</text>
+  <text x="269" y="87" text-anchor="middle" font-size="8" fill="#333">remain for years</text>
+  <text x="269" y="100" text-anchor="middle" font-size="8" fill="#555">IMMUNE!</text>
+  <line x1="314" y1="68" x2="332" y2="68" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 4 -->
+  <rect x="334" y="28" width="76" height="80" fill="#fce4ec" stroke="#c62828" stroke-width="2" rx="6"/>
+  <text x="372" y="44" text-anchor="middle" font-size="8" font-weight="bold" fill="#c62828">4. REAL</text>
+  <text x="372" y="55" text-anchor="middle" font-size="8" font-weight="bold" fill="#c62828">PATHOGEN</text>
+  <text x="372" y="68" text-anchor="middle" font-size="16">🦠</text>
+  <text x="372" y="85" text-anchor="middle" font-size="8" fill="#c62828">Attacks → FAST</text>
+  <text x="372" y="97" text-anchor="middle" font-size="8" fill="#2e7d32">response!</text>
+  <text x="372" y="108" text-anchor="middle" font-size="8" fill="#2e7d32">✅ Defeated!</text>
+  <!-- Comparison graph -->
+  <rect x="10" y="118" width="400" height="100" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="134" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Antibody Response: Vaccinated vs Unvaccinated</text>
+  <!-- Y-axis -->
+  <line x1="40" y1="145" x2="40" y2="205" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="35" y="150" text-anchor="end" font-size="8" fill="#333">High</text>
+  <text x="35" y="200" text-anchor="end" font-size="8" fill="#333">Low</text>
+  <!-- X-axis -->
+  <line x1="40" y1="205" x2="390" y2="205" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="215" y="218" text-anchor="middle" font-size="8" fill="#333">Time after pathogen exposure →</text>
+  <!-- Unvaccinated (slow, weak) -->
+  <polyline points="40,203 120,198 180,175 230,165 280,185 340,198 390,202" fill="none" stroke="#e53935" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="350" y="173" font-size="8" fill="#e53935">Unvaccinated</text>
+  <text x="350" y="183" font-size="8" fill="#e53935">(slow, weak)</text>
+  <!-- Vaccinated (fast, strong) -->
+  <polyline points="40,203 80,190 110,158 130,148 160,155 210,175 280,195 390,202" fill="none" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="80" y="143" font-size="8" fill="#2e7d32">Vaccinated</text>
+  <text x="80" y="153" font-size="8" fill="#2e7d32">(fast, strong)</text>
+  <!-- Herd immunity -->
+  <rect x="10" y="226" width="400" height="38" fill="#2e7d32" rx="5"/>
+  <text x="210" y="240" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Herd Immunity: When most people are vaccinated,</text>
+  <text x="210" y="254" text-anchor="middle" font-size="9" fill="#c8e6c9">the disease cannot spread — protecting even unvaccinated people (babies, elderly)</text>
+</svg>`},
+{q:'Common Diseases Table — Malaria, Cholera, TB, HIV',
+content:`<h3>Common Diseases — Cause, Symptoms, Prevention</h3><p>Four major diseases affect people in Botswana and around the world. Each has a different type of pathogen, different symptoms, and different ways to prevent it. Remember: antibiotics treat bacteria only — they do NOT work on viruses.</p><ul><li><strong>Malaria</strong> — caused by the Plasmodium parasite spread by mosquitoes; prevented with nets and removing stagnant water</li><li><strong>Cholera</strong> — caused by Vibrio cholerae bacteria in dirty water; prevented by clean water and good sanitation</li><li><strong>TB (Tuberculosis)</strong> — caused by Mycobacterium tuberculosis spread through the air; BCG vaccine and completing treatment are key</li><li><strong>HIV/AIDS</strong> — caused by the HIV virus spread through blood and body fluids; prevented by safe behaviour and ARV drugs</li></ul>`,
+visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="280" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">Common Diseases — Cause, Symptoms, Prevention</text>
+  <!-- Header -->
+  <rect x="5" y="22" width="410" height="22" fill="#2e7d32" rx="3"/>
+  <text x="62" y="37" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Disease</text>
+  <text x="135" y="37" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Cause / Type</text>
+  <text x="225" y="37" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Main Symptoms</text>
+  <text x="335" y="37" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Prevention</text>
+  <!-- Malaria row -->
+  <rect x="5" y="44" width="410" height="50" fill="#fff9c4" rx="2"/>
+  <text x="30" y="58" font-size="14">🦟</text>
+  <text x="62" y="58" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Malaria</text>
+  <text x="62" y="70" text-anchor="middle" font-size="8" fill="#555">Parasitic</text>
+  <text x="135" y="55" text-anchor="middle" font-size="9" fill="#333">Plasmodium</text>
+  <text x="135" y="67" text-anchor="middle" font-size="9" fill="#333">(parasite)</text>
+  <text x="135" y="79" text-anchor="middle" font-size="8" fill="#555">via mosquito bite</text>
+  <text x="225" y="56" text-anchor="middle" font-size="9" fill="#333">Fever, chills, sweats</text>
+  <text x="225" y="68" text-anchor="middle" font-size="9" fill="#333">headache, vomiting</text>
+  <text x="225" y="80" text-anchor="middle" font-size="8" fill="#555">repeated attacks</text>
+  <text x="335" y="56" text-anchor="middle" font-size="8" fill="#333">Mosquito nets (ITN)</text>
+  <text x="335" y="68" text-anchor="middle" font-size="8" fill="#333">Drain stagnant water</text>
+  <text x="335" y="80" text-anchor="middle" font-size="8" fill="#333">Repellents, drugs</text>
+  <!-- Cholera row -->
+  <rect x="5" y="94" width="410" height="50" fill="#e3f2fd" rx="2"/>
+  <text x="30" y="108" font-size="14">💧</text>
+  <text x="62" y="108" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Cholera</text>
+  <text x="62" y="120" text-anchor="middle" font-size="8" fill="#555">Bacterial</text>
+  <text x="135" y="105" text-anchor="middle" font-size="9" fill="#333">Vibrio cholerae</text>
+  <text x="135" y="117" text-anchor="middle" font-size="9" fill="#333">(bacterium)</text>
+  <text x="135" y="129" text-anchor="middle" font-size="8" fill="#555">dirty water/food</text>
+  <text x="225" y="106" text-anchor="middle" font-size="9" fill="#333">Watery diarrhoea</text>
+  <text x="225" y="118" text-anchor="middle" font-size="9" fill="#333">vomiting, dehydration</text>
+  <text x="225" y="130" text-anchor="middle" font-size="8" fill="#555">can be fatal</text>
+  <text x="335" y="106" text-anchor="middle" font-size="8" fill="#333">Drink clean water</text>
+  <text x="335" y="118" text-anchor="middle" font-size="8" fill="#333">Proper sanitation</text>
+  <text x="335" y="130" text-anchor="middle" font-size="8" fill="#333">Oral rehydration</text>
+  <!-- TB row -->
+  <rect x="5" y="144" width="410" height="50" fill="#e8f5e9" rx="2"/>
+  <text x="30" y="158" font-size="14">😮‍💨</text>
+  <text x="62" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">TB</text>
+  <text x="62" y="170" text-anchor="middle" font-size="8" fill="#555">Bacterial</text>
+  <text x="135" y="155" text-anchor="middle" font-size="9" fill="#333">Mycobacterium</text>
+  <text x="135" y="167" text-anchor="middle" font-size="9" fill="#333">tuberculosis</text>
+  <text x="135" y="179" text-anchor="middle" font-size="8" fill="#555">airborne droplets</text>
+  <text x="225" y="156" text-anchor="middle" font-size="9" fill="#333">Persistent cough (blood)</text>
+  <text x="225" y="168" text-anchor="middle" font-size="9" fill="#333">weight loss, night sweats</text>
+  <text x="225" y="180" text-anchor="middle" font-size="8" fill="#555">lung damage</text>
+  <text x="335" y="156" text-anchor="middle" font-size="8" fill="#333">BCG vaccine</text>
+  <text x="335" y="168" text-anchor="middle" font-size="8" fill="#333">Good ventilation</text>
+  <text x="335" y="180" text-anchor="middle" font-size="8" fill="#333">Complete treatment</text>
+  <!-- HIV row -->
+  <rect x="5" y="194" width="410" height="50" fill="#fce4ec" rx="2"/>
+  <text x="30" y="208" font-size="14">🩸</text>
+  <text x="62" y="208" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">HIV/AIDS</text>
+  <text x="62" y="220" text-anchor="middle" font-size="8" fill="#555">Viral</text>
+  <text x="135" y="205" text-anchor="middle" font-size="9" fill="#333">HIV virus</text>
+  <text x="135" y="217" text-anchor="middle" font-size="9" fill="#333">(retrovirus)</text>
+  <text x="135" y="229" text-anchor="middle" font-size="8" fill="#555">blood/body fluids</text>
+  <text x="225" y="206" text-anchor="middle" font-size="9" fill="#333">Weakened immunity</text>
+  <text x="225" y="218" text-anchor="middle" font-size="9" fill="#333">frequent infections</text>
+  <text x="225" y="230" text-anchor="middle" font-size="8" fill="#555">→ AIDS (late stage)</text>
+  <text x="335" y="206" text-anchor="middle" font-size="8" fill="#333">Abstinence/faithfulness</text>
+  <text x="335" y="218" text-anchor="middle" font-size="8" fill="#333">Condoms, no needle</text>
+  <text x="335" y="230" text-anchor="middle" font-size="8" fill="#333">sharing, ARV drugs</text>
+  <!-- Dividers -->
+  <rect x="5" y="44" width="410" height="200" fill="none" stroke="#2e7d32" stroke-width="1.5" rx="2"/>
+  <line x1="107" y1="22" x2="107" y2="244" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="170" y1="22" x2="170" y2="244" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="283" y1="22" x2="283" y2="244" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="5" y1="94" x2="415" y2="94" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="5" y1="144" x2="415" y2="144" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="5" y1="194" x2="415" y2="194" stroke="#2e7d32" stroke-width="0.8"/>
+  <!-- Note -->
+  <rect x="5" y="249" width="410" height="25" fill="#2e7d32" rx="4"/>
+  <text x="210" y="266" text-anchor="middle" font-size="9" fill="#fff">Antibiotics treat bacterial diseases only — NOT viral (HIV, flu, COVID)</text>
+</svg>`},
+{q:'Healthy Lifestyle Factors',
+content:`<h3>Healthy Lifestyle Factors</h3><p>Good health is not just about avoiding disease — it means actively looking after your body and mind. Five key lifestyle factors work together to keep you healthy and strengthen your immune system.</p><ul><li><strong>Sleep</strong> — 8–10 hours each night allows your body to repair cells and strengthen immunity</li><li><strong>Diet</strong> — a balanced diet with fruits, vegetables, and protein gives your body the nutrients it needs</li><li><strong>Exercise</strong> — regular physical activity strengthens the heart, muscles, and bones and reduces stress</li><li><strong>Hygiene</strong> — washing hands and keeping clean prevents the spread of pathogens</li><li><strong>Avoid harmful substances</strong> — smoking, alcohol, and drugs damage organs and weaken the immune system</li></ul>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Healthy Lifestyle Factors</text>
+  <!-- Central "Healthy Life" -->
+  <circle cx="210" cy="128" r="38" fill="#2e7d32" stroke="#1b5e20" stroke-width="2.5"/>
+  <text x="210" y="124" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">HEALTHY</text>
+  <text x="210" y="138" text-anchor="middle" font-size="10" font-weight="bold" fill="#c8e6c9">LIFESTYLE</text>
+  <!-- Factor 1: Sleep -->
+  <circle cx="80" cy="55" r="38" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+  <text x="80" y="46" text-anchor="middle" font-size="22">😴</text>
+  <text x="80" y="64" text-anchor="middle" font-size="10" font-weight="bold" fill="#7b1fa2">SLEEP</text>
+  <text x="80" y="76" text-anchor="middle" font-size="8" fill="#333">8–10 hrs/night</text>
+  <text x="80" y="86" text-anchor="middle" font-size="8" fill="#555">Repairs body,</text>
+  <text x="80" y="96" text-anchor="middle" font-size="8" fill="#555">strengthens immunity</text>
+  <line x1="115" y1="75" x2="176" y2="103" stroke="#7b1fa2" stroke-width="1.5"/>
+  <!-- Factor 2: Diet -->
+  <circle cx="340" cy="55" r="38" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+  <text x="340" y="46" text-anchor="middle" font-size="22">🥦</text>
+  <text x="340" y="64" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">DIET</text>
+  <text x="340" y="76" text-anchor="middle" font-size="8" fill="#333">Balanced meals</text>
+  <text x="340" y="86" text-anchor="middle" font-size="8" fill="#555">Fruits, veg, protein</text>
+  <text x="340" y="96" text-anchor="middle" font-size="8" fill="#555">Less sugar and fat</text>
+  <line x1="305" y1="75" x2="244" y2="103" stroke="#f9a825" stroke-width="1.5"/>
+  <!-- Factor 3: Exercise -->
+  <circle cx="55" cy="190" r="38" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="55" y="181" text-anchor="middle" font-size="22">🏃</text>
+  <text x="55" y="199" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">EXERCISE</text>
+  <text x="55" y="211" text-anchor="middle" font-size="8" fill="#333">Regular activity</text>
+  <text x="55" y="221" text-anchor="middle" font-size="8" fill="#555">Strengthens heart,</text>
+  <text x="55" y="231" text-anchor="middle" font-size="8" fill="#555">muscles, bones</text>
+  <line x1="90" y1="172" x2="175" y2="150" stroke="#1565c0" stroke-width="1.5"/>
+  <!-- Factor 4: Hygiene -->
+  <circle cx="365" cy="190" r="38" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="365" y="181" text-anchor="middle" font-size="22">🧼</text>
+  <text x="365" y="199" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">HYGIENE</text>
+  <text x="365" y="211" text-anchor="middle" font-size="8" fill="#333">Wash hands, bathe</text>
+  <text x="365" y="221" text-anchor="middle" font-size="8" fill="#555">Prevents spread of</text>
+  <text x="365" y="231" text-anchor="middle" font-size="8" fill="#555">pathogens</text>
+  <line x1="330" y1="172" x2="245" y2="150" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Factor 5: Avoid harmful substances (label at bottom centre) -->
+  <rect x="140" y="174" width="140" height="38" fill="#fce4ec" stroke="#c62828" stroke-width="1.5" rx="6"/>
+  <text x="210" y="190" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">🚫 AVOID:</text>
+  <text x="210" y="203" text-anchor="middle" font-size="9" fill="#333">Smoking, alcohol, drugs</text>
+  <text x="210" y="215" text-anchor="middle" font-size="8" fill="#555">damage organs + immunity</text>
+  <!-- Bottom note -->
+  <rect x="5" y="244" width="410" height="14" fill="#2e7d32" rx="3"/>
+  <text x="210" y="255" text-anchor="middle" font-size="9" fill="#fff">All factors work TOGETHER to maintain good health and prevent disease</text>
+</svg>`},
+{title:'Mini-Quiz: Pathogens & Immunity',
+mcq:[
+  {q:'Which type of white blood cell ENGULFS and digests pathogens?',opts:['Lymphocytes','Red blood cells','Phagocytes','Platelets'],ans:2,exp:'PHAGOCYTES are white blood cells that engulf (ingest) and digest pathogens by PHAGOCYTOSIS. They form the body\'s second line of defence. LYMPHOCYTES produce antibodies. Red blood cells carry oxygen. Platelets clot blood.'},
+  {q:'Vaccines work by:',opts:['Killing all bacteria in the body','Introducing a weakened pathogen to stimulate antibody production','Providing ready-made antibiotics','Preventing all infections permanently'],ans:1,exp:'VACCINES contain weakened, killed, or parts of a pathogen. The immune system detects this and produces ANTIBODIES and MEMORY CELLS. When the real pathogen arrives later, the immune system responds RAPIDLY, preventing disease.'},
+]},
+{title:'Mini-Quiz: Antibiotics & Malaria',
+mcq:[
+  {q:'Why can\'t antibiotics be used to treat the flu?',opts:['Antibiotics are too expensive','Flu is caused by a VIRUS, and antibiotics only kill bacteria','Antibiotics cause side effects in the lungs','Antibiotics need to be injected only'],ans:1,exp:'ANTIBIOTICS kill or inhibit BACTERIA by interfering with bacterial cell walls, protein synthesis, or DNA. Viruses (like flu) don\'t have these structures — they hijack host cells. Antibiotics have NO EFFECT on viruses.'},
+  {q:'How can malaria be prevented? Choose the BEST answer.',opts:['By eating more fruit','Using mosquito nets, insect repellent, and removing stagnant water','By taking antibiotics daily','By avoiding all outdoor activity'],ans:1,exp:'Malaria prevention targets the MOSQUITO VECTOR: 1. Mosquito nets (especially insecticide-treated). 2. Insect repellent. 3. Drain or treat stagnant water (where mosquitoes breed). 4. Anti-malarial drugs (prophylaxis). Multiple methods together are most effective.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#b71c1c',dark:'#7f0000',light:'#ffebee',title:'Diseases & Health'});
+</script></body></html>

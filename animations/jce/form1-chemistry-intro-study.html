@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Introduction to Chemistry — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,12,20]))}
+
+const STEPS=[
+  {
+    title:'Matter, Elements & Compounds',
+    body:`<strong>Chemistry</strong> is the study of matter — what it is made of and how it changes.
+    <br><br>
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Element</strong> — pure substance made of ONE type of atom (e.g. oxygen O, carbon C)</li>
+      <li><strong>Compound</strong> — two or more elements CHEMICALLY combined in a fixed ratio (e.g. water H₂O)</li>
+      <li><strong>Mixture</strong> — two or more substances PHYSICALLY combined, not chemically (e.g. salt water)</li>
+    </ul>
+    <br>Key difference: compounds have NEW properties different from their elements; mixtures keep the properties of their components.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const labels=[
+        {n:'ELEMENT',sub:'One type\nof atom',c:[231,76,60],x:0.17,y:0.48,atoms:[{x:0,y:0}]},
+        {n:'COMPOUND',sub:'Two+ elements\nchemically joined',c:[52,152,219],x:0.5,y:0.48,atoms:[{x:-14,y:0},{x:14,y:0}]},
+        {n:'MIXTURE',sub:'Mixed, NOT\nchemically joined',c:[46,204,113],x:0.83,y:0.48,atoms:[{x:-18,y:-10,c:[231,76,60]},{x:8,y:12,c:[52,152,219]},{x:20,y:-14,c:[241,196,15]}]},
+      ];
+      labels.forEach((lv,i)=>{
+        const cx=lv.x*W,cy=lv.y*H;
+        // Box
+        sk.fill(...lv.c,20);sk.stroke(...lv.c,120);sk.strokeWeight(1.5);
+        sk.rect(cx-65,cy-70,130,140,10);
+        // Atoms
+        lv.atoms.forEach(a=>{
+          const ac=a.c||lv.c;
+          const pulse=1+Math.sin(t*1.4+i*1.2)*0.1;
+          sk.fill(...ac,200);sk.noStroke();sk.circle(cx+(a.x||0),cy-10+(a.y||0),22*pulse);
+          if(lv.atoms.length>1&&!a.c){
+            // Bond
+            sk.stroke(...lv.c,140);sk.strokeWeight(2);
+            sk.line(cx-6,cy-10,cx+6,cy-10);
+          }
+        });
+        if(lv.atoms.length===3){
+          // Mixture — no bonds
+        }else if(lv.atoms.length===2){
+          sk.stroke(...lv.c,160);sk.strokeWeight(2);sk.noFill();
+          sk.line(cx-4,cy-10,cx+4,cy-10);
+        }
+        sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(lv.n,cx,cy+30);
+        sk.textSize(8);sk.textStyle(sk.NORMAL);sk.text(lv.sub,cx,cy+50);
+      });
+    }
+  },
+  {
+    title:'Physical & Chemical Changes',
+    body:`<strong>Physical change</strong>: No new substance is formed. The change is reversible.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Melting ice → water (still H₂O)</li>
+      <li>Dissolving sugar in water</li>
+      <li>Cutting paper</li>
+    </ul>
+    <br>
+    <strong>Chemical change</strong>: A NEW substance is formed with different properties. Usually irreversible.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Burning wood → ash + gases</li>
+      <li>Iron rusting (Fe + O₂ → Fe₂O₃)</li>
+      <li>Cooking an egg</li>
+    </ul>
+    Signs of a chemical change: colour change, gas produced, precipitate formed, temperature change, light produced.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Physical change side (left) — ice melting
+      const melt=0.5+0.5*Math.sin(t*0.5);
+      sk.fill(150,220,255,200);sk.noStroke();
+      // Ice block fading into water
+      const iA=220*(1-melt*0.6);
+      sk.fill(150,220,255,iA);
+      sk.rect(W*0.08,H*0.35,80,70,6);
+      sk.fill(100,180,255,melt*120);
+      sk.ellipse(W*0.18,H*0.75,90,28);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Physical Change',W*0.2,H*0.15);
+      sk.textSize(8);sk.text('(Ice → Water)',W*0.2,H*0.88);
+      sk.fill(200,240,255,160);sk.textSize(8);sk.text('Same substance\n(H₂O)',W*0.2,H*0.27);
+      // Chemical change (right) — burning
+      const flames=t*2;
+      for(let i=0;i<8;i++){
+        const fx=W*0.68+Math.sin(flames*1.2+i*0.9)*14+(i%4)*16,fy=H*0.65-i*20;
+        const h=14+Math.sin(flames+i)*8;
+        sk.fill(255,100+i*20,0,180-i*14);sk.noStroke();sk.ellipse(fx,fy,h,h*2);
+      }
+      sk.fill(80,60,40,200);sk.noStroke();sk.rect(W*0.62,H*0.65,90,18,3);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Chemical Change',W*0.75,H*0.15);
+      sk.textSize(8);sk.text('(Wood → Ash)',W*0.75,H*0.88);
+      sk.fill(255,180,100,160);sk.textSize(8);sk.text('New substance\nformed!',W*0.75,H*0.27);
+      // Divider
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);sk.line(W/2,H*0.1,W/2,H*0.92);
+    }
+  },
+  {
+    title:'States of Matter',
+    body:`All matter exists in one of <strong>three states</strong>:
+    <br><br>
+    <table style="width:100%;border-collapse:collapse;font-size:.79rem;margin-top:4px">
+      <thead><tr style="background:#1a237e;color:#fff"><th style="padding:6px 8px;border:1px solid #333">State</th><th style="padding:6px 8px;border:1px solid #333">Shape</th><th style="padding:6px 8px;border:1px solid #333">Volume</th><th style="padding:6px 8px;border:1px solid #333">Particle motion</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:5px 8px;border:1px solid #333;font-weight:700">Solid</td><td style="padding:5px 8px;border:1px solid #333">Fixed</td><td style="padding:5px 8px;border:1px solid #333">Fixed</td><td style="padding:5px 8px;border:1px solid #333">Vibrate in place</td></tr>
+        <tr style="background:#1a1a30"><td style="padding:5px 8px;border:1px solid #333;font-weight:700">Liquid</td><td style="padding:5px 8px;border:1px solid #333">Variable</td><td style="padding:5px 8px;border:1px solid #333">Fixed</td><td style="padding:5px 8px;border:1px solid #333">Slide past each other</td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #333;font-weight:700">Gas</td><td style="padding:5px 8px;border:1px solid #333">Variable</td><td style="padding:5px 8px;border:1px solid #333">Variable</td><td style="padding:5px 8px;border:1px solid #333">Move freely, fast</td></tr>
+      </tbody>
+    </table>
+    <br>Changes: <strong>melting</strong> (solid→liquid), <strong>boiling/evaporation</strong> (liquid→gas), <strong>condensation</strong> (gas→liquid), <strong>freezing</strong> (liquid→solid), <strong>sublimation</strong> (solid→gas).`,
+    vars:{solidP:null,liquidP:null,gasP:null},
+    setup:(sk,state)=>{
+      const W=sk.width,H=sk.height;
+      state.solidP=Array.from({length:9},(_,i)=>({x:W*0.1+(i%3)*18,y:H*0.55+(Math.floor(i/3))*18,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2}));
+      state.liquidP=Array.from({length:9},(_,i)=>({x:W*0.43+Math.random()*60,y:H*0.42+Math.random()*60,vx:(Math.random()-0.5)*1.2,vy:(Math.random()-0.5)*1.2}));
+      state.gasP=Array.from({length:9},(_,i)=>({x:W*0.72+Math.random()*80,y:H*0.3+Math.random()*80,vx:(Math.random()-0.5)*2.5,vy:(Math.random()-0.5)*2.5}));
+    },
+    draw:(sk,state)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height;
+      // Labels
+      const cols=[[231,76,60],[52,152,219],[46,204,113]];
+      ['SOLID','LIQUID','GAS'].forEach((n,i)=>{
+        sk.fill(...cols[i]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(n,[W*0.15,W*0.5,W*0.8][i],H*0.18);
+      });
+      // Solid particles (tight grid, vibrate)
+      if(state.solidP)state.solidP.forEach(p=>{
+        p.x+=p.vx;p.vy*=-1;p.vx*=-1;
+        sk.fill(231,76,60,200);sk.noStroke();sk.circle(p.x,p.y,16);
+      });
+      // Box for solid
+      sk.stroke(231,76,60,80);sk.strokeWeight(1.5);sk.noFill();
+      sk.rect(W*0.05,H*0.44,90,70,4);
+      // Liquid
+      if(state.liquidP)state.liquidP.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;
+        const bx=W*0.38,by=H*0.38;
+        if(p.x<bx||p.x>bx+70){p.vx*=-1;p.x=sk.constrain(p.x,bx,bx+70);}
+        if(p.y<by||p.y>by+70){p.vy*=-1;p.y=sk.constrain(p.y,by,by+70);}
+        sk.fill(52,152,219,200);sk.noStroke();sk.circle(p.x,p.y,16);
+      });
+      sk.stroke(52,152,219,80);sk.strokeWeight(1.5);sk.noFill();
+      sk.rect(W*0.38,H*0.38,70,70,4);
+      // Gas
+      if(state.gasP)state.gasP.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;
+        const bx=W*0.66,by=H*0.25;
+        if(p.x<bx||p.x>bx+90){p.vx*=-1;p.x=sk.constrain(p.x,bx,bx+90);}
+        if(p.y<by||p.y>by+90){p.vy*=-1;p.y=sk.constrain(p.y,by,by+90);}
+        sk.fill(46,204,113,200);sk.noStroke();sk.circle(p.x,p.y,16);
+      });
+      sk.stroke(46,204,113,80);sk.strokeWeight(1.5);sk.noFill();
+      sk.rect(W*0.66,H*0.25,90,90,4);
+    }
+  },
+  {
+    title:'Laboratory Safety Symbols',
+    content:`<h3>Hazard Warning Symbols</h3><p>These symbols appear on chemical containers. You must recognise them and follow safety precautions before using any chemical in the lab.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#fff3e0" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Laboratory Safety Hazard Symbols</text>
+  <!-- 3x3 grid of symbols -->
+  <!-- FLAMMABLE (col1, row1) -->
+  <rect x="10" y="24" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <polygon points="59,30 54,50 64,44 59,62 64,48 54,54 59,30" fill="#f57f17"/>
+  <text x="59" y="74" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">FLAMMABLE</text>
+  <text x="59" y="83" text-anchor="middle" font-size="7" fill="#555">Keep away from flames</text>
+  <!-- CORROSIVE (col2, row1) -->
+  <rect x="151" y="24" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Dripping onto hand -->
+  <rect x="195" y="32" width="26" height="10" fill="#78909c" rx="2"/>
+  <line x1="200" y1="42" x2="196" y2="56" stroke="#f57f17" stroke-width="2"/>
+  <line x1="214" y1="42" x2="218" y2="56" stroke="#f57f17" stroke-width="2"/>
+  <path d="M190,56 Q196,50 210,56 Q218,62 224,56" fill="#f57f17" opacity="0.7"/>
+  <line x1="206" y1="42" x2="207" y2="52" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="210" y="74" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">CORROSIVE</text>
+  <text x="210" y="83" text-anchor="middle" font-size="7" fill="#555">Burns skin/surfaces</text>
+  <!-- TOXIC (col3, row1) -->
+  <rect x="292" y="24" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Skull and crossbones -->
+  <circle cx="351" cy="44" r="12" fill="#555"/>
+  <circle cx="346" cy="40" r="4" fill="#fff8e1"/>
+  <circle cx="356" cy="40" r="4" fill="#fff8e1"/>
+  <rect x="347" y="50" width="8" height="6" fill="#555"/>
+  <line x1="338" y1="55" x2="364" y2="62" stroke="#555" stroke-width="2.5"/>
+  <line x1="364" y1="55" x2="338" y2="62" stroke="#555" stroke-width="2.5"/>
+  <text x="351" y="74" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">TOXIC</text>
+  <text x="351" y="83" text-anchor="middle" font-size="7" fill="#555">Can cause death/illness</text>
+  <!-- OXIDISING (col1, row2) -->
+  <rect x="10" y="98" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <circle cx="59" cy="128" r="14" fill="none" stroke="#f57f17" stroke-width="2"/>
+  <polygon points="59,114 54,124 64,118 59,136 64,122 54,128 59,114" fill="#f57f17"/>
+  <text x="59" y="168" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">OXIDISING</text>
+  <text x="59" y="177" text-anchor="middle" font-size="7" fill="#555">Intensifies fire risk</text>
+  <!-- HARMFUL (col2, row2) -->
+  <rect x="151" y="98" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Exclamation mark -->
+  <rect x="206" y="112" width="8" height="28" fill="#e65100" rx="2"/>
+  <circle cx="210" cy="148" r="5" fill="#e65100"/>
+  <text x="210" y="168" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">HARMFUL</text>
+  <text x="210" y="177" text-anchor="middle" font-size="7" fill="#555">Health hazard; take care</text>
+  <!-- EXPLOSIVE (col3, row2) -->
+  <rect x="292" y="98" width="118" height="62" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Exploding circle -->
+  <circle cx="351" cy="128" r="12" fill="#ffb74d" stroke="#e65100" stroke-width="1.5"/>
+  <line x1="351" y1="110" x2="348" y2="116" stroke="#e65100" stroke-width="2"/>
+  <line x1="363" y1="118" x2="358" y2="122" stroke="#e65100" stroke-width="2"/>
+  <line x1="366" y1="130" x2="360" y2="130" stroke="#e65100" stroke-width="2"/>
+  <line x1="339" y1="118" x2="344" y2="122" stroke="#e65100" stroke-width="2"/>
+  <line x1="336" y1="130" x2="342" y2="130" stroke="#e65100" stroke-width="2"/>
+  <text x="351" y="168" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">EXPLOSIVE</text>
+  <text x="351" y="177" text-anchor="middle" font-size="7" fill="#555">May explode; handle with care</text>
+  <!-- IRRITANT (col1, row3) -->
+  <rect x="10" y="183" width="118" height="60" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <rect x="55" y="192" width="8" height="22" fill="#f9a825" rx="2"/>
+  <circle cx="59" cy="222" r="4" fill="#f9a825"/>
+  <text x="59" y="237" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">IRRITANT</text>
+  <!-- RADIOACTIVE (col2, row3) -->
+  <rect x="151" y="183" width="118" height="60" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Trefoil -->
+  <circle cx="210" cy="210" r="5" fill="#333"/>
+  <path d="M210,205 A12,12 0 0,1 221,212 L215,212 A6,6 0 0,0 210,209 Z" fill="#333"/>
+  <path d="M221,212 A12,12 0 0,1 210,224 L210,218 A6,6 0 0,0 216,213 Z" fill="#333"/>
+  <path d="M210,224 A12,12 0 0,1 199,212 L205,212 A6,6 0 0,0 210,218 Z" fill="#333"/>
+  <text x="210" y="237" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">RADIOACTIVE</text>
+  <!-- BIOHAZARD (col3, row3) -->
+  <rect x="292" y="183" width="118" height="60" fill="#fff8e1" stroke="#f57f17" stroke-width="2" rx="5"/>
+  <!-- Three-circle biohazard symbol simplified -->
+  <circle cx="351" cy="206" r="6" fill="none" stroke="#e65100" stroke-width="2"/>
+  <circle cx="344" cy="218" r="6" fill="none" stroke="#e65100" stroke-width="2"/>
+  <circle cx="358" cy="218" r="6" fill="none" stroke="#e65100" stroke-width="2"/>
+  <circle cx="351" cy="213" r="4" fill="#e65100"/>
+  <text x="351" y="237" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">BIOHAZARD</text>
+  <!-- Footer -->
+  <rect x="6" y="244" width="408" height="4" fill="#e65100" rx="2"/>
+</svg>`,
+  },
+  {
+    title:'Common Laboratory Apparatus',
+    content:`<h3>Apparatus — Know the Tool and Its Use</h3><p>Different apparatus are used for different purposes. Using the wrong equipment causes inaccuracy or accidents. Learn each by name, shape, and purpose.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#fff3e0" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Common Laboratory Apparatus</text>
+  <!-- 4 items top row, 4 items bottom row -->
+  <!-- BEAKER -->
+  <g transform="translate(28,28)">
+    <path d="M8,0 L8,52 Q8,60 16,60 L46,60 Q54,60 54,52 L54,0 Z" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+    <line x1="4" y1="4" x2="12" y2="4" stroke="#1565c0" stroke-width="2"/>
+    <path d="M8,35 L54,35" stroke="#b3d4f0" stroke-width="0.8"/>
+    <path d="M8,50 L54,50" stroke="#b3d4f0" stroke-width="0.8"/>
+    <text x="31" y="76" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Beaker</text>
+    <text x="31" y="86" text-anchor="middle" font-size="6.5" fill="#555">Heating / mixing</text>
+  </g>
+  <!-- CONICAL FLASK -->
+  <g transform="translate(118,28)">
+    <path d="M20,0 L20,22 L4,58 Q2,64 10,64 L54,64 Q62,64 60,58 L44,22 L44,0 Z" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="32" y="80" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Conical Flask</text>
+    <text x="32" y="90" text-anchor="middle" font-size="6.5" fill="#555">Reactions / titration</text>
+  </g>
+  <!-- MEASURING CYLINDER -->
+  <g transform="translate(218,22)">
+    <rect x="14" y="0" width="26" height="68" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="3"/>
+    <line x1="28" y1="2" x2="36" y2="2" stroke="#1565c0" stroke-width="1"/>
+    <line x1="28" y1="14" x2="36" y2="14" stroke="#1565c0" stroke-width="1"/>
+    <line x1="28" y1="26" x2="36" y2="26" stroke="#1565c0" stroke-width="1"/>
+    <line x1="28" y1="38" x2="36" y2="38" stroke="#1565c0" stroke-width="1"/>
+    <line x1="28" y1="50" x2="36" y2="50" stroke="#1565c0" stroke-width="1"/>
+    <text x="27" y="84" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Meas. Cylinder</text>
+    <text x="27" y="94" text-anchor="middle" font-size="6.5" fill="#555">Precise volume</text>
+  </g>
+  <!-- TEST TUBE -->
+  <g transform="translate(310,22)">
+    <path d="M14,0 L14,52 Q14,64 27,64 Q40,64 40,52 L40,0 Z" fill="#fce4ec" stroke="#c62828" stroke-width="1.5"/>
+    <text x="27" y="80" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Test Tube</text>
+    <text x="27" y="90" text-anchor="middle" font-size="6.5" fill="#555">Small reactions</text>
+  </g>
+  <!-- BUNSEN BURNER -->
+  <g transform="translate(18,138)">
+    <rect x="18" y="40" width="26" height="36" fill="#78909c" rx="3"/>
+    <rect x="10" y="70" width="42" height="8" fill="#546e7a" rx="2"/>
+    <rect x="6" y="74" width="50" height="6" fill="#37474f" rx="2"/>
+    <!-- Flame -->
+    <path d="M31,10 Q24,20 24,32 Q24,42 31,42 Q38,42 38,32 Q38,20 31,10 Z" fill="#ff8f00" opacity="0.85"/>
+    <path d="M31,18 Q27,26 27,35 Q27,40 31,40 Q35,40 35,35 Q35,26 31,18 Z" fill="#ffe57f"/>
+    <!-- Air hole -->
+    <rect x="22" y="52" width="8" height="6" fill="#263238" rx="1"/>
+    <text x="31" y="98" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Bunsen Burner</text>
+    <text x="31" y="108" text-anchor="middle" font-size="6.5" fill="#555">Heating</text>
+  </g>
+  <!-- TRIPOD + GAUZE -->
+  <g transform="translate(116,138)">
+    <!-- Tripod legs -->
+    <line x1="31" y1="28" x2="8" y2="68" stroke="#78909c" stroke-width="3"/>
+    <line x1="31" y1="28" x2="54" y2="68" stroke="#78909c" stroke-width="3"/>
+    <line x1="31" y1="28" x2="31" y2="68" stroke="#78909c" stroke-width="3"/>
+    <!-- Gauze -->
+    <rect x="8" y="24" width="46" height="8" fill="#aaa" stroke="#666" stroke-width="1" rx="1"/>
+    <line x1="16" y1="24" x2="16" y2="32" stroke="#666" stroke-width="0.8"/>
+    <line x1="24" y1="24" x2="24" y2="32" stroke="#666" stroke-width="0.8"/>
+    <line x1="32" y1="24" x2="32" y2="32" stroke="#666" stroke-width="0.8"/>
+    <line x1="40" y1="24" x2="40" y2="32" stroke="#666" stroke-width="0.8"/>
+    <line x1="8" y1="28" x2="54" y2="28" stroke="#666" stroke-width="0.8"/>
+    <text x="31" y="84" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Tripod + Gauze</text>
+    <text x="31" y="94" text-anchor="middle" font-size="6.5" fill="#555">Supports beaker over flame</text>
+  </g>
+  <!-- EVAPORATING DISH -->
+  <g transform="translate(218,148)">
+    <path d="M4,32 Q4,8 32,8 Q60,8 60,32 Z" fill="#fff9c4" stroke="#f57f17" stroke-width="1.5"/>
+    <line x1="4" y1="32" x2="60" y2="32" stroke="#f57f17" stroke-width="1.5"/>
+    <text x="32" y="50" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Evaporating Dish</text>
+    <text x="32" y="60" text-anchor="middle" font-size="6.5" fill="#555">Evaporation of solutions</text>
+  </g>
+  <!-- FILTER FUNNEL -->
+  <g transform="translate(316,138)">
+    <path d="M4,10 L58,10 L36,48 L36,72 L28,72 L28,48 Z" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="31" y="88" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e65100">Filter Funnel</text>
+    <text x="31" y="98" text-anchor="middle" font-size="6.5" fill="#555">Filtration of mixtures</text>
+  </g>
+</svg>`,
+  },
+  {
+    title:'Physical vs Chemical Changes — Comparison',
+    content:`<h3>How to Tell Physical from Chemical</h3><p>Physical changes are usually reversible — no new substance forms. Chemical changes form new substances with different properties and are usually irreversible.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#fff3e0" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Physical vs Chemical Changes</text>
+  <!-- PHYSICAL column -->
+  <rect x="6" y="22" width="196" height="196" fill="#e3f2fd" stroke="#1565c0" stroke-width="2" rx="6"/>
+  <text x="104" y="38" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">PHYSICAL CHANGE</text>
+  <text x="104" y="50" text-anchor="middle" font-size="8" fill="#0288d1">Reversible ↔ No new substance</text>
+  <!-- Physical examples -->
+  <text x="20" y="68" font-size="8.5" fill="#333">↔  Melting ice (ice → water → ice)</text>
+  <text x="20" y="84" font-size="8.5" fill="#333">↔  Dissolving sugar in water</text>
+  <text x="20" y="100" font-size="8.5" fill="#333">↔  Tearing paper</text>
+  <text x="20" y="116" font-size="8.5" fill="#333">↔  Boiling water</text>
+  <text x="20" y="132" font-size="8.5" fill="#333">↔  Bending a wire</text>
+  <!-- Physical clue box -->
+  <rect x="14" y="146" width="180" height="64" fill="#bbdefb" stroke="#1565c0" stroke-width="1" rx="4"/>
+  <text x="104" y="160" text-anchor="middle" font-size="8" font-weight="bold" fill="#1565c0">KEY CLUES (Physical):</text>
+  <text x="104" y="172" text-anchor="middle" font-size="7.5" fill="#333">Same substance, different form</text>
+  <text x="104" y="183" text-anchor="middle" font-size="7.5" fill="#333">Can be reversed</text>
+  <text x="104" y="194" text-anchor="middle" font-size="7.5" fill="#333">No energy change (usually)</text>
+  <text x="104" y="205" text-anchor="middle" font-size="7.5" fill="#333">No colour change / gas / precipitate</text>
+  <!-- CHEMICAL column -->
+  <rect x="218" y="22" width="196" height="196" fill="#fff3e0" stroke="#e65100" stroke-width="2" rx="6"/>
+  <text x="316" y="38" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">CHEMICAL CHANGE</text>
+  <text x="316" y="50" text-anchor="middle" font-size="8" fill="#e65100">Irreversible → New substance formed</text>
+  <!-- Chemical examples -->
+  <text x="228" y="68" font-size="8.5" fill="#333">→  Burning wood (→ ash + CO₂)</text>
+  <text x="228" y="84" font-size="8.5" fill="#333">→  Rusting iron (Fe + O₂ → Fe₂O₃)</text>
+  <text x="228" y="100" font-size="8.5" fill="#333">→  Cooking an egg</text>
+  <text x="228" y="116" font-size="8.5" fill="#333">→  Photosynthesis</text>
+  <text x="228" y="132" font-size="8.5" fill="#333">→  Acid + base neutralisation</text>
+  <!-- Chemical clue box -->
+  <rect x="226" y="146" width="180" height="64" fill="#ffe0b2" stroke="#e65100" stroke-width="1" rx="4"/>
+  <text x="316" y="160" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">KEY CLUES (Chemical):</text>
+  <text x="316" y="172" text-anchor="middle" font-size="7.5" fill="#333">Colour change</text>
+  <text x="316" y="183" text-anchor="middle" font-size="7.5" fill="#333">Gas produced (bubbles)</text>
+  <text x="316" y="194" text-anchor="middle" font-size="7.5" fill="#333">Heat/light given off or absorbed</text>
+  <text x="316" y="205" text-anchor="middle" font-size="7.5" fill="#333">Precipitate (solid) formed</text>
+  <!-- Divider label -->
+  <text x="210" y="228" text-anchor="middle" font-size="8" fill="#555">VS</text>
+  <line x1="6" y1="220" x2="196" y2="220" stroke="#1565c0" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="218" y1="220" x2="414" y2="220" stroke="#e65100" stroke-width="1" stroke-dasharray="3,2"/>
+</svg>`,
+  },
+  {
+    title:'Elements, Compounds and Mixtures',
+    content:`<h3>Particle Diagrams — Spot the Difference</h3><p>The arrangement and variety of particles tells you whether something is an element, compound, or mixture. Compounds have fixed ratios; mixtures have variable proportions.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#fff3e0" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Elements, Compounds &amp; Mixtures — Particle Diagrams</text>
+  <!-- ELEMENT box -->
+  <rect x="6" y="24" width="124" height="170" fill="#ffebee" stroke="#c62828" stroke-width="2" rx="6"/>
+  <text x="68" y="40" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">ELEMENT</text>
+  <text x="68" y="52" text-anchor="middle" font-size="7.5" fill="#555">One type of atom only</text>
+  <!-- Element particles (all same) -->
+  <circle cx="40" cy="85" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="40" y="90" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="72" cy="85" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="72" y="90" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="100" cy="85" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="100" y="90" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="40" cy="115" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="40" y="120" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="72" cy="115" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="72" y="120" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="100" cy="115" r="14" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="100" y="120" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <!-- Element example label -->
+  <rect x="14" y="136" width="106" height="48" fill="#ffcdd2" stroke="#e57373" stroke-width="1" rx="3"/>
+  <text x="67" y="150" text-anchor="middle" font-size="8" font-weight="bold" fill="#c62828">e.g. O₂ (oxygen)</text>
+  <text x="67" y="162" text-anchor="middle" font-size="7" fill="#555">All atoms identical</text>
+  <text x="67" y="173" text-anchor="middle" font-size="7" fill="#555">Cannot be split further</text>
+  <text x="67" y="184" text-anchor="middle" font-size="7" fill="#555">by chemical means</text>
+  <!-- COMPOUND box -->
+  <rect x="148" y="24" width="124" height="170" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="210" y="40" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">COMPOUND</text>
+  <text x="210" y="52" text-anchor="middle" font-size="7.5" fill="#555">Two+ elements chemically bonded</text>
+  <!-- H2O molecules (red O + 2 blue H) -->
+  <!-- Molecule 1 -->
+  <circle cx="190" cy="80" r="13" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="190" y="85" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="175" cy="96" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="175" y="100" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <circle cx="205" cy="96" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="205" y="100" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <line x1="183" y1="91" x2="179" y2="95" stroke="#555" stroke-width="1.5"/>
+  <line x1="197" y1="91" x2="201" y2="95" stroke="#555" stroke-width="1.5"/>
+  <!-- Molecule 2 -->
+  <circle cx="232" cy="80" r="13" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="232" y="85" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="217" cy="96" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="217" y="100" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <circle cx="247" cy="96" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="247" y="100" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <line x1="225" y1="91" x2="221" y2="95" stroke="#555" stroke-width="1.5"/>
+  <line x1="239" y1="91" x2="243" y2="95" stroke="#555" stroke-width="1.5"/>
+  <!-- Molecule 3 -->
+  <circle cx="210" cy="120" r="13" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="210" y="125" text-anchor="middle" font-size="8" fill="#fff">O</text>
+  <circle cx="196" cy="136" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="196" y="140" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <circle cx="224" cy="136" r="9" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="224" y="140" text-anchor="middle" font-size="7" fill="#fff">H</text>
+  <line x1="203" y1="131" x2="199" y2="135" stroke="#555" stroke-width="1.5"/>
+  <line x1="217" y1="131" x2="221" y2="135" stroke="#555" stroke-width="1.5"/>
+  <!-- Compound label -->
+  <rect x="156" y="150" width="108" height="36" fill="#c8e6c9" stroke="#81c784" stroke-width="1" rx="3"/>
+  <text x="210" y="163" text-anchor="middle" font-size="8" font-weight="bold" fill="#2e7d32">e.g. H₂O (water)</text>
+  <text x="210" y="176" text-anchor="middle" font-size="7" fill="#555">Fixed ratio 2H : 1O</text>
+  <!-- MIXTURE box -->
+  <rect x="290" y="24" width="124" height="170" fill="#fff9c4" stroke="#f57f17" stroke-width="2" rx="6"/>
+  <text x="352" y="40" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">MIXTURE</text>
+  <text x="352" y="52" text-anchor="middle" font-size="7.5" fill="#555">Two+ substances, NOT bonded</text>
+  <!-- Mixture particles (different colours, random) -->
+  <circle cx="310" cy="75" r="11" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+  <text x="310" y="79" text-anchor="middle" font-size="7" fill="#fff">Na</text>
+  <circle cx="345" cy="82" r="11" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="345" y="86" text-anchor="middle" font-size="7" fill="#fff">Cl</text>
+  <circle cx="378" cy="72" r="11" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+  <text x="378" y="76" text-anchor="middle" font-size="7" fill="#fff">Na</text>
+  <circle cx="320" cy="108" r="11" fill="#90caf9" stroke="#1565c0" stroke-width="1"/>
+  <text x="320" y="112" text-anchor="middle" font-size="7" fill="#fff">Cl</text>
+  <circle cx="358" cy="102" r="11" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <text x="358" y="106" text-anchor="middle" font-size="7" fill="#fff">H₂O</text>
+  <circle cx="302" cy="130" r="11" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <text x="302" y="134" text-anchor="middle" font-size="7" fill="#fff">H₂O</text>
+  <circle cx="375" cy="126" r="11" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+  <text x="375" y="130" text-anchor="middle" font-size="7" fill="#fff">Na</text>
+  <!-- Mixture label -->
+  <rect x="298" y="150" width="108" height="36" fill="#fff9c4" stroke="#f9a825" stroke-width="1" rx="3"/>
+  <text x="352" y="163" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">e.g. Salt water</text>
+  <text x="352" y="176" text-anchor="middle" font-size="7" fill="#555">Variable proportions</text>
+  <!-- Bottom key -->
+  <rect x="6" y="200" width="408" height="44" fill="#fff" stroke="#ccc" stroke-width="1" rx="4"/>
+  <text x="210" y="213" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">Key Rule: Compound vs Mixture</text>
+  <text x="210" y="225" text-anchor="middle" font-size="7.5" fill="#333">Compound: fixed ratio, new properties, chemically bonded — hard to separate</text>
+  <text x="210" y="237" text-anchor="middle" font-size="7.5" fill="#333">Mixture: variable proportions, keeps original properties — easily separated</text>
+</svg>`,
+  },
+  {
+    title:'Heating Safely — Bunsen Burner and Lab Rules',
+    content:`<h3>The Bunsen Burner — Two Flames</h3><p>The Bunsen burner has two flame types controlled by the air hole. Always follow lab safety rules when heating substances.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#e65100"/>
+    </marker>
+  </defs>
+  <rect width="420" height="250" fill="#fff3e0" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Bunsen Burner — Parts, Flames &amp; Safety</text>
+  <!-- YELLOW FLAME burner (left) -->
+  <text x="90" y="30" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#f57f17">YELLOW / SAFETY FLAME</text>
+  <text x="90" y="42" text-anchor="middle" font-size="7.5" fill="#555">Air hole CLOSED — cool, sooty</text>
+  <!-- Yellow flame -->
+  <path d="M76,118 Q64,100 68,82 Q72,65 82,56 Q88,50 90,60 Q92,50 98,56 Q108,65 112,82 Q116,100 104,118 Z" fill="#ffd54f" stroke="#f57f17" stroke-width="1"/>
+  <path d="M82,118 Q76,104 78,92 Q82,80 90,74 Q98,80 102,92 Q104,104 98,118 Z" fill="#ffb74d"/>
+  <!-- Barrel left -->
+  <rect x="80" y="118" width="20" height="56" fill="#78909c" rx="2"/>
+  <!-- Air hole CLOSED -->
+  <rect x="84" y="142" width="12" height="8" fill="#37474f" rx="1"/>
+  <text x="74" y="150" font-size="6" fill="#37474f" text-anchor="end">Air hole</text>
+  <text x="74" y="157" font-size="6" fill="#c62828" text-anchor="end">CLOSED</text>
+  <!-- Gas inlet left -->
+  <rect x="74" y="170" width="32" height="6" fill="#546e7a" rx="2"/>
+  <text x="90" y="188" text-anchor="middle" font-size="6" fill="#555">Gas inlet</text>
+  <!-- Base left -->
+  <rect x="66" y="174" width="48" height="8" fill="#546e7a" rx="3"/>
+  <rect x="62" y="178" width="56" height="6" fill="#37474f" rx="3"/>
+  <!-- BLUE FLAME burner (right) -->
+  <text x="320" y="30" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1565c0">BLUE / ROARING FLAME</text>
+  <text x="320" y="42" text-anchor="middle" font-size="7.5" fill="#555">Air hole OPEN — hot, efficient</text>
+  <!-- Blue flame -->
+  <path d="M306,118 Q294,98 300,76 Q306,56 314,48 Q318,42 320,54 Q322,42 326,48 Q334,56 340,76 Q346,98 334,118 Z" fill="#42a5f5" stroke="#1565c0" stroke-width="1"/>
+  <path d="M312,118 Q306,102 310,86 Q314,72 320,66 Q326,72 330,86 Q334,102 328,118 Z" fill="#90caf9"/>
+  <path d="M316,118 Q313,108 316,98 Q318,90 320,88 Q322,90 324,98 Q327,108 324,118 Z" fill="#e3f2fd"/>
+  <!-- Barrel right -->
+  <rect x="310" y="118" width="20" height="56" fill="#78909c" rx="2"/>
+  <!-- Air hole OPEN -->
+  <rect x="314" y="142" width="12" height="8" fill="#263238" rx="1"/>
+  <line x1="316" y1="142" x2="316" y2="150" stroke="#42a5f5" stroke-width="1"/>
+  <line x1="320" y1="142" x2="320" y2="150" stroke="#42a5f5" stroke-width="1"/>
+  <line x1="324" y1="142" x2="324" y2="150" stroke="#42a5f5" stroke-width="1"/>
+  <text x="338" y="150" font-size="6" fill="#37474f">Air hole</text>
+  <text x="338" y="157" font-size="6" fill="#1b5e20">OPEN</text>
+  <!-- Gas inlet right -->
+  <rect x="304" y="170" width="32" height="6" fill="#546e7a" rx="2"/>
+  <!-- Base right -->
+  <rect x="296" y="174" width="48" height="8" fill="#546e7a" rx="3"/>
+  <rect x="292" y="178" width="56" height="6" fill="#37474f" rx="3"/>
+  <!-- Parts label arrow -->
+  <line x1="155" y1="138" x2="180" y2="138" stroke="#e65100" stroke-width="1" marker-end="url(#a)"/>
+  <text x="100" y="136" font-size="7" fill="#e65100">Barrel</text>
+  <line x1="155" y1="150" x2="180" y2="150" stroke="#e65100" stroke-width="1" marker-end="url(#a)"/>
+  <text x="100" y="148" font-size="7" fill="#e65100">Collar/Air hole</text>
+  <line x1="155" y1="178" x2="180" y2="178" stroke="#e65100" stroke-width="1" marker-end="url(#a)"/>
+  <text x="100" y="176" font-size="7" fill="#e65100">Gas inlet</text>
+  <!-- Comparison arrows (centre) -->
+  <text x="210" y="90" text-anchor="middle" font-size="8" font-weight="bold" fill="#555">Temp:</text>
+  <text x="210" y="102" text-anchor="middle" font-size="8" fill="#f57f17">~300°C</text>
+  <text x="210" y="112" text-anchor="middle" font-size="8" fill="#555">vs</text>
+  <text x="210" y="122" text-anchor="middle" font-size="8" fill="#1565c0">~500°C+</text>
+  <!-- Safety rules box -->
+  <rect x="6" y="194" width="408" height="50" fill="#fff8e1" stroke="#f57f17" stroke-width="1.5" rx="5"/>
+  <text x="210" y="207" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">Lab Safety Rules</text>
+  <text x="14" y="220" font-size="7.5" fill="#333">• Tie hair back • Wear safety goggles • Never point test tube at anyone</text>
+  <text x="14" y="232" font-size="7.5" fill="#333">• Heat from bottom of test tube • Use tongs to hold hot objects • Turn off burner when not in use</text>
+</svg>`,
+  },
+  {
+    title:'🎮 Check — Matter & Changes',
+    body:'Test your understanding of matter, elements, compounds, and changes.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is an element?',opts:['Two or more substances mixed together','A pure substance made of only one type of atom','A substance formed by chemical combination','A substance with variable composition'],ans:1,exp:'An element is a pure substance made of ONE type of atom. It cannot be broken down into simpler substances by chemical means. Examples: oxygen (O), iron (Fe), carbon (C).'},
+      {q:'Which of these is a chemical change?',opts:['Melting ice','Dissolving salt in water','Burning wood','Cutting a piece of paper'],ans:2,exp:'Burning wood is a CHEMICAL change — a new substance (ash, carbon dioxide) is formed with completely different properties. The process is largely irreversible.'},
+      {q:'What is the state of matter where particles move freely and quickly?',opts:['Solid','Liquid','Gas','Plasma'],ans:2,exp:'In the GAS state, particles have enough energy to move freely and quickly, spreading out to fill any container. They have very little attraction to each other.'},
+      {q:'What is the difference between a compound and a mixture?',opts:['Mixtures have more elements','Compounds are chemically joined in fixed ratios; mixtures are physically combined','Mixtures cannot be separated','Compounds can be separated by filtering'],ans:1,exp:'In a COMPOUND, elements are chemically combined in fixed ratios and have new properties. In a MIXTURE, substances are physically combined — they can be separated by physical methods and keep their own properties.'},
+    ]}
+  },
+  {
+    title:'Atoms, Molecules & Ions',
+    body:`<strong>Atom</strong> — the smallest particle of an element that retains its chemical properties.
+    <br><br>
+    <strong>Molecule</strong> — two or more atoms bonded together (can be same or different elements).
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>H₂ — two hydrogen atoms (element molecule)</li>
+      <li>H₂O — hydrogen + oxygen (compound molecule)</li>
+      <li>CO₂ — carbon + oxygen (compound molecule)</li>
+    </ul>
+    <br>
+    <strong>Ion</strong> — an atom or group of atoms that has gained or lost electrons, giving it a charge.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Na⁺ — sodium loses 1 electron → positive ion (cation)</li>
+      <li>Cl⁻ — chlorine gains 1 electron → negative ion (anion)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // H2O molecule
+      sk.fill(231,76,60,200);sk.noStroke();sk.circle(W*0.25,H*0.4,30);
+      sk.fill(255,150,100,200);sk.circle(W*0.15,H*0.58,20);
+      sk.fill(255,150,100,200);sk.circle(W*0.35,H*0.58,20);
+      sk.stroke(255,255,255,120);sk.strokeWeight(2);
+      sk.line(W*0.25,H*0.4+15,W*0.15,H*0.58-10);
+      sk.line(W*0.25,H*0.4+15,W*0.35,H*0.58-10);
+      sk.fill(231,76,60);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('O',W*0.25,H*0.4+1);
+      sk.fill(255,200,150);sk.textSize(7.5);sk.text('H',W*0.15,H*0.585);
+      sk.fill(255,200,150);sk.text('H',W*0.35,H*0.585);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.text('H₂O molecule',W*0.25,H*0.75);
+      // Na+ ion (left mid)
+      const pulse=1+Math.sin(t*1.5)*0.1;
+      sk.fill(241,196,15,200);sk.noStroke();sk.circle(W*0.6,H*0.4,34*pulse);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Na⁺',W*0.6,H*0.4);
+      sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);sk.text('Positive ion\n(lost electron)',W*0.6,H*0.63);
+      // Cl- ion
+      sk.fill(100,180,230,200);sk.noStroke();sk.circle(W*0.82,H*0.4,38*pulse);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Cl⁻',W*0.82,H*0.4);
+      sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);sk.text('Negative ion\n(gained electron)',W*0.82,H*0.63);
+    }
+  },
+  {
+    title:'The Periodic Table (Introduction)',
+    body:`The <strong>Periodic Table</strong> organises all elements by increasing atomic number.
+    <br><br>
+    Key features:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Period</strong> — horizontal row; period number = number of electron shells</li>
+      <li><strong>Group</strong> — vertical column; elements in the same group have similar chemical properties and the same number of outer electrons</li>
+      <li><strong>Metals</strong> — left and centre (good conductors, lustrous, malleable)</li>
+      <li><strong>Non-metals</strong> — top right (poor conductors, many are gases)</li>
+      <li><strong>Noble gases</strong> — Group 18, very unreactive, full outer electron shell</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Simple periodic table grid
+      const cols=18,rows=4;
+      const cw=W/(cols+1),ch=(H*0.65)/rows;
+      const metals=[[0,0],[0,1],[0,2],[0,3],[1,2],[1,3],[2,2],[2,3],[3,2],[3,3],[4,2],[4,3],[5,2],[5,3],[6,2],[6,3],[7,2],[7,3],[8,2],[8,3],[9,2],[9,3],[10,2],[10,3],[11,2],[11,3],[12,2],[12,3],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],[9,1],[10,1],[11,1],[12,1]];
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const x=cw*(c+0.5),y=H*0.15+ch*(r+0.5);
+          // Skip blanks for periods 1,2,3
+          if(r===0&&c>0&&c<17)continue;
+          if((r===1||r===2)&&c>1&&c<12)continue;
+          const isMetal=r>=2&&c>=2&&c<=11;
+          const isNoble=c===17;
+          const isNonMetal=!isMetal&&!isNoble&&c>12;
+          const pulse=1+Math.sin(t*0.8+c*0.3+r*0.5)*0.06;
+          let fc;
+          if(isNoble)fc=[155,89,182,160];
+          else if(isMetal)fc=[52,152,219,120];
+          else if(isNonMetal)fc=[46,204,113,120];
+          else fc=[52,152,219,80];
+          sk.fill(...fc);sk.noStroke();sk.rect(x-cw*0.45,y-ch*0.43,cw*0.88*pulse,ch*0.84*pulse,2);
+        }
+      }
+      // Legend
+      const legend=[{c:[52,152,219,180],n:'Metals'},{c:[46,204,113,180],n:'Non-metals'},{c:[155,89,182,180],n:'Noble gases'}];
+      legend.forEach((lv,i)=>{
+        sk.fill(...lv.c);sk.noStroke();sk.rect(W*0.07,H*0.82+i*18,14,12,2);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.LEFT);sk.text(lv.n,W*0.07+18,H*0.82+i*18+9);
+      });
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('The Periodic Table',W/2,H*0.08);
+    }
+  },
+  {
+    title:'🎮 Final — Chemistry Intro',
+    body:'Final challenge — atoms, ions, the periodic table, and key chemistry concepts.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which particle has a positive charge?',opts:['Electron','Neutron','Proton','Molecule'],ans:2,exp:'Protons (in the nucleus) have a positive charge. Electrons have a negative charge. Neutrons have no charge (neutral). The number of protons = atomic number.'},
+      {q:'Elements in the same GROUP of the periodic table have...',opts:['The same mass number','The same number of electron shells','Similar chemical properties and the same number of outer electrons','The same atomic number'],ans:2,exp:'Elements in the same GROUP share similar chemical properties because they have the same number of electrons in their outermost shell. This determines their reactivity patterns.'},
+      {q:'What is a molecule?',opts:['A single atom of any element','Two or more atoms bonded together','An atom that has gained or lost electrons','A substance that cannot be broken down'],ans:1,exp:'A molecule is two or more atoms bonded (joined) together. They can be atoms of the same element (like O₂) or different elements (like H₂O or CO₂).'},
+      {q:'Noble gases (Group 18) are very unreactive because...',opts:['They are metals','They have a full outer electron shell','They are very large atoms','They are radioactive'],ans:1,exp:'Noble gases (helium, neon, argon...) have a FULL outer electron shell (2 or 8 electrons). This makes them very stable and unreactive — they have no need to gain or lose electrons.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#e65100',dark:'#bf360c',light:'#fbe9e7',
+  title:'Introduction to Chemistry — Matter, Atoms & the Periodic Table',
+});
+</script></body></html>

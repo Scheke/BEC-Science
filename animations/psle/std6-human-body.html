@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Human Body — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#880e4f;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#f48fb1;color:#880e4f;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #f48fb1}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #880e4f;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#880e4f;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#880e4f;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%206">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 6 Science</span>
+  <h1>The Human Body</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Digestive System</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Respiratory System</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Circulatory System</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Blood Components</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Digestion Journey</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){
+  tab=n;
+  for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
+  if(n===4) resetGame();
+}
+
+const allBoxes=[
+  [
+    {t:'Digestive System', b:['Breaks food into molecules small enough to absorb into blood','Mechanical digestion: physically breaking food (chewing, churning)','Chemical digestion: enzymes breaking chemical bonds']},
+    {t:'Path of Digestion', b:['Mouth → Oesophagus → Stomach → Small intestine → Large intestine → Rectum → Anus','Mouth: teeth crush food; salivary amylase begins starch digestion','Stomach: hydrochloric acid (pH 2) + pepsin breaks down proteins','Small intestine: main absorption site; bile from liver emulsifies fats']},
+    {t:'Enzymes in Digestion', b:['Amylase (saliva & pancreas): starch → glucose','Pepsin (stomach): proteins → amino acids','Lipase (pancreas): fats → fatty acids + glycerol','Bile (liver/gall bladder): emulsifies fats (not an enzyme)']},
+    {t:'Absorption', b:['Small intestine walls have VILLI — finger-like projections','Villi increase surface area for faster absorption into blood','Nutrients enter the blood and travel to the liver first (portal vein)','Large intestine absorbs water; remaining waste becomes faeces']},
+  ],
+  [
+    {t:'Respiratory System', b:['Delivers oxygen to blood and removes carbon dioxide','Breathing (ventilation) ≠ respiration (cellular energy release)','Air path: Nose/Mouth → Trachea → Bronchi → Bronchioles → Alveoli']},
+    {t:'The Alveoli', b:['Tiny air sacs in the lungs — 700 million in both human lungs','Very thin walls (one cell thick) and good blood supply','O₂ diffuses from alveolus into blood; CO₂ diffuses out of blood','Large surface area + moist lining = efficient gas exchange']},
+    {t:'Breathing Mechanism', b:['Inhalation: diaphragm contracts (flattens), rib cage rises','Volume of chest increases → pressure drops → air rushes in','Exhalation: diaphragm relaxes, rib cage falls → air expelled','At rest: ~15–20 breaths per minute; during exercise: up to 50+']},
+    {t:'Key Comparisons', b:['Inhaled air: 21% O₂, 0.04% CO₂','Exhaled air: 16% O₂, 4% CO₂ (also warmer and wetter)','Oxygen is used in cellular respiration; CO₂ is the waste product']},
+  ],
+  [
+    {t:'Circulatory System', b:['Transports oxygen, nutrients, hormones and waste around the body','Heart pumps blood through two circuits simultaneously','Pulmonary circuit: heart ↔ lungs (to pick up O₂)','Systemic circuit: heart ↔ rest of body (to deliver O₂)']},
+    {t:'Blood Vessels', b:['Arteries: carry blood AWAY from heart; thick muscular walls; high pressure','Veins: carry blood TO heart; thin walls; have VALVES to prevent backflow','Capillaries: one cell thick; allow exchange of O₂/CO₂/nutrients with cells']},
+    {t:'The Heart', b:['4 chambers: right atrium, right ventricle, left atrium, left ventricle','Right side pumps deoxygenated blood to the lungs','Left side pumps oxygenated blood to the body','Heart valves prevent blood flowing backwards']},
+    {t:'Heart Rate', b:['Average resting heart rate: 60–100 beats per minute','Exercise increases heart rate to deliver more O₂ to muscles','Pulse can be felt where arteries are close to skin (wrist, neck)','One heartbeat = one pulse']},
+  ],
+  [
+    {t:'Components of Blood', b:['Blood is a tissue — it consists of plasma and cells','Plasma (55%): pale yellow liquid; carries dissolved nutrients, CO₂, hormones, antibodies','Red blood cells (44%): carry O₂ using haemoglobin protein','White blood cells + platelets (1%): fight infection; clot wounds']},
+    {t:'Red Blood Cells', b:['Biconcave disc shape — large surface area for O₂ uptake','No nucleus (more room for haemoglobin)','Haemoglobin + O₂ = oxyhaemoglobin (bright red) in lungs','Releases O₂ in body tissues, becomes deoxygenated (dark red)']},
+    {t:'White Blood Cells', b:['Larger than red blood cells; have a nucleus','Phagocytes: engulf and digest bacteria (phagocytosis)','Lymphocytes: produce ANTIBODIES specific to each pathogen','Immune memory: after infection, body responds faster next time']},
+    {t:'Platelets & Plasma', b:['Platelets: cell fragments that trigger blood clotting at wounds','Clot seals the cut and prevents entry of pathogens','Plasma carries: glucose, amino acids, urea, hormones, antibodies','Plasma is ~90% water']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Digestive System','Respiratory System','Circulatory System','Blood Components'];
+  let h=`<html><head><title>Human Body Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #880e4f;padding-bottom:8px;color:#880e4f}
+    h2{font-size:1rem;color:#ad1457;margin:22px 0 6px;border-left:4px solid #ad1457;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 6 Science — The Human Body</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── DIGESTION JOURNEY GAME ────────────────────────────────
+const ORGANS=[
+  {name:'Mouth',         x:230, y:80,  w:80, h:36, col:[255,160,130], desc:'Teeth chew food; amylase digests starch'},
+  {name:'Oesophagus',   x:230, y:128, w:40, h:40, col:[255,180,150], desc:'Muscular tube — pushes food to stomach (peristalsis)'},
+  {name:'Stomach',      x:210, y:178, w:90, h:56, col:[255,140,100], desc:'HCl + pepsin break down proteins; churns food to chyme'},
+  {name:'Small Intestine',x:190,y:248,w:120,h:50, col:[255,120,80],  desc:'Absorbs nutrients into blood via villi; enzymes finish digestion'},
+  {name:'Large Intestine',x:180,y:312,w:130,h:44, col:[210,100,70],  desc:'Absorbs water; compacts waste into faeces'},
+  {name:'Rectum/Anus',  x:220, y:368, w:80, h:30, col:[180,80,50],  desc:'Stores and expels faeces'},
+];
+
+let foodX, foodY, foodTarget, foodT, gamePhase, selectedOrgan, gameMsg;
+
+function resetGame(){
+  foodX=230+40; foodY=50; foodTarget=0; foodT=0; gamePhase='wait'; selectedOrgan=-1;
+  gameMsg='Click each organ in the correct order to guide the food through digestion!';
+}
+resetGame();
+
+new p5(sk=>{
+  const W=880, H=510;
+  let tick=0;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    tick++;
+    sk.background(255,248,250);
+    if(tab<4){ drawBodyAnim(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  function drawInfoPanel(){
+    const PX=498,PW=370,PAD=14;
+    sk.fill(255,240,245); sk.noStroke(); sk.rect(PX,0,PW,H);
+    let boxes=allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b, bh=16+lines.length*14+8;
+      sk.fill(136,14,79); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
+      y+=bh+8;
+    });
+  }
+
+  function drawBodyAnim(){
+    if(tab===0) drawDigestAnim();
+    else if(tab===1) drawLungsAnim();
+    else if(tab===2) drawHeartAnim();
+    else drawBloodAnim();
+  }
+
+  function drawDigestAnim(){
+    let t=(tick*0.008)%1;
+    // Draw each organ
+    ORGANS.forEach(org=>{
+      sk.fill(org.col[0],org.col[1],org.col[2]); sk.stroke(180,80,60); sk.strokeWeight(1.5);
+      sk.rect(org.x,org.y,org.w,org.h,8);
+      sk.fill(60); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(org.name, org.x+org.w+6, org.y+org.h/2+4);
+    });
+    // Food bolus
+    let paths=[...ORGANS.map((o,i)=>({x:o.x+o.w/2, y:o.y+o.h/2}))];
+    let seg=Math.floor(t*(ORGANS.length-1));
+    let segT=(t*(ORGANS.length-1))%1;
+    if(seg<paths.length-1){
+      let px=sk.lerp(paths[seg].x,paths[seg+1].x,segT);
+      let py=sk.lerp(paths[seg].y,paths[seg+1].y,segT);
+      sk.fill(255,220,100); sk.noStroke(); sk.ellipse(px,py,16,16);
+      sk.fill(60); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('food',px,py);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawLungsAnim(){
+    let breathT=Math.sin(tick*0.04)*0.5+0.5;
+    sk.fill(255,200,200); sk.stroke(180,80,80); sk.strokeWeight(1.5);
+    sk.ellipse(160,220,80+breathT*30,110+breathT*30);
+    sk.ellipse(310,220,80+breathT*30,110+breathT*30);
+    sk.fill(180,60,60); sk.ellipse(235,280,30,60);
+    // Trachea
+    sk.stroke(180,80,80); sk.strokeWeight(3);
+    sk.line(235,100,235,175); sk.line(235,175,160,195); sk.line(235,175,310,195);
+    sk.fill(255,80,80); sk.noStroke(); sk.ellipse(235,90,20,20);
+    sk.fill(60); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Trachea',290,165); sk.text('Right Lung',160,330); sk.text('Left Lung',310,330);
+    sk.text('Heart',235,310);
+    sk.textStyle(sk.NORMAL); sk.textSize(10);
+    sk.fill(0,100,0); sk.text('Inhale: diaphragm ↓ → lungs expand', 70, 380);
+    sk.fill(150,0,0); sk.text('Exhale: diaphragm ↑ → lungs contract', 70, 395);
+    sk.fill(60); sk.text('O₂ in (21%) ↔ CO₂ out (4%)', 70, 415);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawHeartAnim(){
+    let beat=Math.sin(tick*0.18)*0.12+0.88;
+    // Heart chambers
+    sk.fill(220,60,60,200); sk.stroke(160,20,20); sk.strokeWeight(1.5);
+    sk.rect(140,150,100,130,10); sk.text('',0,0);
+    sk.fill(220,100,100,200); sk.rect(250,150,100,130,10);
+    sk.fill(150,30,30,200); sk.rect(140,170,100,120,10);
+    sk.fill(200,80,80,200); sk.rect(250,170,100,120,10);
+    // Labels
+    sk.fill(255); sk.noStroke(); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+    sk.text('Right\nAtrium',190,175); sk.text('Left\nAtrium',300,175);
+    sk.text('Right\nVentricle',190,240); sk.text('Left\nVentricle',300,240);
+    // Arrows
+    sk.fill(100,180,255); sk.textSize(20); sk.text('↑',160,145); sk.text('↑',165,325);
+    sk.fill(255,100,100); sk.text('↑',320,145); sk.text('↓',315,325);
+    sk.fill(200,230,255); sk.textSize(10); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('← Deoxygenated blood from body',40,360);
+    sk.text('→ Oxygenated blood to body',40,376);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawBloodAnim(){
+    let cols=[[220,50,50,'Red Blood Cells\n(O₂ carrier)'],[220,220,220,'Plasma\n(~55% of blood)'],[200,220,255,'White Blood Cells\n(defence)'],[255,180,180,'Platelets\n(clotting)']];
+    let percs=[44,55,0.5,0.5];
+    let cx=160, cy=220, r=130;
+    let a=0;
+    cols.forEach((c,i)=>{
+      let sw=sk.TWO_PI*percs[i]/100;
+      sk.fill(c[0],c[1],c[2]); sk.stroke(255); sk.strokeWeight(1.5);
+      sk.arc(cx,cy,r*2,r*2,a,a+sw,sk.PIE);
+      let midA=a+sw/2;
+      sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(percs[i]+'%', cx+Math.cos(midA)*r*0.65, cy+Math.sin(midA)*r*0.65);
+      sk.fill(c[0]*0.7,c[1]*0.7,c[2]*0.7); sk.rect(320, 130+i*50, 18, 18, 3);
+      sk.fill(30); sk.textSize(11); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(c[3].replace('\n',' — '), 345, 139+i*50);
+      a+=sw;
+    });
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  // ── GAME (Tab 4) ─────────────────────────────────────
+  function drawGame(){
+    sk.background(255,248,250);
+    sk.fill(136,14,79); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Digestion Journey — click the organs IN ORDER to guide food through the body', W/2,22);
+
+    // Draw organs
+    ORGANS.forEach((org,i)=>{
+      let done = i<foodTarget;
+      let active = i===foodTarget;
+      let c=done?[200,255,200]:active?[255,220,100]:org.col;
+      sk.fill(c[0],c[1],c[2]); sk.stroke(done?[0,150,0]:active?[200,150,0]:org.col[0]*0.6,active?150:org.col[1]*0.6,0); sk.strokeWeight(2);
+      sk.rect(org.x,org.y,org.w,org.h,8);
+      sk.fill(done?[0,100,0]:30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text((done?'✓ ':active?'➤ ':'')+org.name, org.x+org.w+6, org.y+org.h/2+4);
+      // Step number
+      sk.fill(active?[200,140,0]:[150,150,150]); sk.textSize(9); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(i+1, org.x+org.w/2, org.y+org.h/2);
+    });
+
+    // Animated food
+    if(foodTarget<ORGANS.length){
+      let org=ORGANS[foodTarget];
+      sk.fill(255,200,50); sk.noStroke(); sk.ellipse(org.x+org.w/2, org.y+org.h/2, 18+Math.sin(tick*0.1)*4, 18+Math.sin(tick*0.1)*4);
+      sk.fill(60); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('food',org.x+org.w/2,org.y+org.h/2);
+    }
+
+    // Info box
+    sk.fill(255,240,245); sk.noStroke(); sk.rect(30,410,450,70,8);
+    sk.fill(136,14,79); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text(gameMsg, 42,432);
+    if(selectedOrgan>=0&&selectedOrgan<ORGANS.length){
+      sk.fill(60); sk.textStyle(sk.NORMAL); sk.textSize(10);
+      sk.text(ORGANS[selectedOrgan].desc,42,450);
+    }
+
+    // Win
+    if(foodTarget>=ORGANS.length){
+      sk.fill(0,150,0,220); sk.noStroke(); sk.rect(120,160,250,120,12);
+      sk.fill(255); sk.textSize(16); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('Digestion Complete!',245,200);
+      sk.textSize(11); sk.textStyle(sk.NORMAL);
+      sk.text('Food absorbed → nutrients in blood → liver!',245,225);
+      sk.fill(255,220,100); sk.rect(185,244,120,30,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',245,259);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX, my=sk.mouseY;
+    if(foodTarget>=ORGANS.length&&mx>185&&mx<305&&my>244&&my<274){ resetGame(); return; }
+    ORGANS.forEach((org,i)=>{
+      if(mx>org.x&&mx<org.x+org.w&&my>org.y&&my<org.y+org.h){
+        selectedOrgan=i;
+        if(i===foodTarget){
+          foodTarget++; gameMsg=i<ORGANS.length-1?'Correct! Next: '+ORGANS[Math.min(i+1,ORGANS.length-1)].name+'!':'All done!';
+        } else {
+          gameMsg='Wrong order! Click '+ORGANS[foodTarget].name+' (step '+(foodTarget+1)+') next.';
+        }
+      }
+    });
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

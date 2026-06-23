@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Electricity — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,12,24]))}
+
+const STEPS=[
+  {
+    title:'Electric Current, Voltage & Resistance',
+    body:`<strong>Current (I)</strong> — flow of charge (electrons). Measured in Amperes (A).
+    <br><br>
+    <strong>Voltage/Potential difference (V)</strong> — energy transferred per unit charge ("push" that drives current). Measured in Volts (V).
+    <br><br>
+    <strong>Resistance (R)</strong> — opposition to current flow. Measured in Ohms (Ω).
+    <br><br>
+    <strong>Ohm's Law: V = IR</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>V = voltage (V)</li>
+      <li>I = current (A)</li>
+      <li>R = resistance (Ω)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // V=IR triangle
+      const cx=W/2,cy=H*0.45;
+      const ts=80;
+      sk.fill(52,152,219,160);sk.noStroke();
+      sk.triangle(cx,cy-ts,cx-ts,cy+ts*0.6,cx+ts,cy+ts*0.6);
+      sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('V',cx,cy-ts*0.3);
+      sk.text('I',cx-ts*0.55,cy+ts*0.3);
+      sk.text('R',cx+ts*0.55,cy+ts*0.3);
+      sk.stroke(52,152,219);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(cx-ts,cy+ts*0.05,cx+ts,cy+ts*0.05);
+      sk.textStyle(sk.NORMAL);
+      // Flowing electrons
+      const eq=Math.floor(t*5)%10;
+      for(let i=0;i<8;i++){
+        const ex=((t*80+i*50)%(W+20))-10;
+        sk.fill(255,220,50,200);sk.noStroke();sk.circle(ex,H*0.82,9);
+        sk.fill(30);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('e⁻',ex,H*0.82);
+      }
+      sk.stroke(255,255,255,40);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(0,H*0.82,W,H*0.82);
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Current = flow of electrons →',W/2,H*0.9);
+      sk.fill(255,220,50);sk.textSize(12);sk.textStyle(sk.BOLD);
+      sk.text('V = IR',W/2,H*0.14);sk.textStyle(sk.NORMAL);
+    }
+  },
+  {
+    title:'Series & Parallel Circuits',
+    body:`<strong>Series circuit</strong>: components connected in a single loop.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Current is the SAME everywhere: I₁ = I₂ = I</li>
+      <li>Voltage divides: V = V₁ + V₂ + ...</li>
+      <li>Total resistance: R = R₁ + R₂ + ...</li>
+    </ul>
+    <strong>Parallel circuit</strong>: components connect between the same two points.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Voltage is the SAME across each branch: V₁ = V₂ = V</li>
+      <li>Current divides: I = I₁ + I₂ + ...</li>
+      <li>Total resistance: 1/R = 1/R₁ + 1/R₂ + ... (R decreases)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[12,14,26]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Series circuit (left)
+      sk.stroke(52,152,219,180);sk.strokeWeight(2);sk.noFill();
+      const s={x:W*0.06,y:H*0.26,w:W*0.36,h:H*0.42};
+      sk.rect(s.x,s.y,s.w,s.h,4);
+      // Components
+      [[s.x+s.w*0.25,s.y,'R₁'],[s.x+s.w*0.65,s.y,'R₂']].forEach(([x,y,l])=>{
+        sk.fill(231,76,60,180);sk.noStroke();sk.rect(x-18,y-10,36,20,4);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(l,x,y);
+      });
+      // Electron pulse
+      const sep=((t*50)%((s.w*2+s.h*2)));
+      const perim=s.w*2+s.h*2;
+      let ex=s.x,ey=s.y;
+      const sp=sep;
+      if(sp<s.w){ex=s.x+sp;ey=s.y;}
+      else if(sp<s.w+s.h){ex=s.x+s.w;ey=s.y+(sp-s.w);}
+      else if(sp<s.w*2+s.h){ex=s.x+s.w-(sp-s.w-s.h);ey=s.y+s.h;}
+      else{ex=s.x;ey=s.y+s.h-(sp-s.w*2-s.h);}
+      sk.fill(255,220,50,200);sk.noStroke();sk.circle(ex,ey,10);
+      sk.fill(52,152,219);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('SERIES',s.x+s.w/2,H*0.78);
+      sk.text('Same current everywhere',s.x+s.w/2,H*0.85);
+      // Parallel circuit (right)
+      sk.stroke(46,204,113,180);sk.strokeWeight(2);sk.noFill();
+      const p={x:W*0.55,y:H*0.22,w:W*0.38,h:H*0.5};
+      sk.line(p.x,p.y,p.x+p.w,p.y);sk.line(p.x,p.y+p.h,p.x+p.w,p.y+p.h);
+      sk.line(p.x,p.y,p.x,p.y+p.h);sk.line(p.x+p.w,p.y,p.x+p.w,p.y+p.h);
+      // Two branches
+      const bmx=p.x+p.w*0.5;
+      sk.line(bmx,p.y,bmx,p.y+p.h);
+      [[p.x+p.w*0.25,'R₁',46,204,113],[bmx+p.w*0.25,'R₂',241,196,15]].forEach(([x,l,...c])=>{
+        sk.fill(...c,180);sk.noStroke();sk.rect(x-15,p.y+p.h*0.4,30,20,4);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(l,x,p.y+p.h*0.5);
+      });
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('PARALLEL',p.x+p.w/2,H*0.84);
+      sk.text('Same voltage across branches',p.x+p.w/2,H*0.91);
+    }
+  },
+  {
+    title:'Electrical Power & Energy',
+    body:`<strong>Power (P)</strong> — rate of energy transfer. Measured in Watts (W).
+    <br><br>
+    Formulae:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>P = IV</strong> (power = current × voltage)</li>
+      <li><strong>P = I²R</strong> (substituting V = IR)</li>
+      <li><strong>P = V²/R</strong></li>
+    </ul>
+    <strong>Energy transferred:</strong> E = Pt = IVt
+    <br><br>
+    <strong>Kilowatt-hour (kWh)</strong> — unit used by electricity companies.
+    <br>1 kWh = energy used by a 1 kW device for 1 hour
+    <br><br>
+    Cost = power (kW) × time (h) × cost per unit`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Power meter
+      const P=Math.abs(Math.sin(t*0.5))*2400+100;
+      sk.fill(30,30,30,220);sk.noStroke();sk.rect(W*0.28,H*0.18,W*0.44,H*0.5,10);
+      // Gauge arc
+      sk.noFill();sk.stroke(255,255,255,40);sk.strokeWeight(3);
+      sk.arc(W*0.5,H*0.45,H*0.28*2,H*0.28*2,sk.PI,sk.TWO_PI);
+      const angle=sk.PI+sk.PI*(P/2500);
+      sk.stroke(255,220,50,220);sk.strokeWeight(3);
+      sk.arc(W*0.5,H*0.45,H*0.28*2,H*0.28*2,sk.PI,angle);
+      // Needle
+      const nx=W*0.5+H*0.22*Math.cos(angle),ny=H*0.45+H*0.22*Math.sin(angle);
+      sk.stroke(231,76,60,220);sk.strokeWeight(2);
+      sk.line(W*0.5,H*0.45,nx,ny);
+      sk.fill(231,76,60);sk.noStroke();sk.circle(W*0.5,H*0.45,10);
+      // Value
+      sk.fill(255,220,50);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(Math.round(P)+' W',W*0.5,H*0.52);sk.textStyle(sk.NORMAL);
+      // Labels
+      sk.fill(255,255,255,80);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('0',W*0.3,H*0.48);sk.text('2500',W*0.7,H*0.48);
+      // Formulae
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);
+      sk.text('P = IV  |  P = I²R  |  P = V²/R',W/2,H*0.82);
+      sk.textStyle(sk.NORMAL);sk.fill(255,255,255,80);sk.textSize(9);
+      sk.text('E = Pt = IVt',W/2,H*0.9);
+    }
+  },
+  {
+    title:'🎮 Check — Circuits & Power',
+    body:'Test your understanding of Ohm\'s Law, circuits, and electrical power.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'A bulb has resistance 10 Ω and a current of 0.5 A flows through it. What is the voltage across it?',opts:['20 V','5 V','0.05 V','2 V'],ans:1,exp:'V = IR = 0.5 × 10 = 5 V.'},
+      {q:'In a PARALLEL circuit, which quantity is the same across all branches?',opts:['Current','Resistance','Voltage','Power'],ans:2,exp:'In a parallel circuit, each branch is connected directly across the same two points — so voltage is the SAME across all branches.'},
+      {q:'Three 6 Ω resistors are connected in parallel. The total resistance is:',opts:['18 Ω','6 Ω','2 Ω','3 Ω'],ans:2,exp:'For n identical resistors in parallel: R = R₁/n = 6/3 = 2 Ω. (Or: 1/R = 1/6+1/6+1/6 = 3/6 → R = 2 Ω)'},
+      {q:'A 2 kW kettle runs for 0.5 hours. How many kWh does it use?',opts:['4 kWh','1 kWh','0.25 kWh','2.5 kWh'],ans:1,exp:'E = P × t = 2 × 0.5 = 1 kWh. This is what electricity companies charge you for.'},
+    ]}
+  },
+  {
+    title:'Magnets & Electromagnetic Induction',
+    body:`A <strong>current-carrying conductor</strong> in a magnetic field experiences a force (the motor effect).
+    <br><br>
+    <strong>Fleming's Left-Hand Rule</strong> (motor effect):
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>thuMb → Motion (force)</li>
+      <li>First finger → Field</li>
+      <li>seCond finger → Current</li>
+    </ul>
+    <strong>Electromagnetic induction</strong>: Moving a conductor through a magnetic field induces a voltage (generator effect).
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Used in generators, dynamos</li>
+      <li>Faster movement or stronger magnet → bigger induced voltage</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[12,14,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Magnet poles
+      sk.fill(231,76,60,180);sk.noStroke();sk.rect(W*0.08,H*0.3,W*0.18,H*0.4,4);
+      sk.fill(52,152,219,180);sk.rect(W*0.74,H*0.3,W*0.18,H*0.4,4);
+      sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('N',W*0.17,H*0.5);sk.text('S',W*0.83,H*0.5);sk.textStyle(sk.NORMAL);
+      // Field lines (curved between poles)
+      for(let i=-2;i<=2;i++){
+        const fy=H*0.5+i*H*0.07;
+        sk.stroke(241,196,15,100);sk.strokeWeight(1.5);sk.noFill();
+        sk.beginShape();
+        sk.vertex(W*0.26,fy);
+        sk.bezierVertex(W*0.4,fy-i*10,W*0.6,fy-i*10,W*0.74,fy);
+        sk.endShape();
+        // Arrow on line
+        const px=W*0.5+Math.cos(t+i)*W*0.1;
+        const py=fy-i*(10*Math.abs(Math.sin(t)));
+        sk.fill(241,196,15,200);sk.noStroke();sk.circle(px,py,6);
+      }
+      // Wire
+      const wireY=H*0.5+Math.sin(t)*H*0.15;
+      sk.fill(200,150,50,220);sk.noStroke();sk.circle(W*0.5,wireY,14);
+      sk.stroke(200,150,50,200);sk.strokeWeight(2);
+      sk.line(W*0.5,wireY,W*0.5,wireY-H*0.18);
+      // Force arrow
+      sk.stroke(46,204,113,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.5+20,wireY,W*0.5+60,wireY);
+      sk.fill(46,204,113,200);sk.noStroke();
+      sk.triangle(W*0.5+60,wireY,W*0.5+50,wireY-5,W*0.5+50,wireY+5);
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Force (motor)',W*0.5+64,wireY+4);
+    }
+  },
+  {
+    title:'Safety & Domestic Electricity',
+    body:`UK/Botswana mains: <strong>230 V AC, 50 Hz</strong>
+    <br><br>
+    <strong>Three-pin plug wiring:</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Brown — Live (L)</strong>: carries the alternating current</li>
+      <li><strong>Blue — Neutral (N)</strong>: completes the circuit</li>
+      <li><strong>Green/Yellow — Earth (E)</strong>: safety wire, prevents electrocution</li>
+    </ul>
+    <strong>Fuse</strong>: thin wire that melts and breaks the circuit if current is too high, preventing fire.
+    <br><br>
+    <strong>Circuit breaker / RCD</strong>: modern alternative to fuse — can be reset after tripping.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Plug outline
+      sk.fill(60,60,70,200);sk.noStroke();
+      sk.beginShape();
+      sk.vertex(W*0.2,H*0.15);sk.vertex(W*0.8,H*0.15);
+      sk.vertex(W*0.85,H*0.7);sk.vertex(W*0.5,H*0.88);sk.vertex(W*0.15,H*0.7);
+      sk.endShape(sk.CLOSE);
+      // Three pins
+      const pins=[
+        {x:W*0.35,y:H*0.28,col:[100,180,100],label:'E'},
+        {x:W*0.5,y:H*0.45,col:[52,120,52],label:'E'},
+        {x:W*0.35,y:H*0.6,col:[52,100,200],label:'N'},
+        {x:W*0.65,y:H*0.6,col:[200,80,50],label:'L'},
+      ];
+      // Earth pin (top)
+      sk.fill(100,200,100,200);sk.noStroke();sk.rect(W*0.46,H*0.22,W*0.08,H*0.16,3);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('E',W*0.5,H*0.3);
+      // Neutral pin
+      sk.fill(52,152,219,200);sk.noStroke();sk.rect(W*0.26,H*0.5,W*0.08,H*0.16,3);
+      sk.fill(255);sk.text('N',W*0.3,H*0.58);
+      // Live pin
+      sk.fill(220,60,60,200);sk.noStroke();sk.rect(W*0.66,H*0.5,W*0.08,H*0.16,3);
+      sk.fill(255);sk.text('L',W*0.7,H*0.58);
+      // Wire colours
+      sk.fill(100,200,100);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('■ Green/Yellow — Earth (safety)',W*0.04,H*0.22);
+      sk.fill(52,152,219);sk.text('■ Blue — Neutral',W*0.04,H*0.32);
+      sk.fill(220,60,60);sk.text('■ Brown — Live',W*0.04,H*0.42);
+    }
+  },
+  {
+    q:'Series vs Parallel Circuits — Circuit Diagrams',
+    content:`<h3>Series vs Parallel Circuits</h3><p>Understanding the difference between series and parallel circuits is fundamental to electricity. The two configurations behave very differently with respect to current, voltage, and resistance — and this determines how components are wired in real-world devices such as household lighting and electronics.</p><ul><li><strong>Series:</strong> current is the same throughout; voltage divides; total resistance = R₁ + R₂; one break stops all components.</li><li><strong>Parallel:</strong> voltage is the same across all branches; current divides; total resistance decreases; each component operates independently.</li><li>Household circuits are wired in parallel so each appliance receives full mains voltage and can be switched independently.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="270" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Series vs Parallel Circuits</text>
+  <!-- SERIES circuit (top) -->
+  <rect x="10" y="25" width="400" height="110" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="42" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">SERIES Circuit</text>
+  <!-- Series circuit path: battery left, two resistors, bulb, back -->
+  <!-- Battery symbol -->
+  <line x1="40" y1="55" x2="40" y2="110" stroke="#1565c0" stroke-width="2"/>
+  <line x1="40" y1="55" x2="160" y2="55" stroke="#1565c0" stroke-width="2"/>
+  <line x1="160" y1="55" x2="280" y2="55" stroke="#1565c0" stroke-width="2"/>
+  <line x1="280" y1="55" x2="380" y2="55" stroke="#1565c0" stroke-width="2"/>
+  <line x1="380" y1="55" x2="380" y2="110" stroke="#1565c0" stroke-width="2"/>
+  <line x1="40" y1="110" x2="380" y2="110" stroke="#1565c0" stroke-width="2"/>
+  <!-- Battery (left side) -->
+  <line x1="30" y1="72" x2="50" y2="72" stroke="#1565c0" stroke-width="3"/>
+  <line x1="34" y1="79" x2="46" y2="79" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="40" y="95" text-anchor="middle" font-size="9" fill="#1565c0">Cell</text>
+  <!-- Resistor 1 -->
+  <rect x="95" y="47" width="40" height="16" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="115" y="59" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">R₁</text>
+  <!-- Resistor 2 -->
+  <rect x="215" y="47" width="40" height="16" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="235" y="59" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">R₂</text>
+  <!-- Bulb (circle) -->
+  <circle cx="340" cy="82" r="12" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+  <line x1="334" y1="76" x2="346" y2="88" stroke="#f9a825" stroke-width="1.5"/>
+  <line x1="346" y1="76" x2="334" y2="88" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="340" y="104" text-anchor="middle" font-size="8.5" fill="#f9a825">Bulb</text>
+  <!-- Current arrow -->
+  <line x1="80" y1="110" x2="108" y2="110" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="94" y="122" text-anchor="middle" font-size="8.5" fill="#283593">I same</text>
+  <text x="94" y="132" text-anchor="middle" font-size="8.5" fill="#283593">everywhere</text>
+  <!-- Properties -->
+  <text x="210" y="124" text-anchor="middle" font-size="8.5" fill="#333">I total = I₁ = I₂ &nbsp;|&nbsp; V total = V₁ + V₂ &nbsp;|&nbsp; R total = R₁ + R₂</text>
+  <!-- PARALLEL circuit (bottom) -->
+  <rect x="10" y="143" width="400" height="118" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="160" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">PARALLEL Circuit</text>
+  <!-- Parallel rails -->
+  <line x1="40" y1="175" x2="380" y2="175" stroke="#c62828" stroke-width="2"/>
+  <line x1="40" y1="245" x2="380" y2="245" stroke="#c62828" stroke-width="2"/>
+  <line x1="40" y1="175" x2="40" y2="245" stroke="#c62828" stroke-width="2"/>
+  <line x1="380" y1="175" x2="380" y2="245" stroke="#c62828" stroke-width="2"/>
+  <!-- Battery left -->
+  <line x1="30" y1="198" x2="50" y2="198" stroke="#c62828" stroke-width="3"/>
+  <line x1="34" y1="205" x2="46" y2="205" stroke="#c62828" stroke-width="1.5"/>
+  <text x="40" y="220" text-anchor="middle" font-size="8.5" fill="#c62828">Cell</text>
+  <!-- Branch dividers -->
+  <line x1="120" y1="175" x2="120" y2="245" stroke="#c62828" stroke-width="2"/>
+  <line x1="250" y1="175" x2="250" y2="245" stroke="#c62828" stroke-width="2"/>
+  <!-- Resistors in branches -->
+  <rect x="155" y="202" width="35" height="15" rx="3" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="172" y="214" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">R₁</text>
+  <rect x="285" y="202" width="35" height="15" rx="3" fill="#1565c0" stroke="#283593" stroke-width="1.5"/>
+  <text x="302" y="214" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">R₂</text>
+  <!-- Properties -->
+  <text x="210" y="254" text-anchor="middle" font-size="8.5" fill="#333">V total = V₁ = V₂ &nbsp;|&nbsp; I total = I₁ + I₂ &nbsp;|&nbsp; 1/R = 1/R₁ + 1/R₂</text>
+</svg>`
+  },
+  {
+    q:'Ohm\'s Law Triangle — V = IR',
+    content:`<h3>Ohm's Law Triangle — V = IR</h3><p>Ohm's Law states that the voltage across a conductor is directly proportional to the current through it, provided temperature remains constant. The triangle is a memory tool that allows quick rearrangement of the formula to find any one of the three quantities.</p><ul><li>Cover V to get V = I × R; cover I to get I = V ÷ R; cover R to get R = V ÷ I.</li><li>Voltage is measured in Volts (V), current in Amperes (A), and resistance in Ohms (Ω).</li><li>A component that obeys Ohm's Law (e.g. a resistor at constant temperature) is called an ohmic conductor.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">Ohm's Law — V = IR Triangle</text>
+  <!-- Triangle -->
+  <polygon points="210,42 80,185 340,185" fill="#c5cae9" stroke="#283593" stroke-width="2.5"/>
+  <!-- Dividing lines inside triangle -->
+  <line x1="210" y1="42" x2="210" y2="185" stroke="#283593" stroke-width="2"/>
+  <line x1="80" y1="185" x2="340" y2="185" stroke="#283593" stroke-width="2"/>
+  <!-- V at top -->
+  <text x="210" y="95" text-anchor="middle" font-size="28" font-weight="bold" fill="#c62828">V</text>
+  <text x="210" y="115" text-anchor="middle" font-size="11" fill="#c62828">Voltage (Volts)</text>
+  <!-- I bottom-left -->
+  <text x="148" y="170" text-anchor="middle" font-size="28" font-weight="bold" fill="#1565c0">I</text>
+  <text x="148" y="195" text-anchor="middle" font-size="11" fill="#1565c0">Current (A)</text>
+  <!-- R bottom-right -->
+  <text x="272" y="170" text-anchor="middle" font-size="28" font-weight="bold" fill="#2e7d32">R</text>
+  <text x="272" y="195" text-anchor="middle" font-size="11" fill="#2e7d32">Resistance (Ω)</text>
+  <!-- How to use instructions -->
+  <text x="210" y="214" text-anchor="middle" font-size="10" fill="#333">Cover the quantity you want to find:</text>
+  <!-- Three formula boxes -->
+  <rect x="18" y="222" width="118" height="32" rx="5" fill="#ffcdd2" stroke="#c62828" stroke-width="1.5"/>
+  <text x="77" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">V = I × R</text>
+  <text x="77" y="248" text-anchor="middle" font-size="9" fill="#333">Cover V → I × R</text>
+  <rect x="151" y="222" width="118" height="32" rx="5" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">I = V ÷ R</text>
+  <text x="210" y="248" text-anchor="middle" font-size="9" fill="#333">Cover I → V / R</text>
+  <rect x="284" y="222" width="118" height="32" rx="5" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="343" y="234" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">R = V ÷ I</text>
+  <text x="343" y="248" text-anchor="middle" font-size="9" fill="#333">Cover R → V / I</text>
+</svg>`
+  },
+  {
+    q:'Electric Field Lines Between Charges',
+    content:`<h3>Electric Field Lines Between Charges</h3><p>Electric field lines show the direction and relative strength of an electric field. A positive test charge placed in the field would move in the direction the field lines point. The pattern of field lines reveals whether charges attract or repel each other.</p><ul><li>Field lines always point FROM positive TO negative charge (the direction a positive test charge would move).</li><li>Closer field lines indicate a stronger electric field; lines never cross each other.</li><li>Opposite charges produce curved field lines between them (attraction); like charges produce lines that curve away from each other (repulsion).</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Electric Field Lines</text>
+  <!-- Panel 1: Opposite charges (attraction) -->
+  <rect x="10" y="26" width="190" height="160" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="105" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Opposite Charges (attract)</text>
+  <!-- + charge -->
+  <circle cx="52" cy="113" r="22" fill="#ef5350" stroke="#c62828" stroke-width="2"/>
+  <text x="52" y="120" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff">+</text>
+  <!-- - charge -->
+  <circle cx="155" cy="113" r="22" fill="#1565c0" stroke="#283593" stroke-width="2"/>
+  <text x="155" y="120" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff">−</text>
+  <!-- Field lines from + to - (straight middle) -->
+  <line x1="74" y1="113" x2="133" y2="113" stroke="#c62828" stroke-width="2" marker-end="url(#arrR)"/>
+  <!-- Curved field lines -->
+  <path d="M62,95 Q105,68 145,95" fill="none" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrR)"/>
+  <path d="M62,131 Q105,158 145,131" fill="none" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrR)"/>
+  <path d="M46,92 Q105,50 161,92" fill="none" stroke="#c62828" stroke-width="1.2" marker-end="url(#arrR)"/>
+  <path d="M46,134 Q105,176 161,134" fill="none" stroke="#c62828" stroke-width="1.2" marker-end="url(#arrR)"/>
+  <text x="105" y="175" text-anchor="middle" font-size="9" fill="#333">Lines go FROM + TO −</text>
+  <text x="105" y="187" text-anchor="middle" font-size="9" fill="#c62828">Charges attract each other</text>
+  <!-- Panel 2: Same charges (repulsion) -->
+  <rect x="215" y="26" width="195" height="160" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="312" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Same Charges (repel)</text>
+  <!-- + charge left -->
+  <circle cx="258" cy="113" r="22" fill="#ef5350" stroke="#c62828" stroke-width="2"/>
+  <text x="258" y="120" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff">+</text>
+  <!-- + charge right -->
+  <circle cx="362" cy="113" r="22" fill="#ef5350" stroke="#c62828" stroke-width="2"/>
+  <text x="362" y="120" text-anchor="middle" font-size="20" font-weight="bold" fill="#fff">+</text>
+  <!-- Field lines away from each charge (repulsion) -->
+  <line x1="236" y1="113" x2="225" y2="113" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrR)"/>
+  <line x1="384" y1="113" x2="395" y2="113" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrR)"/>
+  <!-- Lines diverging away -->
+  <path d="M244,97 Q230,78 222,65" fill="none" stroke="#c62828" stroke-width="1.3" marker-end="url(#arrR)"/>
+  <path d="M244,129 Q230,148 222,161" fill="none" stroke="#c62828" stroke-width="1.3" marker-end="url(#arrR)"/>
+  <path d="M376,97 Q390,78 398,65" fill="none" stroke="#c62828" stroke-width="1.3" marker-end="url(#arrR)"/>
+  <path d="M376,129 Q390,148 398,161" fill="none" stroke="#c62828" stroke-width="1.3" marker-end="url(#arrR)"/>
+  <!-- Neutral gap in middle -->
+  <text x="312" y="110" text-anchor="middle" font-size="8.5" fill="#7986cb">neutral</text>
+  <text x="312" y="122" text-anchor="middle" font-size="8.5" fill="#7986cb">point</text>
+  <text x="312" y="175" text-anchor="middle" font-size="9" fill="#333">Field lines go AWAY from each +</text>
+  <text x="312" y="187" text-anchor="middle" font-size="9" fill="#c62828">Charges repel each other</text>
+  <!-- Rules box -->
+  <rect x="10" y="193" width="400" height="60" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Electric Field Line Rules:</text>
+  <text x="210" y="225" text-anchor="middle" font-size="9.5" fill="#333">1. Lines go FROM positive TO negative charge.</text>
+  <text x="210" y="239" text-anchor="middle" font-size="9.5" fill="#333">2. Closer together = stronger field. &nbsp;3. Lines never cross.</text>
+  <text x="210" y="251" text-anchor="middle" font-size="9.5" fill="#333">4. Lines enter/leave charges at 90° to the surface.</text>
+</svg>`
+  },
+  {
+    q:'Power Formula Relationships — P = IV = I²R = V²/R',
+    content:`<h3>Electrical Power — Formula Web</h3><p>Electrical power is the rate at which energy is transferred by a circuit. Three equivalent formulae can be derived by combining P = IV with Ohm's Law (V = IR), allowing power to be calculated from any two known electrical quantities.</p><ul><li><strong>P = IV</strong> — the fundamental definition: power equals current times voltage.</li><li><strong>P = I²R</strong> — useful when current and resistance are known (substitute V = IR).</li><li><strong>P = V²/R</strong> — useful when voltage and resistance are known (substitute I = V/R).</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Electrical Power — Formula Web</text>
+  <!-- Central POWER node -->
+  <circle cx="210" cy="120" r="40" fill="#c5cae9" stroke="#283593" stroke-width="3"/>
+  <text x="210" y="112" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">POWER</text>
+  <text x="210" y="128" text-anchor="middle" font-size="11" font-weight="bold" fill="#283593">P (Watts)</text>
+  <text x="210" y="142" text-anchor="middle" font-size="10" fill="#333">= J/s</text>
+  <!-- P = IV node (top left) -->
+  <circle cx="90" cy="55" r="36" fill="#ffcdd2" stroke="#c62828" stroke-width="2"/>
+  <text x="90" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">P = IV</text>
+  <text x="90" y="63" text-anchor="middle" font-size="9.5" fill="#c62828">Power =</text>
+  <text x="90" y="75" text-anchor="middle" font-size="9.5" fill="#c62828">Current × Voltage</text>
+  <line x1="125" y1="72" x2="172" y2="96" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- P = I²R node (top right) -->
+  <circle cx="330" cy="55" r="36" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <text x="330" y="48" text-anchor="middle" font-size="12" font-weight="bold" fill="#1565c0">P = I²R</text>
+  <text x="330" y="63" text-anchor="middle" font-size="9.5" fill="#1565c0">Substitute</text>
+  <text x="330" y="75" text-anchor="middle" font-size="9.5" fill="#1565c0">V = IR into P=IV</text>
+  <line x1="295" y1="72" x2="248" y2="96" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- P = V²/R node (bottom) -->
+  <circle cx="210" cy="210" r="38" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="203" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">P = V²/R</text>
+  <text x="210" y="218" text-anchor="middle" font-size="9.5" fill="#2e7d32">Substitute</text>
+  <text x="210" y="230" text-anchor="middle" font-size="9.5" fill="#2e7d32">I = V/R into P=IV</text>
+  <line x1="210" y1="160" x2="210" y2="172" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Energy box -->
+  <rect x="10" y="148" width="110" height="56" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="65" y="166" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#e65100">Energy (E):</text>
+  <text x="65" y="180" text-anchor="middle" font-size="10" fill="#e65100">E = Pt</text>
+  <text x="65" y="193" text-anchor="middle" font-size="9.5" fill="#e65100">E = IVt (J)</text>
+  <line x1="120" y1="168" x2="170" y2="145" stroke="#f9a825" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- kWh box -->
+  <rect x="300" y="148" width="112" height="56" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+  <text x="356" y="166" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#7b1fa2">kWh (units):</text>
+  <text x="356" y="180" text-anchor="middle" font-size="10" fill="#7b1fa2">E = P(kW)×t(h)</text>
+  <text x="356" y="193" text-anchor="middle" font-size="9" fill="#7b1fa2">Cost = E × rate</text>
+  <line x1="300" y1="168" x2="250" y2="145" stroke="#7b1fa2" stroke-width="2" marker-end="url(#arr)"/>
+</svg>`
+  },
+  {
+    q:'Domestic Wiring — Live, Neutral &amp; Earth',
+    content:`<h3>Domestic Wiring — Three-Pin Plug</h3><p>A three-pin plug connects an appliance safely to the mains supply (230 V AC, 50 Hz in Botswana/UK). Each wire has a specific colour and function. The safety features — earth wire and fuse — work together to prevent electrocution and fire.</p><ul><li><strong>Brown (Live):</strong> carries the alternating current to the appliance — the dangerous wire.</li><li><strong>Blue (Neutral):</strong> completes the circuit back to the supply at near-zero voltage.</li><li><strong>Green/Yellow (Earth):</strong> safety wire connected to the metal casing; if the live wire touches the casing, current flows to earth, blowing the fuse and breaking the circuit.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Domestic Wiring — Three-Pin Plug</text>
+  <!-- Plug outline shape -->
+  <path d="M100,30 L320,30 L340,180 L210,220 L80,180 Z" fill="#e0e0e0" stroke="#283593" stroke-width="2.5"/>
+  <!-- Earth pin (top, longest) -->
+  <rect x="196" y="30" width="28" height="68" rx="4" fill="#4caf50" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="71" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">E</text>
+  <!-- Neutral pin (bottom left) -->
+  <rect x="118" y="108" width="26" height="56" rx="4" fill="#42a5f5" stroke="#1565c0" stroke-width="2"/>
+  <text x="131" y="142" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">N</text>
+  <!-- Live pin (bottom right) -->
+  <rect x="276" y="108" width="26" height="56" rx="4" fill="#ef5350" stroke="#c62828" stroke-width="2"/>
+  <text x="289" y="142" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">L</text>
+  <!-- Fuse symbol between pins -->
+  <rect x="188" y="132" width="44" height="18" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+  <text x="210" y="145" text-anchor="middle" font-size="9" fill="#e65100" font-weight="bold">FUSE</text>
+  <!-- Wire colour labels -->
+  <!-- Earth wire -->
+  <line x1="210" y1="98" x2="210" y2="128" stroke="#4caf50" stroke-width="3"/>
+  <line x1="340" y1="50" x2="260" y2="50" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="342" y="34" width="70" height="34" rx="4" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="377" y="48" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#2e7d32">EARTH</text>
+  <text x="377" y="62" text-anchor="middle" font-size="9" fill="#333">Green/Yellow</text>
+  <!-- Neutral wire -->
+  <line x1="131" y1="108" x2="131" y2="88" stroke="#42a5f5" stroke-width="3"/>
+  <line x1="22" y1="108" x2="120" y2="108" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="8" y="88" width="70" height="34" rx="4" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="43" y="102" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#1565c0">NEUTRAL</text>
+  <text x="43" y="116" text-anchor="middle" font-size="9" fill="#333">Blue</text>
+  <!-- Live wire -->
+  <line x1="289" y1="108" x2="289" y2="88" stroke="#ef5350" stroke-width="3"/>
+  <line x1="398" y1="108" x2="300" y2="108" stroke="#333" stroke-width="1" stroke-dasharray="3,2"/>
+  <rect x="342" y="88" width="70" height="34" rx="4" fill="#ffcdd2" stroke="#c62828" stroke-width="1.5"/>
+  <text x="377" y="102" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">LIVE</text>
+  <text x="377" y="116" text-anchor="middle" font-size="9" fill="#333">Brown</text>
+  <!-- Mains info -->
+  <text x="210" y="200" text-anchor="middle" font-size="9.5" fill="#283593" font-weight="bold">230 V AC, 50 Hz (Botswana/UK mains supply)</text>
+  <!-- Bottom summary -->
+  <rect x="10" y="228" width="400" height="32" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="243" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#c62828">LIVE (Brown)</text>
+  <text x="210" y="243" text-anchor="middle" font-size="9.5" fill="#c62828" dx="60"> carries the current</text>
+  <text x="210" y="255" text-anchor="middle" font-size="9.5" fill="#333">Fuse on LIVE wire | Earth prevents electrocution if casing becomes live</text>
+  <text x="50" y="243" text-anchor="middle" font-size="9.5" fill="#1565c0">Neutral (Blue)</text>
+  <text x="370" y="243" text-anchor="middle" font-size="9.5" fill="#2e7d32">Earth (G/Y)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Electricity & Magnetism',
+    body:'Apply your knowledge of circuits, power, and electromagnetic induction.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What colour wire is the LIVE wire in a 3-pin plug?',opts:['Blue','Green/Yellow','Brown','Red'],ans:2,exp:'Brown = Live (carries alternating current). Blue = Neutral. Green/Yellow = Earth (safety). Remember: "Brown is LIVE."'},
+      {q:'A fuse is designed to:',opts:['Increase the current','Melt if the current gets too high, breaking the circuit','Increase resistance permanently','Store electrical energy'],ans:1,exp:'A fuse contains a thin wire that melts if current EXCEEDS its rating. This breaks the circuit, preventing overheating and fire.'},
+      {q:'What does electromagnetic induction produce?',opts:['A magnetic field only','A current (and voltage) in a conductor moving through a magnetic field','A permanent magnet','An electric motor'],ans:1,exp:'Electromagnetic induction creates a voltage (and therefore current if the circuit is complete) when a conductor moves through a magnetic field. This is how generators work.'},
+      {q:'A 1200 W iron is used for 2 hours. Energy used in kWh:',opts:['600 kWh','2400 kWh','2.4 kWh','1.2 kWh'],ans:2,exp:'P = 1200 W = 1.2 kW. E = P × t = 1.2 × 2 = 2.4 kWh.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#1a237e',dark:'#000051',light:'#e8eaf6',
+  title:'Electricity & Magnetism — Circuits, Power & Induction',
+});
+</script></body></html>

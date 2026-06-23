@@ -1,0 +1,511 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Nutrition — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Why Do We Need Food?',
+content:`<h2>Food Gives Us Energy and Building Materials</h2>
+<p>Your body needs food for three main reasons:</p>
+<ul>
+<li>⚡ <strong>Energy</strong> — to move, think, grow, and stay warm</li>
+<li>🏗️ <strong>Growth and repair</strong> — to build new cells and fix damaged ones</li>
+<li>🛡️ <strong>Protection</strong> — to fight disease and regulate body processes</li>
+</ul>
+<p>A <strong>balanced diet</strong> contains all the nutrients you need in the right amounts. Eating too much or too little of any nutrient causes health problems.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const foods=[{n:'Rice 🍚',c:'#f4511e'},{n:'Meat 🥩',c:'#8e24aa'},{n:'Milk 🥛',c:'#1e88e5'},{n:'Vegetables 🥦',c:'#43a047'},{n:'Fruit 🍎',c:'#e53935'},{n:'Oil 🫙',c:'#ffd600'}];
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    p.fill('#fff');p.stroke('#ccc');p.strokeWeight(2);p.ellipse(210,145,260,200);
+    p.noStroke();p.fill('#333');p.textSize(14);p.text('Balanced Diet 🍽️',210,62);
+    foods.forEach((f,i)=>{
+      const a=p.TWO_PI*(i/6)+t*0.01;
+      const x=210+100*p.cos(a),y=145+80*p.sin(a);
+      p.fill(f.c);p.noStroke();p.ellipse(x,y,70,40);
+      p.fill(255);p.textSize(10);p.text(f.n,x,y);
+    });
+    t++;
+  };
+}},
+{title:'Carbohydrates, Proteins, and Fats',
+content:`<h2>The Macronutrients</h2>
+<p>These are needed in <strong>large amounts</strong> (macronutrients):</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#e65100;color:#fff;padding:6px">Nutrient</th><th style="background:#e65100;color:#fff;padding:6px">Function</th><th style="background:#e65100;color:#fff;padding:6px">Food Sources</th></tr>
+<tr style="background:#fbe9e7"><td style="padding:6px"><strong>Carbohydrates</strong></td><td style="padding:6px">Main energy source</td><td style="padding:6px">Rice, bread, potatoes, sugar</td></tr>
+<tr><td style="padding:6px"><strong>Proteins</strong></td><td style="padding:6px">Growth and repair</td><td style="padding:6px">Meat, fish, eggs, beans, nuts</td></tr>
+<tr style="background:#fbe9e7"><td style="padding:6px"><strong>Fats</strong></td><td style="padding:6px">Stored energy, insulation</td><td style="padding:6px">Oil, butter, avocado, nuts</td></tr>
+</table>
+<p>Carbohydrates are broken down to <strong>glucose</strong> — the fuel for all your cells during respiration.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const nuts=[{n:'Carbs\n⚡ Energy',c:'#f4511e',x:100},{n:'Proteins\n🏗️ Build',c:'#8e24aa',x:210},{n:'Fats\n💾 Store',c:'#ffd600',x:320}];
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    nuts.forEach((nt,i)=>{
+      const pulse=1+0.08*p.sin(t*0.05+i*2);
+      p.fill(nt.c);p.noStroke();p.ellipse(nt.x,150,100*pulse,100*pulse);
+      p.fill(i===1?255:'#333');p.textSize(12);
+      const lines=nt.n.split('\n');
+      lines.forEach((l,li)=>p.text(l,nt.x,142+li*18));
+    });
+    p.fill('#333');p.textSize(11);p.noStroke();p.text('The 3 macronutrients — needed in large amounts',210,250);
+    t++;
+  };
+}},
+{title:'Vitamins and Minerals',
+content:`<h2>Micronutrients</h2>
+<p>Needed in <strong>small amounts</strong> but essential for health:</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#e65100;color:#fff;padding:4px">Nutrient</th><th style="background:#e65100;color:#fff;padding:4px">Function</th><th style="background:#e65100;color:#fff;padding:4px">Deficiency</th></tr>
+<tr style="background:#fbe9e7"><td style="padding:4px">Vitamin A</td><td style="padding:4px">Vision, immune system</td><td style="padding:4px">Night blindness</td></tr>
+<tr><td style="padding:4px">Vitamin C</td><td style="padding:4px">Healthy skin and gums</td><td style="padding:4px">Scurvy</td></tr>
+<tr style="background:#fbe9e7"><td style="padding:4px">Vitamin D</td><td style="padding:4px">Bone formation</td><td style="padding:4px">Rickets</td></tr>
+<tr><td style="padding:4px">Iron</td><td style="padding:4px">Makes haemoglobin (red blood cells)</td><td style="padding:4px">Anaemia</td></tr>
+<tr style="background:#fbe9e7"><td style="padding:4px">Calcium</td><td style="padding:4px">Bones and teeth</td><td style="padding:4px">Weak bones</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const vits=[{n:'Vit A\n🥕',c:'#ef6c00'},{n:'Vit C\n🍊',c:'#e53935'},{n:'Vit D\n☀️',c:'#fdd835'},{n:'Iron\n🥩',c:'#8e24aa'},{n:'Calcium\n🥛',c:'#1e88e5'}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%90===0)active=(active+1)%5;
+    vits.forEach((v,i)=>{
+      const a=p.TWO_PI*(i/5)-p.HALF_PI;
+      const x=210+120*p.cos(a),y=145+100*p.sin(a);
+      const isA=active===i;
+      p.fill(isA?v.c:'#ddd');p.noStroke();p.ellipse(x,y,isA?90:70,isA?60:46);
+      p.fill(isA?255:'#555');p.textSize(isA?12:10);
+      const ls=v.n.split('\n');ls.forEach((l,li)=>p.text(l,x,y-8+li*18));
+    });
+    p.fill('#333');p.noStroke();p.textSize(12);p.text('Micronutrients — small amounts, big impact!',210,262);
+    t++;
+  };
+}},
+{title:'Water and Fibre',
+content:`<h2>Often Forgotten But Essential!</h2>
+<p><strong>Water 💧</strong></p>
+<ul>
+<li>Makes up about 60-70% of your body</li>
+<li>Needed for ALL body processes</li>
+<li>Transports nutrients and waste in blood</li>
+<li>Regulates body temperature (sweating)</li>
+<li>We need about 6-8 glasses a day</li>
+</ul>
+<p><strong>Fibre (roughage) 🥦</strong></p>
+<ul>
+<li>Found in vegetables, fruits, whole grains</li>
+<li>Not digested — helps MOVE food through the intestines</li>
+<li>Prevents constipation</li>
+<li>Reduces risk of bowel cancer</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,level=0.2;
+  p.draw=()=>{
+    p.background(245);
+    level=0.5+0.35*p.sin(t*0.03);
+    // water glass
+    p.fill('#e3f2fd');p.stroke('#1e88e5');p.strokeWeight(2);p.rect(60,80,100,150,0,0,10,10);
+    p.fill('#42a5f5');p.noStroke();p.rect(60,80+150*(1-level),100,150*level,0,0,10,10);
+    p.fill('#1565c0');p.textSize(13);p.text('Water\n💧',110,180);
+    // body outline
+    p.fill('#fff3e0');p.stroke('#e65100');p.strokeWeight(2);p.ellipse(310,100,70,50);
+    p.rect(280,125,60,100,8);
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('60-70%\nwater',310,108);
+    // wave
+    p.stroke('#42a5f5');p.strokeWeight(2);p.noFill();p.beginShape();
+    for(let x=0;x<=60;x++){const wx=250+x*1,wy=235+8*p.sin(x*0.4+t*0.1);p.vertex(wx,wy);}
+    p.endShape();
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Fibre keeps digestion moving!',310,260);
+    t++;
+  };
+}},
+{title:'Food Tests',
+content:`<h2>How to Test Food for Nutrients</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#e65100;color:#fff;padding:6px">Nutrient</th><th style="background:#e65100;color:#fff;padding:6px">Reagent Used</th><th style="background:#e65100;color:#fff;padding:6px">Positive Result</th></tr>
+<tr style="background:#fbe9e7"><td style="padding:6px"><strong>Starch</strong></td><td style="padding:6px">Iodine solution</td><td style="padding:6px">Yellow-brown → <strong>Blue-black</strong></td></tr>
+<tr><td style="padding:6px"><strong>Glucose (sugar)</strong></td><td style="padding:6px">Benedict's solution + heat</td><td style="padding:6px">Blue → <strong>Brick-red/orange</strong></td></tr>
+<tr style="background:#fbe9e7"><td style="padding:6px"><strong>Protein</strong></td><td style="padding:6px">Biuret solution</td><td style="padding:6px">Blue → <strong>Purple/violet</strong></td></tr>
+<tr><td style="padding:6px"><strong>Fat</strong></td><td style="padding:6px">Ethanol + water</td><td style="padding:6px">Clear → <strong>Milky white</strong></td></tr>
+</table>
+<p>Food tests tell us which nutrients are present — but not how much.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const tests=[{n:'Starch\n(Iodine)',before:'#f9a825',after:'#1a237e',bx:60},{n:'Glucose\n(Benedict\'s)',before:'#1e88e5',after:'#bf360c',bx:175},{n:'Protein\n(Biuret)',before:'#42a5f5',after:'#6a1b9a',bx:290}];
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    tests.forEach((ts,i)=>{
+      const progress=(p.sin(t*0.03+i*2)+1)/2;
+      const r=p.lerp(p.red(p.color(ts.before)),p.red(p.color(ts.after)),progress);
+      const g=p.lerp(p.green(p.color(ts.before)),p.green(p.color(ts.after)),progress);
+      const b=p.lerp(p.blue(p.color(ts.before)),p.blue(p.color(ts.after)),progress);
+      p.fill(r,g,b);p.stroke('#999');p.strokeWeight(2);
+      p.rect(ts.bx-28,80,56,100,8,8,4,4);
+      p.noStroke();p.fill('#333');p.textSize(10);
+      ts.n.split('\n').forEach((l,li)=>p.text(l,ts.bx,210+li*14));
+    });
+    p.fill('#333');p.textSize(11);p.noStroke();p.text('Watch the colour change — that\'s a positive result!',210,262);
+    t++;
+  };
+}},
+{title:'The Food Groups — The Healthy Plate',
+content:`<h3>A Balanced Plate Has All Food Groups</h3>
+<p>Nutritionists use a <strong>healthy plate model</strong> to show how much of each food group you should eat at each meal.</p>
+<ul>
+<li><strong>Carbohydrates</strong> (largest portion) — rice, bread, maize, potatoes</li>
+<li><strong>Vegetables</strong> — half the plate should be vegetables and fruit</li>
+<li><strong>Proteins</strong> — meat, fish, eggs, beans, lentils</li>
+<li><strong>Dairy</strong> — milk, yoghurt, cheese (calcium source)</li>
+<li><strong>Fats/Oils</strong> — small amounts only (butter, oil)</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+  </defs>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">The Healthy Plate</text>
+  <!-- Plate circle -->
+  <circle cx="180" cy="122" r="88" fill="#f5f5f5" stroke="#bdbdbd" stroke-width="3"/>
+  <!-- Carbohydrates: large slice ~35%, roughly 0 to 126 deg -->
+  <path d="M180,122 L268,122 A88,88 0 0,1 136,204 Z" fill="#fdd835"/>
+  <!-- Vegetables: ~30%, 126 to 234 deg -->
+  <path d="M180,122 L136,204 A88,88 0 0,1 92,40 Z" fill="#66bb6a"/>
+  <!-- Fruits: ~15%, 234 to 288 deg -->
+  <path d="M180,122 L92,40 A88,88 0 0,1 180,34 Z" fill="#ef5350"/>
+  <!-- Proteins: ~15%, 288 to 342 deg -->
+  <path d="M180,122 L180,34 A88,88 0 0,1 248,46 Z" fill="#8e24aa"/>
+  <!-- Dairy: ~4%, 342 to 356 deg -->
+  <path d="M180,122 L248,46 A88,88 0 0,1 266,96 Z" fill="#1e88e5"/>
+  <!-- Fats: ~1%, 356 to 360 -->
+  <path d="M180,122 L266,96 A88,88 0 0,1 268,122 Z" fill="#ff8f00"/>
+  <!-- Plate border on top -->
+  <circle cx="180" cy="122" r="88" fill="none" stroke="#bdbdbd" stroke-width="3"/>
+  <!-- Divider lines -->
+  <line x1="180" y1="122" x2="268" y2="122" stroke="#fff" stroke-width="2"/>
+  <line x1="180" y1="122" x2="136" y2="204" stroke="#fff" stroke-width="2"/>
+  <line x1="180" y1="122" x2="92" y2="40" stroke="#fff" stroke-width="2"/>
+  <line x1="180" y1="122" x2="180" y2="34" stroke="#fff" stroke-width="2"/>
+  <line x1="180" y1="122" x2="248" y2="46" stroke="#fff" stroke-width="2"/>
+  <line x1="180" y1="122" x2="266" y2="96" stroke="#fff" stroke-width="2"/>
+  <!-- Legend -->
+  <rect x="286" y="30" width="14" height="12" rx="2" fill="#fdd835"/>
+  <text x="304" y="41" font-size="10" fill="#333">Carbohydrates ~35%</text>
+  <text x="304" y="52" font-size="9" fill="#777">Rice, bread, maize</text>
+  <rect x="286" y="60" width="14" height="12" rx="2" fill="#66bb6a"/>
+  <text x="304" y="71" font-size="10" fill="#333">Vegetables ~30%</text>
+  <text x="304" y="82" font-size="9" fill="#777">Spinach, carrots, beans</text>
+  <rect x="286" y="90" width="14" height="12" rx="2" fill="#ef5350"/>
+  <text x="304" y="101" font-size="10" fill="#333">Fruits ~15%</text>
+  <text x="304" y="112" font-size="9" fill="#777">Mango, orange, apple</text>
+  <rect x="286" y="120" width="14" height="12" rx="2" fill="#8e24aa"/>
+  <text x="304" y="131" font-size="10" fill="#333">Proteins ~15%</text>
+  <text x="304" y="142" font-size="9" fill="#777">Meat, fish, eggs, beans</text>
+  <rect x="286" y="150" width="14" height="12" rx="2" fill="#1e88e5"/>
+  <text x="304" y="161" font-size="10" fill="#333">Dairy ~4%</text>
+  <text x="304" y="172" font-size="9" fill="#777">Milk, yoghurt, cheese</text>
+  <rect x="286" y="180" width="14" height="12" rx="2" fill="#ff8f00"/>
+  <text x="304" y="191" font-size="10" fill="#333">Fats/Oils ~1%</text>
+  <text x="304" y="202" font-size="9" fill="#777">Oil, butter — use sparingly</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="212" width="420" height="28" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Eat the most from the biggest sections — variety is key!</text>
+</svg>`},
+{title:'The 6 Nutrients — What They Do',
+content:`<h3>Six Essential Nutrients</h3>
+<p>Every nutrient has a specific job in the body. All six are needed for good health:</p>
+<ul>
+<li><strong>Carbohydrates</strong> — primary energy fuel (broken down to glucose)</li>
+<li><strong>Proteins</strong> — build and repair muscles, organs, enzymes, antibodies</li>
+<li><strong>Fats</strong> — store energy, insulate body, absorb fat-soluble vitamins</li>
+<li><strong>Vitamins</strong> — regulate body processes, protect cells</li>
+<li><strong>Minerals</strong> — build bones and teeth, carry oxygen in blood</li>
+<li><strong>Water</strong> — transport medium for all body reactions</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#006064">The 6 Nutrients — What They Do</text>
+  <!-- Column definitions: x positions for 6 columns -->
+  <!-- Carbohydrates -->
+  <rect x="2" y="20" width="66" height="185" rx="5" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <rect x="2" y="20" width="66" height="30" rx="5" fill="#f9a825"/>
+  <text x="35" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Carbo-</text>
+  <text x="35" y="49" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">hydrates</text>
+  <text x="35" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="35" y="84" text-anchor="middle" font-size="8" fill="#555">Main</text>
+  <text x="35" y="95" text-anchor="middle" font-size="8" fill="#555">energy</text>
+  <text x="35" y="106" text-anchor="middle" font-size="8" fill="#555">source</text>
+  <text x="35" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="35" y="137" text-anchor="middle" font-size="8" fill="#777">Rice</text>
+  <text x="35" y="148" text-anchor="middle" font-size="8" fill="#777">Bread</text>
+  <text x="35" y="159" text-anchor="middle" font-size="8" fill="#777">Maize</text>
+  <text x="35" y="170" text-anchor="middle" font-size="8" fill="#777">Potatoes</text>
+  <!-- Proteins -->
+  <rect x="72" y="20" width="66" height="185" rx="5" fill="#fce4ec" stroke="#e53935" stroke-width="1.5"/>
+  <rect x="72" y="20" width="66" height="30" rx="5" fill="#e53935"/>
+  <text x="105" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Proteins</text>
+  <text x="105" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="105" y="84" text-anchor="middle" font-size="8" fill="#555">Growth</text>
+  <text x="105" y="95" text-anchor="middle" font-size="8" fill="#555">&amp; repair</text>
+  <text x="105" y="106" text-anchor="middle" font-size="8" fill="#555">of cells</text>
+  <text x="105" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="105" y="137" text-anchor="middle" font-size="8" fill="#777">Meat</text>
+  <text x="105" y="148" text-anchor="middle" font-size="8" fill="#777">Fish</text>
+  <text x="105" y="159" text-anchor="middle" font-size="8" fill="#777">Eggs</text>
+  <text x="105" y="170" text-anchor="middle" font-size="8" fill="#777">Beans</text>
+  <!-- Fats -->
+  <rect x="142" y="20" width="66" height="185" rx="5" fill="#fff3e0" stroke="#ff8f00" stroke-width="1.5"/>
+  <rect x="142" y="20" width="66" height="30" rx="5" fill="#ff8f00"/>
+  <text x="175" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Fats</text>
+  <text x="175" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="175" y="84" text-anchor="middle" font-size="8" fill="#555">Stored</text>
+  <text x="175" y="95" text-anchor="middle" font-size="8" fill="#555">energy;</text>
+  <text x="175" y="106" text-anchor="middle" font-size="8" fill="#555">insulation</text>
+  <text x="175" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="175" y="137" text-anchor="middle" font-size="8" fill="#777">Oil</text>
+  <text x="175" y="148" text-anchor="middle" font-size="8" fill="#777">Butter</text>
+  <text x="175" y="159" text-anchor="middle" font-size="8" fill="#777">Avocado</text>
+  <text x="175" y="170" text-anchor="middle" font-size="8" fill="#777">Nuts</text>
+  <!-- Vitamins -->
+  <rect x="212" y="20" width="66" height="185" rx="5" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <rect x="212" y="20" width="66" height="30" rx="5" fill="#43a047"/>
+  <text x="245" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Vitamins</text>
+  <text x="245" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="245" y="84" text-anchor="middle" font-size="8" fill="#555">Regulate</text>
+  <text x="245" y="95" text-anchor="middle" font-size="8" fill="#555">body</text>
+  <text x="245" y="106" text-anchor="middle" font-size="8" fill="#555">processes</text>
+  <text x="245" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="245" y="137" text-anchor="middle" font-size="8" fill="#777">Fruits</text>
+  <text x="245" y="148" text-anchor="middle" font-size="8" fill="#777">Vegetables</text>
+  <text x="245" y="159" text-anchor="middle" font-size="8" fill="#777">Liver</text>
+  <text x="245" y="170" text-anchor="middle" font-size="8" fill="#777">Sunlight(D)</text>
+  <!-- Minerals -->
+  <rect x="282" y="20" width="66" height="185" rx="5" fill="#e3f2fd" stroke="#1e88e5" stroke-width="1.5"/>
+  <rect x="282" y="20" width="66" height="30" rx="5" fill="#1e88e5"/>
+  <text x="315" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Minerals</text>
+  <text x="315" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="315" y="84" text-anchor="middle" font-size="8" fill="#555">Build</text>
+  <text x="315" y="95" text-anchor="middle" font-size="8" fill="#555">bones;</text>
+  <text x="315" y="106" text-anchor="middle" font-size="8" fill="#555">carry O2</text>
+  <text x="315" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="315" y="137" text-anchor="middle" font-size="8" fill="#777">Milk(Ca)</text>
+  <text x="315" y="148" text-anchor="middle" font-size="8" fill="#777">Meat(Fe)</text>
+  <text x="315" y="159" text-anchor="middle" font-size="8" fill="#777">Salt(I)</text>
+  <text x="315" y="170" text-anchor="middle" font-size="8" fill="#777">Greens(Fe)</text>
+  <!-- Water -->
+  <rect x="352" y="20" width="66" height="185" rx="5" fill="#e0f7fa" stroke="#00acc1" stroke-width="1.5"/>
+  <rect x="352" y="20" width="66" height="30" rx="5" fill="#00acc1"/>
+  <text x="385" y="39" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Water</text>
+  <text x="385" y="72" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">FUNCTION</text>
+  <text x="385" y="84" text-anchor="middle" font-size="8" fill="#555">Transport</text>
+  <text x="385" y="95" text-anchor="middle" font-size="8" fill="#555">nutrients;</text>
+  <text x="385" y="106" text-anchor="middle" font-size="8" fill="#555">all reactions</text>
+  <text x="385" y="125" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">SOURCES</text>
+  <text x="385" y="137" text-anchor="middle" font-size="8" fill="#777">Drinking</text>
+  <text x="385" y="148" text-anchor="middle" font-size="8" fill="#777">water</text>
+  <text x="385" y="159" text-anchor="middle" font-size="8" fill="#777">Fruits</text>
+  <text x="385" y="170" text-anchor="middle" font-size="8" fill="#777">Vegetables</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="212" width="420" height="28" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">All 6 nutrients are essential — deficiency of any causes disease</text>
+</svg>`},
+{title:'Deficiency Diseases',
+content:`<h3>What Happens When Nutrients Are Missing?</h3>
+<p>A <strong>deficiency disease</strong> occurs when the body lacks a specific nutrient for a long time. These are common in areas where food variety is limited.</p>
+<ul>
+<li><strong>Iron deficiency → Anaemia</strong>: tired, pale, breathless (not enough red blood cells)</li>
+<li><strong>Vitamin C deficiency → Scurvy</strong>: bleeding gums, slow wound healing</li>
+<li><strong>Vitamin D deficiency → Rickets</strong>: soft/bent bones in children</li>
+<li><strong>Iodine deficiency → Goitre</strong>: swollen thyroid gland in neck</li>
+</ul>
+<p>Prevention: eat a varied diet with plenty of fruits, vegetables, meat, fish and dairy.</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">Deficiency Diseases</text>
+  <!-- 2x2 grid of boxes -->
+  <!-- Box 1: Iron / Anaemia -->
+  <rect x="8" y="22" width="198" height="100" rx="7" fill="#fce4ec" stroke="#e53935" stroke-width="1.5"/>
+  <!-- Warning triangle -->
+  <polygon points="28,60 18,78 38,78" fill="#e53935"/>
+  <text x="28" y="74" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">!</text>
+  <text x="118" y="38" text-anchor="middle" font-size="10" fill="#b71c1c" font-weight="bold">Nutrient: Iron (Fe)</text>
+  <text x="118" y="52" text-anchor="middle" font-size="11" fill="#e53935" font-weight="bold">Disease: Anaemia</text>
+  <text x="118" y="66" text-anchor="middle" font-size="9" fill="#555">Symptoms: tiredness, pale skin,</text>
+  <text x="118" y="78" text-anchor="middle" font-size="9" fill="#555">breathlessness, weakness</text>
+  <text x="118" y="92" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Eat: red meat, spinach, liver</text>
+  <!-- Box 2: Vitamin C / Scurvy -->
+  <rect x="214" y="22" width="198" height="100" rx="7" fill="#fff3e0" stroke="#ff8f00" stroke-width="1.5"/>
+  <polygon points="234,60 224,78 244,78" fill="#ff8f00"/>
+  <text x="234" y="74" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">!</text>
+  <text x="324" y="38" text-anchor="middle" font-size="10" fill="#bf360c" font-weight="bold">Nutrient: Vitamin C</text>
+  <text x="324" y="52" text-anchor="middle" font-size="11" fill="#ff8f00" font-weight="bold">Disease: Scurvy</text>
+  <text x="324" y="66" text-anchor="middle" font-size="9" fill="#555">Symptoms: bleeding gums,</text>
+  <text x="324" y="78" text-anchor="middle" font-size="9" fill="#555">loose teeth, slow healing</text>
+  <text x="324" y="92" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Eat: citrus fruits, tomatoes</text>
+  <!-- Box 3: Vitamin D / Rickets -->
+  <rect x="8" y="130" width="198" height="100" rx="7" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <polygon points="28,168 18,186 38,186" fill="#43a047"/>
+  <text x="28" y="182" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">!</text>
+  <text x="118" y="146" text-anchor="middle" font-size="10" fill="#1b5e20" font-weight="bold">Nutrient: Vitamin D</text>
+  <text x="118" y="160" text-anchor="middle" font-size="11" fill="#43a047" font-weight="bold">Disease: Rickets</text>
+  <text x="118" y="174" text-anchor="middle" font-size="9" fill="#555">Symptoms: soft bones,</text>
+  <text x="118" y="186" text-anchor="middle" font-size="9" fill="#555">bowed legs in children</text>
+  <text x="118" y="200" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Eat: fish, eggs; get sunlight</text>
+  <!-- Box 4: Iodine / Goitre -->
+  <rect x="214" y="130" width="198" height="100" rx="7" fill="#e3f2fd" stroke="#1e88e5" stroke-width="1.5"/>
+  <polygon points="234,168 224,186 244,186" fill="#1e88e5"/>
+  <text x="234" y="182" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">!</text>
+  <text x="324" y="146" text-anchor="middle" font-size="10" fill="#0d47a1" font-weight="bold">Nutrient: Iodine</text>
+  <text x="324" y="160" text-anchor="middle" font-size="11" fill="#1e88e5" font-weight="bold">Disease: Goitre</text>
+  <text x="324" y="174" text-anchor="middle" font-size="9" fill="#555">Symptoms: swollen thyroid</text>
+  <text x="324" y="186" text-anchor="middle" font-size="9" fill="#555">gland in neck, fatigue</text>
+  <text x="324" y="200" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Eat: iodised salt, seafood</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="217" width="420" height="23" fill="#e0f7fa"/>
+  <text x="210" y="232" text-anchor="middle" font-size="9" fill="#006064">Prevention = varied diet with all food groups every day</text>
+</svg>`},
+{title:'Balanced vs Unbalanced Diet Comparison',
+content:`<h3>What Makes a Diet Balanced?</h3>
+<p>A <strong>balanced diet</strong> contains all 6 nutrients in the right proportions. An <strong>unbalanced diet</strong> has too much of some foods and too little of others.</p>
+<ul>
+<li>Too much fat and sugar → obesity, heart disease, diabetes</li>
+<li>Too little protein → stunted growth, poor immunity</li>
+<li>Too little vitamins/minerals → deficiency diseases</li>
+<li>Too little food overall → malnutrition, weakness</li>
+</ul>
+<p>A balanced diet + exercise + enough water = good health!</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e53935"/></marker>
+  </defs>
+  <text x="210" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">Balanced vs Unbalanced Diet</text>
+  <!-- LEFT: Balanced plate -->
+  <circle cx="100" cy="110" r="72" fill="#f9fbe7" stroke="#bdbdbd" stroke-width="2.5"/>
+  <!-- Colourful food sections on balanced plate -->
+  <path d="M100,110 L172,110 A72,72 0 0,1 118,174 Z" fill="#fdd835"/>
+  <path d="M100,110 L118,174 A72,72 0 0,1 36,148 Z" fill="#66bb6a"/>
+  <path d="M100,110 L36,148 A72,72 0 0,1 36,72 Z" fill="#ef5350"/>
+  <path d="M100,110 L36,72 A72,72 0 0,1 100,38 Z" fill="#8e24aa"/>
+  <path d="M100,110 L100,38 A72,72 0 0,1 172,110 Z" fill="#1e88e5"/>
+  <circle cx="100" cy="110" r="72" fill="none" stroke="#bdbdbd" stroke-width="2.5"/>
+  <!-- Tick marks -->
+  <text x="60" y="90" font-size="16" fill="#2e7d32">&#x2713;</text>
+  <text x="115" y="155" font-size="16" fill="#2e7d32">&#x2713;</text>
+  <text x="130" y="85" font-size="16" fill="#2e7d32">&#x2713;</text>
+  <text x="65" y="150" font-size="16" fill="#2e7d32">&#x2713;</text>
+  <!-- Label -->
+  <text x="100" y="198" text-anchor="middle" font-size="11" fill="#2e7d32" font-weight="bold">BALANCED</text>
+  <text x="100" y="212" text-anchor="middle" font-size="9" fill="#555">All nutrients present</text>
+  <!-- RIGHT: Unbalanced plate -->
+  <circle cx="320" cy="110" r="72" fill="#fff8e1" stroke="#bdbdbd" stroke-width="2.5"/>
+  <!-- Mostly fried/junk - one big orange section -->
+  <path d="M320,110 L392,110 A72,72 0 1,1 320,38 Z" fill="#ff8f00"/>
+  <path d="M320,110 L320,38 A72,72 0 0,1 392,110 Z" fill="#ffca28"/>
+  <circle cx="320" cy="110" r="72" fill="none" stroke="#bdbdbd" stroke-width="2.5"/>
+  <!-- Cross marks -->
+  <text x="285" y="95" font-size="16" fill="#e53935">&#x2717;</text>
+  <text x="335" y="130" font-size="16" fill="#e53935">&#x2717;</text>
+  <text x="310" y="72" font-size="12" fill="#555">Fried</text>
+  <text x="310" y="84" font-size="12" fill="#555">food</text>
+  <!-- Health problem arrows -->
+  <text x="380" y="58" font-size="8" fill="#e53935">Obesity</text>
+  <line x1="365" y1="62" x2="350" y2="78" stroke="#e53935" stroke-width="1" marker-end="url(#a)"/>
+  <text x="380" y="110" font-size="8" fill="#e53935">Heart</text>
+  <text x="380" y="120" font-size="8" fill="#e53935">disease</text>
+  <line x1="393" y1="113" x2="393" y2="113" stroke="#e53935" stroke-width="1"/>
+  <text x="380" y="155" font-size="8" fill="#e53935">Malnutrition</text>
+  <line x1="378" y1="148" x2="365" y2="138" stroke="#e53935" stroke-width="1" marker-end="url(#a)"/>
+  <!-- Label -->
+  <text x="320" y="198" text-anchor="middle" font-size="11" fill="#e53935" font-weight="bold">UNBALANCED</text>
+  <text x="320" y="212" text-anchor="middle" font-size="9" fill="#555">Mostly one food type</text>
+  <!-- VS divider -->
+  <text x="210" y="116" text-anchor="middle" font-size="16" fill="#006064" font-weight="bold">VS</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="220" width="420" height="20" fill="#e0f7fa"/>
+  <text x="210" y="234" text-anchor="middle" font-size="9" fill="#006064">Variety and moderation are the keys to a healthy balanced diet</text>
+</svg>`},
+{title:'How the Body Uses Nutrients',
+content:`<h3>Every Nutrient Has a Destination</h3>
+<p>After digestion, nutrients are absorbed into the bloodstream and transported to where they are needed most.</p>
+<ul>
+<li><strong>Carbohydrates → glucose</strong>: energy for muscles and brain</li>
+<li><strong>Protein → amino acids</strong>: build and repair muscles, skin, organs</li>
+<li><strong>Calcium → bones and teeth</strong>: keep them strong and hard</li>
+<li><strong>Iron → blood haemoglobin</strong>: carries oxygen from lungs to all cells</li>
+<li><strong>Vitamin A → eyes</strong>: needed for vision especially in dim light</li>
+<li><strong>Water → every cell</strong>: all chemical reactions happen in water</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+  </defs>
+  <text x="210" y="15" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">How the Body Uses Nutrients</text>
+  <!-- Body silhouette (simplified) -->
+  <!-- Head -->
+  <circle cx="210" cy="55" r="22" fill="#ffccbc" stroke="#e64a19" stroke-width="1.5"/>
+  <text x="210" y="59" text-anchor="middle" font-size="9" fill="#555">Brain</text>
+  <!-- Body torso -->
+  <rect x="186" y="78" width="48" height="70" rx="8" fill="#ffccbc" stroke="#e64a19" stroke-width="1.5"/>
+  <text x="210" y="108" text-anchor="middle" font-size="8" fill="#555">Heart</text>
+  <text x="210" y="120" text-anchor="middle" font-size="8" fill="#555">Lungs</text>
+  <!-- Arms -->
+  <rect x="158" y="80" width="26" height="55" rx="6" fill="#ffccbc" stroke="#e64a19" stroke-width="1"/>
+  <rect x="236" y="80" width="26" height="55" rx="6" fill="#ffccbc" stroke="#e64a19" stroke-width="1"/>
+  <!-- Legs -->
+  <rect x="188" y="150" width="22" height="55" rx="6" fill="#ffccbc" stroke="#e64a19" stroke-width="1.5"/>
+  <rect x="212" y="150" width="22" height="55" rx="6" fill="#ffccbc" stroke="#e64a19" stroke-width="1.5"/>
+  <!-- LEFT side arrows (nutrients in) -->
+  <!-- Carbs -->
+  <rect x="2" y="22" width="90" height="22" rx="4" fill="#fdd835"/>
+  <text x="47" y="37" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Carbs (rice/bread)</text>
+  <line x1="93" y1="33" x2="158" y2="55" stroke="#f9a825" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="128" y="42" font-size="7" fill="#f57f17">Energy for brain</text>
+  <!-- Protein -->
+  <rect x="2" y="58" width="90" height="22" rx="4" fill="#ef9a9a"/>
+  <text x="47" y="73" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Protein (meat/eggs)</text>
+  <line x1="93" y1="69" x2="158" y2="90" stroke="#e53935" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="128" y="80" font-size="7" fill="#c62828">Build muscles</text>
+  <!-- Calcium -->
+  <rect x="2" y="94" width="90" height="22" rx="4" fill="#bbdefb"/>
+  <text x="47" y="109" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Calcium (milk)</text>
+  <line x1="93" y1="105" x2="186" y2="148" stroke="#1e88e5" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="128" y="118" font-size="7" fill="#1565c0">Bones &amp; teeth</text>
+  <!-- RIGHT side arrows -->
+  <!-- Iron -->
+  <rect x="328" y="22" width="90" height="22" rx="4" fill="#ce93d8"/>
+  <text x="373" y="37" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Iron (meat/spinach)</text>
+  <line x1="328" y1="33" x2="262" y2="55" stroke="#8e24aa" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="295" y="42" font-size="7" fill="#6a1b9a" text-anchor="end">O2 in blood</text>
+  <!-- Vitamin A -->
+  <rect x="328" y="58" width="90" height="22" rx="4" fill="#ffe0b2"/>
+  <text x="373" y="73" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Vitamin A (carrot)</text>
+  <line x1="328" y1="69" x2="228" y2="45" stroke="#e65100" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="280" y="60" font-size="7" fill="#bf360c" text-anchor="end">Vision / eyes</text>
+  <!-- Water -->
+  <rect x="328" y="94" width="90" height="22" rx="4" fill="#b2ebf2"/>
+  <text x="373" y="109" text-anchor="middle" font-size="8" fill="#555" font-weight="bold">Water</text>
+  <line x1="328" y1="105" x2="234" y2="110" stroke="#00acc1" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="284" y="102" font-size="7" fill="#00838f" text-anchor="end">Every cell</text>
+  <!-- Carbs to legs (energy for muscles) -->
+  <line x1="93" y1="33" x2="190" y2="150" stroke="#f9a825" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a)"/>
+  <text x="100" y="148" font-size="7" fill="#f57f17">Energy for muscles</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="213" width="420" height="27" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Digestion breaks food into nutrients the blood transports to every organ</text>
+</svg>`},
+{title:'Mini-Quiz: Nutrients',
+mcq:[
+  {q:'Which nutrient is the main source of energy for the body?',opts:['Proteins','Fats','Carbohydrates','Vitamins'],ans:2,exp:'CARBOHYDRATES are the main and quickest energy source. They are broken down to glucose, which is used in respiration to release energy for all body activities.'},
+  {q:'Lack of vitamin C causes which deficiency disease?',opts:['Rickets','Anaemia','Night blindness','Scurvy'],ans:3,exp:'SCURVY is caused by lack of VITAMIN C. Symptoms include bleeding gums, slow wound healing, bruising easily. Vitamin C is found in citrus fruits, tomatoes, and peppers.'},
+]},
+{title:'Mini-Quiz: Food Tests',
+mcq:[
+  {q:'Which reagent is used to test for starch?',opts:['Benedict\'s solution','Biuret solution','Iodine solution','Ethanol'],ans:2,exp:'IODINE solution tests for STARCH. If starch is present, the solution changes from yellow-brown to BLUE-BLACK. If it stays yellow-brown, starch is NOT present.'},
+  {q:'Proteins are most important for:',opts:['Giving quick energy','Growth and repair of body cells','Protecting bones','Keeping warm'],ans:1,exp:'PROTEINS are needed for GROWTH and REPAIR of body cells and tissues. They also make enzymes, hormones, and antibodies. Good sources include meat, fish, eggs, beans, and nuts.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#e65100',dark:'#ac1900',light:'#fbe9e7',title:'Nutrition & Food'});
+</script></body></html>

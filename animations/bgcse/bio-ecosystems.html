@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecosystems — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#2e7d32;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#a5d6a7;color:#1b5e20;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #c8e6c9}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #2e7d32;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#2e7d32;transition:all .15s}
+    .btn.on{background:#2e7d32;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Ecosystems &amp; Nutrient Cycles</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🕸 Food Web</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">♻️ Carbon Cycle</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🌿 Nitrogen Cycle</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">📊 Energy Flow</button>
+  <button class="btn" id="b-prac" onclick="setEcoPractice(!ecoMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Ecosystems</h2><ul><li><b>Producer</b>: Photosynthetic organisms (plants/algae) — first trophic level.</li><li><b>Energy transfer</b>: Only ~10% of energy passes from one trophic level to the next.</li><li><b>Carbon cycle</b>: Carbon returned via respiration, decomposition, combustion; fixed by photosynthesis.</li><li><b>Nitrogen fixation</b>: Bacteria convert N₂ gas into ammonia/nitrates that plants can use.</li><li><b>Decomposers</b>: Fungi and bacteria break down dead organic matter, recycling nutrients.</li><li><b>Denitrification</b>: Bacteria convert nitrates back to N₂ gas.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let ecoMcq=false;
+const ECO_MCQ=[
+  {q:'What is the primary producer in a food chain?',opts:['A photosynthetic plant or algae','A herbivore','A carnivore','A decomposer'],c:0,tip:'Producers make their own food via photosynthesis — they are the first trophic level.'},
+  {q:'How much energy is typically transferred between trophic levels?',opts:['About 10%','About 50%','About 90%','100%'],c:0,tip:'Only ~10% of energy moves to the next level; the rest is lost as heat or waste.'},
+  {q:'Carbon is returned to the atmosphere mainly through:',opts:['Respiration and decomposition','Photosynthesis','Nitrogen fixation','Fossilisation'],c:0,tip:'Respiration by all organisms and decomposition both release CO₂.'},
+  {q:'Nitrogen fixation is carried out by:',opts:['Bacteria in soil and root nodules','Plants during photosynthesis','Animals during digestion','Fungi during decomposition'],c:0,tip:'Nitrogen-fixing bacteria convert N₂ into ammonium compounds.'},
+  {q:'What is a decomposer?',opts:['An organism that breaks down dead organic matter','A top predator','A primary producer','A nitrogen-fixing bacterium'],c:0,tip:'Decomposers (fungi, bacteria) recycle nutrients back into the soil.'},
+  {q:'A pyramid of numbers shows:',opts:['Number of organisms at each trophic level','Energy at each trophic level','Biomass at each trophic level','Speed of energy transfer'],c:0,tip:'Pyramids of numbers count organisms; pyramids of energy are always correct pyramid shape.'},
+  {q:'Denitrification converts nitrates into:',opts:['Nitrogen gas (N₂)','Ammonia','Protein','Carbon dioxide'],c:0,tip:'Denitrifying bacteria convert nitrates back to N₂, completing the nitrogen cycle.'}
+];
+let ecoMcqIdx=0,ecoMcqSel=-1,ecoMcqScore=0,ecoMcqDone=false,ecoMcqFeedback=null;
+function setEcoPractice(on){ecoMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){ecoMcqIdx=0;ecoMcqSel=-1;ecoMcqScore=0;ecoMcqDone=false;ecoMcqFeedback=null;}}
+function drawEcoMCQ(s){s.background(252,252,240);if(ecoMcqDone){s.fill(46,125,50);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+ecoMcqScore+'/'+ECO_MCQ.length,440,215);let msg=ecoMcqScore===ECO_MCQ.length?'Perfect! You know Ecosystems!':ecoMcqScore>=5?'Great job!':'Review food chains, cycles & energy flow.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=ECO_MCQ[ecoMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(ecoMcqIdx/ECO_MCQ.length),10,5);s.fill(46,125,50);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(ecoMcqIdx+1)+' of '+ECO_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=ecoMcqSel===i,correct=ecoMcqFeedback!==null&&i===q.c,wrong=ecoMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(ecoMcqFeedback){s.fill(ecoMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(ecoMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function ecoMcqClick(mx,my){if(ecoMcqDone){if(mx>310&&mx<570&&my>290&&my<334){ecoMcqIdx=0;ecoMcqSel=-1;ecoMcqScore=0;ecoMcqDone=false;ecoMcqFeedback=null;}return;}if(ecoMcqFeedback!==null){ecoMcqIdx++;ecoMcqSel=-1;ecoMcqFeedback=null;if(ecoMcqIdx>=ECO_MCQ.length)ecoMcqDone=true;return;}ECO_MCQ[ecoMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){ecoMcqSel=i;ecoMcqFeedback=i===ECO_MCQ[ecoMcqIdx].c?'correct':'wrong';if(i===ECO_MCQ[ecoMcqIdx].c)ecoMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let energyParticles=[];
+  sk.setup=()=>{
+    sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');
+    for(let i=0;i<20;i++) energyParticles.push({y:440,x:60+Math.random()*380,t:Math.random()});
+  };
+  sk.draw=()=>{
+    if(ecoMcq){ drawEcoMCQ(sk); return; }
+    tick+=0.028;
+    sk.background(245,252,245);
+    if(tab===0) drawFoodWeb();
+    else if(tab===1) drawCarbonCycle();
+    else if(tab===2) drawNitrogenCycle();
+    else drawEnergyFlow();
+    drawInfoPanel();
+  };
+
+  function drawFoodWeb(){
+    // Botswana savanna food web
+    const nodes={
+      grass:{x:200,y:420,em:'🌿',col:[30,140,30],lab:'Grass\n(Producer)'},
+      shrubs:{x:300,y:420,em:'🌾',col:[60,140,30],lab:'Shrubs\n(Producer)'},
+      insects:{x:100,y:320,em:'🦗',col:[130,100,0],lab:'Insects\n(Primary\nConsumer)'},
+      zebra:{x:220,y:300,em:'🦓',col:[60,60,60],lab:'Zebra\n(Primary\nConsumer)'},
+      impala:{x:320,y:300,em:'🦌',col:[160,100,30],lab:'Impala\n(Primary\nConsumer)'},
+      frog:{x:100,y:200,em:'🐸',col:[40,140,40],lab:'Frog\n(Secondary)'},
+      cheetah:{x:230,y:180,em:'🐆',col:[180,120,0],lab:'Cheetah\n(Secondary)'},
+      lion:{x:360,y:180,em:'🦁',col:[200,100,0],lab:'Lion\n(Secondary)'},
+      eagle:{x:140,y:80,em:'🦅',col:[120,60,0],lab:'Eagle\n(Tertiary)'},
+    };
+    const links=[['grass','insects'],['grass','zebra'],['grass','impala'],['shrubs','impala'],['shrubs','zebra'],['insects','frog'],['insects','cheetah'],['zebra','cheetah'],['zebra','lion'],['impala','lion'],['impala','cheetah'],['frog','eagle'],['cheetah','eagle']];
+    // Draw arrows
+    links.forEach(([a,b])=>{
+      let n1=nodes[a],n2=nodes[b];
+      sk.stroke(80,140,80,160);sk.strokeWeight(1.5);
+      arrow(n1.x,n1.y,n2.x,n2.y);
+    });
+    // Draw nodes
+    Object.values(nodes).forEach(n=>{
+      sk.fill(n.col[0],n.col[1],n.col[2],30);sk.stroke(n.col[0],n.col[1],n.col[2]);sk.strokeWeight(1.5);
+      sk.rect(n.x-38,n.y-30,76,60,7);sk.noStroke();
+      sk.textSize(22);sk.textAlign(sk.CENTER);sk.text(n.em,n.x,n.y-2);
+      sk.fill(n.col[0],n.col[1],n.col[2]);sk.textSize(8);sk.textStyle(sk.BOLD);
+      n.lab.split('\n').forEach((l,i)=>sk.text(l,n.x,n.y+16+i*9));sk.textStyle(sk.NORMAL);
+    });
+    // Trophic levels labels
+    const lvls=[{y:420,l:'Trophic Level 1 — Producers'},{y:310,l:'Trophic Level 2 — Primary Consumers'},{y:190,l:'Trophic Level 3 — Secondary Consumers'},{y:80,l:'Trophic Level 4 — Tertiary Consumers'}];
+    lvls.forEach(lv=>{
+      sk.fill(30,100,30,120);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.RIGHT);
+      sk.text(lv.l,462,lv.y+4);sk.textStyle(sk.NORMAL);
+    });
+    // Decomposer note
+    sk.fill(100,60,0,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('🍄 Decomposers (bacteria, fungi) break ALL dead organisms back to minerals',14,490);sk.textStyle(sk.NORMAL);
+  }
+
+  function arrow(x1,y1,x2,y2){
+    let a=Math.atan2(y2-y1,x2-x1);
+    let mx=(x1+x2)/2,my=(y1+y2)/2;
+    sk.line(x1+Math.cos(a)*36,y1+Math.sin(a)*36,mx,my);
+    sk.noStroke();sk.fill(80,140,80,200);
+    sk.push();sk.translate(mx,my);sk.rotate(a);
+    sk.triangle(0,0,-8,-4,-8,4);sk.pop();sk.stroke(80,140,80,160);sk.strokeWeight(1.5);
+  }
+
+  function drawCarbonCycle(){
+    // Key reservoirs and fluxes
+    const reservoirs=[
+      {l:'ATMOSPHERE\nCO₂',x:248,y:70,col:[30,100,200],w:120,h:50},
+      {l:'PLANTS\n(Photosynthesis)',x:100,y:220,col:[30,160,30],w:120,h:50},
+      {l:'ANIMALS\n(Consumers)',x:248,y:280,col:[180,80,0],w:110,h:50},
+      {l:'SOIL &\nDECOMPOSERS',x:390,y:370,col:[120,60,0],w:120,h:50},
+      {l:'FOSSIL FUELS\n(coal, oil)',x:248,y:430,col:[60,60,60],w:120,h:50},
+    ];
+    reservoirs.forEach(r=>{
+      sk.fill(r.col[0],r.col[1],r.col[2],35);sk.stroke(r.col[0],r.col[1],r.col[2]);sk.strokeWeight(2);
+      sk.rect(r.x-r.w/2,r.y-r.h/2,r.w,r.h,8);sk.noStroke();
+      sk.fill(r.col[0],r.col[1],r.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      r.l.split('\n').forEach((l,i)=>sk.text(l,r.x,r.y+(i-r.l.split('\n').length/2+0.6)*13));sk.textStyle(sk.NORMAL);
+    });
+    // Process arrows
+    const fluxes=[
+      {x1:100,y1:195,x2:248,y2:96,col:[30,100,200],lbl:'Photosynthesis\n(CO₂ absorbed)',lx:150,ly:120},
+      {x1:248,y1:96,x2:100,y2:195,col:[200,60,30],lbl:'Respiration\n(CO₂ released)',lx:90,ly:160},
+      {x1:248,y1:96,x2:390,y2:345,col:[200,60,30],lbl:'Respiration',lx:360,ly:220},
+      {x1:100,y1:245,x2:248,y2:255,col:[160,80,0],lbl:'Feeding',lx:168,ly:242},
+      {x1:390,y1:345,x2:248,y2:96,col:[200,80,0],lbl:'Decomposition\n→ CO₂',lx:380,ly:280},
+      {x1:248,y1:405,x2:248,y2:96,col:[80,80,80],lbl:'Combustion\n(burning)',lx:164,ly:350},
+    ];
+    fluxes.forEach(f=>{
+      sk.stroke(f.col[0],f.col[1],f.col[2],180);sk.strokeWeight(2);
+      sk.line(f.x1,f.y1,f.x2,f.y2);
+      let a=Math.atan2(f.y2-f.y1,f.x2-f.x1);
+      sk.noStroke();sk.fill(f.col[0],f.col[1],f.col[2],200);
+      let mx=(f.x1+f.x2)/2,my=(f.y1+f.y2)/2;
+      sk.push();sk.translate(mx,my);sk.rotate(a);sk.triangle(0,0,-8,-4,-8,4);sk.pop();
+      sk.fill(f.col[0],f.col[1],f.col[2]);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+      f.lbl.split('\n').forEach((l,i)=>sk.text(l,f.lx,f.ly+i*11));sk.textStyle(sk.NORMAL);
+    });
+    // CO₂ particles
+    for(let i=0;i<8;i++){
+      let angle=tick*0.4+i*sk.TWO_PI/8;
+      let r=22;
+      sk.fill(30,100,200,160);sk.noStroke();sk.ellipse(248+Math.cos(angle)*r,70+Math.sin(angle)*r,8);
+    }
+  }
+
+  function drawNitrogenCycle(){
+    const r=[
+      {l:'N₂ IN ATMOSPHERE\n(78%)',x:248,y:55,col:[30,80,200],w:150,h:46},
+      {l:'NITROGEN-FIXING\nBACTERIA (roots)',x:80,y:200,col:[0,140,60],w:130,h:46},
+      {l:'NITRATES (NO₃⁻)\nin soil',x:248,y:220,col:[30,160,120],w:120,h:46},
+      {l:'PLANTS',x:380,y:200,col:[30,160,30],w:80,h:40},
+      {l:'ANIMALS',x:380,y:300,col:[160,80,0],w:80,h:40},
+      {l:'DECOMPOSERS\n(ammonium NH₄⁺)',x:200,y:340,col:[120,60,0],w:140,h:46},
+      {l:'NITRIFYING\nBACTERIA',x:248,y:140,col:[0,100,100],w:120,h:40},
+    ];
+    r.forEach(n=>{
+      sk.fill(n.col[0],n.col[1],n.col[2],30);sk.stroke(n.col[0],n.col[1],n.col[2]);sk.strokeWeight(1.5);
+      sk.rect(n.x-n.w/2,n.y-n.h/2,n.w,n.h,7);sk.noStroke();
+      sk.fill(n.col[0],n.col[1],n.col[2]);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      n.l.split('\n').forEach((l,i)=>sk.text(l,n.x,n.y+(i-n.l.split('\n').length/2+0.6)*12));sk.textStyle(sk.NORMAL);
+    });
+    const fluxes=[
+      {x1:80,y1:176,x2:248,y2:78,lbl:'Denitrification\n(NO₃⁻→N₂)',lx:140,ly:115,col:[40,80,200]},
+      {x1:248,y1:78,x2:80,y2:176,lbl:'Nitrogen\nfixation',lx:70,ly:138,col:[0,140,40]},
+      {x1:80,y1:223,x2:188,y2:223,lbl:'Nitrification\n(NH₄⁺→NO₃⁻)',lx:118,ly:240,col:[0,100,100]},
+      {x1:248,y1:197,x2:380,y2:180,lbl:'Uptake\nby roots',lx:320,ly:178,col:[30,160,30]},
+      {x1:380,y1:220,x2:380,y2:280,lbl:'Feeding',lx:418,ly:250,col:[160,80,0]},
+      {x1:380,y1:320,x2:270,y2:340,lbl:'Excretion\n+ death',lx:340,ly:348,col:[120,60,0]},
+      {x1:200,y1:317,x2:248,y2:243,lbl:'',lx:214,ly:280,col:[0,100,100]},
+    ];
+    fluxes.forEach(f=>{
+      sk.stroke(f.col[0],f.col[1],f.col[2],200);sk.strokeWeight(1.8);sk.line(f.x1,f.y1,f.x2,f.y2);
+      let a=Math.atan2(f.y2-f.y1,f.x2-f.x1);
+      sk.noStroke();sk.fill(f.col[0],f.col[1],f.col[2],200);
+      let mx=(f.x1+f.x2)/2,my=(f.y1+f.y2)/2;
+      sk.push();sk.translate(mx,my);sk.rotate(a);sk.triangle(0,0,-8,-4,-8,4);sk.pop();
+      if(f.lbl){sk.fill(f.col[0],f.col[1],f.col[2]);sk.textSize(8);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+        f.lbl.split('\n').forEach((l,i)=>sk.text(l,f.lx,f.ly+i*10));sk.textStyle(sk.NORMAL);}
+    });
+    // Key summary box
+    let ky=390;
+    sk.fill(240,255,245,220);sk.stroke(30,100,30,80);sk.strokeWeight(1);sk.rect(14,ky,462,100,7);sk.noStroke();
+    sk.fill(20,80,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('KEY PROCESSES:',20,ky+14);sk.textStyle(sk.NORMAL);
+    const kp=['Nitrogen fixation: N₂ → NH₄⁺ (bacteria in root nodules of legumes, e.g. beans)','Nitrification: NH₄⁺ → NO₂⁻ → NO₃⁻ (nitrifying bacteria in soil)','Denitrification: NO₃⁻ → N₂ (denitrifying bacteria, anaerobic conditions)','Decomposition: organic N → NH₄⁺ (decomposers — bacteria, fungi)'];
+    kp.forEach((k,i)=>{sk.fill(30);sk.textSize(9.5);sk.text(k,20,ky+30+i*18);});
+  }
+
+  function drawEnergyFlow(){
+    // Pyramid of energy
+    const levels=[
+      {l:'Producers (Grass)',e:100000,col:[30,160,30],y:420,w:400},
+      {l:'Primary Consumers (Zebra)',e:10000,col:[60,160,60],y:355,w:300},
+      {l:'Secondary Consumers (Lion)',e:1000,col:[180,100,0],y:290,w:200},
+      {l:'Tertiary Consumers (Eagle)',e:100,col:[120,60,0],y:225,w:100},
+    ];
+    levels.forEach(lv=>{
+      sk.fill(lv.col[0],lv.col[1],lv.col[2],180);sk.stroke(lv.col[0],lv.col[1],lv.col[2]);sk.strokeWeight(2);
+      sk.rect(248-lv.w/2,lv.y-30,lv.w,58,5);sk.noStroke();
+      sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(lv.l,248,lv.y-8);
+      sk.fill(255,250,200);sk.textSize(9.5);sk.text(lv.e.toLocaleString()+' kJ/m²/yr',248,lv.y+14);
+      sk.textStyle(sk.NORMAL);
+    });
+    // Lost as heat arrows
+    for(let i=0;i<3;i++){
+      let ly=levels[i].y-30+4;
+      sk.stroke(200,80,30,180);sk.strokeWeight(2);sk.setLineDash([4,3]);
+      sk.line(levels[i].x||248+levels[i].w/2-8||248+levels[i].w/2,ly,420,ly-10);sk.setLineDash([]);
+    }
+    sk.fill(200,60,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('← 90% energy LOST at each level\n(heat, movement, urine, undigested)',310,310);sk.textStyle(sk.NORMAL);
+    // 10% rule
+    sk.fill(30,80,30);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('10% RULE: Only ~10% of energy passes to the next trophic level',248,482);sk.textStyle(sk.NORMAL);
+    // Light input
+    sk.fill(255,220,0,200);sk.noStroke();sk.ellipse(50,290,36,36);
+    sk.fill(255,200,0,220);
+    for(let i=0;i<8;i++){let a=i*sk.TWO_PI/8;sk.rect(50+Math.cos(a)*20-2,290+Math.sin(a)*20-2,4,12,2);}
+    sk.fill(180,140,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('SUNLIGHT',50,340);
+    sk.stroke(200,170,0,180);sk.strokeWeight(2);sk.line(68,290,158,400);sk.textStyle(sk.NORMAL);
+    // Efficiency label
+    sk.fill(30,80,30,180);sk.textSize(9);sk.textAlign(sk.LEFT);
+    sk.text('Only 1-5% of light\nenergy is captured\nby photosynthesis',12,155);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[30,100,30];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Food Webs','Carbon Cycle','Nitrogen Cycle','Energy Flow'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Food Chains & Webs',b:'Food chain: one linear path of energy.\nFood web: many interconnected food chains.\nArrows show direction of energy flow.'},{t:'Producers & Consumers',b:'Producers (plants): make own food (photosynthesis).\nPrimary consumers: eat producers (herbivores).\nSecondary/tertiary: eat other animals (carnivores).'},{t:'Decomposers',b:'Bacteria and fungi break down dead organic matter.\nRecycle nutrients back into soil.\nEssential for all cycles.'},{t:'Ecosystem Disruption',b:'Removing one species affects all others.\nPesticides can accumulate up food chain.\nIntroducing alien species disrupts web.'}],
+      [{t:'Photosynthesis & Respiration',b:'Photosynthesis: CO₂ + H₂O → glucose + O₂.\nRespiration: glucose + O₂ → CO₂ + H₂O + energy.\nThese two processes BALANCE the carbon cycle.'},{t:'Carbon Stores (sinks)',b:'Oceans dissolve CO₂.\nForests hold carbon as wood.\nFossil fuels hold ancient carbon.'},{t:'Human Impact',b:'Burning fossil fuels releases stored CO₂.\nDeforestation reduces CO₂ absorption.\nBoth increase greenhouse effect → climate change.'},{t:'Greenhouse Effect',b:'CO₂ traps heat from sun in atmosphere.\nSome greenhouse effect is natural and essential.\nEnhanced greenhouse effect causes global warming.'}],
+      [{t:'Why Nitrogen?',b:'Nitrogen needed for proteins and DNA/RNA.\nAtmosphere is 78% N₂ but plants cannot use it.\nMust be converted to usable form (NO₃⁻).'},{t:'Nitrogen Fixation',b:'Bacteria (Rhizobium) live in root nodules of legumes.\nConvert N₂ → NH₄⁺ (ammonium).\nLegumes enrich soil: crop rotation benefit.'},{t:'Agricultural Impact',b:'Fertilisers add nitrates to soil.\nExcess washes into rivers → eutrophication.\nAlgal bloom → deoxygenation → fish death.'},{t:'Eutrophication',b:'Fertiliser runs off into water bodies.\nAlgae grow rapidly, block sunlight.\nPlants die, bacteria decompose → use all O₂.\nFish and other animals suffocate.'}],
+      [{t:'Energy Flow Efficiency',b:'10% rule: only ~10% energy passes upward.\nOther 90% lost as heat, movement, waste.\nThis limits length of food chains (usually 4-5 levels).'},{t:'Biomass Pyramids',b:'Biomass = total dry mass at each trophic level.\nAlways decreases up the pyramid.\nReflects loss of energy at each stage.'},{t:'Why eat lower?',b:'Eating plants more energy-efficient than eating meat.\n10% efficiency means less land/water needed.\nVegetarian diet uses far fewer resources.'},{t:'Ecological Efficiency',b:'Assimilation efficiency: food absorbed vs eaten.\nProduction efficiency: growth vs assimilation.\nRuminants are less efficient (fermentation losses).'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(ecoMcq){ ecoMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

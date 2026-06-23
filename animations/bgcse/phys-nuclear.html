@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuclear Physics — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#4a148c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ce93d8;color:#4a148c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ce93d8}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #4a148c;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#4a148c;transition:all .15s}
+    .btn.on{background:#4a148c;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Nuclear Physics &amp; Radioactivity</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">☢️ Radiation Types</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">📉 Half-Life</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">⚛️ Nuclear Reactions</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔬 Applications</button>
+  <button class="btn" id="b-prac" onclick="setNuclearPractice(!nuclearMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nuclear Physics</h2><ul><li><b>Alpha (α)</b>: 2 protons + 2 neutrons (He nucleus). Stopped by paper. Highly ionising.</li><li><b>Beta (β)</b>: Fast electron from nucleus (neutron → proton). Stopped by 3mm Al.</li><li><b>Gamma (γ)</b>: High-energy electromagnetic wave. Stopped by thick lead/concrete. Most penetrating.</li><li><b>Half-life</b>: Time for half the radioactive nuclei to decay (activity halves each half-life).</li><li><b>After n half-lives</b>: Fraction remaining = (½)ⁿ. e.g., 3 half-lives → 1/8 remains.</li><li><b>Fission</b>: Large nucleus splits → 2 smaller nuclei + neutrons + energy.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let nuclearMcq=false;
+const NUCLEAR_MCQ=[
+  {q:'An alpha particle consists of:',opts:['2 protons and 2 neutrons (helium nucleus)','1 proton and 0 neutrons','0 protons and 1 neutron','1 electron'],c:0,tip:'Alpha particles are identical to helium-4 nuclei: 2 protons + 2 neutrons.'},
+  {q:'Which type of radiation is MOST penetrating?',opts:['Gamma rays','Alpha particles','Beta particles','Neutrons'],c:0,tip:'Gamma rays are the most penetrating — they require thick lead or concrete to stop them.'},
+  {q:'Half-life is defined as the time for:',opts:['Half the radioactive nuclei to decay','All the nuclei to decay','The activity to double','The mass to halve'],c:0,tip:'In one half-life, exactly half the remaining radioactive nuclei decay.'},
+  {q:'Beta decay involves the conversion of:',opts:['A neutron into a proton and an electron','A proton into a neutron','Two protons into an alpha particle','A nucleus into gamma radiation only'],c:0,tip:'In beta (β⁻) decay: neutron → proton + electron (beta particle) + antineutrino.'},
+  {q:'After 3 half-lives, what fraction of radioactive nuclei remains?',opts:['1/8','1/4','1/2','1/6'],c:0,tip:'After each half-life: 1/2 → 1/4 → 1/8. After n half-lives: (½)ⁿ remains.'},
+  {q:'Nuclear fission releases energy by:',opts:['Splitting a large nucleus into two smaller ones','Fusing two nuclei together','Emitting gamma rays only','Absorbing neutrons'],c:0,tip:'Fission splits heavy nuclei (e.g., U-235) when struck by neutrons, releasing energy and more neutrons.'},
+  {q:'Which radiation type is NOT deflected by a magnetic field?',opts:['Gamma rays','Alpha particles','Beta particles','Both alpha and beta'],c:0,tip:'Gamma rays are electromagnetic waves (no charge) — not deflected. Alpha and beta are charged particles.'}
+];
+let nuclearMcqIdx=0,nuclearMcqSel=-1,nuclearMcqScore=0,nuclearMcqDone=false,nuclearMcqFeedback=null;
+function setNuclearPractice(on){nuclearMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){nuclearMcqIdx=0;nuclearMcqSel=-1;nuclearMcqScore=0;nuclearMcqDone=false;nuclearMcqFeedback=null;}}
+function drawNuclearMCQ(s){s.background(252,252,240);if(nuclearMcqDone){s.fill(74,20,140);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+nuclearMcqScore+'/'+NUCLEAR_MCQ.length,440,215);let msg=nuclearMcqScore===NUCLEAR_MCQ.length?'Perfect! You know Nuclear Physics!':nuclearMcqScore>=5?'Great job!':'Review radiation types, half-life & fission.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=NUCLEAR_MCQ[nuclearMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(nuclearMcqIdx/NUCLEAR_MCQ.length),10,5);s.fill(74,20,140);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(nuclearMcqIdx+1)+' of '+NUCLEAR_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=nuclearMcqSel===i,correct=nuclearMcqFeedback!==null&&i===q.c,wrong=nuclearMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(nuclearMcqFeedback){s.fill(nuclearMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(nuclearMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function nuclearMcqClick(mx,my){if(nuclearMcqDone){if(mx>310&&mx<570&&my>290&&my<334){nuclearMcqIdx=0;nuclearMcqSel=-1;nuclearMcqScore=0;nuclearMcqDone=false;nuclearMcqFeedback=null;}return;}if(nuclearMcqFeedback!==null){nuclearMcqIdx++;nuclearMcqSel=-1;nuclearMcqFeedback=null;if(nuclearMcqIdx>=NUCLEAR_MCQ.length)nuclearMcqDone=true;return;}NUCLEAR_MCQ[nuclearMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){nuclearMcqSel=i;nuclearMcqFeedback=i===NUCLEAR_MCQ[nuclearMcqIdx].c?'correct':'wrong';if(i===NUCLEAR_MCQ[nuclearMcqIdx].c)nuclearMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(nuclearMcq){ drawNuclearMCQ(sk); return; }tick+=0.025;sk.background(252,248,255);
+    if(tab===0) drawRadTypes();
+    else if(tab===1) drawHalfLife();
+    else if(tab===2) drawNuclear();
+    else drawApplications();
+    drawInfoPanel();
+  };
+
+  function drawRadTypes(){
+    sk.fill(80,0,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Types of Ionising Radiation',248,22);sk.textStyle(sk.NORMAL);
+    // Source in centre
+    let sx=200,sy=260;
+    sk.fill(60,60,60,200);sk.stroke(30,30,30);sk.strokeWeight(2);sk.ellipse(sx,sy,32,32);
+    sk.noStroke();sk.fill(60,60,60);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('☢',sx,sy+5);sk.textStyle(sk.NORMAL);
+    sk.fill(40,40,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Source',sx,sy+28);sk.textStyle(sk.NORMAL);
+    // Alpha particle (up-right)
+    let at=(tick*0.4)%1;
+    let ax=sx+at*120,ay=sy-at*80;
+    sk.fill(200,80,0,220);sk.noStroke();sk.ellipse(ax,ay,16);
+    sk.fill(200,60,0);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('α',ax,ay+3);sk.textStyle(sk.NORMAL);
+    // Alpha track (short)
+    sk.stroke(200,80,0,120);sk.strokeWeight(1.5);sk.line(sx+16,sy-10,sx+140,sy-90);
+    sk.noStroke();sk.fill(200,80,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('α ALPHA',sx+150,sy-90);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9.5);
+    sk.text('• Helium nucleus (2p + 2n)',sx+150,sy-74);
+    sk.text('• Charge: +2',sx+150,sy-58);
+    sk.text('• Stopped by paper / skin',sx+150,sy-42);
+    sk.text('• Most ionising',sx+150,sy-26);
+    // Beta particle (right)
+    let bt=(tick*0.5)%1;
+    let bx=sx+bt*150,by2=sy;
+    sk.fill(30,80,200,220);sk.noStroke();sk.ellipse(bx,by2,12);
+    sk.fill(30,80,200);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('β',bx,by2+3);sk.textStyle(sk.NORMAL);
+    sk.stroke(30,80,200,120);sk.strokeWeight(1.5);sk.line(sx+16,sy,sx+350,sy);
+    sk.noStroke();sk.fill(30,80,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('β BETA',sx+150,sy+4);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9.5);
+    sk.text('• Fast electron',sx+150,sy+18);sk.text('• Charge: −1',sx+150,sy+32);
+    sk.text('• Stopped by 3mm aluminium',sx+150,sy+46);sk.text('• Moderately ionising',sx+150,sy+60);
+    // Gamma ray (down-right)
+    let gt=(tick*0.6)%1;
+    let gx2=sx+gt*100,gy2=sy+gt*100;
+    sk.fill(60,0,120,220);sk.noStroke();sk.ellipse(gx2,gy2,10);
+    sk.stroke(60,0,120,120);sk.strokeWeight(1.5);sk.setLineDash([6,5]);
+    sk.line(sx+12,sy+12,sx+200,sy+200);sk.setLineDash([]);
+    sk.noStroke();sk.fill(60,0,120);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('γ GAMMA',sx+210,sy+196);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9.5);
+    sk.text('• Electromagnetic wave',sx+210,sy+212);sk.text('• No charge, no mass',sx+210,sy+228);
+    sk.text('• Reduced by thick lead/concrete',sx+210,sy+244);sk.text('• Least ionising, most penetrating',sx+210,sy+260);
+    // Comparison table
+    let ty=380;
+    sk.fill(245,240,255,220);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(14,ty,462,120,7);sk.noStroke();
+    const rows=[['Type','Symbol','Charge','Mass','Speed','Stopped by'],['Alpha','⁴₂He','2+','4u','0.1c','Paper/5cm air'],['Beta','e⁻','1−','~0','≤0.99c','3mm aluminium'],['Gamma','γ','0','0','c (light)','Thick lead/concrete']];
+    const cx=[22,75,110,148,188,236];
+    rows.forEach((row,ri)=>{
+      let ry=ty+16+ri*24;
+      if(ri===0){sk.fill(80,0,160);sk.textStyle(sk.BOLD);}else sk.fill(30);sk.textStyle(ri===0?sk.BOLD:sk.NORMAL);
+      row.forEach((cell,ci)=>{sk.textSize(8.5);sk.textAlign(ci===0?sk.LEFT:sk.CENTER);sk.text(cell,cx[ci],ry);});
+    });sk.textStyle(sk.NORMAL);
+  }
+
+  function drawHalfLife(){
+    sk.fill(80,0,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Radioactive Decay & Half-Life',248,22);sk.textStyle(sk.NORMAL);
+    // Atom count visual
+    let totalAtoms=64;
+    let decayProgress=((tick*0.2)%4)/4;
+    let remaining=Math.round(totalAtoms*Math.pow(0.5,decayProgress*4));
+    let cx=120,cy=160,cw=220,ch=140;
+    sk.fill(240,230,255,160);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(cx-10,cy-10,cw,ch,5);sk.noStroke();
+    for(let i=0;i<totalAtoms;i++){
+      let col=i<remaining?[160,0,60,220]:[180,180,180,80];
+      sk.fill(col[0],col[1],col[2],col[3]);
+      sk.ellipse(cx+10+(i%8)*26,cy+10+Math.floor(i/8)*26,18);
+    }
+    sk.fill(80,0,120);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Remaining: '+remaining+'  |  Decayed: '+(totalAtoms-remaining),cx+cw/2-10,cy+ch+16);sk.textStyle(sk.NORMAL);
+    // Half-life decay curve
+    let gx=14,gy=460,gw=462,gh=260;
+    sk.noFill();sk.stroke(180,180,200);sk.strokeWeight(1);
+    for(let i=0;i<=4;i++)sk.line(gx,gy-i*gh/4,gx+gw,gy-i*gh/4);
+    sk.stroke(80,80,100);sk.strokeWeight(2);sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    // Decay curve
+    sk.noFill();sk.stroke(160,0,60,220);sk.strokeWeight(3);sk.beginShape();
+    for(let i=0;i<=gw;i++){
+      let t2=i/gw*4;let n=Math.pow(0.5,t2);sk.vertex(gx+i,gy-n*gh);
+    }sk.endShape();
+    // Animated current point
+    let cx2=gx+(tick*0.5%1)*(gw/4)*4,ct=((tick*0.5%1)*4);
+    let cn=Math.pow(0.5,ct);
+    sk.fill(255,100,0,220);sk.noStroke();sk.ellipse(cx2,gy-cn*gh,12);
+    // Half-life markers
+    [1,2,3,4].forEach(n=>{
+      let x=gx+n*gw/4;let y=gy-Math.pow(0.5,n)*gh;
+      sk.stroke(0,100,180,160);sk.strokeWeight(1.5);sk.setLineDash([4,4]);
+      sk.line(x,gy,x,y);sk.line(gx,y,x,y);sk.setLineDash([]);
+      sk.noStroke();sk.fill(0,80,160);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('t₁/₂',x,gy+14);sk.text((100*Math.pow(0.5,n)).toFixed(1)+'%',gx-34,y+3);sk.textStyle(sk.NORMAL);
+    });
+    // Labels
+    sk.noStroke();sk.fill(60);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Time (half-lives) →',gx+gw/2,gy+26);
+    sk.push();sk.translate(gx-42,gy-gh/2);sk.rotate(-sk.PI/2);sk.text('% of original remaining →',0,0);sk.pop();
+    sk.fill(160,0,60);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.RIGHT);
+    sk.text('N = N₀ × (½)ⁿ  where n = t/t₁/₂',gx+gw,gy-gh+14);sk.textStyle(sk.NORMAL);
+    // Examples
+    sk.fill(80,0,120);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Carbon-14: t₁/₂ = 5730 years (radiocarbon dating)',370,160);
+    sk.text('Radon-222: t₁/₂ = 3.82 days',370,178);
+    sk.text('Uranium-238: t₁/₂ = 4.5 billion years',370,196);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawNuclear(){
+    sk.fill(80,0,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Nuclear Equations',248,22);sk.textStyle(sk.NORMAL);
+    // Alpha decay
+    let ay=60;
+    sk.fill(255,235,220,220);sk.stroke(200,80,0,80);sk.strokeWeight(1);sk.rect(14,ay,462,100,7);sk.noStroke();
+    sk.fill(180,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ALPHA DECAY (loses ⁴He nucleus):',20,ay+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('²³⁸₉₂U   →   ²³⁴₉₀Th   +   ⁴₂He',248,ay+40);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.textAlign(sk.CENTER);
+    sk.text('Mass: 238 → 234 + 4  ✓    Atomic number: 92 → 90 + 2  ✓',248,ay+60);
+    sk.text('New element has Z−2, A−4 from parent',248,ay+80);
+    // Beta decay
+    let by2=174;
+    sk.fill(220,235,255,220);sk.stroke(30,80,200,80);sk.strokeWeight(1);sk.rect(14,by2,462,100,7);sk.noStroke();
+    sk.fill(20,60,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('BETA DECAY (neutron → proton + electron):',20,by2+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('¹⁴₆C   →   ¹⁴₇N   +   ⁰₋₁e',248,by2+40);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.textAlign(sk.CENTER);
+    sk.text('Mass: 14 → 14 + 0  ✓    Atomic number: 6 → 7 + (−1)  ✓',248,by2+60);
+    sk.text('New element has Z+1, same A from parent',248,by2+80);
+    // Gamma emission
+    let gy2=288;
+    sk.fill(240,220,255,220);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(14,gy2,462,70,7);sk.noStroke();
+    sk.fill(80,0,160);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('GAMMA EMISSION:',20,gy2+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);sk.textAlign(sk.LEFT);
+    sk.text('Gamma rays emitted when nucleus loses excess energy (no change in Z or A).',20,gy2+30);
+    sk.text('Often follows alpha or beta decay. Symbol: γ or ⁰₀γ',20,gy2+48);
+    // Notation
+    let ny=370;
+    sk.fill(248,240,255,220);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(14,ny,462,130,7);sk.noStroke();
+    sk.fill(80,0,160);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('NUCLEAR NOTATION  ᴬᴢX:',20,ny+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['A = mass number (protons + neutrons) — top left',
+     'Z = atomic number (protons) — bottom left',
+     'X = element symbol',
+     'Neutrons = A − Z',
+     'In any nuclear equation: sum of top numbers and sum of bottom numbers must balance'].forEach((l,i)=>sk.text(l,20,ny+32+i*20));
+    // Fission and fusion
+    let fy=510;
+    if(fy<H){
+      sk.fill(255,245,220,220);sk.stroke(180,100,0,80);sk.strokeWeight(1);sk.rect(14,fy,462,80,7);sk.noStroke();
+    }
+  }
+
+  function drawApplications(){
+    sk.fill(80,0,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Applications of Nuclear Physics',248,22);sk.textStyle(sk.NORMAL);
+    const apps=[
+      {title:'Nuclear Power (Fission)',desc:'Heavy nuclei split (e.g. ²³⁵U) releasing huge energy.\nChain reaction controlled in reactor.\nProduces steam → turns turbine → generates electricity.\nNo CO₂, but radioactive waste is a problem.',col:[200,60,30]},
+      {title:'Medical Uses',desc:'PET scans: positron-emitting isotopes (e.g. ¹⁸F-FDG) detect cancer.\nRadiotherapy: gamma rays kill cancer cells.\nMedical imaging: X-rays, gamma cameras.\nSterilising medical equipment with gamma rays.',col:[30,120,200]},
+      {title:'Carbon-14 Dating',desc:'Living organisms absorb ¹⁴C from atmosphere.\nWhen organism dies, ¹⁴C decays (t₁/₂ = 5730 yrs).\nMeasure remaining ¹⁴C ratio → calculate age.\nAccurate up to ~50,000 years.',col:[0,140,60]},
+      {title:'Nuclear Fusion',desc:'Light nuclei combine to release enormous energy.\ne.g. 2H + 3H → 4He + n (net 17.6 MeV)\nSun\'s energy source. Clean, huge fuel supply.\nJET/ITER: challenge is achieving 100M°C plasma.',col:[160,0,160]},
+      {title:'Radiation Safety',desc:'ALARA principle: As Low As Reasonably Achievable.\nShielding: lead/concrete for gamma; paper for alpha.\nDistance: intensity ∝ 1/r² (inverse square law).\nMonitoring: Geiger-Müller tube, film badges.',col:[100,60,0]},
+      {title:'Smoke Detectors',desc:'Contain ²⁴¹Am (americium), an alpha source.\nAlpha ions air between plates → small current.\nSmoke absorbs alpha → current drops → alarm triggers.\nSafe because alpha stopped by casing.',col:[60,60,60]},
+    ];
+    apps.forEach((a,i)=>{
+      let x=14+(i%2)*234,y=46+Math.floor(i/2)*150;
+      sk.fill(a.col[0],a.col[1],a.col[2],30);sk.stroke(a.col[0],a.col[1],a.col[2],100);sk.strokeWeight(1.5);
+      sk.rect(x,y,228,140,6);sk.noStroke();
+      sk.fill(a.col[0],a.col[1],a.col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(a.title,x+8,y+14);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(9);
+      a.desc.split('\n').forEach((l,li)=>sk.text(l,x+8,y+28+li*26,212,100));
+    });
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[80,0,160];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Radiation Types','Half-Life','Nuclear Equations','Applications'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'The Nucleus',b:'Made of protons (positive) and neutrons (neutral).\nHeld together by strong nuclear force.\nNucleus is tiny — 10⁻¹⁵ m (atom is 10⁻¹⁰ m).'},{t:'Radioactivity',b:'Spontaneous, random emission of radiation from unstable nuclei.\nCannot be controlled by temperature, pressure, or chemistry.\nDecay rate only depends on the number of nuclei present.'},{t:'Ionisation',b:'Radiation knocks electrons off atoms → ionises them.\nAlpha: most ionising (slow, heavy, large charge).\nGamma: least ionising (no charge, very fast).'},{t:'Detection',b:'Geiger-Müller (GM) tube: counts ionising radiation.\nPhotographic film: darkens when exposed to radiation.\nCloud/bubble chambers: show particle tracks.'}],
+      [{t:'Half-Life Definition',b:'Time for half the radioactive nuclei in a sample to decay.\nNuclear property — unique to each isotope.\nNot affected by temperature, pressure, or chemical state.'},{t:'Calculating Remaining Activity',b:'N = N₀ × (½)ⁿ where n = t / t₁/₂\nAfter 1 half-life: 50% remains.\nAfter 2: 25%. After 3: 12.5%. After 4: 6.25%.'},{t:'Activity',b:'Activity = rate of decay = number of decays per second.\nUnit: becquerel (Bq). 1 Bq = 1 decay/s.\nActivity also halves every half-life.'},{t:'Uses of Half-Life',b:'Short t₁/₂: medical tracers (minimal dose to patient).\nLong t₁/₂: geological dating, nuclear waste issues.\nCarbon-14 (5730y): archaeological dating.'}],
+      [{t:'Nuclear Notation',b:'ᴬᴢX: A = mass number, Z = atomic number.\nProtons = Z. Neutrons = A−Z. Electrons = Z (neutral).'},{t:'Alpha (α) Decay',b:'Parent → Daughter + ⁴₂He\nMass number decreases by 4.\nAtomic number decreases by 2.'},{t:'Beta (β) Decay',b:'Neutron → proton + electron\nMass number unchanged.\nAtomic number increases by 1.'},{t:'Conservation Laws',b:'In nuclear equations:\n• Total mass number (A) is conserved.\n• Total atomic number (Z) is conserved.\n• Total energy is conserved (E=mc²).'}],
+      [{t:'Nuclear Fission',b:'Heavy nucleus (e.g. ²³⁵U) splits into two lighter nuclei.\nReleases neutrons → chain reaction possible.\nEnormous energy released per reaction.\nUsed in nuclear power plants and atomic bombs.'},{t:'Nuclear Fusion',b:'Light nuclei combine → heavier nucleus.\nReleases even more energy than fission.\nRequires very high temperature (~100M°C).\nSun\'s energy source. Clean but very difficult to control.'},{t:'Hazards of Radiation',b:'Ionising radiation damages DNA → cancer.\nExternal: gamma and beta penetrate skin.\nInternal: swallowed/inhaled alpha most dangerous.\nAlways use lead shielding and maintain distance.'},{t:'Background Radiation',b:'Naturally occurring radiation always present.\nSources: radon gas, cosmic rays, rocks, food, medical.\nMust subtract from measured counts in experiments.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(nuclearMcq){ nuclearMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

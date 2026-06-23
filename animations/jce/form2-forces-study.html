@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Forces & Motion — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,14,22]))}
+
+const STEPS=[
+  {
+    title:'What is a Force?',
+    body:`A <strong>force</strong> is a push or pull that can change an object's:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Speed</strong> (accelerate or decelerate)</li>
+      <li><strong>Direction</strong> of motion</li>
+      <li><strong>Shape</strong> (deform or compress)</li>
+    </ul>
+    <br>
+    Forces are <strong>vectors</strong> — they have both magnitude (size) and direction.
+    <br><br>
+    Unit: <strong>Newton (N)</strong>
+    <br><br>
+    Common forces:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Gravity/Weight</strong> — pulls objects toward Earth's centre</li>
+      <li><strong>Normal force</strong> — surface pushes back perpendicular to contact</li>
+      <li><strong>Friction</strong> — opposes relative motion between surfaces</li>
+      <li><strong>Tension</strong> — force in a stretched string/rope</li>
+      <li><strong>Air resistance (drag)</strong> — opposes motion through air</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Central object
+      sk.fill(52,152,219,180);sk.noStroke();sk.rect(W*0.42,H*0.4,W*0.16,H*0.2,6);
+      // Force arrows
+      const forces=[
+        {n:'Weight (W)',c:[231,76,60],dx:0,dy:1,ox:0.5,oy:0.6},
+        {n:'Normal (N)',c:[46,204,113],dx:0,dy:-1,ox:0.5,oy:0.4},
+        {n:'Friction',c:[241,196,15],dx:-1,dy:0,ox:0.42,oy:0.5},
+        {n:'Push',c:[155,89,182],dx:1,dy:0,ox:0.58,oy:0.5},
+      ];
+      forces.forEach((f,i)=>{
+        const cx=f.ox*W,cy=f.oy*H;
+        const len=55+10*Math.sin(t*1.5+i);
+        sk.stroke(...f.c,200);sk.strokeWeight(3);sk.fill(...f.c,200);
+        const ex=cx+f.dx*len,ey=cy+f.dy*len;
+        sk.line(cx,cy,ex,ey);
+        // Arrowhead
+        const ang=Math.atan2(f.dy,f.dx);
+        sk.push();sk.translate(ex,ey);sk.rotate(ang);sk.noStroke();
+        sk.triangle(0,0,-10,-5,-10,5);sk.pop();
+        // Label
+        sk.fill(...f.c);sk.textSize(9);sk.textAlign(f.dx<0?sk.RIGHT:f.dx>0?sk.LEFT:sk.CENTER);
+        const lx=f.dx<0?ex-8:f.dx>0?ex+8:ex,ly=f.dy<0?ey-10:f.dy>0?ey+10:ey;
+        sk.text(f.n,lx,ly);
+      });
+    }
+  },
+  {
+    title:"Newton's Laws of Motion",
+    body:`<strong>Newton's 1st Law</strong>: An object remains at rest or moves in a straight line at constant speed UNLESS a net (unbalanced) force acts on it.
+    <br><br>
+    <strong>Newton's 2nd Law</strong>: Net force = mass × acceleration
+    <br>
+    <div style="background:#0d47a1;border-radius:8px;padding:10px 14px;margin:8px 0;font-family:monospace;font-size:.9rem;text-align:center;color:#90caf9">
+      F = m × a &nbsp;&nbsp; (force in N, mass in kg, acceleration in m/s²)
+    </div>
+    <strong>Newton's 3rd Law</strong>: For every action there is an equal and opposite reaction.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Rocket pushes gas backward → gas pushes rocket forward</li>
+      <li>You push down on Earth → Earth pushes you up</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Law 1: ball at rest, then moving
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Law 1: Inertia',W*0.25,H*0.12);
+      const ballX=W*0.08+(t*2%1)*(W*0.35);
+      sk.fill(52,152,219,200);sk.noStroke();sk.circle(ballX,H*0.28,22);
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);sk.line(W*0.08,H*0.28,W*0.43,H*0.28);
+      // Law 2: F=ma
+      sk.fill(255);sk.textStyle(sk.BOLD);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Law 2: F = m × a',W*0.5,H*0.5);
+      const accel=0.5+0.5*Math.sin(t);
+      const boxx=W*0.38+accel*50;
+      sk.fill(231,76,60,180);sk.noStroke();sk.rect(boxx,H*0.6,36,26,4);
+      sk.stroke(231,76,60,200);sk.strokeWeight(2.5);
+      sk.line(boxx-10,H*0.6+13,boxx-40,H*0.6+13);
+      sk.fill(231,76,60);sk.noStroke();
+      sk.triangle(boxx-10,H*0.6+10,boxx-10,H*0.6+16,boxx,H*0.6+13);
+      // Law 3: Rocket
+      sk.fill(255);sk.textStyle(sk.BOLD);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Law 3: Action = Reaction',W*0.75,H*0.12);
+      const rocketX=W*0.65+Math.sin(t)*2;
+      sk.fill(200,200,200,200);sk.noStroke();
+      sk.triangle(rocketX,H*0.2,rocketX-12,H*0.38,rocketX+12,H*0.38);
+      sk.rect(rocketX-12,H*0.38,24,30,0,0,4,4);
+      for(let i=0;i<4;i++){
+        const fh=18+12*Math.sin(t*3+i);
+        sk.fill(255,120,0,180+30*Math.sin(t*3+i));sk.noStroke();
+        sk.ellipse(rocketX-8+i*5,H*0.68,6,fh);
+      }
+      sk.stroke(100,200,255,160);sk.strokeWeight(1.5);
+      sk.line(rocketX,H*0.35,rocketX,H*0.22);
+      sk.fill(100,200,255);sk.noStroke();
+      sk.triangle(rocketX-5,H*0.22,rocketX+5,H*0.22,rocketX,H*0.16);
+      sk.fill(255,120,0);
+      sk.triangle(rocketX-5,H*0.68,rocketX+5,H*0.68,rocketX,H*0.76);
+    }
+  },
+  {
+    title:'Speed, Velocity & Acceleration',
+    body:`<strong>Speed</strong> = distance ÷ time &nbsp;&nbsp; (scalar — no direction)
+    <br>Unit: m/s
+    <br><br>
+    <strong>Velocity</strong> = displacement ÷ time &nbsp;&nbsp; (vector — has direction)
+    <br>Unit: m/s
+    <br><br>
+    <strong>Acceleration</strong> = change in velocity ÷ time
+    <br>
+    <div style="background:#0d47a1;border-radius:8px;padding:8px 14px;margin:8px 0;font-family:monospace;font-size:.88rem;text-align:center;color:#90caf9">
+      a = (v − u) / t &nbsp;&nbsp; (m/s²)
+    </div>
+    where u = initial velocity, v = final velocity, t = time.
+    <br><br>
+    Positive acceleration: speeding up. Negative acceleration (deceleration): slowing down.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Distance-time graph
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Distance-Time Graph',W*0.28,H*0.1);
+      const gx=W*0.05,gy=H*0.18,gw=W*0.42,gh=H*0.42;
+      sk.stroke(255,255,255,80);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(gx,gy+gh,gx+gw,gy+gh); // x-axis
+      sk.line(gx,gy,gx,gy+gh); // y-axis
+      sk.fill(200);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Time →',gx+gw/2,gy+gh+12);
+      sk.push();sk.translate(gx-10,gy+gh/2);sk.rotate(-sk.HALF_PI);sk.text('Distance →',0,0);sk.pop();
+      // Constant speed (straight line)
+      sk.stroke(46,204,113,200);sk.strokeWeight(2);sk.noFill();
+      sk.line(gx,gy+gh,gx+gw*0.45,gy+gh*0.1);
+      sk.fill(46,204,113);sk.textSize(8);sk.textAlign(sk.LEFT);
+      sk.text('Const. speed',gx+gw*0.46,gy+gh*0.12);
+      // Stationary (flat line)
+      sk.stroke(231,76,60,200);sk.strokeWeight(2);sk.noFill();
+      sk.line(gx+gw*0.48,gy+gh*0.45,gx+gw*0.78,gy+gh*0.45);
+      sk.fill(231,76,60);sk.text('Stationary',gx+gw*0.8,gy+gh*0.47);
+      // Accelerating (curve)
+      sk.stroke(52,152,219,200);sk.strokeWeight(2);sk.noFill();
+      sk.beginShape();
+      for(let x=0;x<W*0.4;x+=4){
+        const nx=x/(W*0.4);
+        sk.vertex(gx+x,gy+gh-nx*nx*gh*0.9);
+      }
+      sk.endShape();
+      sk.fill(52,152,219);sk.text('Accelerating',gx+gw*0.42,gy+gh*0.1);
+      // Moving point on straight line
+      const prog=(t*0.08)%1;
+      sk.fill(255,220,50,220);sk.noStroke();
+      sk.circle(gx+prog*gw*0.45,gy+gh-prog*gh*0.9,9);
+    }
+  },
+  {
+    q:'Types of Forces — Labeled Diagram',
+    content:`<h3>Types of Forces — Labeled Diagram</h3><p>A force is a push or pull that can change an object's speed, direction, or shape. Forces are measured in Newtons (N) and are vector quantities — they have both size and direction.</p><ul><li>Contact forces (push, pull, friction, normal) require physical contact between surfaces</li><li>Non-contact forces (gravity/weight, magnetism, electrostatic) act at a distance without touching</li><li>Weight always acts downward toward the centre of the Earth; the normal force is the surface pushing back up</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Types of Forces</text>
+  <!-- Central object (box) -->
+  <rect x="170" y="110" width="80" height="60" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2.5" rx="5"/>
+  <text x="210" y="144" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Object</text>
+  <!-- Push arrow (from left) -->
+  <line x1="60" y1="140" x2="165" y2="140" stroke="#e53935" stroke-width="3" marker-end="url(#arr)"/>
+  <rect x="20" y="124" width="50" height="28" fill="#e53935" rx="4"/>
+  <text x="45" y="140" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">PUSH</text>
+  <text x="45" y="177" text-anchor="middle" font-size="9" fill="#c62828">Contact force</text>
+  <!-- Pull arrow (from right) -->
+  <line x1="360" y1="140" x2="255" y2="140" stroke="#1565c0" stroke-width="3" marker-end="url(#arr)"/>
+  <rect x="350" y="124" width="50" height="28" fill="#1565c0" rx="4"/>
+  <text x="375" y="140" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">PULL</text>
+  <text x="375" y="177" text-anchor="middle" font-size="9" fill="#0d47a1">Contact force</text>
+  <!-- Weight/Gravity arrow (down) -->
+  <line x1="210" y1="175" x2="210" y2="230" stroke="#e65100" stroke-width="3" marker-end="url(#arr)"/>
+  <text x="210" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">WEIGHT</text>
+  <text x="210" y="258" text-anchor="middle" font-size="9" fill="#e65100">(gravity, downward)</text>
+  <!-- Normal force (up) -->
+  <line x1="210" y1="110" x2="210" y2="55" stroke="#2e7d32" stroke-width="3" marker-end="url(#arr)"/>
+  <text x="210" y="48" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">NORMAL</text>
+  <text x="210" y="38" text-anchor="middle" font-size="9" fill="#2e7d32">(surface pushes up)</text>
+  <!-- Friction arrow (opposing motion, from right) -->
+  <line x1="155" y1="180" x2="90" y2="180" stroke="#f9a825" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="115" y="198" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">FRICTION</text>
+  <text x="115" y="209" text-anchor="middle" font-size="8" fill="#555">opposes motion</text>
+  <!-- Air resistance (curved dashed) -->
+  <line x1="265" y1="180" x2="330" y2="180" stroke="#9c27b0" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+  <text x="310" y="198" text-anchor="middle" font-size="9" fill="#9c27b0">AIR</text>
+  <text x="310" y="209" text-anchor="middle" font-size="9" fill="#9c27b0">RESISTANCE</text>
+  <!-- Legend box -->
+  <rect x="10" y="226" width="400" height="38" fill="#fff" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="210" y="240" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">All forces measured in NEWTONS (N) — vectors (have direction)</text>
+  <text x="210" y="255" text-anchor="middle" font-size="9" fill="#555">Contact forces need touching | Non-contact: gravity, magnetism, electrostatic</text>
+</svg>`
+  },
+  {
+    q:'Balanced vs Unbalanced Forces',
+    content:`<h3>Balanced vs Unbalanced Forces</h3><p>Whether an object accelerates depends on the resultant (net) force acting on it. When all forces cancel out, the object is in equilibrium. When a net force remains, the object accelerates in that direction.</p><ul><li>Balanced forces: net force = 0 N — the object stays stationary OR moves at constant speed (Newton's 1st Law)</li><li>Unbalanced forces: net force ≠ 0 N — the object accelerates in the direction of the resultant force (F = ma)</li><li>To find the resultant: add forces in the same direction, subtract forces in opposite directions</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e53935"/></marker>
+  <marker id="arrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1565c0"/></marker></defs>
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Balanced vs Unbalanced Forces</text>
+  <!-- Left: Balanced Forces -->
+  <rect x="10" y="26" width="196" height="220" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <rect x="10" y="26" width="196" height="24" fill="#2e7d32" rx="6"/>
+  <text x="108" y="43" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">BALANCED FORCES</text>
+  <!-- Balanced box -->
+  <rect x="80" y="82" width="56" height="42" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" rx="4"/>
+  <text x="108" y="108" text-anchor="middle" font-size="10" fill="#333">Box</text>
+  <!-- Equal arrows left and right -->
+  <line x1="30" y1="103" x2="75" y2="103" stroke="#e53935" stroke-width="2.5" marker-end="url(#arrR)"/>
+  <text x="52" y="118" text-anchor="middle" font-size="9" fill="#e53935">50 N →</text>
+  <line x1="186" y1="103" x2="141" y2="103" stroke="#1565c0" stroke-width="2.5" marker-end="url(#arrB)"/>
+  <text x="164" y="118" text-anchor="middle" font-size="9" fill="#1565c0">← 50 N</text>
+  <!-- Net force = 0 -->
+  <rect x="25" y="138" width="166" height="30" fill="#fff" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="108" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Net Force = 0 N</text>
+  <text x="108" y="163" text-anchor="middle" font-size="9" fill="#555">Object in EQUILIBRIUM</text>
+  <text x="108" y="185" text-anchor="middle" font-size="10" fill="#333">Result:</text>
+  <text x="108" y="198" text-anchor="middle" font-size="10" fill="#333">• Object stays stationary</text>
+  <text x="108" y="211" text-anchor="middle" font-size="10" fill="#333">• OR moves at constant speed</text>
+  <text x="108" y="224" text-anchor="middle" font-size="9" fill="#555">(Newton's 1st Law)</text>
+  <!-- Right: Unbalanced Forces -->
+  <rect x="214" y="26" width="196" height="220" fill="#fff3e0" stroke="#e65100" stroke-width="1.5" rx="6"/>
+  <rect x="214" y="26" width="196" height="24" fill="#e65100" rx="6"/>
+  <text x="312" y="43" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">UNBALANCED FORCES</text>
+  <!-- Unbalanced box -->
+  <rect x="280" y="82" width="56" height="42" fill="#ffcc80" stroke="#e65100" stroke-width="2" rx="4"/>
+  <text x="308" y="108" text-anchor="middle" font-size="10" fill="#333">Box</text>
+  <!-- Unequal arrows -->
+  <line x1="230" y1="103" x2="275" y2="103" stroke="#e53935" stroke-width="2.5" marker-end="url(#arrR)"/>
+  <text x="252" y="118" text-anchor="middle" font-size="9" fill="#e53935">30 N →</text>
+  <line x1="390" y1="103" x2="341" y2="103" stroke="#1565c0" stroke-width="4" marker-end="url(#arrB)"/>
+  <text x="366" y="118" text-anchor="middle" font-size="9" fill="#1565c0">← 80 N</text>
+  <!-- Net force -->
+  <rect x="225" y="138" width="176" height="30" fill="#fff" stroke="#e65100" stroke-width="1" rx="4"/>
+  <text x="313" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Net Force = 50 N ←</text>
+  <text x="313" y="163" text-anchor="middle" font-size="9" fill="#555">Resultant force acts left</text>
+  <text x="312" y="185" text-anchor="middle" font-size="10" fill="#333">Result:</text>
+  <text x="312" y="198" text-anchor="middle" font-size="10" fill="#333">• Object ACCELERATES left</text>
+  <text x="312" y="211" text-anchor="middle" font-size="10" fill="#333">• F = m × a (Newton's 2nd)</text>
+  <text x="312" y="224" text-anchor="middle" font-size="9" fill="#555">Speed / direction changes!</text>
+</svg>`
+  },
+  {
+    q:'Friction — Direction and Surfaces',
+    content:`<h3>Friction — Direction and Surfaces</h3><p>Friction is a force that opposes the relative motion between two surfaces in contact. It always acts in the direction opposite to the motion of the moving object.</p><ul><li>Rough surfaces produce more friction (e.g. road tires, sandpaper) — useful for braking and grip</li><li>Smooth or lubricated surfaces produce less friction (e.g. ice, oiled bearings) — reduces wear in machinery</li><li>Friction converts kinetic energy into heat; it can be reduced by lubrication, using rollers, or using smoother materials</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e53935"/></marker>
+  <marker id="arrO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f9a825"/></marker></defs>
+  <rect width="420" height="255" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Friction — How It Works</text>
+  <!-- Surface (rough) -->
+  <rect x="20" y="110" width="380" height="20" fill="#795548" stroke="#3e2723" stroke-width="1.5" rx="3"/>
+  <!-- Microscopic bumps -->
+  <path d="M20,110 Q30,102 40,110 Q50,102 60,110 Q70,102 80,110 Q90,102 100,110 Q110,102 120,110 Q130,102 140,110 Q150,102 160,110 Q170,102 180,110 Q190,102 200,110 Q210,102 220,110 Q230,102 240,110 Q250,102 260,110 Q270,102 280,110 Q290,102 300,110 Q310,102 320,110 Q330,102 340,110 Q350,102 360,110 Q370,102 380,110 Q390,102 400,110" fill="none" stroke="#5d4037" stroke-width="1.5"/>
+  <!-- Moving block -->
+  <rect x="155" y="70" width="90" height="40" fill="#ef9a9a" stroke="#c62828" stroke-width="2" rx="5"/>
+  <text x="200" y="95" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Block</text>
+  <!-- Motion direction (right) -->
+  <line x1="250" y1="90" x2="310" y2="90" stroke="#e53935" stroke-width="2.5" marker-end="url(#arrR)"/>
+  <text x="280" y="82" text-anchor="middle" font-size="9" fill="#e53935">Direction</text>
+  <text x="280" y="92" text-anchor="middle" font-size="9" fill="#e53935">of motion →</text>
+  <!-- Friction arrow (opposing, pointing left) -->
+  <line x1="150" y1="90" x2="88" y2="90" stroke="#f9a825" stroke-width="3" marker-end="url(#arrO)"/>
+  <text x="118" y="82" text-anchor="middle" font-size="9" fill="#f9a825">← Friction</text>
+  <text x="118" y="92" text-anchor="middle" font-size="9" fill="#f9a825">(opposes motion)</text>
+  <!-- Label: surfaces in contact -->
+  <line x1="200" y1="110" x2="200" y2="155" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="200" y="168" text-anchor="middle" font-size="9" fill="#333">Surfaces in contact</text>
+  <!-- Two comparison: rough vs smooth -->
+  <rect x="20" y="188" width="180" height="55" fill="#ffccbc" stroke="#e64a19" stroke-width="1.5" rx="5"/>
+  <rect x="20" y="188" width="180" height="22" fill="#e64a19" rx="5"/>
+  <text x="110" y="203" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Rough Surface</text>
+  <text x="110" y="220" text-anchor="middle" font-size="9" fill="#333">MORE friction generated</text>
+  <text x="110" y="233" text-anchor="middle" font-size="9" fill="#333">e.g. road tyres, sandpaper</text>
+  <text x="110" y="240" text-anchor="middle" font-size="8" fill="#555">useful for braking, grip</text>
+  <rect x="220" y="188" width="180" height="55" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="5"/>
+  <rect x="220" y="188" width="180" height="22" fill="#1565c0" rx="5"/>
+  <text x="310" y="203" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Smooth Surface</text>
+  <text x="310" y="220" text-anchor="middle" font-size="9" fill="#333">LESS friction generated</text>
+  <text x="310" y="233" text-anchor="middle" font-size="9" fill="#333">e.g. ice, oiled surface</text>
+  <text x="310" y="240" text-anchor="middle" font-size="8" fill="#555">reduces wear in machinery</text>
+</svg>`
+  },
+  {
+    q:'Simple Machines — Lever Classes',
+    content:`<h3>Simple Machines — Lever Classes</h3><p>A lever is a simple machine that uses a rigid bar pivoting around a fixed point (fulcrum) to magnify a force or increase distance. All levers have three parts: Load, Effort, and Fulcrum. Their arrangement determines the class.</p><ul><li>Class 1: Fulcrum between Load and Effort — examples: see-saw, scissors, pliers</li><li>Class 2: Load between Fulcrum and Effort — examples: wheelbarrow, nutcracker, bottle opener</li><li>Class 3: Effort between Fulcrum and Load — examples: tweezers, fishing rod, forearm at elbow</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Lever Classes — Fulcrum, Load, Effort</text>
+  <!-- Class 1 Lever -->
+  <text x="14" y="38" font-size="10" font-weight="bold" fill="#2e7d32">Class 1 — Fulcrum BETWEEN load and effort</text>
+  <!-- Lever bar -->
+  <rect x="30" y="48" width="360" height="8" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5" rx="2"/>
+  <!-- Fulcrum (triangle) in middle -->
+  <polygon points="210,56 195,78 225,78" fill="#2e7d32"/>
+  <!-- Load (down left) -->
+  <line x1="80" y1="56" x2="80" y2="80" stroke="#e53935" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="80" y="92" text-anchor="middle" font-size="9" fill="#e53935">Load</text>
+  <!-- Effort (down right) -->
+  <line x1="340" y1="56" x2="340" y2="80" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="340" y="92" text-anchor="middle" font-size="9" fill="#1565c0">Effort</text>
+  <text x="210" y="96" text-anchor="middle" font-size="9" fill="#555">Examples: see-saw, scissors, pliers</text>
+  <!-- Class 2 Lever -->
+  <text x="14" y="114" font-size="10" font-weight="bold" fill="#e65100">Class 2 — Load BETWEEN fulcrum and effort</text>
+  <rect x="30" y="122" width="360" height="8" fill="#ffcc80" stroke="#e65100" stroke-width="1.5" rx="2"/>
+  <!-- Fulcrum at left end -->
+  <polygon points="30,130 18,152 42,152" fill="#e65100"/>
+  <!-- Load in middle -->
+  <line x1="190" y1="130" x2="190" y2="150" stroke="#e53935" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="190" y="162" text-anchor="middle" font-size="9" fill="#e53935">Load</text>
+  <!-- Effort at right -->
+  <line x1="380" y1="122" x2="380" y2="104" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="380" y="100" text-anchor="middle" font-size="9" fill="#1565c0">Effort</text>
+  <text x="210" y="172" text-anchor="middle" font-size="9" fill="#555">Examples: wheelbarrow, nutcracker, bottle opener</text>
+  <!-- Class 3 Lever -->
+  <text x="14" y="190" font-size="10" font-weight="bold" fill="#1565c0">Class 3 — Effort BETWEEN fulcrum and load</text>
+  <rect x="30" y="198" width="360" height="8" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5" rx="2"/>
+  <!-- Fulcrum at left -->
+  <polygon points="30,206 18,228 42,228" fill="#1565c0"/>
+  <!-- Effort in middle -->
+  <line x1="140" y1="198" x2="140" y2="180" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="140" y="176" text-anchor="middle" font-size="9" fill="#1565c0">Effort</text>
+  <!-- Load at right end -->
+  <line x1="360" y1="206" x2="360" y2="226" stroke="#e53935" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="360" y="238" text-anchor="middle" font-size="9" fill="#e53935">Load</text>
+  <text x="210" y="250" text-anchor="middle" font-size="9" fill="#555">Examples: tweezers, fishing rod, forearm/elbow</text>
+</svg>`
+  },
+  {
+    q:'Pressure Formula: P = F ÷ A',
+    content:`<h3>Pressure Formula: P = F ÷ A</h3><p>Pressure is the force applied per unit area. The same force spread over a smaller area creates greater pressure — this is why a knife cuts better when sharpened (smaller area) and why snowshoes prevent sinking (larger area).</p><ul><li>Formula: Pressure (P) = Force (F) ÷ Area (A) — SI unit is Pascal (Pa) = N/m²</li><li>Sharp objects have very small contact areas, creating extremely high pressure from a small force</li><li>Flat, wide objects distribute force over a large area, reducing pressure — examples: wide tyres, camel's feet, snowshoes</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="255" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Pressure: P = F ÷ A</text>
+  <!-- Formula triangle -->
+  <polygon points="210,32 145,110 275,110" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2.5"/>
+  <line x1="178" y1="71" x2="242" y2="71" stroke="#2e7d32" stroke-width="2"/>
+  <line x1="210" y1="71" x2="210" y2="110" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="66" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">F</text>
+  <text x="170" y="100" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">P</text>
+  <text x="248" y="100" text-anchor="middle" font-size="16" font-weight="bold" fill="#2e7d32">A</text>
+  <text x="210" y="124" text-anchor="middle" font-size="9" fill="#555">Cover the unknown to get the formula</text>
+  <!-- Example 1: sharp knife -->
+  <rect x="10" y="134" width="190" height="112" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="5"/>
+  <text x="105" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Sharp Knife (small area)</text>
+  <line x1="105" y1="168" x2="105" y2="200" stroke="#2e7d32" stroke-width="3"/>
+  <polygon points="95,200 115,200 105,215" fill="#9e9e9e" stroke="#333" stroke-width="1"/>
+  <text x="105" y="228" text-anchor="middle" font-size="10" fill="#333">F = 20 N, A = 0.0001 m²</text>
+  <text x="105" y="241" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">P = 200 000 Pa</text>
+  <!-- Example 2: snowshoe -->
+  <rect x="220" y="134" width="190" height="112" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="5"/>
+  <text x="315" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Snowshoe (large area)</text>
+  <ellipse cx="315" cy="192" rx="55" ry="20" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <text x="315" y="196" text-anchor="middle" font-size="9" fill="#1565c0">large flat shoe</text>
+  <text x="315" y="228" text-anchor="middle" font-size="10" fill="#333">F = 600 N, A = 0.5 m²</text>
+  <text x="315" y="241" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">P = 1 200 Pa</text>
+  <!-- Key rule -->
+  <text x="210" y="252" text-anchor="middle" font-size="9" fill="#2e7d32">Same force: BIGGER area = LESS pressure | SMALLER area = MORE pressure</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Forces & Motion',
+    body:'Test your knowledge of forces, Newton\'s Laws, and motion equations.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'A 5 kg object accelerates at 3 m/s². What is the net force?',opts:['1.67 N','8 N','15 N','2 N'],ans:2,exp:'Using F = m × a: F = 5 kg × 3 m/s² = 15 N. Always check units: mass in kg, acceleration in m/s² gives force in Newtons.'},
+      {q:'Which of Newton\'s Laws explains why you fall forward when a bus brakes suddenly?',opts:['3rd Law — action-reaction','1st Law — inertia (you tend to keep moving forward)','2nd Law — F = ma','None of these'],ans:1,exp:'Newton\'s 1ST LAW (inertia): your body tends to continue moving forward at the same velocity. When the bus brakes (force on bus/floor), your body has no direct force to stop it — so you lurch forward.'},
+      {q:'What is the difference between speed and velocity?',opts:['Speed is faster than velocity','Velocity includes direction (it\'s a vector); speed does not (scalar)','Speed is measured in m/s²; velocity in m/s','They are identical'],ans:1,exp:'VELOCITY is a VECTOR (magnitude + direction): e.g. 20 m/s north. SPEED is a SCALAR (magnitude only): e.g. 20 m/s. A car going at 60 km/h around a bend has constant speed but changing velocity (direction changes).'},
+      {q:'A car\'s velocity changes from 10 m/s to 30 m/s in 5 seconds. What is its acceleration?',opts:['2 m/s²','4 m/s²','150 m/s²','6 m/s²'],ans:1,exp:'a = (v - u) / t = (30 - 10) / 5 = 20 / 5 = 4 m/s². The car accelerates at 4 m/s² (velocity increases by 4 m/s every second).'},
+    ]}
+  },
+  {
+    title:'Friction & Balanced Forces',
+    body:`<strong>Friction</strong> is a force that opposes relative motion between two surfaces in contact.
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Caused by surface roughness at microscopic level</li>
+      <li>Useful: brakes, grip when walking, writing with a pen</li>
+      <li>Disadvantageous: wears out machinery, reduces efficiency</li>
+    </ul>
+    <br>
+    <strong>Balanced forces</strong>: When all forces on an object cancel out (net force = 0), the object is in <strong>equilibrium</strong>.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Stationary object: weight = normal force</li>
+      <li>Constant speed: driving force = friction + drag</li>
+    </ul>
+    <strong>Terminal velocity</strong>: when drag equals weight, a falling object stops accelerating — moves at constant speed.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Terminal velocity diagram — skydiver falling
+      const fallProgress=(t*0.06)%1;
+      const terminalV=0.55; // when terminal is reached
+      const currentV=fallProgress<terminalV?fallProgress/terminalV:1;
+      // Skydiver (stick figure)
+      const skyY=H*0.1+fallProgress*H*0.65;
+      sk.fill(200,150,100,200);sk.noStroke();
+      sk.circle(W*0.5,skyY,14); // head
+      sk.stroke(200,150,100,200);sk.strokeWeight(2);
+      sk.line(W*0.5,skyY+7,W*0.5,skyY+28); // body
+      sk.line(W*0.38,skyY+14,W*0.62,skyY+14); // arms
+      sk.line(W*0.5,skyY+28,W*0.42,skyY+42); // legs
+      sk.line(W*0.5,skyY+28,W*0.58,skyY+42);
+      // Parachute
+      if(fallProgress>0.4){
+        sk.fill(231,76,60,150);sk.noStroke();
+        sk.arc(W*0.5,skyY-5,55,40,sk.PI,0);
+        sk.stroke(231,76,60,120);sk.strokeWeight(1);
+        sk.line(W*0.5-27,skyY-5,W*0.5,skyY+7);
+        sk.line(W*0.5+27,skyY-5,W*0.5,skyY+7);
+      }
+      // Weight arrow
+      const wLen=60;
+      sk.stroke(231,76,60,200);sk.strokeWeight(2.5);
+      sk.line(W*0.5,skyY+10,W*0.5,skyY+10+wLen);
+      sk.fill(231,76,60);sk.noStroke();
+      sk.triangle(W*0.5-5,skyY+10+wLen,W*0.5+5,skyY+10+wLen,W*0.5,skyY+10+wLen+8);
+      sk.fill(231,76,60);sk.textSize(8);sk.textAlign(sk.RIGHT);sk.text('Weight',W*0.44,skyY+42);
+      // Drag arrow
+      const dragLen=wLen*currentV;
+      sk.stroke(46,204,113,200);sk.strokeWeight(2.5);
+      sk.line(W*0.5,skyY+10,W*0.5,skyY+10-dragLen);
+      sk.fill(46,204,113);sk.noStroke();
+      if(dragLen>4)sk.triangle(W*0.5-5,skyY+10-dragLen,W*0.5+5,skyY+10-dragLen,W*0.5,skyY+2-dragLen);
+      sk.fill(46,204,113);sk.textSize(8);sk.textAlign(sk.LEFT);sk.text('Air resistance',W*0.56,skyY-dragLen/2+10);
+      // Terminal velocity label
+      if(currentV>0.95){
+        sk.fill(255,220,50);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text('TERMINAL VELOCITY',W*0.5,H*0.93);
+        sk.textSize(8);sk.textStyle(sk.NORMAL);sk.text('Weight = Drag → no acceleration',W*0.5,H*0.98);
+      }
+    }
+  },
+  {
+    title:'Pressure',
+    body:`<strong>Pressure</strong> is the force per unit area.
+    <br>
+    <div style="background:#0d47a1;border-radius:8px;padding:10px 14px;margin:10px 0;font-family:monospace;font-size:.9rem;text-align:center;color:#90caf9">
+      Pressure = Force ÷ Area &nbsp;&nbsp; (P = F/A)
+    </div>
+    Unit: <strong>pascal (Pa) = N/m²</strong>
+    <br><br>
+    <strong>Key ideas:</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Same force over SMALLER area → GREATER pressure (e.g. knife blade is sharp)</li>
+      <li>Same force over LARGER area → LESS pressure (e.g. snowshoes spread weight)</li>
+      <li>Pressure in liquids increases with depth: P = ρgh</li>
+      <li>Liquid pressure acts in ALL directions</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Two objects with same force, different areas
+      const F=60;
+      // Small area (left)
+      sk.fill(231,76,60,40);sk.noStroke();sk.rect(W*0.12,H*0.35,W*0.06,H*0.35);
+      sk.fill(231,76,60,180);sk.rect(W*0.12,H*0.35,W*0.06,H*0.12);
+      sk.stroke(231,76,60,200);sk.strokeWeight(2);
+      sk.line(W*0.15,H*0.27,W*0.15,H*0.35);
+      sk.fill(231,76,60);sk.noStroke();
+      sk.triangle(W*0.12,H*0.35,W*0.18,H*0.35,W*0.15,H*0.38);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('F = 60N',W*0.15,H*0.22);
+      sk.text('Area = 0.003 m²',W*0.15,H*0.76);
+      sk.fill(231,76,60);sk.textSize(9);sk.textStyle(sk.BOLD);
+      sk.text('P = 20,000 Pa',W*0.15,H*0.86);
+      // Large area (right)
+      sk.fill(52,152,219,40);sk.noStroke();sk.rect(W*0.6,H*0.35,W*0.3,H*0.35);
+      sk.fill(52,152,219,180);sk.rect(W*0.6,H*0.35,W*0.3,H*0.12);
+      sk.stroke(52,152,219,200);sk.strokeWeight(2);
+      sk.line(W*0.75,H*0.27,W*0.75,H*0.35);
+      sk.fill(52,152,219);sk.noStroke();
+      sk.triangle(W*0.72,H*0.35,W*0.78,H*0.35,W*0.75,H*0.38);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('F = 60N',W*0.75,H*0.22);
+      sk.text('Area = 0.03 m²',W*0.75,H*0.76);
+      sk.fill(52,152,219);sk.textSize(9);sk.textStyle(sk.BOLD);
+      sk.text('P = 2,000 Pa',W*0.75,H*0.86);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('Same force → LARGER area = LESS pressure',W*0.5,H*0.96);
+    }
+  },
+  {
+    title:'🎮 Final — Forces, Pressure & Motion',
+    body:'Final challenge on all force topics covered.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'A force of 40 N acts on an area of 0.005 m². What is the pressure?',opts:['0.000125 Pa','200 Pa','8,000 Pa','4,000 Pa'],ans:2,exp:'P = F ÷ A = 40 ÷ 0.005 = 8,000 Pa. The smaller the area, the greater the pressure for the same force. This is why sharp knives cut easily — tiny area → very high pressure.'},
+      {q:'When does a falling object reach terminal velocity?',opts:['When weight equals air resistance','When weight is greater than air resistance','When it stops moving','When acceleration is maximum'],ans:0,exp:'Terminal velocity is reached when WEIGHT (downward) EQUALS AIR RESISTANCE (upward). At this point, net force = 0, so acceleration = 0. The object falls at constant speed.'},
+      {q:'Newton\'s 3rd Law states:',opts:['F = ma','Every action has an equal and opposite reaction','An object stays at rest unless acted on by a force','Pressure = Force/Area'],ans:1,exp:'Newton\'s 3RD LAW: "For every action there is an equal and opposite reaction." Examples: rocket exhaust pushes gas backward → gas pushes rocket forward; you push down on the ground → ground pushes you upward.'},
+      {q:'Why do skis have a large area?',opts:['To increase the friction with snow','To decrease pressure on the snow so you don\'t sink','To make them heavier','To increase air resistance'],ans:1,exp:'Large area → LOW pressure (P = F/A). The large ski area spreads the skier\'s weight over a large surface, reducing pressure on the snow — preventing the skier from sinking in. Same principle as snowshoes or caterpillar tracks on tanks.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#1565c0',dark:'#003c8f',light:'#e3f2fd',
+  title:'Forces & Motion — Newton\'s Laws, Speed & Pressure',
+});
+</script></body></html>

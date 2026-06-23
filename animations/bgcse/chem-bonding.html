@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemical Bonding — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#4a148c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ce93d8;color:#4a148c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ce93d8}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #4a148c;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#4a148c;transition:all .15s}
+    .btn.on{background:#4a148c;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Chemical Bonding</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🔴🔵 Ionic</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🔗 Covalent</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🔩 Metallic</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">📋 Comparison</button>
+  <button class="btn" id="b-prac" onclick="setBondPractice(!bondMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Chemical Bonding</h2><ul><li><b>Ionic bonding</b>: Transfer of electrons from metal to non-metal. Forms ions. High melting point, conducts when molten/dissolved.</li><li><b>Covalent bonding</b>: Sharing of electron pairs between non-metals. Can be single, double or triple bonds.</li><li><b>Metallic bonding</b>: Metal ions in a lattice surrounded by a sea of delocalised electrons. Good conductors.</li><li><b>Giant ionic</b>: NaCl, MgO — high mp, brittle. <b>Simple molecular</b>: CO₂, H₂O — low mp.</li><li><b>Giant covalent</b>: Diamond, SiO₂ — very high mp, hard.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let bondMcq=false;
+const BOND_MCQ=[
+  {q:'Ionic bonding involves:',opts:['Transfer of electrons between atoms','Sharing of electron pairs','A sea of delocalised electrons','Hydrogen bonds between molecules'],c:0,tip:'In ionic bonding, electrons are transferred from metal to non-metal atoms.'},
+  {q:'Which compound is an example of ionic bonding?',opts:['NaCl (sodium chloride)','H₂O (water)','CO₂ (carbon dioxide)','CH₄ (methane)'],c:0,tip:'NaCl is formed by electron transfer from Na to Cl, creating Na⁺ and Cl⁻ ions.'},
+  {q:'Covalent bonding involves:',opts:['Sharing of electron pairs','Transfer of electrons','Attraction of ions','Delocalised electrons'],c:0,tip:'Covalent bonds form when atoms share pairs of electrons.'},
+  {q:'Metallic bonding is best described as:',opts:['Metal ions in a lattice with delocalised electrons','Electron transfer between metals','Shared electrons in a molecule','Ionic attraction'],c:0,tip:'Metals have a lattice of positive ions surrounded by a "sea" of free electrons.'},
+  {q:'Which type of structure generally has the HIGHEST melting point?',opts:['Giant ionic lattice','Simple molecular','Metallic (low mp metals)','Simple covalent'],c:0,tip:'Giant ionic/covalent structures need much energy to break all bonds — very high mp.'},
+  {q:'What type of bond is found in an HCl molecule?',opts:['Covalent bond','Ionic bond','Metallic bond','Hydrogen bond'],c:0,tip:'HCl involves two non-metals sharing electrons — a covalent bond.'},
+  {q:'Diamond is an example of which structure type?',opts:['Giant covalent','Simple molecular','Giant ionic','Metallic'],c:0,tip:'Diamond is a giant covalent structure — each C bonds to 4 others, giving extreme hardness.'}
+];
+let bondMcqIdx=0,bondMcqSel=-1,bondMcqScore=0,bondMcqDone=false,bondMcqFeedback=null;
+function setBondPractice(on){bondMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){bondMcqIdx=0;bondMcqSel=-1;bondMcqScore=0;bondMcqDone=false;bondMcqFeedback=null;}}
+function drawBondMCQ(s){s.background(252,252,240);if(bondMcqDone){s.fill(74,20,140);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+bondMcqScore+'/'+BOND_MCQ.length,440,215);let msg=bondMcqScore===BOND_MCQ.length?'Perfect! You know Chemical Bonding!':bondMcqScore>=5?'Great job!':'Review ionic, covalent & metallic bonding.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=BOND_MCQ[bondMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(bondMcqIdx/BOND_MCQ.length),10,5);s.fill(74,20,140);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(bondMcqIdx+1)+' of '+BOND_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=bondMcqSel===i,correct=bondMcqFeedback!==null&&i===q.c,wrong=bondMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(bondMcqFeedback){s.fill(bondMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(bondMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function bondMcqClick(mx,my){if(bondMcqDone){if(mx>310&&mx<570&&my>290&&my<334){bondMcqIdx=0;bondMcqSel=-1;bondMcqScore=0;bondMcqDone=false;bondMcqFeedback=null;}return;}if(bondMcqFeedback!==null){bondMcqIdx++;bondMcqSel=-1;bondMcqFeedback=null;if(bondMcqIdx>=BOND_MCQ.length)bondMcqDone=true;return;}BOND_MCQ[bondMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){bondMcqSel=i;bondMcqFeedback=i===BOND_MCQ[bondMcqIdx].c?'correct':'wrong';if(i===BOND_MCQ[bondMcqIdx].c)bondMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let electronT=0;let covalentPhase=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(bondMcq){ drawBondMCQ(sk); return; }tick+=0.03;electronT=(electronT+0.008)%1;sk.background(252,248,255);
+    if(tab===0) drawIonic();
+    else if(tab===1) drawCovalent();
+    else if(tab===2) drawMetallic();
+    else drawComparison();
+    drawInfoPanel();
+  };
+
+  function drawIonic(){
+    // Na loses electron → Na+; Cl gains → Cl-
+    let na={x:100,y:180};let cl={x:380,y:180};
+    // NaCl crystal lattice at bottom
+    sk.fill(30,30,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Ionic Bonding — NaCl (Sodium Chloride) Example',248,22);sk.textStyle(sk.NORMAL);
+    // Na atom
+    sk.fill(180,90,0,40);sk.stroke(180,90,0);sk.strokeWeight(2);sk.ellipse(na.x,na.y,80,80);
+    sk.noFill();sk.stroke(180,90,0,100);sk.strokeWeight(1.5);sk.ellipse(na.x,na.y,110,110);
+    // Na's electron
+    let ea=tick*sk.TWO_PI;
+    let ex=na.x+Math.cos(ea)*55,ey=na.y+Math.sin(ea)*55;
+    sk.fill(30,80,200,220);sk.noStroke();sk.ellipse(ex,ey,11);
+    sk.fill(180,90,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Na',na.x,na.y+4);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('11 protons\n11 electrons\n2,8,1',na.x,na.y+62);
+
+    // Cl atom
+    sk.fill(30,160,30,40);sk.stroke(30,160,30);sk.strokeWeight(2);sk.ellipse(cl.x,cl.y,80,80);
+    sk.noFill();sk.stroke(30,160,30,100);sk.strokeWeight(1.5);sk.ellipse(cl.x,cl.y,110,110);
+    sk.fill(30,160,30,180);sk.noStroke();
+    for(let i=0;i<7;i++){let a2=i*sk.TWO_PI/7;sk.ellipse(cl.x+Math.cos(a2)*55,cl.y+Math.sin(a2)*55,11);}
+    sk.fill(30,160,30);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Cl',cl.x,cl.y+4);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(8.5);sk.text('17 protons\n17 electrons\n2,8,7',cl.x,cl.y+62);
+
+    // Electron transfer arrow
+    let arrowProgress=electronT;
+    let arrowX=na.x+60+(cl.x-na.x-110)*arrowProgress,arrowY=na.y-40;
+    sk.fill(30,80,200,220);sk.noStroke();sk.ellipse(arrowX,arrowY,11);
+    sk.stroke(30,80,200,160);sk.strokeWeight(2);sk.setLineDash([5,4]);
+    sk.line(na.x+60,na.y-20,cl.x-60,cl.y-20);sk.setLineDash([]);
+    sk.noStroke();sk.fill(30,80,200);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('e⁻ transferred',240,na.y-50);sk.textStyle(sk.NORMAL);
+
+    // Ion labels
+    sk.fill(180,90,0);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Na⁺',na.x,na.y-70);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(9);sk.text('(loses 1e⁻)',na.x,na.y-58);
+    sk.fill(30,160,30);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Cl⁻',cl.x,cl.y-70);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(9);sk.text('(gains 1e⁻)',cl.x,cl.y-58);
+
+    // Crystal lattice
+    let lx=50,ly=295,cs=32;
+    sk.fill(30);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('NaCl Crystal Lattice (ionic lattice):',lx,ly-12);sk.textStyle(sk.NORMAL);
+    for(let row=0;row<4;row++){for(let col=0;col<8;col++){
+      let x2=lx+col*cs,y2=ly+row*cs;
+      let isNa=(row+col)%2===0;
+      sk.fill(isNa?[180,90,0,200]:[30,160,30,200]);sk.noStroke();sk.ellipse(x2,y2,22);
+      sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(isNa?'Na⁺':'Cl⁻',x2,y2+3);sk.textStyle(sk.NORMAL);
+    }}
+    // Properties
+    let py=435;
+    sk.fill(245,240,255,220);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(14,py,462,68,7);sk.noStroke();
+    sk.fill(80,0,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('PROPERTIES of ionic compounds:',20,py+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('• High melting/boiling points   • Conduct electricity when molten or dissolved',20,py+30);
+    sk.text('• Soluble in water (often)   • Brittle (layers slide → ion repulsion)',20,py+48);
+  }
+
+  function drawCovalent(){
+    sk.fill(30,80,160);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Covalent Bonding — Sharing Electron Pairs',248,22);sk.textStyle(sk.NORMAL);
+    // H2 molecule
+    let h2x=100,h2y=120;
+    sk.fill(80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('H₂ (single bond)',h2x+40,h2y-30);sk.textStyle(sk.NORMAL);
+    drawAtom(h2x,h2y,20,'H',1,[200,80,80]);drawAtom(h2x+80,h2y,20,'H',1,[200,80,80]);
+    // Shared electron pair
+    sk.fill(30,80,200,230);sk.noStroke();
+    sk.ellipse(h2x+30+Math.sin(tick*2)*6,h2y,12);sk.ellipse(h2x+50+Math.sin(tick*2+1)*6,h2y,12);
+    sk.fill(30,80,200);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('shared pair',h2x+40,h2y+36);sk.textStyle(sk.NORMAL);
+
+    // O2 double bond
+    let o2x=220,o2y=120;
+    sk.fill(80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('O₂ (double bond)',o2x+40,o2y-30);sk.textStyle(sk.NORMAL);
+    drawAtom(o2x,o2y,22,'O',6,[200,60,60]);drawAtom(o2x+80,o2y,22,'O',6,[200,60,60]);
+    sk.fill(200,60,60,220);sk.noStroke();
+    sk.ellipse(o2x+28+Math.sin(tick*2)*5,o2y-8,12);sk.ellipse(o2x+52+Math.sin(tick*2+1)*5,o2y-8,12);
+    sk.ellipse(o2x+28+Math.sin(tick*2)*5,o2y+8,12);sk.ellipse(o2x+52+Math.sin(tick*2+1)*5,o2y+8,12);
+    sk.fill(200,60,60);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('2 shared pairs',o2x+40,o2y+40);sk.textStyle(sk.NORMAL);
+
+    // N2 triple bond
+    let n2x=350,n2y=120;
+    sk.fill(80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('N₂ (triple bond)',n2x+40,n2y-30);sk.textStyle(sk.NORMAL);
+    drawAtom(n2x,n2y,22,'N',5,[30,80,200]);drawAtom(n2x+80,n2y,22,'N',5,[30,80,200]);
+    sk.fill(30,80,200,220);sk.noStroke();
+    for(let k=-1;k<=1;k++){
+      sk.ellipse(n2x+28+Math.sin(tick*2)*5,n2y+k*10,12);sk.ellipse(n2x+52+Math.sin(tick*2+1)*5,n2y+k*10,12);
+    }
+    sk.fill(30,80,200);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('3 shared pairs',n2x+40,n2y+44);sk.textStyle(sk.NORMAL);
+
+    // H2O with lone pairs
+    let wy=230;
+    sk.fill(80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('H₂O — covalent with lone pairs:',14,wy-12);sk.textStyle(sk.NORMAL);
+    let ox=160,oy=wy+50;
+    drawAtom(ox,oy,24,'O',6,[200,60,60]);
+    drawAtom(ox-60,oy+45,16,'H',1,[100,100,200]);drawAtom(ox+60,oy+45,16,'H',1,[100,100,200]);
+    // Bonds
+    sk.stroke(200,60,60,180);sk.strokeWeight(3);sk.line(ox-14,oy+14,ox-46,oy+38);sk.line(ox+14,oy+14,ox+46,oy+38);
+    // Lone pairs
+    sk.fill(200,60,60,200);sk.noStroke();
+    sk.ellipse(ox-20,oy-18,10);sk.ellipse(ox-8,oy-22,10);
+    sk.ellipse(ox+8,oy-22,10);sk.ellipse(ox+20,oy-18,10);
+    sk.fill(150,30,30);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('lone pairs',ox,oy-34);sk.textStyle(sk.NORMAL);
+    // CO2
+    let co2x=320,co2y=wy+50;
+    sk.fill(80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('CO₂ — linear, no dipole:',co2x-20,wy-12);sk.textStyle(sk.NORMAL);
+    drawAtom(co2x,co2y,24,'C',4,[60,60,60]);
+    drawAtom(co2x-70,co2y,22,'O',6,[200,60,60]);drawAtom(co2x+70,co2y,22,'O',6,[200,60,60]);
+    sk.stroke(60,60,60,180);sk.strokeWeight(3);
+    sk.line(co2x-18,co2y-8,co2x-50,co2y-8);sk.line(co2x-18,co2y+8,co2x-50,co2y+8);
+    sk.line(co2x+18,co2y-8,co2x+50,co2y-8);sk.line(co2x+18,co2y+8,co2x+50,co2y+8);
+
+    // Properties
+    let py=380;
+    sk.fill(240,245,255,220);sk.stroke(30,60,200,80);sk.strokeWeight(1);sk.rect(14,py,462,118,7);sk.noStroke();
+    sk.fill(20,60,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('PROPERTIES of covalent substances:',20,py+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Simple molecular (e.g. H₂O, CO₂): low MP/BP, don\'t conduct electricity','Polymeric/giant covalent (e.g. diamond, SiO₂): very high MP/BP','Diamond: each C bonded to 4 others → hardest natural substance','Covalent bonds strong; intermolecular forces (between molecules) weak'].forEach((l,i)=>sk.text(l,20,py+32+i*20));
+  }
+
+  function drawAtom(x,y,r,sym,ve,col){
+    sk.fill(col[0],col[1],col[2],50);sk.stroke(col[0],col[1],col[2]);sk.strokeWeight(1.5);sk.ellipse(x,y,r*2,r*2);
+    sk.noStroke();sk.fill(col[0],col[1],col[2]);sk.textSize(r*0.65);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text(sym,x,y+r*0.28);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawMetallic(){
+    // Sea of electrons model
+    sk.fill(100,60,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Metallic Bonding — Sea of Delocalised Electrons',248,22);sk.textStyle(sk.NORMAL);
+    // Grid of + ions
+    let gx=30,gy=70,cs=56;let rows=5,cols=8;
+    for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){
+      let x2=gx+c*cs,y2=gy+r*cs;
+      sk.fill(220,160,60,200);sk.stroke(160,100,0);sk.strokeWeight(2);sk.ellipse(x2,y2,36);
+      sk.noStroke();sk.fill(120,60,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('M⁺',x2,y2+4);sk.textStyle(sk.NORMAL);
+    }}
+    lbl('Metal cations\n(positive ions\nin fixed lattice)',gx-14,gy+rows*cs/2,[150,80,0]);
+    // Floating electrons
+    for(let i=0;i<28;i++){
+      let ex=gx+10+(tick*0.5+i*0.7)%(cols*cs-20);
+      let ey=gy+10+(i*37+tick*0.3)%(rows*cs-20);
+      sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(ex,ey,9);
+    }
+    lbl('Free/delocalised electrons\n(sea of electrons)',220,gy+rows*cs+20,[30,80,200]);
+    // Arrows for conduction
+    sk.stroke(30,80,200,180);sk.strokeWeight(2);
+    sk.line(30,gy+rows*cs+45,430,gy+rows*cs+45);
+    sk.noStroke();sk.fill(30,80,200,200);sk.triangle(430,gy+rows*cs+40,430,gy+rows*cs+50,442,gy+rows*cs+45);
+    sk.fill(0,60,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Electrons flow freely → electrical conduction',248,gy+rows*cs+62);sk.textStyle(sk.NORMAL);
+    // Properties box
+    let py=390;
+    sk.fill(255,245,220,220);sk.stroke(160,80,0,80);sk.strokeWeight(1);sk.rect(14,py,462,110,7);sk.noStroke();
+    sk.fill(120,60,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('METALLIC BONDING PROPERTIES:',20,py+14);sk.textStyle(sk.NORMAL);
+    const props=[['High melting/boiling points','Strong electrostatic attraction between M⁺ ions and electron sea'],['Electrical conductivity','Delocalised electrons carry current freely'],['Thermal conductivity','Free electrons transfer kinetic energy'],['Malleability/Ductility','Layers of ions can slide without breaking bond'],['Lustre (shiny)','Free electrons reflect light']];
+    props.forEach((p,i)=>{
+      sk.fill(140,70,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(p[0]+':',20,py+30+i*16);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.textSize(9);sk.text(p[1],140,py+30+i*16);
+    });
+  }
+
+  function lbl(txt,x,y,col){
+    sk.fill(col[0],col[1],col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    txt.split('\n').forEach((l,i)=>sk.text(l,x,y+i*13));sk.textStyle(sk.NORMAL);
+  }
+
+  function drawComparison(){
+    sk.fill(60,0,120);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Comparison of Bond Types',248,22);sk.textStyle(sk.NORMAL);
+    const rows=[
+      ['Property','Ionic','Covalent\n(simple)','Covalent\n(giant)','Metallic'],
+      ['Particles','Na⁺ and Cl⁻','Molecules','Giant lattice','M⁺ + e⁻ sea'],
+      ['Bonding force','Electrostatic\n(+ and − ions)','Shared e⁻\npair','Shared e⁻','Attraction:\nM⁺ & e⁻'],
+      ['Melting point','HIGH','LOW','VERY HIGH','HIGH'],
+      ['Electrical cond.','Conducts when\nmolten/dissolved','Does NOT\nconduct','Does NOT\nconduct (except\ngraphite)','Always\nconducts'],
+      ['Solubility','Often soluble\nin water','Often\ninsoluble','Insoluble','Insoluble'],
+      ['Examples','NaCl, MgO\nCaCl₂','H₂O, CO₂\nHCl, NH₃','Diamond, SiO₂\nSilica','Na, Cu, Fe\nAl, Mg'],
+    ];
+    const colW=[100,82,82,82,82];const colX=[14,114,196,278,360];
+    const colCols=[[60,0,120],[160,60,0],[30,80,200],[30,80,200],[100,60,0]];
+    rows.forEach((row,ri)=>{
+      let ry=46+ri*56;let rh=52;
+      if(ri===0){sk.fill(60,0,120,200);sk.noStroke();sk.rect(14,ry-2,448,rh,6);
+        row.forEach((cell,ci)=>{
+          sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(ci===0?sk.LEFT:sk.CENTER);
+          cell.split('\n').forEach((l,li)=>sk.text(l,ci===0?colX[ci]+4:colX[ci]+colW[ci]/2,ry+14+li*11));sk.textStyle(sk.NORMAL);
+        });
+      } else {
+        if(ri%2===0){sk.fill(240,235,255,180);sk.noStroke();sk.rect(14,ry-2,448,rh,4);}
+        row.forEach((cell,ci)=>{
+          let cc=colCols[ci];
+          sk.fill(cc[0],cc[1],cc[2]);sk.textSize(8.5);sk.textStyle(ci===0?sk.BOLD:sk.NORMAL);sk.textAlign(ci===0?sk.LEFT:sk.CENTER);
+          cell.split('\n').forEach((l,li)=>sk.text(l,ci===0?colX[ci]+4:colX[ci]+colW[ci]/2,ry+12+li*11));sk.textStyle(sk.NORMAL);
+        });
+      }
+    });
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[80,0,140];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Ionic Bonding','Covalent Bonding','Metallic Bonding','Comparison'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'What is Ionic Bonding?',b:'Transfer of electrons from metal to non-metal.\nForms oppositely charged ions (cations + anions).\nElectrostatic attraction between ions.'},{t:'Formation',b:'Metal loses electrons → cation (+).\nNon-metal gains electrons → anion (−).\nAtoms achieve full outer shell (noble gas config).'},{t:'Ionic Lattice',b:'Ions arranged in regular 3D giant lattice.\nEach ion surrounded by opposite-charge ions.\nVery strong forces → high melting point.'},{t:'Electrical Conductivity',b:'Solid: ions fixed, cannot move → no conduction.\nMolten or dissolved: ions free to move → conducts.\nThis is why NaCl doesn\'t conduct when solid.'}],
+      [{t:'What is Covalent Bonding?',b:'SHARING of electron pairs between non-metals.\nEach atom contributes one electron per bond.\nBoth atoms achieve full outer shell.'},{t:'Bond Types',b:'Single bond: 1 shared pair (e.g. H-H, H-Cl).\nDouble bond: 2 shared pairs (e.g. O=O, CO₂).\nTriple bond: 3 shared pairs (e.g. N≡N).'},{t:'Lone Pairs',b:'Electrons not involved in bonding.\nStill present on atom in molecule.\nAffect shape of molecule (e.g. H₂O bent).'},{t:'Giant Covalent',b:'Millions of atoms bonded in large network.\nDiamond: each C bonded to 4 C → very hard.\nSilica (SiO₂): similar structure, high MP.'}],
+      [{t:'What is Metallic Bonding?',b:'Metal atoms lose outer electrons → M⁺ ions.\nElectrons form a "sea" of delocalised electrons.\nAttraction between M⁺ ions and electron sea.'},{t:'Why Metals Conduct',b:'Delocalised electrons move freely under voltage.\nNo fixed structure to electrons → good conductor.\nBetter conductor = more free electrons.'},{t:'Why Metals are Malleable',b:'Layers of positive ions can slide past each other.\nElectron sea holds them together throughout.\nThis makes metals bendable without breaking.'},{t:'Alloys',b:'Mixture of metals (or metal + non-metal).\nDifferent-sized atoms disrupt regular layers.\nHarder and stronger than pure metals (e.g. steel).'}],
+      [{t:'Choosing Bond Type',b:'Metal + non-metal → ionic bonding.\nNon-metal + non-metal → covalent bonding.\nMetal atoms only → metallic bonding.'},{t:'Structure-Property Link',b:'Bond type determines structure → determines properties.\nIonic: giant lattice → high MP, brittle.\nCovalent simple: separate molecules → low MP.'},{t:'Testing Bond Type',b:'Dissolves in water & conducts → ionic.\nLow MP, doesn\'t conduct → simple covalent.\nConducts electricity → metallic or dissolved ionic.'},{t:'Intermolecular Forces',b:'Forces BETWEEN molecules (not within bonds).\nWeaker than covalent/ionic bonds.\nDeterminate BP of simple molecular substances.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(bondMcq){ bondMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

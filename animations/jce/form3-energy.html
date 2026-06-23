@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Forms &amp; Transformations — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#e65100; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#ffcc80; color:#bf360c; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #ffe0b2; }
+    #controls { display:flex; gap:10px; margin-top:14px; }
+    .btn { padding:8px 20px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-s { border-color:#e65100; color:#e65100; background:#fff; }
+    .btn-s.on { background:#e65100; color:#fff; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ffcc80;color:#bf360c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 3 Physics</span>
+  <h1>Energy Forms &amp; Transformations</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-s on" id="b0" onclick="setScene(0)">🔵 Pendulum</button>
+  <button class="btn btn-s"    id="b1" onclick="setScene(1)">⚽ Bouncing Ball</button>
+  <button class="btn btn-s"    id="b2" onclick="setScene(2)">💡 Electric Circuit</button>
+  <button class="btn btn-s"    id="b3" onclick="setEnergyPractice(!energyMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Energy Quiz</button>
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Energy Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#e65100;border-bottom:2px solid #e65100;padding-bottom:8px}h2{color:#bf360c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Energy Forms &amp; Transformations — Study Notes</h1><h2>Forms of Energy</h2><ul>';
+  ENERGY_TYPES.forEach(e=>html+=`<li><strong>${e.name} (${e.sym}):</strong> ${e.desc}</li>`);
+  html+='</ul><h2>Law of Conservation of Energy</h2><p>Energy cannot be created or destroyed — it can only be transferred or transformed from one form to another.</p>';
+  html+='<h2>Energy Transformations</h2><ul><li>Pendulum: GPE ↔ KE (ideal) + heat (friction)</li><li>Ball drop: GPE → KE → Thermal (heat on impact)</li><li>Light bulb: Electrical → Light + Heat</li><li>Battery: Chemical → Electrical</li><li>Sun: Nuclear → Light + Thermal</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let energyMcq=false;
+const ENERGY_MCQ=[
+  {q:'A swinging pendulum converts energy between:',opts:['Gravitational PE and Kinetic Energy','Kinetic Energy and Electrical Energy','Chemical and Thermal Energy','Light and Sound Energy'],c:0,tip:'At top of swing: max GPE, min KE. At bottom: min GPE, max KE. Some is lost as heat due to friction.'},
+  {q:'The Law of Conservation of Energy states:',opts:['Energy cannot be created or destroyed, only transferred','Energy is always lost as heat','Energy decreases over time','Electrical energy is the most efficient'],c:0,tip:'Total energy before = total energy after. Some may convert to "wasted" heat, but none is lost.'},
+  {q:'Which energy transformation happens in a solar panel?',opts:['Light → Electrical','Electrical → Light','Chemical → Electrical','Thermal → Kinetic'],c:0,tip:'Solar panels (photovoltaic cells) convert light energy directly into electrical energy.'},
+  {q:'A bouncing ball converts GPE to KE, then to:',opts:['Thermal (heat) and Sound energy on impact','More GPE','Electrical energy','Chemical energy'],c:0,tip:'On impact, kinetic energy converts to sound (the bounce sound) and heat (deforming the ball).'},
+  {q:'In an electric light bulb, electrical energy converts mainly to:',opts:['Light and Heat (thermal)','Sound and Chemical','Kinetic and Light','Gravitational PE'],c:0,tip:'Traditional bulbs waste about 95% as heat. LED bulbs are more efficient but still produce some heat.'},
+  {q:'Kinetic Energy (KE) formula is:',opts:['KE = ½mv²','KE = mgh','KE = F×d','KE = mv'],c:0,tip:'KE = half × mass (kg) × velocity² (m/s²). Doubling speed quadruples KE!'},
+  {q:'Gravitational Potential Energy (GPE) increases when:',opts:['An object is lifted higher','An object moves faster','Temperature increases','An object cools down'],c:0,tip:'GPE = mgh. Increasing height (h) increases GPE.'},
+];
+let energyMcqIdx=0,energyMcqSel=-1,energyMcqScore=0,energyMcqDone=false,energyMcqFeedback=null;
+function setEnergyPractice(on){ energyMcq=on; let b=document.getElementById('b3'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){energyMcqIdx=0;energyMcqSel=-1;energyMcqScore=0;energyMcqDone=false;energyMcqFeedback=null;} }
+function drawEnergyMCQ(s){
+  s.background(255,248,240);
+  if(energyMcqDone){
+    s.fill(230,81,0);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+energyMcqScore+'/'+ENERGY_MCQ.length,440,210);
+    s.text(energyMcqScore>=6?'You\'re an energy expert!':energyMcqScore>=4?'Good work!':'Review energy types!',440,240);
+    s.fill(230,81,0);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=ENERGY_MCQ[energyMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(230,81,0);s.rect(30,18,820*(energyMcqIdx/ENERGY_MCQ.length),10,5);
+  s.fill(230,81,0);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(energyMcqIdx+1)+' of '+ENERGY_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=energyMcqSel===i,correct=energyMcqFeedback!==null&&i===q.c,wrong=energyMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[255,248,240]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[220]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(energyMcqFeedback){
+    s.fill(energyMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(energyMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(255,204,128);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function energyMcqClick(mx,my){
+  if(energyMcqDone){if(mx>310&&mx<570&&my>265&&my<309){energyMcqIdx=0;energyMcqSel=-1;energyMcqScore=0;energyMcqDone=false;energyMcqFeedback=null;}return;}
+  let q=ENERGY_MCQ[energyMcqIdx];
+  if(energyMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){energyMcqFeedback=null;energyMcqSel=-1;energyMcqIdx++;if(energyMcqIdx>=ENERGY_MCQ.length)energyMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&energyMcqFeedback===null){energyMcqSel=i;energyMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)energyMcqScore++;}});
+}
+let scene = 0;
+function setScene(n) {
+  scene = n;
+  [0,1,2].forEach(i => document.getElementById('b'+i).classList.toggle('on', i===n));
+  resetScene();
+}
+
+// Pendulum state
+let pAngle = Math.PI * 0.42, pOmega = 0;
+const PIVOT = {x:225, y:52};
+const L = 200, G_PEND = 0.38;
+const MAX_ANGLE = Math.PI * 0.42;
+let pendTrail = [];
+
+// Ball drop state
+let ballY = 60, ballVy = 0, bounceCount = 0, maxBounceH = 420;
+let sparks = [];
+
+// Circuit state
+let electrons = [];
+let bulbGlow = 0;
+
+function resetScene() {
+  pAngle = Math.PI * 0.42; pOmega = 0; pendTrail = [];
+  ballY = 60; ballVy = 0; bounceCount = 0; maxBounceH = 420; sparks = [];
+  electrons = [];
+  for (let i=0;i<12;i++) electrons.push({t: i/12}); // spread around circuit
+  bulbGlow = 0;
+}
+resetScene();
+
+const ENERGY_TYPES = [
+  {name:'Kinetic Energy',   col:[220,80,40],  sym:'KE', desc:'Energy of moving objects. KE = ½mv²'},
+  {name:'Gravitational PE', col:[40,100,220],  sym:'GPE',desc:'Stored energy due to height. GPE = mgh'},
+  {name:'Thermal Energy',   col:[255,140,0],   sym:'Th', desc:'Internal energy — random particle vibration'},
+  {name:'Light Energy',     col:[255,220,30],  sym:'Lt', desc:'Electromagnetic radiation we can see'},
+  {name:'Electrical Energy',col:[100,60,200],  sym:'El', desc:'Energy of moving charged particles'},
+  {name:'Chemical Energy',  col:[0,150,80],    sym:'Ch', desc:'Stored in chemical bonds (food, fuel, batteries)'},
+  {name:'Sound Energy',     col:[160,30,160],  sym:'So', desc:'Vibrations travelling through a medium'},
+];
+
+new p5(function(sk) {
+  const W = 880, H = 510;
+  let tick = 0;
+
+  sk.setup = function() {
+    sk.createCanvas(W, H).parent('sketch');
+    sk.textFont('Arial');
+  };
+
+  sk.draw = function() {
+    if(energyMcq){ drawEnergyMCQ(sk); return; }
+    tick += 0.04;
+    sk.background(248, 252, 248);
+    switch(scene) {
+      case 0: drawPendulum(); break;
+      case 1: drawBallDrop(); break;
+      case 2: drawCircuit();  break;
+    }
+    drawInfoPanel();
+  };
+
+  // ─── Pendulum ──────────────────────────────────────────────
+  function drawPendulum() {
+    // Physics update
+    pOmega += -(G_PEND / L) * sk.sin(pAngle);
+    pOmega *= 0.9988;
+    pAngle += pOmega;
+
+    let bx = PIVOT.x + L * sk.sin(pAngle);
+    let by = PIVOT.y + L * sk.cos(pAngle);
+
+    // Energy fractions
+    let maxH = L * (1 - sk.cos(MAX_ANGLE));
+    let h = (PIVOT.y + L) - by;
+    let pe_f = sk.constrain(h / maxH, 0, 1);
+    let ke_f = 1 - pe_f;
+    let te_f = 1 - (pOmega === 0 ? 1 : Math.pow(Math.max(pOmega, 0.001)/0.001, 0));
+
+    // Trail
+    pendTrail.push({x:bx, y:by});
+    if (pendTrail.length > 30) pendTrail.shift();
+    for (let i=0; i<pendTrail.length; i++) {
+      let a = sk.map(i, 0, pendTrail.length, 20, 120);
+      sk.fill(220,80,40,a); sk.noStroke();
+      sk.ellipse(pendTrail[i].x, pendTrail[i].y, sk.map(i,0,pendTrail.length,4,18));
+    }
+
+    // Pivot
+    sk.fill(100); sk.noStroke(); sk.ellipse(PIVOT.x, PIVOT.y, 14);
+    // Ceiling mount
+    sk.stroke(140); sk.strokeWeight(3); sk.line(PIVOT.x-30, PIVOT.y-2, PIVOT.x+30, PIVOT.y-2);
+
+    // String
+    sk.stroke(80); sk.strokeWeight(2); sk.line(PIVOT.x, PIVOT.y, bx, by);
+
+    // Ball
+    let r = 26;
+    sk.noStroke();
+    sk.fill(220,80,40,60); sk.ellipse(bx,by,r*2+14);
+    sk.fill(220,80,40); sk.ellipse(bx,by,r*2);
+    sk.fill(255,255,255,100); sk.ellipse(bx-6,by-6,r*0.6);
+
+    // Arc path indicator
+    sk.stroke(100,100,100,60); sk.strokeWeight(1.5); sk.noFill();
+    sk.arc(PIVOT.x, PIVOT.y, L*2, L*2, sk.PI/2-MAX_ANGLE, sk.PI/2+MAX_ANGLE);
+    sk.noStroke();
+
+    // Height indicator
+    let lowestY = PIVOT.y + L;
+    if (pe_f > 0.05) {
+      sk.stroke(40,100,220,150); sk.strokeWeight(1.5);
+      sk.line(bx+r+4, by, bx+r+4, lowestY);
+      sk.fill(40,100,220); sk.textSize(9); sk.textAlign(sk.LEFT);
+      sk.text('h', bx+r+7, (by+lowestY)/2+3);
+      sk.noStroke();
+    }
+
+    // Energy labels at extremes
+    sk.textSize(10); sk.textAlign(sk.CENTER); sk.textStyle(sk.BOLD);
+    if (pAngle > MAX_ANGLE*0.7) {
+      sk.fill(40,100,220,180); sk.text('Max GPE', bx, by-r-8);
+      sk.fill(220,80,40,180); sk.text('Min KE', bx, by-r-22);
+    }
+    if (Math.abs(pAngle) < 0.1) {
+      sk.fill(220,80,40,200); sk.text('Max KE', bx, by+r+20);
+      sk.fill(40,100,220,200); sk.text('Min GPE', bx, by+r+34);
+    }
+    sk.textStyle(sk.NORMAL);
+
+    // Energy bars
+    drawEnergyBars(ke_f, pe_f, 0, 0, 60, 405, scene);
+  }
+
+  // ─── Ball Drop ─────────────────────────────────────────────
+  function drawBallDrop() {
+    let floorY = 440;
+    let bx = 215;
+    const BALL_R = 22;
+
+    // Physics
+    ballVy += 0.45; // gravity
+    ballY += ballVy;
+
+    // Bounce
+    if (ballY + BALL_R >= floorY) {
+      ballY = floorY - BALL_R;
+      ballVy = -Math.abs(ballVy) * 0.72; // energy loss
+      if (Math.abs(ballVy) > 2) {
+        for (let i=0;i<10;i++) {
+          let a = sk.random(-sk.PI, 0);
+          sparks.push({x:bx, y:floorY, vx:sk.cos(a)*sk.random(2,5), vy:sk.sin(a)*sk.random(2,6), alpha:220, col:sk.random()<0.5?[255,120,0]:[200,200,200]});
+        }
+        bounceCount++;
+      }
+      if (Math.abs(ballVy) < 1.5) { ballY = 60; ballVy=0; bounceCount=0; sparks=[]; } // reset
+    }
+
+    // Height-based energy
+    let maxH = floorY - BALL_R - 60;
+    let curH = floorY - BALL_R - ballY;
+    let pe_f = sk.constrain(curH / maxH, 0, 1);
+    let ke_f = sk.constrain(Math.abs(ballVy) / 18, 0, 1);
+    let thermal_f = sk.constrain(bounceCount * 0.12, 0, 0.9);
+
+    // Floor
+    sk.fill(200,185,165); sk.noStroke(); sk.rect(60, floorY, 320, 50);
+    sk.stroke(160,145,125); sk.strokeWeight(2); sk.line(60, floorY, 380, floorY);
+
+    // Ball shadow
+    sk.fill(0,0,0,30); sk.noStroke();
+    sk.ellipse(bx, floorY+4, sk.map(ballY, 60, floorY-BALL_R, 10, BALL_R*2), 8);
+
+    // Sparks
+    sparks = sparks.filter(s=>s.alpha>8);
+    for (let s of sparks) {
+      s.x+=s.vx; s.y+=s.vy; s.vy+=0.15; s.alpha-=8;
+      sk.fill(s.col[0],s.col[1],s.col[2],s.alpha); sk.noStroke(); sk.ellipse(s.x,s.y,5);
+    }
+
+    // Ball
+    sk.noStroke();
+    sk.fill(220,80,40,60); sk.ellipse(bx,ballY,BALL_R*2+12);
+    sk.fill(220,80,40); sk.ellipse(bx,ballY,BALL_R*2);
+    sk.fill(255,255,255,100); sk.ellipse(bx-5,ballY-5,BALL_R*0.55);
+
+    // Velocity arrow
+    if (Math.abs(ballVy) > 2) {
+      sk.stroke(220,80,40,200); sk.strokeWeight(2); sk.noFill();
+      let arrLen = sk.constrain(ballVy*5, -60, 60);
+      arrowLine(sk, bx+BALL_R+5, ballY, bx+BALL_R+5, ballY+arrLen, [220,80,40]);
+    }
+
+    // Height annotation
+    if (pe_f > 0.05) {
+      sk.stroke(40,100,220,140); sk.strokeWeight(1.5);
+      sk.line(bx-BALL_R-12, ballY, bx-BALL_R-12, floorY-BALL_R);
+      sk.fill(40,100,220); sk.textSize(9); sk.textAlign(sk.RIGHT);
+      sk.text('h', bx-BALL_R-15, (ballY+floorY-BALL_R)/2+3);
+      sk.noStroke();
+    }
+
+    // Energy annotations
+    sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    if (pe_f > 0.7) { sk.fill(40,100,220); sk.text('HIGH GPE', bx, ballY-BALL_R-10); }
+    if (ke_f > 0.7 && ballVy > 0) { sk.fill(220,80,40); sk.text('HIGH KE', bx, ballY+BALL_R+14); }
+    if (bounceCount > 0) {
+      sk.fill(255,140,0); sk.textSize(9);
+      sk.text('Heat + Sound at bounce', bx, floorY+24);
+    }
+    sk.textStyle(sk.NORMAL);
+
+    // Energy bars
+    drawEnergyBars(ke_f, pe_f, thermal_f, 0, 60, 405, scene);
+  }
+
+  // ─── Circuit ───────────────────────────────────────────────
+  function drawCircuit() {
+    // Initialize electrons on first call
+    if (electrons.length === 0) {
+      for (let i=0;i<12;i++) electrons.push({t: i/12});
+    }
+
+    // Update electrons
+    for (let e of electrons) {
+      e.t = (e.t + 0.003) % 1;
+    }
+
+    // Circuit path (rectangle)
+    let cx = 215, cy = 260;
+    let cW = 240, cH = 210;
+    // Battery (left side)
+    let batX = cx-cW/2, batY1 = cy-cH/2, batY2 = cy+cH/2;
+    // Bulb (right side)
+    let bulbX = cx+cW/2, bulbY = cy;
+
+    // Draw wires
+    sk.stroke(80); sk.strokeWeight(3); sk.noFill();
+    sk.rect(batX, batY1, cW, cH, 5);
+
+    // Draw electrons on path
+    for (let e of electrons) {
+      let pos = getCircuitPos(e.t, batX, batY1, cW, cH);
+      sk.fill(100, 60, 220, 220); sk.noStroke();
+      sk.ellipse(pos.x, pos.y, 9);
+      sk.fill(200, 180, 255, 150); sk.ellipse(pos.x-1.5, pos.y-1.5, 4);
+    }
+
+    // === Battery ===
+    sk.fill(240,230,150); sk.stroke(180,160,60); sk.strokeWeight(2);
+    sk.rect(batX-32, cy-50, 40, 100, 5);
+    // Battery terminals
+    sk.stroke(80); sk.strokeWeight(3);
+    sk.line(batX-20, cy-60, batX-20, cy-50); // + terminal
+    sk.line(batX-20, cy+50, batX-20, cy+60); // - terminal
+    // + and - labels
+    sk.fill(30); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('+', batX-20, cy-64); sk.text('−', batX-20, cy+68);
+    // Cell stripes
+    sk.stroke(180,160,60); sk.strokeWeight(1.5);
+    for (let i=-2;i<=2;i++) { sk.line(batX-35, cy+i*18, batX-5, cy+i*18); }
+    sk.textStyle(sk.NORMAL);
+
+    // Battery label
+    lbl2(sk, 'Battery', batX-12, cy+80, 'center', [120,100,0]);
+    lbl2(sk, '(Chemical Energy)', batX-12, cy+93, 'center', [140,120,20]);
+
+    // === Light Bulb ===
+    bulbGlow = sk.lerp(bulbGlow, 0.9, 0.05);
+    let glow = bulbGlow;
+    // Glow halo
+    sk.noStroke();
+    for (let r=0; r<4; r++) {
+      sk.fill(255, 240, 100, glow*50-r*12); sk.ellipse(bulbX, bulbY-10, 65+r*18, 65+r*18);
+    }
+    // Bulb glass
+    sk.fill(255, 250, 200, 220); sk.stroke(150); sk.strokeWeight(2);
+    sk.ellipse(bulbX, bulbY-10, 56, 56);
+    // Bulb base
+    sk.fill(180); sk.rect(bulbX-12, bulbY+15, 24, 28, 2);
+    // Filament
+    sk.stroke(255,180,0); sk.strokeWeight(2); sk.noFill();
+    sk.beginShape(); sk.noFill();
+    for (let x=-10;x<=10;x+=5) sk.vertex(bulbX+x, bulbY-10+Math.sin(x)*8);
+    sk.endShape();
+    // Light rays
+    sk.stroke(255,240,100,glow*120); sk.strokeWeight(1.5);
+    for (let a=0;a<8;a++) {
+      let ra = a*sk.PI/4;
+      sk.line(bulbX+sk.cos(ra)*30, bulbY-10+sk.sin(ra)*30, bulbX+sk.cos(ra)*46, bulbY-10+sk.sin(ra)*46);
+    }
+    // Heat wavy lines
+    sk.stroke(255,130,0,glow*100); sk.strokeWeight(1.5); sk.noFill();
+    for (let h=0;h<3;h++) {
+      sk.beginShape();
+      for (let x=-10;x<=10;x+=3) {
+        sk.vertex(bulbX+x+sk.sin(tick*3+h)*2, bulbY-50-h*12+sk.sin(x*0.8+tick*2)*4);
+      }
+      sk.endShape();
+    }
+    sk.noStroke();
+    lbl2(sk, 'Light Bulb', bulbX, bulbY+55, 'center', [120,90,0]);
+    lbl2(sk, '(Light + Thermal Energy)', bulbX, bulbY+68, 'center', [140,100,20]);
+
+    // Arrows on wires showing current direction
+    sk.fill(100,60,220,180); sk.noStroke();
+    let arrowPositions = [0.1, 0.35, 0.62, 0.87];
+    for (let t of arrowPositions) {
+      let pos = getCircuitPos(t, batX, batY1, cW, cH);
+      let pos2 = getCircuitPos((t+0.01)%1, batX, batY1, cW, cH);
+      let a = sk.atan2(pos2.y-pos.y, pos2.x-pos.x);
+      sk.push(); sk.translate(pos.x, pos.y); sk.rotate(a);
+      sk.triangle(0,0,-10,4,-10,-4); sk.pop();
+    }
+
+    // Energy conversion label
+    sk.fill(60); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Chemical  →  Electrical  →  Light + Thermal', cx, cy+cH/2+38);
+    sk.textStyle(sk.NORMAL);
+
+    // Energy bars for circuit
+    drawEnergyBars(0, 0, 0.35, 0.65, 60, 405, scene);
+  }
+
+  function getCircuitPos(t, bx, by, cW, cH) {
+    // t goes 0→1 around the rectangle
+    let perim = 2*(cW+cH);
+    let d = t * perim;
+    if (d < cW)          return {x: bx+d,      y: by};
+    d -= cW;
+    if (d < cH)          return {x: bx+cW,     y: by+d};
+    d -= cH;
+    if (d < cW)          return {x: bx+cW-d,   y: by+cH};
+    d -= cW;
+                         return {x: bx,         y: by+cH-d};
+  }
+
+  // ─── Energy Bars ───────────────────────────────────────────
+  function drawEnergyBars(ke, pe, thermal, light, bx, by, scn) {
+    let barW = 44, barMaxH = 155, gap = 58, barsY = by;
+
+    const BARS = scn===0 ? [
+      {frac:ke,  col:[220,80,40],  label:'KE',   full:'Kinetic'},
+      {frac:pe,  col:[40,100,220], label:'GPE',  full:'Gravitational PE'},
+    ] : scn===1 ? [
+      {frac:ke,  col:[220,80,40],  label:'KE',   full:'Kinetic Energy'},
+      {frac:pe,  col:[40,100,220], label:'GPE',  full:'Gravitational PE'},
+      {frac:thermal,col:[255,140,0],label:'Th',  full:'Thermal Energy'},
+    ] : [
+      {frac:0.9, col:[0,150,80],   label:'Ch',   full:'Chemical (battery)'},
+      {frac:0.8, col:[100,60,200], label:'El',   full:'Electrical (wires)'},
+      {frac:light,col:[255,220,30],label:'Lt',   full:'Light Energy'},
+      {frac:thermal,col:[255,140,0],label:'Th',  full:'Thermal Energy'},
+    ];
+
+    // Panel background
+    sk.fill(255,255,255,200); sk.stroke(200); sk.strokeWeight(1.5);
+    sk.rect(bx-8, barsY-barMaxH-30, BARS.length*gap+16, barMaxH+60, 8);
+    sk.noStroke();
+    sk.fill(80); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('ENERGY', bx + (BARS.length*gap-gap)/2, barsY-barMaxH-16);
+    sk.textStyle(sk.NORMAL);
+
+    for (let i=0; i<BARS.length; i++) {
+      let b = BARS[i];
+      let x = bx + i*gap + barW/2;
+      let h = b.frac * barMaxH;
+      // Bar background
+      sk.fill(240); sk.noStroke(); sk.rect(x-barW/2, barsY-barMaxH, barW, barMaxH, 3);
+      // Bar fill (animated)
+      sk.fill(b.col[0],b.col[1],b.col[2],220);
+      sk.rect(x-barW/2, barsY-h, barW, h, 3);
+      // Value %
+      sk.fill(255,255,255,200); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      if (h > 18) sk.text(Math.round(b.frac*100)+'%', x, barsY-h+13);
+      sk.textStyle(sk.NORMAL);
+      // Label below
+      sk.fill(b.col[0],b.col[1],b.col[2]); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text(b.label, x, barsY+14); sk.textStyle(sk.NORMAL);
+    }
+
+    // Conservation note
+    sk.fill(30,100,30,200); sk.textSize(8.5); sk.textAlign(sk.CENTER);
+    let tx = bx + (BARS.length*gap-gap)/2;
+    sk.text('Energy is', tx, barsY+28);
+    sk.text('conserved', tx, barsY+40);
+  }
+
+  // ─── Info Panel ────────────────────────────────────────────
+  function drawInfoPanel() {
+    let px=520, py=8, pw=352, ph=494;
+    sk.fill(255,255,255,235); sk.stroke(220,100,30); sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10); sk.noStroke();
+
+    // Title
+    const titles=['Pendulum — KE ↔ GPE', 'Bouncing Ball — Energy Loss', 'Electric Circuit — Conversions'];
+    sk.fill(200,60,0); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text(titles[scene], px+14, py+26); sk.textStyle(sk.NORMAL);
+
+    // Scene dots
+    for (let i=0;i<3;i++) {
+      sk.fill(220,100,30,i===scene?255:60); sk.ellipse(px+pw/2-20+i*20, py+42, i===scene?13:9);
+    }
+
+    // Law of conservation
+    let ley = py+56;
+    sk.fill(255,248,230,200); sk.stroke(220,160,0); sk.strokeWeight(1.2);
+    sk.rect(px+10,ley,pw-20,44,6); sk.noStroke();
+    sk.fill(140,80,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('⚡ LAW OF CONSERVATION OF ENERGY:', px+14, ley+14); sk.textStyle(sk.NORMAL);
+    sk.fill(60); sk.textSize(10.5);
+    sk.text('"Energy cannot be created or destroyed,', px+14, ley+28);
+    sk.text('only transferred or transformed."', px+14, ley+42);
+
+    // Current scenario explanation
+    let sy = ley+58;
+    const explanations = [
+      ['At the top of swing:', 'Maximum GPE, Zero KE',
+       'At the bottom:', 'Maximum KE, Zero GPE',
+       'Total energy stays constant.','Energy converts between KE ↔ GPE'],
+      ['As ball falls:', 'GPE converts to KE',
+       'At bounce:', 'KE → thermal + sound energy',
+       'Ball rises less each time.','Energy is "lost" as heat and sound'],
+      ['Battery provides:', 'Chemical Energy',
+       'In wires:', 'Electrical Energy',
+       'In bulb:', 'Light + Thermal Energy'],
+    ];
+    let ex = explanations[scene];
+    sk.fill(240,248,255,200); sk.stroke(80,140,220); sk.strokeWeight(1.2);
+    sk.rect(px+10,sy,pw-20,108,6); sk.noStroke();
+    sk.fill(0,60,150); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('WHAT IS HAPPENING:', px+14, sy+14); sk.textStyle(sk.NORMAL);
+    for (let i=0;i<3;i++) {
+      sk.fill(0,60,150); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.text(ex[i*2], px+14, sy+30+i*26);
+      sk.textStyle(sk.NORMAL); sk.fill(30); sk.textSize(11); sk.text(ex[i*2+1], px+14, sy+43+i*26);
+    }
+
+    // Energy types reference
+    let ety = sy + 118;
+    sk.fill(250,250,250,200); sk.stroke(200); sk.strokeWeight(1);
+    sk.rect(px+10,ety,pw-20,174,6); sk.noStroke();
+    sk.fill(40); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('ENERGY TYPES:', px+14, ety+14); sk.textStyle(sk.NORMAL);
+    for (let i=0; i<ENERGY_TYPES.length; i++) {
+      let e = ENERGY_TYPES[i];
+      let ey = ety + 28 + i*21;
+      sk.fill(e.col[0],e.col[1],e.col[2],220); sk.ellipse(px+22, ey-4, 12);
+      sk.fill(e.col[0],e.col[1],e.col[2]); sk.textSize(9.5); sk.textStyle(sk.BOLD);
+      sk.text(e.name+':', px+32, ey); sk.textStyle(sk.NORMAL);
+      sk.fill(60); sk.textSize(9); sk.text(e.sym, px+pw-30, ey);
+    }
+
+    // Fun fact
+    let ffy = ety + 182;
+    sk.fill(255,253,231,220); sk.stroke(255,213,79); sk.strokeWeight(1.5);
+    sk.rect(px+10,ffy,pw-20,ph-(ffy-py)-14,6); sk.noStroke();
+    sk.fill(130,100,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('💡 Did you know?', px+16, ffy+14); sk.textStyle(sk.NORMAL);
+    const facts = [
+      'A pendulum keeps swinging because energy converts\nbetween kinetic and potential energy. Without friction,\nit would swing forever!',
+      'When a ball bounces, it never returns to its original\nheight because energy is lost as heat and sound\neach time it hits the ground.',
+      'A standard LED bulb converts about 95% of electrical\nenergy into light — much more efficient than the\nold filament bulbs!',
+    ];
+    sk.fill(60); sk.textSize(10);
+    facts[scene].split('\n').forEach((l,i) => sk.text(l, px+16, ffy+30+i*15));
+  }
+
+  function arrowLine(sk, x1, y1, x2, y2, col) {
+    sk.stroke(col[0],col[1],col[2],200); sk.strokeWeight(2); sk.noFill();
+    sk.line(x1,y1,x2,y2);
+    let a = sk.atan2(y2-y1,x2-x1);
+    sk.fill(col[0],col[1],col[2]); sk.noStroke();
+    sk.push(); sk.translate(x2,y2); sk.rotate(a);
+    sk.triangle(0,0,-10,4,-10,-4); sk.pop();
+  }
+
+  function lbl2(sk, txt, x, y, align, col) {
+    sk.textSize(9.5); sk.textAlign(align==='right'?sk.RIGHT:align==='left'?sk.LEFT:sk.CENTER);
+    let tw = sk.textWidth(txt);
+    let bx = align==='center'?x-tw/2-4:align==='right'?x-tw-4:x-4;
+    sk.fill(255,255,255,200); sk.noStroke(); sk.rect(bx,y-12,tw+8,14,3);
+    sk.fill(col[0],col[1],col[2]); sk.text(txt,x,y);
+  }
+  sk.mouseClicked=function(){ if(energyMcq){ energyMcqClick(sk.mouseX,sk.mouseY); return; } };
+});
+</script>
+</body>
+</html>

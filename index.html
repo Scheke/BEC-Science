@@ -1,0 +1,1986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEC Science Animations</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;color:#1a1a1a;min-height:100vh;background:#f4f6f8}
+    .hidden{display:none!important}
+
+    /* ── CSS level colour tokens ── */
+    :root{--c:#2e7d32;--c-dark:#1b5e20;--c-mid:#388e3c;--c-light:#e8f5e9;--c-text:#fff}
+
+    /* ════════════════════════════════
+       LANDING VIEW
+    ════════════════════════════════ */
+    #v-land{
+      min-height:100vh;
+      background:linear-gradient(155deg,#071a09 0%,#0d2b11 30%,#1b5e20 65%,#2e7d32 100%);
+      display:flex;flex-direction:column;
+    }
+    .l-hdr{
+      padding:20px 36px;display:flex;align-items:center;justify-content:space-between;
+      background:linear-gradient(90deg,rgba(0,0,0,.1),transparent);
+      backdrop-filter:blur(10px);
+    }
+    .l-logo{
+      color:#fff;font-size:1.3rem;font-weight:900;letter-spacing:.5px;
+      background:linear-gradient(135deg,#fff,#81c784);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .l-logo span{color:#a5d6a7;}
+    .l-hdr-btns{margin-left:auto;display:flex;gap:10px;align-items:center}
+    .l-hdr-btn{text-decoration:none;font-size:.85rem;font-weight:600;padding:6px 14px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid transparent}
+    .l-hdr-visit{color:#a5d6a7;border-color:#81c784}
+    .l-hdr-visit:hover{background:rgba(129,199,132,.2)}
+    .l-hdr-signin{color:#fff;background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+    .l-hdr-signin:hover{background:rgba(255,255,255,.25)}
+    .l-badge{
+      background:linear-gradient(135deg,rgba(46,125,50,.3),rgba(129,199,132,.2));
+      border:1.5px solid #81c784;border-radius:999px;padding:8px 18px;
+      color:#a5d6a7;font-size:.75rem;font-weight:700;
+      box-shadow:0 4px 15px rgba(129,199,132,.25);
+      animation:pulse 2s ease-in-out infinite;
+    }
+    .l-main{
+      flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:32px 20px 48px;gap:10px;
+    }
+    .l-eyebrow{
+      color:#81c784;font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+      animation:slideDown .8s ease-out;
+    }
+    .l-h1{
+      color:#fff;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;text-align:center;line-height:1.15;
+      background:linear-gradient(135deg,#fff 0%,#e0f7e0 100%);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+      animation:slideDown .9s ease-out .1s both;
+    }
+    .l-sub{
+      color:rgba(255,255,255,.8);font-size:1.05rem;text-align:center;margin-bottom:10px;
+      font-weight:500;animation:slideDown 1s ease-out .2s both;
+    }
+    @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+    @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
+    .l-cards{
+      display:flex;gap:20px;flex-wrap:wrap;justify-content:center;
+      max-width:1020px;width:100%;margin-top:20px;
+    }
+    .l-card{
+      background:rgba(255,255,255,.07);
+      border:1.5px solid rgba(255,255,255,.13);
+      border-radius:18px;
+      padding:32px 28px 28px;
+      cursor:pointer;
+      flex:1;min-width:260px;max-width:310px;
+      transition:transform .3s cubic-bezier(.34,.1,.64,.1),background .3s,border-color .3s,box-shadow .3s;
+      position:relative;overflow:hidden;
+    }
+    .l-card::before{
+      content:'';position:absolute;inset:0;border-radius:18px;
+      background:radial-gradient(600px at var(--x,50%) var(--y,50%),rgba(255,255,255,.1),transparent 80%);
+      opacity:0;transition:opacity .3s;
+    }
+    .l-card::after{
+      content:'';position:absolute;inset:0;border-radius:18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
+    }
+    .l-card:hover{
+      transform:translateY(-10px) scale(1.02);
+      background:rgba(255,255,255,.15);
+      box-shadow:0 20px 50px rgba(0,0,0,.4);
+    }
+    .l-card:hover::before{opacity:1}
+    .l-card.primary{border-color:rgba(21,101,192,.4)}
+    .l-card.primary:hover{background:rgba(21,101,192,.2);border-color:rgba(100,149,237,.6)}
+    .l-card.junior{border-color:rgba(46,125,50,.5)}
+    .l-card.junior:hover{background:rgba(46,125,50,.22);border-color:rgba(100,200,100,.6)}
+    .l-card.senior{border-color:rgba(191,54,12,.4)}
+    .l-card.senior:hover{background:rgba(191,54,12,.2);border-color:rgba(230,120,60,.6)}
+    .lc-icon{
+      font-size:3rem;margin-bottom:14px;display:block;
+      animation:float 3s ease-in-out infinite;
+    }
+    .lc-level{
+      color:#fff;font-size:1.35rem;font-weight:800;margin-bottom:3px;
+      background:linear-gradient(135deg,#fff,#e0f7e0);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .lc-exam{
+      font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+      color:#81c784;margin-bottom:14px;
+    }
+    .lc-grades{color:rgba(255,255,255,.85);font-size:.95rem;margin-bottom:16px;line-height:1.5;font-weight:500}
+    .lc-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+    .lc-pill{
+      background:linear-gradient(135deg,rgba(129,199,132,.3),rgba(46,125,50,.2));
+      border:1px solid rgba(129,199,132,.4);color:#fff;font-size:.75rem;font-weight:600;
+      padding:6px 12px;border-radius:999px;transition:all .2s;
+    }
+    .l-card:hover .lc-pill{background:rgba(129,199,132,.5);border-color:#81c784}
+    .lc-count{color:rgba(255,255,255,.75);font-size:.85rem;font-weight:600}
+    .lc-count strong{
+      font-size:2.2rem;color:#fff;display:block;line-height:1;margin-bottom:2px;
+      background:linear-gradient(135deg,#a5d6a7,#81c784);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .lc-arrow{
+      position:absolute;bottom:24px;right:24px;color:rgba(255,255,255,.3);
+      font-size:1.6rem;transition:transform .3s cubic-bezier(.34,.1,.64,.1),color .3s;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    .l-card:hover .lc-arrow{
+      transform:translateX(8px) scale(1.2);
+      color:#a5d6a7;
+      animation:none;
+    }
+    /* ── Features section ── */
+    .l-features{
+      max-width:1100px;width:100%;margin:40px auto 0;padding:0 20px;
+    }
+    .l-features-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;margin-bottom:30px;
+    }
+    .l-feat-item{
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+      padding:20px;text-align:center;transition:all .3s;
+    }
+    .l-feat-item:hover{
+      background:rgba(255,255,255,.15);border-color:rgba(129,199,132,.4);
+      transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,.2);
+    }
+    .l-feat-icon{font-size:2.2rem;margin-bottom:10px;display:block;animation:float 3s ease-in-out infinite}
+    .l-feat-title{color:#fff;font-size:.9rem;font-weight:700;margin-bottom:5px}
+    .l-feat-desc{color:rgba(255,255,255,.6);font-size:.75rem;line-height:1.4}
+    .l-foot{
+      text-align:center;color:rgba(255,255,255,.3);font-size:.75rem;
+      padding:30px 18px 18px;border-top:1px solid rgba(255,255,255,.07);
+    }
+    /* ── Landing player card ── */
+    #player-card{
+      max-width:700px;width:100%;
+      background:linear-gradient(135deg,rgba(0,0,0,.4),rgba(46,125,50,.15));
+      border:1.5px solid rgba(129,199,132,.3);
+      border-radius:20px;overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.1);
+      font-family:system-ui,sans-serif;
+      animation:slideDown 1.2s ease-out;
+    }
+    .pc-head{
+      padding:13px 24px 11px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+    .pc-head-lbl{
+      font-size:.6rem;font-weight:800;text-transform:uppercase;
+      letter-spacing:1.8px;color:rgba(255,255,255,.35);
+    }
+    .pc-view-all{
+      background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+      color:#fff;font-size:.73rem;font-weight:800;
+      padding:5px 14px;border-radius:7px;cursor:pointer;
+      font-family:inherit;transition:background .15s;
+    }
+    .pc-view-all:hover{background:rgba(255,255,255,.2)}
+    .pc-body{
+      padding:18px 24px;
+      display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    }
+    .pc-lv-icon{font-size:2.8rem;line-height:1;flex-shrink:0}
+    .pc-lv-info{flex:1;min-width:140px}
+    .pc-lv-name{font-size:1rem;font-weight:800;color:#fff;margin-bottom:5px}
+    .pc-xp-bar-wrap{
+      height:8px;background:rgba(255,255,255,.1);
+      border-radius:999px;overflow:hidden;margin-bottom:4px;
+    }
+    .pc-xp-bar{height:100%;background:linear-gradient(90deg,#66bb6a,#a5d6a7);border-radius:999px;transition:width .7s}
+    .pc-xp-txt{font-size:.72rem;color:rgba(255,255,255,.5);font-weight:600}
+    .pc-stats{display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .pc-stat-blk{display:flex;flex-direction:column;align-items:center;gap:1px}
+    .pc-stat-icon{font-size:1.4rem;line-height:1}
+    .pc-stat-val{font-size:.88rem;font-weight:800;color:#fff}
+    .pc-stat-lbl{font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.7px}
+    .pc-hearts{display:flex;gap:3px;margin-bottom:1px}
+    .pc-badge-btn{
+      background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.18);
+      color:#fff;font-size:.82rem;font-weight:800;
+      padding:9px 18px;border-radius:10px;cursor:pointer;
+      font-family:inherit;transition:background .15s;text-align:center;
+    }
+    .pc-badge-btn:hover{background:rgba(255,255,255,.2)}
+    .pc-badge-big{font-size:1.2rem;font-weight:900;display:block}
+    .pc-badge-lbl{font-size:.62rem;opacity:.6;font-weight:600;display:block}
+    .pc-foot{
+      padding:10px 24px 13px;
+      border-top:1px solid rgba(255,255,255,.07);
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .pc-next-lbl{
+      font-size:.62rem;font-weight:800;text-transform:uppercase;
+      letter-spacing:.8px;color:rgba(255,255,255,.28);flex-shrink:0;
+    }
+    .pc-next-badge{
+      font-size:.74rem;color:rgba(255,255,255,.55);
+      background:rgba(255,255,255,.06);border-radius:6px;padding:4px 10px;
+    }
+    .pc-earned-icons{display:flex;gap:6px;align-items:center;margin-left:auto}
+
+    /* ════════════════════════════════
+       DASHBOARD VIEW
+    ════════════════════════════════ */
+    #v-dash{min-height:100vh;background:#f4f6f8}
+
+    /* ── Header ── */
+    .d-hdr{
+      position:sticky;top:0;z-index:100;
+      background:var(--c);
+      display:flex;align-items:center;gap:6px;
+      height:58px;padding:0 18px;
+      box-shadow:0 2px 10px rgba(0,0,0,.25);
+    }
+
+    /* Stats bar — sticky below header */
+    #bec-stats{
+      position:sticky;top:58px;z-index:99;
+      background:#fff;padding:10px 18px;
+      border-bottom:1px solid #e8e8e8;
+      font-size:.85rem;
+    }
+    .d-back{
+      background:rgba(255,255,255,.12);border:none;color:#fff;
+      font-size:.82rem;font-weight:600;cursor:pointer;
+      padding:7px 12px;border-radius:8px;
+      display:flex;align-items:center;gap:5px;white-space:nowrap;
+      transition:background .15s;flex-shrink:0;
+    }
+    .d-back:hover{background:rgba(255,255,255,.22)}
+
+    /* Level dropdown */
+    .d-lvdrop{position:relative;flex-shrink:0}
+    .d-lvdrop-btn{background:rgba(255,255,255,.12);border:none;color:#fff;font-size:.8rem;
+      font-weight:700;padding:7px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;
+      transition:all .15s;font-family:inherit}
+    .d-lvdrop-btn:hover{background:rgba(255,255,255,.22)}
+    .d-lvdrop-menu{position:absolute;top:calc(100% + 6px);left:0;background:#fff;
+      border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);min-width:160px;
+      z-index:1000;overflow:hidden}
+    .d-lvdrop-menu.hidden{display:none}
+    .d-lvdrop-item{display:block;width:100%;text-align:left;background:none;border:none;
+      color:#333;font-size:.9rem;font-weight:600;padding:12px 16px;cursor:pointer;
+      transition:background .12s;font-family:inherit;border-bottom:1px solid #f0f0f0}
+    .d-lvdrop-item:last-child{border-bottom:none}
+    .d-lvdrop-item:hover{background:#f5f5f5}
+    .d-lvdrop-item.on{background:var(--c-light);color:var(--c);font-weight:700}
+    .d-nav{display:flex;gap:2px;overflow-x:auto;padding:0 4px;flex:1}
+    .d-nav::-webkit-scrollbar{display:none}
+    .d-nbtn{
+      background:transparent;border:none;color:rgba(255,255,255,.7);
+      font-size:.84rem;font-weight:600;padding:8px 14px;border-radius:8px;
+      cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;
+    }
+    .d-nbtn:hover{background:rgba(255,255,255,.12);color:#fff}
+    .d-nbtn.on{background:rgba(255,255,255,.22);color:#fff}
+    .d-srch{position:relative;flex-shrink:0}
+    .d-srch input{
+      background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+      color:#fff;border-radius:8px;padding:7px 30px 7px 12px;
+      font-size:.8rem;width:140px;outline:none;
+      transition:background .15s,width .2s;font-family:inherit;
+    }
+    .d-srch input::placeholder{color:rgba(255,255,255,.5)}
+    .d-srch input:focus{background:rgba(255,255,255,.25);width:180px}
+    .d-srch-x{
+      position:absolute;right:7px;top:50%;transform:translateY(-50%);
+      background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;
+      font-size:.85rem;display:none;line-height:1;padding:2px;
+    }
+    .d-srch-x:hover{color:#fff}
+    .d-rnd{
+      background:rgba(255,255,255,.12);border:none;color:#fff;
+      font-size:1.1rem;padding:7px 10px;border-radius:8px;cursor:pointer;
+      transition:background .15s;flex-shrink:0;
+    }
+    .d-rnd:hover{background:rgba(255,255,255,.25)}
+
+    /* ── Hero strip ── */
+    .d-hero{
+      background:linear-gradient(120deg,var(--c-dark) 0%,var(--c-mid,var(--c)) 60%,var(--c) 100%);
+      color:#fff;padding:28px 32px;
+      display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+      box-shadow:0 4px 20px rgba(0,0,0,.15);
+    }
+    .d-hero-text{flex:1;min-width:200px}
+    .d-hero-eyebrow{
+      font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.8px;
+      color:rgba(255,255,255,.6);margin-bottom:6px;
+    }
+    .d-hero-h1{
+      font-size:1.6rem;font-weight:900;margin-bottom:6px;
+      letter-spacing:-.5px;
+    }
+    .d-hero-p{font-size:.95rem;color:rgba(255,255,255,.8);line-height:1.5;font-weight:500}
+    .d-hero-stats{display:flex;gap:12px;flex-shrink:0;flex-wrap:wrap}
+    .d-hstat{
+      background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.05));
+      border:1.5px solid rgba(255,255,255,.25);border-radius:12px;
+      padding:12px 18px;text-align:center;min-width:80px;
+      transition:all .3s;
+    }
+    .d-hstat:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);transform:translateY(-2px)}
+    .d-hstat strong{display:block;font-size:1.6rem;line-height:1;font-weight:900}
+    .d-hstat span{font-size:.68rem;color:rgba(255,255,255,.7)}
+
+    /* ── Body wrapper ── */
+    .d-body{max-width:1100px;margin:0 auto;padding:20px 24px 50px}
+
+    /* ── Widgets ── */
+    .d-widgets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+    @media(max-width:740px){.d-widgets{grid-template-columns:1fr}}
+    .wid{
+      background:#fff;border:1.5px solid #e8e8e8;border-radius:14px;
+      padding:18px 20px;overflow:hidden;
+    }
+    .wid-hdr{
+      font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+      color:#999;margin-bottom:12px;display:flex;align-items:center;gap:7px;
+    }
+    .wid-hdr-icon{font-size:.95rem}
+
+    /* Spotlight widget */
+    .wid-spot-card{
+      background:var(--c-light,#e8f5e9);border-radius:10px;padding:14px;
+      text-decoration:none;color:inherit;display:block;transition:box-shadow .15s;
+    }
+    .wid-spot-card:hover{box-shadow:0 3px 12px rgba(0,0,0,.1)}
+    .wid-spot-icon{font-size:1.6rem;margin-bottom:6px}
+    .wid-spot-title{font-size:.9rem;font-weight:700;margin-bottom:3px;color:#111}
+    .wid-spot-sub{font-size:.75rem;color:#666;line-height:1.4;margin-bottom:10px}
+    .wid-spot-btn{
+      background:var(--c,#2e7d32);color:#fff;border:none;border-radius:6px;
+      font-size:.78rem;font-weight:700;padding:6px 14px;cursor:pointer;
+      font-family:inherit;transition:opacity .15s;
+    }
+    .wid-spot-btn:hover{opacity:.85}
+
+    /* Progress widget */
+    .wid-prog-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+    .wid-prog-nums{font-size:1.3rem;font-weight:800;color:#111}
+    .wid-prog-of{font-size:.78rem;color:#888}
+    .prog-bar{height:8px;background:#eee;border-radius:999px;overflow:hidden;margin-bottom:14px}
+    .prog-fill{height:100%;background:var(--c,#2e7d32);border-radius:999px;transition:width .4s}
+    .prog-recent-hdr{font-size:.72rem;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
+    .prog-recent-item{
+      display:flex;align-items:center;gap:8px;font-size:.8rem;color:#555;
+      padding:5px 0;border-bottom:1px solid #f0f0f0;text-decoration:none;
+      transition:color .12s;
+    }
+    .prog-recent-item:last-child{border-bottom:none}
+    .prog-recent-item:hover{color:var(--c,#2e7d32)}
+    .prog-recent-icon{font-size:1rem;flex-shrink:0}
+    .prog-empty{font-size:.82rem;color:#bbb;font-style:italic}
+
+    /* Tips widget */
+    .tip-item{
+      display:flex;gap:10px;font-size:.82rem;line-height:1.5;color:#555;
+      padding:7px 0;border-bottom:1px solid #f4f4f4;
+    }
+    .tip-item:last-child{border-bottom:none}
+    .tip-emoji{flex-shrink:0}
+
+    /* ── Search bar ── */
+    .d-search-wrap{position:relative;margin-bottom:20px}
+    .d-search-wrap input{
+      width:100%;padding:11px 38px 11px 16px;font-size:.9rem;
+      border:1.5px solid #e0e0e0;border-radius:9px;background:#fff;
+      outline:none;transition:border-color .15s,box-shadow .15s;font-family:inherit;
+    }
+    .d-search-wrap input:focus{border-color:var(--c,#2e7d32);box-shadow:0 0 0 3px rgba(46,125,50,.1)}
+    .d-search-wrap .sx{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      background:none;border:none;font-size:1rem;color:#bbb;cursor:pointer;display:none;
+    }
+    .d-search-wrap .sx:hover{color:#555}
+    #d-no-results{display:none;text-align:center;padding:32px;color:#aaa;font-size:.9rem}
+
+    /* ── Section dividers ── */
+    .sec-div{display:flex;align-items:center;gap:10px;margin:22px 0 12px}
+    .sec-div-label{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;white-space:nowrap}
+    .sec-div-line{flex:1;height:1px;background:#e8e8e8}
+    .sec-sub-badge{
+      font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:999px;
+      background:var(--c-light,#e8f5e9);color:var(--c,#2e7d32);white-space:nowrap;
+    }
+
+    /* ── Animation card grid ── */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-bottom:8px}
+    .acard{
+      background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;
+      padding:16px;color:inherit;display:flex;flex-direction:column;
+      transition:border-color .13s,box-shadow .13s,transform .1s;position:relative;
+    }
+    .acard:hover{
+      border-color:var(--c,#2e7d32);
+      box-shadow:0 3px 14px rgba(0,0,0,.09);
+      transform:translateY(-2px);
+    }
+    .acard-icon{font-size:1.45rem;margin-bottom:7px}
+    .acard-title{font-size:.87rem;font-weight:700;margin-bottom:4px;color:#111}
+    .acard-sub{font-size:.73rem;color:#777;line-height:1.4;flex:1;margin-bottom:14px}
+    .acard-btns{display:flex;gap:6px;margin-top:auto}
+    .acard-btn{
+      flex:1;text-align:center;text-decoration:none;font-size:.72rem;font-weight:700;
+      padding:6px 4px;border-radius:7px;border:1.5px solid transparent;
+      cursor:pointer;font-family:inherit;transition:all .15s;display:block;
+    }
+    .acard-btn-anim{
+      background:var(--c,#2e7d32);color:#fff;border-color:var(--c,#2e7d32);
+    }
+    .acard-btn-anim:hover{opacity:.85}
+    .acard-btn-study{
+      background:transparent;color:var(--c,#2e7d32);border-color:var(--c,#2e7d32);
+    }
+    .acard-btn-study:hover{background:var(--c-light,#e8f5e9)}
+    .acard-btn-quiz{
+      background:transparent;color:var(--c,#2e7d32);border-color:var(--c,#2e7d32);
+    }
+    .acard-btn-quiz:hover{background:var(--c-light,#e8f5e9)}
+    .acard-btn-locked{
+      background:transparent;color:#bbb;border-color:#ddd;
+      cursor:not-allowed;opacity:.7;pointer-events:none;
+    }
+    .grp-hidden{display:none}
+    /* Crown badge on cards */
+    .acard-crown{position:absolute;top:8px;right:10px;font-size:1.1rem;line-height:1;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));pointer-events:none}
+
+    .d-foot{
+      text-align:center;color:#bbb;font-size:.76rem;padding:20px;
+      border-top:1px solid #e8e8e8;background:#fff;margin-top:20px;
+    }
+
+    /* ── Test / Exam bar ── */
+    .te-bar{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+      margin:8px 0 26px;padding:10px 14px;
+      background:linear-gradient(90deg,var(--c-light,#e8f5e9) 0%,rgba(255,255,255,0) 100%);
+      border-radius:10px;border-left:3px solid var(--c,#2e7d32);
+    }
+    .te-bar-label{font-size:.78rem;color:#888;font-weight:600;letter-spacing:.5px;flex:1;min-width:80px}
+    .te-btn{
+      border:none;border-radius:8px;font-size:.8rem;font-weight:700;
+      padding:8px 16px;cursor:pointer;font-family:inherit;transition:all .15s;
+      display:inline-flex;align-items:center;gap:5px;
+    }
+    .te-btn-test{background:var(--c,#2e7d32);color:#fff;}
+    .te-btn-test:hover{opacity:.85}
+    .te-btn-exam{background:#e65100;color:#fff;}
+    .te-btn-exam:hover{background:#bf360c}
+    /* ── Topic Selector Modal ── */
+    .te-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      z-index:1000;display:flex;align-items:center;justify-content:center;
+      padding:20px;
+    }
+    .te-modal-box{
+      background:#fff;border-radius:14px;padding:28px;
+      max-width:460px;width:100%;max-height:82vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+    }
+    .te-modal-title{font-size:1.1rem;font-weight:800;margin-bottom:4px;color:#111}
+    .te-modal-sub{font-size:.82rem;color:#888;margin-bottom:16px}
+    .te-topic-row{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;
+      border:1.5px solid #e8e8e8;border-radius:8px;margin-bottom:7px;cursor:pointer;
+      transition:border-color .12s,background .12s;
+    }
+    .te-topic-row:hover{border-color:var(--c,#2e7d32);background:var(--c-light,#e8f5e9)}
+    .te-topic-row input[type=checkbox]{accent-color:var(--c,#2e7d32);width:16px;height:16px;cursor:pointer;flex-shrink:0}
+    .te-topic-row label{font-size:.88rem;font-weight:600;cursor:pointer;flex:1}
+    .te-topic-row small{font-size:.72rem;color:#aaa;white-space:nowrap}
+    .te-modal-actions{display:flex;gap:10px;margin-top:18px}
+    .te-modal-btn{
+      flex:1;border:none;border-radius:8px;font-size:.88rem;font-weight:700;
+      padding:10px;cursor:pointer;font-family:inherit;transition:all .15s;
+    }
+    .te-modal-btn-start{background:var(--c,#2e7d32);color:#fff}
+    .te-modal-btn-start:hover{opacity:.85}
+    .te-modal-btn-cancel{background:#f5f5f5;color:#666}
+    .te-modal-btn-cancel:hover{background:#e8e8e8}
+    /* Landing page mobile */
+    @media(max-width:768px){
+      .l-hdr{padding:12px 16px;flex-wrap:wrap;gap:10px}
+      .l-logo{font-size:1.1rem}
+      .l-badge{font-size:.7rem;padding:6px 12px}
+      .l-hdr-btns{margin-left:0;width:100%;gap:8px}
+      .l-hdr-btn{flex:1;font-size:.75rem;padding:8px 10px!important}
+    }
+    @media(max-width:480px){
+      .l-hdr{padding:10px 12px;gap:8px}
+      .l-logo{font-size:.95rem}
+      .l-badge{display:none}
+      .l-h1{font-size:clamp(1.5rem,3.5vw,2rem)}
+      .l-sub{font-size:.9rem;padding:0 12px}
+      .l-hdr-btns{width:100%;gap:6px}
+      .l-hdr-btn{font-size:.65rem;padding:6px 10px!important}
+    }
+  </style>
+  <script src="animations/game.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     LANDING VIEW
+════════════════════════════════════ -->
+<div id="v-land">
+  <header class="l-hdr">
+    <div class="l-logo">BEC <span>Science</span> Animations</div>
+    <div class="l-badge">41 animations • 123 study items • 50+ quizzes • 47+ badges</div>
+    <div class="l-hdr-btns">
+      <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit">🌐 Visit Us</a>
+      <button onclick="showAuthModal()" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
+    </div>
+  </header>
+
+  <main class="l-main">
+    <div class="l-eyebrow">✨ Botswana Examinations Council Curriculum</div>
+    <h1 class="l-h1">Learn Science Like Never Before</h1>
+    <p class="l-sub">Interactive animations, real-time quizzes, detailed study guides, and achievements. Everything you need to excel in your exams.</p>
+
+    <div class="l-cards">
+
+      <div class="l-card primary" onclick="openLevel('primary')">
+        <span class="lc-icon">🏫</span>
+        <div class="lc-level">Primary School</div>
+        <div class="lc-exam">PSLE</div>
+        <div class="lc-grades">Standards 5 – 7</div>
+        <div class="lc-pills">
+          <span class="lc-pill">📚 13 Topics</span>
+          <span class="lc-pill">❓ 13 Quizzes</span>
+          <span class="lc-pill">🏆 Badges</span>
+        </div>
+        <div class="lc-count">
+          <strong>39</strong>
+          total study items
+        </div>
+        <div class="lc-arrow">→</div>
+      </div>
+
+      <div class="l-card junior" onclick="openLevel('junior')">
+        <span class="lc-icon">📚</span>
+        <div class="lc-level">Junior School</div>
+        <div class="lc-exam">JCE</div>
+        <div class="lc-grades">Forms 1 – 3</div>
+        <div class="lc-pills">
+          <span class="lc-pill">🧬 Biology</span>
+          <span class="lc-pill">⚗️ Chemistry</span>
+          <span class="lc-pill">⚡ Physics</span>
+        </div>
+        <div class="lc-count">
+          <strong>33</strong>
+          study items
+        </div>
+        <div class="lc-arrow">→</div>
+      </div>
+
+      <div class="l-card senior" onclick="openLevel('senior')">
+        <span class="lc-icon">🎓</span>
+        <div class="lc-level">Senior School</div>
+        <div class="lc-exam">BGCSE</div>
+        <div class="lc-grades">Forms 4 – 5</div>
+        <div class="lc-pills">
+          <span class="lc-pill">🧬 Biology</span>
+          <span class="lc-pill">⚗️ Chemistry</span>
+          <span class="lc-pill">⚡ Physics</span>
+        </div>
+        <div class="lc-count">
+          <strong>51</strong>
+          study items
+        </div>
+        <div class="lc-arrow">→</div>
+      </div>
+
+    </div>
+
+    <!-- Features/Highlights -->
+    <div class="l-features">
+      <div class="l-features-grid">
+        <div class="l-feat-item">
+          <span class="l-feat-icon">🎬</span>
+          <div class="l-feat-title">41+ Animations</div>
+          <div class="l-feat-desc">Interactive visualizations for every topic</div>
+        </div>
+        <div class="l-feat-item">
+          <span class="l-feat-icon">📝</span>
+          <div class="l-feat-title">50+ Quizzes</div>
+          <div class="l-feat-desc">Test your knowledge with practice tests</div>
+        </div>
+        <div class="l-feat-item">
+          <span class="l-feat-icon">🏆</span>
+          <div class="l-feat-title">Achievements</div>
+          <div class="l-feat-desc">Unlock badges & track your progress</div>
+        </div>
+        <div class="l-feat-item">
+          <span class="l-feat-icon">📚</span>
+          <div class="l-feat-title">Study Guides</div>
+          <div class="l-feat-desc">20 steps per topic with deep dives</div>
+        </div>
+        <div class="l-feat-item">
+          <span class="l-feat-icon">⚡</span>
+          <div class="l-feat-title">Fast Learning</div>
+          <div class="l-feat-desc">Master complex concepts in minutes</div>
+        </div>
+        <div class="l-feat-item">
+          <span class="l-feat-icon">✅</span>
+          <div class="l-feat-title">Curriculum Aligned</div>
+          <div class="l-feat-desc">BEC & education standards based</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="l-foot">🌍 BEC Science Animations &mdash; Master Science, Master Your Future &mdash; Built with p5.js</footer>
+</div>
+
+
+<!-- ════════════════════════════════════
+     DASHBOARD VIEW
+════════════════════════════════════ -->
+<div id="v-dash" class="hidden">
+
+  <header class="d-hdr" id="d-hdr">
+    <button class="d-back" onclick="goHome()">&#8592; Home</button>
+    <div class="d-lvdrop">
+      <button class="d-lvdrop-btn" id="d-lvdrop-toggle" onclick="toggleLevelDropdown()">📚 Level ⌄</button>
+      <div class="d-lvdrop-menu hidden" id="d-lvdrop-menu">
+        <button onclick="openLevel('primary');toggleLevelDropdown()" class="d-lvdrop-item" id="dlv-primary">🏫 PSLE</button>
+        <button onclick="openLevel('junior');toggleLevelDropdown()"   class="d-lvdrop-item" id="dlv-junior">📚 JCE</button>
+        <button onclick="openLevel('senior');toggleLevelDropdown()"   class="d-lvdrop-item" id="dlv-senior">🎓 BGCSE</button>
+      </div>
+    </div>
+    <nav class="d-nav" id="d-nav"></nav>
+    <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
+    <button class="d-rnd" onclick="showDonateModal()" title="Support us">❤️</button>
+    <button class="d-rnd" onclick="showAuthModal()" title="Sign in" style="font-size:.95rem">🔐</button>
+  </header>
+
+  <!-- Game stats bar -->
+  <div id="bec-stats"></div>
+
+  <!-- Hero -->
+  <div class="d-hero" id="d-hero">
+    <div class="d-hero-text">
+      <div class="d-hero-eyebrow" id="d-hero-eyebrow"></div>
+      <h1 class="d-hero-h1" id="d-hero-h1"></h1>
+      <p class="d-hero-p" id="d-hero-p"></p>
+    </div>
+    <div class="d-hero-stats" id="d-hero-stats"></div>
+  </div>
+
+  <!-- Body -->
+  <div class="d-body">
+
+    <!-- Widgets row -->
+    <div class="d-widgets" id="d-widgets"></div>
+
+    <!-- Standalone search (inside body for mobile fallback) -->
+    <div class="d-search-wrap">
+      <input id="d-srch2" type="text" placeholder="Search all animations in this level…" oninput="dSearch(this.value)" autocomplete="off">
+      <button class="sx" id="d-srch2-x" onclick="clearDSearch()">✕</button>
+    </div>
+
+    <div id="d-no-results">No animations match &ldquo;<span id="d-nr-q"></span>&rdquo; &mdash; try a different keyword.</div>
+
+    <!-- Animation groups -->
+    <div id="d-grid"></div>
+
+  </div>
+
+  <footer class="d-foot">
+    BEC Science Animations &mdash; Built with p5.js &mdash; Botswana Examinations Council Curriculum
+  </footer>
+</div>
+
+
+<!-- ════════════ TOPIC SELECTOR MODAL ════════════ -->
+<div id="te-overlay" class="te-overlay hidden" onclick="if(event.target===this)closeTestModal()">
+  <div class="te-modal-box">
+    <div class="te-modal-title" id="te-modal-title">Choose Topics</div>
+    <div class="te-modal-sub" id="te-modal-sub">Tick the topics to include, then click Start.</div>
+    <div id="te-topic-list"></div>
+    <div class="te-modal-actions">
+      <button class="te-modal-btn te-modal-btn-start" onclick="startSelectedTest()">🚀 Start Test</button>
+      <button class="te-modal-btn te-modal-btn-cancel" onclick="closeTestModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ FULL-PAGE AUTH VIEW ════════════ -->
+<div id="v-auth" class="hidden" style="
+  position:fixed;inset:0;z-index:2000;
+  background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 40%,#1565c0 100%);
+  display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.35)">
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:2rem;margin-bottom:6px">🔬</div>
+      <div style="font-size:1.4rem;font-weight:900;color:#1b5e20;letter-spacing:.3px">BEC Science</div>
+      <div style="font-size:.85rem;color:#888;margin-top:4px" id="auth-subtitle">Sign in to unlock all content</div>
+    </div>
+
+    <!-- Tab switcher -->
+    <div style="display:flex;border-radius:10px;overflow:hidden;border:2px solid #e8e8e8;margin-bottom:24px">
+      <button id="tab-signin" onclick="switchAuthTab('signin')" style="flex:1;padding:10px;border:none;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;background:#2e7d32;color:#fff;transition:all .2s">Sign In</button>
+      <button id="tab-signup" onclick="switchAuthTab('signup')" style="flex:1;padding:10px;border:none;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;background:#fff;color:#888;transition:all .2s">Create Account</button>
+    </div>
+
+    <!-- Form -->
+    <div id="auth-form">
+      <div id="auth-username-row" style="display:none;margin-bottom:12px">
+        <label style="font-size:.8rem;font-weight:600;color:#555;display:block;margin-bottom:4px">Username</label>
+        <input type="text" id="auth-username" placeholder="Choose a username" autocomplete="username"
+          style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;box-sizing:border-box;outline:none;transition:border .2s"
+          onfocus="this.style.borderColor='#2e7d32'" onblur="this.style.borderColor='#ddd'">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:.8rem;font-weight:600;color:#555;display:block;margin-bottom:4px">Email</label>
+        <input type="email" id="auth-email" placeholder="your@email.com" autocomplete="email"
+          style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;box-sizing:border-box;outline:none;transition:border .2s"
+          onfocus="this.style.borderColor='#2e7d32'" onblur="this.style.borderColor='#ddd'">
+      </div>
+      <div style="margin-bottom:8px">
+        <label style="font-size:.8rem;font-weight:600;color:#555;display:block;margin-bottom:4px">Password</label>
+        <input type="password" id="auth-password" placeholder="Min 6 characters" autocomplete="current-password"
+          style="width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:8px;font-family:inherit;font-size:.95rem;box-sizing:border-box;outline:none;transition:border .2s"
+          onfocus="this.style.borderColor='#2e7d32'" onblur="this.style.borderColor='#ddd'"
+          onkeydown="if(event.key==='Enter')signIn()">
+      </div>
+      <div id="auth-error" style="color:#d32f2f;font-size:.82rem;min-height:1.2em;margin-bottom:12px;font-weight:500"></div>
+      <button id="auth-submit-btn" onclick="signIn()"
+        style="width:100%;padding:14px;background:linear-gradient(135deg,#2e7d32,#1565c0);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;margin-bottom:12px;transition:opacity .2s"
+        onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Sign In</button>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="flex:1;height:1px;background:#e8e8e8"></div>
+        <div style="font-size:.8rem;color:#bbb;font-weight:600">OR</div>
+        <div style="flex:1;height:1px;background:#e8e8e8"></div>
+      </div>
+
+      <!-- Google Sign-In -->
+      <button id="google-signin-btn" onclick="signInWithGoogle()"
+        style="width:100%;padding:12px;background:#fff;color:#333;border:1.5px solid #ddd;border-radius:8px;font-weight:600;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s"
+        onmouseover="this.style.background='#f9f9f9';this.style.borderColor='#2e7d32'" onmouseout="this.style.background='#fff';this.style.borderColor='#ddd'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+
+      <!-- Buttons row -->
+      <div style="display:flex;gap:8px">
+        <button id="login-later-btn" onclick="loginLater()"
+          style="flex:1;padding:11px;background:transparent;color:#2e7d32;border:1.5px solid #e8e8e8;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s"
+          onmouseover="this.style.borderColor='#2e7d32';this.style.background='#f1f8f6'" onmouseout="this.style.borderColor='#e8e8e8';this.style.background='transparent'">Login Later</button>
+      </div>
+    </div>
+
+    <!-- Signed-in state -->
+    <div id="auth-signed-in" style="display:none;text-align:center">
+      <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#1b5e20;margin-bottom:6px" id="signed-in-name"></div>
+      <div style="color:#666;font-size:.9rem;margin-bottom:24px">All content unlocked!</div>
+      <button onclick="closeAuthPage()"
+        style="width:100%;padding:14px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;margin-bottom:10px">🚀 Start Learning</button>
+      <button onclick="signOut()"
+        style="width:100%;padding:12px;background:transparent;color:#d32f2f;border:1.5px solid #ffcdd2;border-radius:8px;font-size:.85rem;cursor:pointer;font-family:inherit">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ DONATE MODAL ════════════ -->
+<div id="donate-modal" class="te-overlay hidden" onclick="if(event.target===this)closeDonateModal()">
+  <div class="te-modal-box" style="max-width:450px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div class="te-modal-title">Support Us 💚</div>
+      <button onclick="closeDonateModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#bbb">&times;</button>
+    </div>
+    <p style="color:#666;margin-bottom:20px;line-height:1.6">Help us create more FREE educational content. Your donation directly funds new animations, study guides, and features.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <a href="https://paypal.me/scheke" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:15px;background:#0070ba;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 PayPal</a>
+      <a href="https://buymeacoffee.com/scheke" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:15px;background:#ffdd00;color:#000;border-radius:8px;text-decoration:none;font-weight:700;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">☕ Coffee</a>
+    </div>
+    <button onclick="closeDonateModal()" style="width:100%;padding:12px;background:#2e7d32;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit">Close</button>
+  </div>
+</div>
+
+<!-- ════════════ CARD LOCK OVERLAY ════════════ -->
+<!-- Firebase SDK (compat v9) + Google Sign-In -->
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+<script>
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const fbAuth      = firebase.auth();
+  const fbAnalytics = firebase.analytics();
+  fbAuth.useDeviceLanguage();
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+</script>
+
+<script>
+/* ══════════════════════════════════════════
+   AUTH & CARD LOCKING SYSTEM
+══════════════════════════════════════════ */
+let currentUser = null;
+
+// Exactly 1 free preview card per level/subject — all others locked for visitors
+const DEMO_CARDS = {
+  std5:      'animations/psle/std5-classification.html',   // PSLE Std 5: 1 card
+  std6:      'animations/psle/std6-human-body.html',       // PSLE Std 6: 1 card
+  std7:      'animations/psle/std7-solar-system.html',     // PSLE Std 7: 1 card
+  form1:     'animations/jce/form1-cells.html',            // JCE Form 1: 1 card
+  form2:     'animations/jce/form2-digestion.html',        // JCE Form 2: 1 card
+  form3:     'animations/jce/form3-circulatory.html',      // JCE Form 3: 1 card
+  Biology:   'animations/bgcse/bio-cell-transport.html',   // BGCSE Bio: 1 card
+  Chemistry: 'animations/bgcse/chem-atomic-structure.html',// BGCSE Chem: 1 card
+  Physics:   'animations/bgcse/phys-mechanics.html',       // BGCSE Phys: 1 card
+};
+
+let _authTab = 'signin'; // 'signin' | 'signup'
+
+function initAuth() {
+  fbAuth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = {
+        name: user.displayName || (user.email ? user.email.split('@')[0] : 'Guest'),
+        email: user.email,
+        uid: user.uid,
+        isAnonymous: user.isAnonymous   // ← carry Firebase flag through
+      };
+    } else {
+      currentUser = null;
+    }
+    if (typeof renderGrid === 'function')
+      renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+  });
+}
+
+function isCardUnlocked(url) {
+  // Full access for authenticated (non-anonymous) users
+  if (currentUser && !currentUser.isAnonymous) return true;
+  // Demo cards only for anonymous/visitor users
+  return Object.values(DEMO_CARDS).includes(url);
+}
+
+function showAuthModal() {
+  const page = document.getElementById('v-auth');
+  page.classList.remove('hidden');
+  page.style.display = 'flex';
+  // Show form for anonymous/new users, show success only for authenticated (non-anonymous) users
+  if (currentUser && !currentUser.isAnonymous) {
+    _showSignedInState();
+  } else {
+    document.getElementById('auth-form').style.display = 'block';
+    document.getElementById('auth-signed-in').style.display = 'none';
+    switchAuthTab('signin');
+  }
+  // clear fields
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-password').value = '';
+  document.getElementById('auth-username').value = '';
+  document.getElementById('auth-error').textContent = '';
+}
+
+// alias used by Sign In button in header
+function showAuthPage() { showAuthModal(); }
+
+function closeAuthModal() { closeAuthPage(); }
+
+function closeAuthPage() {
+  document.getElementById('v-auth').classList.add('hidden');
+  document.getElementById('v-auth').style.display = 'none';
+}
+
+function switchAuthTab(tab) {
+  _authTab = tab;
+  const isSignUp = tab === 'signup';
+
+  document.getElementById('tab-signin').style.background = isSignUp ? '#fff' : '#2e7d32';
+  document.getElementById('tab-signin').style.color      = isSignUp ? '#888' : '#fff';
+  document.getElementById('tab-signup').style.background = isSignUp ? '#2e7d32' : '#fff';
+  document.getElementById('tab-signup').style.color      = isSignUp ? '#fff' : '#888';
+
+  document.getElementById('auth-username-row').style.display = isSignUp ? 'block' : 'none';
+  document.getElementById('auth-submit-btn').textContent = isSignUp ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-subtitle').textContent = isSignUp
+    ? 'Create a free account for full access'
+    : 'Sign in to unlock all content';
+  document.getElementById('auth-error').textContent = '';
+}
+
+function _setAuthBusy(busy) {
+  const btn = document.getElementById('auth-submit-btn');
+  const googleBtn = document.getElementById('google-signin-btn');
+  btn.disabled = busy;
+  googleBtn.disabled = busy;
+  btn.textContent = busy ? 'Please wait…' : (_authTab === 'signup' ? 'Create Account' : 'Sign In');
+  googleBtn.style.opacity = busy ? '0.6' : '1';
+  googleBtn.style.pointerEvents = busy ? 'none' : 'auto';
+}
+
+function _showSignedInState() {
+  document.getElementById('auth-form').style.display = 'none';
+  document.getElementById('auth-signed-in').style.display = 'block';
+  document.getElementById('signed-in-name').textContent =
+    `Welcome, ${currentUser.name}! 👋`;
+}
+
+async function signIn() {
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const username = document.getElementById('auth-username').value.trim();
+  const errEl    = document.getElementById('auth-error');
+
+  if (!email || !password) { errEl.textContent = 'Please fill in email and password.'; return; }
+  if (_authTab === 'signup' && !username) { errEl.textContent = 'Please choose a username.'; return; }
+
+  _setAuthBusy(true);
+  errEl.textContent = '';
+
+  try {
+    if (_authTab === 'signup') {
+      const cred = await fbAuth.createUserWithEmailAndPassword(email, password);
+      await cred.user.updateProfile({ displayName: username });
+      currentUser = { name: username, email, uid: cred.user.uid };
+      fbAnalytics.logEvent('sign_up', { method: 'email' });
+    } else {
+      const cred = await fbAuth.signInWithEmailAndPassword(email, password);
+      const name = cred.user.displayName || email.split('@')[0];
+      currentUser = { name, email, uid: cred.user.uid };
+      fbAnalytics.logEvent('login', { method: 'email' });
+    }
+    _showSignedInState();
+    if (typeof renderGrid === 'function')
+      renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+  } catch (err) {
+    errEl.textContent = _friendlyAuthError(err.code);
+  } finally {
+    _setAuthBusy(false);
+  }
+}
+
+async function signInWithGoogle() {
+  const errEl = document.getElementById('auth-error');
+  _setAuthBusy(true);
+  errEl.textContent = '';
+  try {
+    const result = await fbAuth.signInWithPopup(googleProvider);
+    currentUser = {
+      name: result.user.displayName || result.user.email.split('@')[0],
+      email: result.user.email,
+      uid: result.user.uid
+    };
+    fbAnalytics.logEvent('login', { method: 'google' });
+    _showSignedInState();
+    if (typeof renderGrid === 'function')
+      renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+  } catch (err) {
+    if (err.code !== 'auth/popup-closed-by-user') {
+      errEl.textContent = _friendlyAuthError(err.code);
+    }
+  } finally {
+    _setAuthBusy(false);
+  }
+}
+
+async function loginLater() {
+  const btn = document.getElementById('login-later-btn');
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  try {
+    const result = await fbAuth.signInAnonymously();
+    currentUser = {
+      name: 'Guest',
+      email: null,
+      uid: result.user.uid,
+      isAnonymous: true
+    };
+    fbAnalytics.logEvent('login', { method: 'anonymous' });
+    // Close auth page and show limited content
+    closeAuthPage();
+    if (typeof renderGrid === 'function')
+      renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+  } catch (err) {
+    document.getElementById('auth-error').textContent = 'Failed to continue. Please try again.';
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+}
+
+async function signOut() {
+  await fbAuth.signOut();
+  currentUser = null;
+  closeAuthPage();
+  if (typeof renderGrid === 'function')
+    renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+}
+
+function _friendlyAuthError(code) {
+  const map = {
+    'auth/user-not-found':       'No account with that email.',
+    'auth/wrong-password':       'Incorrect password.',
+    'auth/invalid-credential':   'Incorrect email or password.',
+    'auth/email-already-in-use': 'An account with that email already exists.',
+    'auth/weak-password':        'Password must be at least 6 characters.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/too-many-requests':    'Too many attempts — try again later.',
+    'auth/account-exists-with-different-credential': 'An account with this email already exists. Try signing in with a different method.',
+    'auth/operation-not-supported-in-this-environment': 'Google Sign-In is not available. Please use email/password instead.',
+    'auth/popup-closed-by-user': '',
+  };
+  return map[code] || `Error: ${code}`;
+}
+
+function closeLockOverlay() {
+  document.getElementById('lock-overlay').classList.add('hidden');
+}
+
+function closeDonateModal() {
+  document.getElementById('donate-modal').classList.add('hidden');
+}
+
+function showDonateModal() {
+  document.getElementById('donate-modal').classList.remove('hidden');
+}
+
+/* ══════════════════════════════════════════
+   DATA
+══════════════════════════════════════════ */
+const META = {
+  primary: {
+    name:'Primary School', exam:'PSLE', grades:'Standards 5–7',
+    accent:'#1565c0', dark:'#0d47a1', mid:'#1976d2', light:'#e3f2fd',
+    subjects:['Science'],
+    tips:[
+      '📊 Draw labelled diagrams for food chains — identify producers, consumers & decomposers.',
+      '🔬 Match each organ to its job in the body: remember digestion goes mouth → anus.',
+      '🧪 Learn the three states of matter by observing ice, water, and steam in real life.',
+    ],
+  },
+  junior: {
+    name:'Junior School', exam:'JCE', grades:'Forms 1–3',
+    accent:'#2e7d32', dark:'#1b5e20', mid:'#388e3c', light:'#e8f5e9',
+    subjects:['All','Biology','Chemistry','Physics'],
+    tips:[
+      '🔬 Biology: Trace food from mouth to anus — name each organ and enzyme.',
+      '⚗️ Chemistry: Remember Filtration → Evaporation → Crystallisation for separating mixtures.',
+      '⚡ Physics: Always write F = ma before calculating forces — include units.',
+    ],
+  },
+  senior: {
+    name:'Senior School', exam:'BGCSE', grades:'Forms 4–5',
+    accent:'#bf360c', dark:'#870000', mid:'#d84315', light:'#fbe9e7',
+    subjects:['All','Biology','Chemistry','Physics'],
+    tips:[
+      '🧬 Biology: Draw and label the Krebs cycle — know all inputs and outputs.',
+      '⚗️ Chemistry: n = m/Mr is your first step in every calculation. Don\'t skip it.',
+      '⚡ Physics: State the equation, substitute, solve, then write the unit every time.',
+    ],
+  },
+};
+
+const ANIM = {
+  primary:[
+    { group:'Standard 5', items:[
+      {icon:'🔬',title:'Science & Scientific Processes',sub:'Observing, classifying, predicting, hypothesising',url:'animations/psle/std5-scientific-processes.html',subj:'Science'},
+      {icon:'🌿',title:'Plants & Animals',sub:'Vertebrates, invertebrates, flowering vs non-flowering',url:'animations/psle/std5-classification.html',subj:'Science'},
+      {icon:'🦁',title:'Ecosystems & Food Chains',sub:'Simple habitats, local environments, energy flow',url:'animations/psle/std5-food-chains.html',subj:'Science'},
+      {icon:'🧊',title:'Matter & Energy',sub:'Particle simulation — solid, liquid, gas, material properties',url:'animations/psle/std5-states-of-matter.html',subj:'Science'},
+      {icon:'🥗',title:'Health & Safety',sub:'Personal hygiene, balanced diet, nutritional science',url:'animations/psle/std5-nutrition.html',subj:'Science'},
+    ]},
+    { group:'Standard 6', items:[
+      {icon:'🫀',title:'The Human Body',sub:'Digestive, respiratory & circulatory systems + game',url:'animations/psle/std6-human-body.html',subj:'Science'},
+      {icon:'🏃',title:'Force & Motion',sub:'Types of forces, friction, gravity + Friction Slider game',url:'animations/psle/std6-forces-motion.html',subj:'Science'},
+      {icon:'🔌',title:'Electricity & Magnetism',sub:'Circuits, conductors, insulators + Circuit Builder game',url:'animations/psle/std6-electricity.html',subj:'Science'},
+      {icon:'🧬',title:'Reproductive Health',sub:'Growth, puberty changes, hygiene + Puberty Match game',url:'animations/psle/std6-reproductive-health.html',subj:'Science'},
+    ]},
+    { group:'Standard 7', items:[
+      {icon:'🪐',title:'The Solar System',sub:'Planets, day/night, moon phases + Planet Order game',url:'animations/psle/std7-solar-system.html',subj:'Science'},
+      {icon:'🧠',title:'Advanced Body Systems',sub:'Excretion, kidneys, sensory organs + Label the Body game',url:'animations/psle/std7-advanced-systems.html',subj:'Science'},
+      {icon:'🌍',title:'Environmental Science',sub:'Resources, pollution, conservation + Eco Choices game',url:'animations/psle/std7-environmental-science.html',subj:'Science'},
+      {icon:'🦠',title:'Diseases & Health',sub:'Malaria, HIV/AIDS, substance abuse + Break the Chain quiz',url:'animations/psle/std7-diseases-health.html',subj:'Science'},
+    ]},
+  ],
+  junior:[
+    { group:'Form 1', items:[
+      {icon:'🔬',title:'Introduction to Cells',sub:'Plant vs animal — click organelles to see their function',url:'animations/jce/form1-cells.html',subj:'Biology'},
+      {icon:'⚗️',title:'Introduction to Chemistry',sub:'Lab apparatus, physical vs chemical changes',url:'animations/jce/form1-chemistry-intro.html',subj:'Chemistry'},
+      {icon:'📏',title:'SI Units & Measurement',sub:'Base units, instruments, density formula',url:'animations/jce/form1-si-units.html',subj:'Physics'},
+    ]},
+    { group:'Form 2', items:[
+      {icon:'🌱',title:'Plant Nutrition & Photosynthesis',sub:'Xylem, phloem, 6CO₂ + 6H₂O + Light → Glucose + O₂',url:'animations/jce/form2-photosynthesis.html',subj:'Biology'},
+      {icon:'🍽️',title:'Human Nutrition & Digestion',sub:'Food journey through organs, enzymes & pH at each stage',url:'animations/jce/form2-digestion.html',subj:'Biology'},
+      {icon:'🧪',title:'Separation Methods',sub:'Filtration, distillation, chromatography, crystallisation',url:'animations/jce/form2-separation.html',subj:'Chemistry'},
+      {icon:'⚡',title:'Forces & Motion',sub:"Newton's 3 Laws, F=ma, force vectors, free fall",url:'animations/jce/form2-forces.html',subj:'Physics'},
+    ]},
+    { group:'Form 3', items:[
+      {icon:'❤️',title:'Human Circulatory System',sub:'Beating heart, blood flow, pulmonary & systemic circuits',url:'animations/jce/form3-circulatory.html',subj:'Biology'},
+      {icon:'🫁',title:'Respiration & Gas Exchange',sub:'Alveolus gas exchange, aerobic vs anaerobic, ATP yield',url:'animations/jce/form3-respiration.html',subj:'Biology'},
+      {icon:'⚡',title:'Energy Forms & Transformations',sub:'Pendulum KE↔GPE, ball drop, electric circuit',url:'animations/jce/form3-energy.html',subj:'Physics'},
+      {icon:'🔊',title:'Sound Properties',sub:'Longitudinal waves, frequency, amplitude, v=fλ',url:'animations/jce/form3-sound.html',subj:'Physics'},
+    ]},
+  ],
+  senior:[
+    { group:'Biology', items:[
+      {icon:'🔬',title:'Cell Transport',sub:'Diffusion, osmosis, active transport',url:'animations/bgcse/bio-cell-transport.html',subj:'Biology'},
+      {icon:'⚙️',title:'Advanced Respiration',sub:'Glycolysis, Krebs cycle, electron transport chain',url:'animations/bgcse/bio-respiration-advanced.html',subj:'Biology'},
+      {icon:'🌡️',title:'Homeostasis',sub:'Negative feedback, thermoregulation, blood glucose',url:'animations/bgcse/bio-homeostasis.html',subj:'Biology'},
+      {icon:'🧠',title:'Nervous System & Hormones',sub:'Neuron structure, reflex arc, synapse, endocrine',url:'animations/bgcse/bio-nervous-system.html',subj:'Biology'},
+      {icon:'🧬',title:'Genetics & Inheritance',sub:'DNA, Punnett square, mitosis vs meiosis',url:'animations/bgcse/bio-genetics.html',subj:'Biology'},
+      {icon:'🌍',title:'Ecosystems & Nutrient Cycles',sub:'Food web, carbon cycle, nitrogen cycle, energy flow',url:'animations/bgcse/bio-ecosystems.html',subj:'Biology'},
+    ]},
+    { group:'Chemistry', items:[
+      {icon:'⚛️',title:'Atomic Structure',sub:'Bohr model, electron config, periodic trends, isotopes',url:'animations/bgcse/chem-atomic-structure.html',subj:'Chemistry'},
+      {icon:'🔗',title:'Chemical Bonding',sub:'Ionic, covalent, metallic — animated',url:'animations/bgcse/chem-bonding.html',subj:'Chemistry'},
+      {icon:'⚖️',title:'Quantitative Chemistry',sub:'Moles, stoichiometry, % yield, titration',url:'animations/bgcse/chem-quantitative.html',subj:'Chemistry'},
+      {icon:'💥',title:'Rates of Reaction',sub:'Collision theory, temperature, concentration, catalysts',url:'animations/bgcse/chem-rates.html',subj:'Chemistry'},
+      {icon:'🔩',title:'Metals & Reactivity',sub:'Reactivity series, displacement, extraction, alloys',url:'animations/bgcse/chem-metals.html',subj:'Chemistry'},
+      {icon:'🧴',title:'Organic Chemistry',sub:'Alkanes, alkenes, alcohols, functional groups',url:'animations/bgcse/chem-organic.html',subj:'Chemistry'},
+    ]},
+    { group:'Physics', items:[
+      {icon:'🚗',title:'Mechanics',sub:"Motion graphs, momentum, energy, Newton's laws",url:'animations/bgcse/phys-mechanics.html',subj:'Physics'},
+      {icon:'🔥',title:'Thermal Physics',sub:'Heat transfer, Q=mcΔT, latent heat, gas laws',url:'animations/bgcse/phys-thermal.html',subj:'Physics'},
+      {icon:'🌊',title:'Waves & EM Spectrum',sub:'Transverse, longitudinal, reflection, refraction',url:'animations/bgcse/phys-waves.html',subj:'Physics'},
+      {icon:'⚡',title:'Electricity & Magnetism',sub:"Circuits, Ohm's law, power, electromagnetism",url:'animations/bgcse/phys-electricity.html',subj:'Physics'},
+      {icon:'☢️',title:'Nuclear Physics',sub:'α/β/γ decay, half-life, nuclear equations, fission',url:'animations/bgcse/phys-nuclear.html',subj:'Physics'},
+    ]},
+  ],
+};
+
+/* ══════════════════════════════════════════
+   QUESTION BANKS  (3–4 questions per topic)
+══════════════════════════════════════════ */
+const QS = {
+  'psle/std5-scientific-processes':[
+    {q:'Which scientific skill is used when you sort animals by whether they have a backbone?',opts:['Observing','Classifying','Predicting','Measuring'],ans:1,exp:'Classifying means grouping things by shared features — like sorting animals into vertebrates and invertebrates.'},
+    {q:'A hypothesis is best described as:',opts:['A final result','A conclusion after experiments','A testable prediction based on prior knowledge','A list of materials'],ans:2,exp:'A hypothesis is a testable "If…then…" statement made before an experiment. It is NOT a conclusion.'},
+    {q:'In a fair test, the INDEPENDENT variable is:',opts:['The variable we keep the same','The variable we measure','The variable we deliberately change','Any variable'],ans:2,exp:'The independent variable is the one you change on purpose. The dependent variable is what you measure. All other variables are kept the same (control variables).'},
+    {q:'A student notices that plants near a window grow taller. This is an example of:',opts:['Experimenting','Observing','Concluding','Measuring'],ans:1,exp:'Observing is using your senses to notice something in the world. This is the first step of the scientific method.'},
+  ],
+  'psle/std5-classification':[
+    {q:'Which animal is a vertebrate?',opts:['Earthworm','Butterfly','Frog','Spider'],ans:2,exp:'A vertebrate has a backbone (spine). Frogs are amphibians — they have a backbone. Earthworms, butterflies, and spiders are all invertebrates.'},
+    {q:'Which type of plant has seeds enclosed inside a fruit?',opts:['Fern','Moss','Gymnosperm','Angiosperm'],ans:3,exp:'Angiosperms (flowering plants) produce flowers and seeds enclosed in fruits. Gymnosperms have naked seeds (e.g. cones). Ferns and mosses do not produce seeds.'},
+    {q:'How many legs does an insect have?',opts:['4','6','8','10'],ans:1,exp:'All insects have 6 legs, 3 body segments (head, thorax, abdomen), and usually 2 pairs of wings. Spiders have 8 legs — they are arachnids, not insects.'},
+    {q:'Which characteristic do ALL living things share?',opts:['Ability to move from place to place','Carrying out respiration','Having a backbone','Being able to fly'],ans:1,exp:'All living things respire — they release energy from food. Not all living things move from place to place (plants stay rooted), and most do not have backbones or fly.'},
+  ],
+  'psle/std5-food-chains':[
+    {q:'In a food chain, what is the role of a PRODUCER?',opts:['Eats other animals','Makes its own food by photosynthesis','Breaks down dead organisms','Eats only plants'],ans:1,exp:'Producers (green plants) make their own food using sunlight (photosynthesis). They are always the FIRST link in a food chain.'},
+    {q:'What do decomposers do in an ecosystem?',opts:['Produce food from sunlight','Hunt and eat prey','Break down dead organisms, returning nutrients to the soil','Eat only producers'],ans:2,exp:'Decomposers (bacteria, fungi) break down dead plants and animals, recycling nutrients back into the soil. Without decomposers, nutrients would be locked in dead matter forever.'},
+    {q:'An animal that eats BOTH plants and animals is called:',opts:['Herbivore','Carnivore','Omnivore','Decomposer'],ans:2,exp:'Omnivores eat both plants and animals. Herbivores eat only plants; carnivores eat only animals; decomposers break down dead matter.'},
+    {q:'Energy in a food chain flows from:',opts:['Consumers to producers','Decomposers to producers','Sun → producers → consumers','Prey to predator only'],ans:2,exp:'Energy flows from the Sun → producers (via photosynthesis) → primary consumers → secondary consumers. Energy is LOST (as heat) at each step.'},
+  ],
+  'psle/std5-states-of-matter':[
+    {q:'In which state of matter do particles vibrate in fixed positions?',opts:['Gas','Liquid','Solid','All states'],ans:2,exp:'In a solid, strong forces hold particles in fixed positions. They can only vibrate on the spot — they cannot move away from their neighbours.'},
+    {q:'What change of state occurs when water is heated to 100°C?',opts:['Melting','Freezing','Condensation','Boiling'],ans:3,exp:'Boiling occurs at 100°C — the entire liquid turns to gas (steam). Melting is solid → liquid; freezing is liquid → solid; condensation is gas → liquid.'},
+    {q:'Why can a gas be compressed but a solid cannot?',opts:['Gas particles are heavier','Gas particles are far apart with large gaps between them','Solid particles vibrate more','Gas is hotter'],ans:1,exp:'Gas particles are far apart with huge spaces between them. Compressing a gas pushes the particles closer together. Solid particles are already touching — they cannot be pushed closer.'},
+    {q:'Which of the following is an example of condensation?',opts:['Ice melting on a warm day','Water droplets forming on a cold glass','Water boiling in a kettle','Puddles drying in the sun'],ans:1,exp:'Condensation is gas → liquid. Water vapour in warm air hits the cold glass, loses energy, and becomes liquid water droplets on the outside of the glass.'},
+  ],
+  'psle/std5-nutrition':[
+    {q:'Which nutrient provides the MOST energy per gram?',opts:['Protein','Carbohydrate','Fat','Vitamin'],ans:2,exp:'Fat provides about 9 kJ per gram — more than double carbohydrates (4 kJ/g) and protein (4 kJ/g). However, carbohydrates are the body\'s preferred energy source.'},
+    {q:'Which food group is the primary source of carbohydrates?',opts:['Meat and fish','Dairy products','Cereals, bread and rice','Fruits only'],ans:2,exp:'Cereals (maize, sorghum, rice, bread) are the main source of carbohydrates. Carbohydrates are the body\'s main energy source and should form the largest part of the diet.'},
+    {q:'What is the function of protein in the body?',opts:['Main energy store','Growth and repair of tissues','Insulation','Carrying oxygen'],ans:1,exp:'Protein is needed for growth, repair of cells and tissues, and making enzymes and hormones. Good sources include meat, fish, eggs, beans, and nuts.'},
+    {q:'Which vitamin is produced by the skin when exposed to sunlight?',opts:['Vitamin A','Vitamin B','Vitamin C','Vitamin D'],ans:3,exp:'Vitamin D is made by the skin when UV light from the sun hits it. It is essential for absorbing calcium and keeping bones and teeth strong. Deficiency causes rickets.'},
+  ],
+  'psle/std6-human-body':[
+    {q:'Which organ absorbs MOST of the nutrients from digested food?',opts:['Stomach','Large intestine','Small intestine','Liver'],ans:2,exp:'The small intestine has millions of tiny finger-like projections called villi that greatly increase the surface area for absorbing nutrients into the blood.'},
+    {q:'What carries oxygen in red blood cells?',opts:['White blood cells','Platelets','Haemoglobin','Plasma'],ans:2,exp:'Haemoglobin is a red protein in red blood cells that binds to oxygen in the lungs and releases it to body tissues. It also gives blood its red colour.'},
+    {q:'The diaphragm and ribcage muscles work together to:',opts:['Pump blood','Produce saliva','Cause breathing in and out','Digest proteins'],ans:2,exp:'When the diaphragm contracts and flattens and the ribcage rises, lung volume increases and air flows in (inhalation). The reverse causes exhalation.'},
+  ],
+  'psle/std6-forces-motion':[
+    {q:'What is the SI unit of force?',opts:['Kilogram','Joule','Newton','Watt'],ans:2,exp:'Force is measured in Newtons (N), named after Isaac Newton. Weight is a force measured in Newtons; mass is measured in kilograms (kg).'},
+    {q:'Which force opposes motion between two surfaces in contact?',opts:['Gravity','Friction','Magnetism','Tension'],ans:1,exp:'Friction acts against the direction of motion. It can be useful (braking) or unhelpful (slowing machines). It increases with rougher surfaces and greater force pushing surfaces together.'},
+    {q:'An object\'s weight on the Moon compared to Earth:',opts:['Increases','Stays the same','Decreases','Becomes zero'],ans:2,exp:'Weight = mass × gravitational field strength. The Moon\'s gravity is about 1/6 of Earth\'s, so an object weighs about 6 times less on the Moon — but its MASS stays the same.'},
+  ],
+  'psle/std6-electricity':[
+    {q:'Which material is a good conductor of electricity?',opts:['Plastic','Wood','Rubber','Copper'],ans:3,exp:'Copper is an excellent electrical conductor — this is why it is used in wires. Plastic, wood, and rubber are insulators that do not allow current to flow easily.'},
+    {q:'In a SERIES circuit, if one bulb is removed, what happens to the others?',opts:['They get brighter','Nothing changes','They all go out','Current increases'],ans:2,exp:'In a series circuit there is only one path for current. If that path is broken (bulb removed), current stops everywhere and all bulbs go out.'},
+    {q:'Which poles of two magnets will REPEL each other?',opts:['North and South','South and South only','Like poles (N-N or S-S)','Opposite poles'],ans:2,exp:'Like poles repel; unlike poles attract. N-N and S-S push away from each other. N-S always attract. This is the fundamental rule of magnetism.'},
+  ],
+  'psle/std6-reproductive-health':[
+    {q:'Which hormone is mainly responsible for male puberty changes?',opts:['Oestrogen','Insulin','Testosterone','Adrenaline'],ans:2,exp:'Testosterone is produced by the testes and causes male puberty changes: voice deepening, body hair growth, muscle development, and sperm production.'},
+    {q:'What is menstruation?',opts:['Egg fertilisation','Shedding of the uterus lining when no fertilisation occurs','Ovulation','Pregnancy'],ans:1,exp:'If an egg is NOT fertilised, the uterus lining built up during the cycle is shed — this is menstruation (period). The cycle then restarts. It typically lasts 3–7 days.'},
+    {q:'Which physical change occurs during female puberty?',opts:['Voice deepens significantly','Facial hair grows','Hips widen','Shoulders broaden more than hips'],ans:2,exp:'During female puberty, oestrogen causes the hips to widen (preparing for childbirth), breasts to develop, and body hair to grow. Voice change is less dramatic than in males.'},
+  ],
+  'psle/std7-solar-system':[
+    {q:'Which planet is CLOSEST to the Sun?',opts:['Venus','Earth','Mars','Mercury'],ans:3,exp:'Mercury is the innermost planet. The order from the Sun is: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. A mnemonic: My Very Educated Mother Just Served Us Nachos.'},
+    {q:'What causes day and night on Earth?',opts:['Earth orbiting the Sun','Earth rotating on its own axis','The Moon blocking sunlight','The Sun moving around Earth'],ans:1,exp:'Earth rotates on its axis once every 24 hours. The half facing the Sun experiences day; the half facing away experiences night. Earth\'s revolution (orbit) around the Sun takes 365.25 days and causes the seasons.'},
+    {q:'What is a lunar eclipse?',opts:['Moon passes between Earth and Sun','Earth passes between the Sun and Moon, blocking sunlight from the Moon','Sun passes between Earth and Moon','Moon moves to the far side of the Sun'],ans:1,exp:'A lunar eclipse occurs when Earth is between the Sun and Moon, and Earth\'s shadow falls on the Moon. The Moon appears red/orange (blood moon) because Earth\'s atmosphere bends red light onto it.'},
+  ],
+  'psle/std7-advanced-systems':[
+    {q:'What is the main function of the kidneys?',opts:['Digesting food','Filtering waste products (urea) from blood to make urine','Pumping blood around the body','Producing hormones only'],ans:1,exp:'The kidneys filter about 180 litres of blood per day, removing urea (protein waste), excess water and salts to form urine. Urine is stored in the bladder then excreted.'},
+    {q:'Which part of the eye FOCUSES light onto the retina?',opts:['Iris','Pupil','Lens','Cornea'],ans:2,exp:'The lens changes shape (accommodation) to focus light from objects at different distances onto the retina. The cornea also bends light but cannot change shape. The iris controls pupil size.'},
+    {q:'What does the skin excrete as part of its excretory function?',opts:['Carbon dioxide only','Oxygen and CO₂','Urea, water, and salts in sweat','Glucose and minerals'],ans:2,exp:'Sweat glands in the skin excrete water, urea (small amounts), and salts. This is a form of excretion. Sweat also cools the body through evaporation (thermoregulation).'},
+  ],
+  'psle/std7-environmental-science':[
+    {q:'Which natural resource is RENEWABLE?',opts:['Coal','Oil','Trees (sustainably managed)','Natural gas'],ans:2,exp:'Trees are renewable because they can be regrown — IF managed sustainably (replanting what is cut). Coal, oil, and natural gas are fossil fuels formed over millions of years — they are non-renewable.'},
+    {q:'Which human activity is the LEADING cause of deforestation in Botswana and Africa?',opts:['Fishing in rivers','Clearing land for farming and cattle ranching','Swimming in rivers','Using wind turbines'],ans:1,exp:'Clearing land for agriculture (farming and cattle ranching) is the main cause of deforestation globally. Trees are cut to create farmland and grazing land.'},
+    {q:'What does BIODIVERSITY mean?',opts:['Number of trees in a forest only','The variety of different species in an ecosystem','Amount of annual rainfall','Quality of soil nutrients'],ans:1,exp:'Biodiversity is the variety of all living things — plants, animals, fungi, bacteria — in an ecosystem. High biodiversity makes ecosystems more stable and resilient to change.'},
+  ],
+  'psle/std7-diseases-health':[
+    {q:'What type of organism causes malaria?',opts:['Bacterium','Virus','Plasmodium (protozoan parasite)','Fungus'],ans:2,exp:'Malaria is caused by Plasmodium, a protozoan parasite. It is transmitted by the bite of an infected female Anopheles mosquito. It infects and destroys red blood cells, causing fever and anaemia.'},
+    {q:'How is HIV mainly transmitted?',opts:['Mosquito bites','Sharing food and utensils','Unprotected sex or contact with infected blood','Touching an infected person'],ans:2,exp:'HIV (Human Immunodeficiency Virus) is transmitted through unprotected sex, sharing needles, transfusion with infected blood, or from mother to child during birth or breastfeeding. It CANNOT be spread by casual contact.'},
+    {q:'Which disease is caused by a VIRUS?',opts:['Tuberculosis (TB)','Cholera','Malaria','COVID-19'],ans:3,exp:'COVID-19 is caused by the SARS-CoV-2 virus. TB is caused by Mycobacterium tuberculosis (bacterium). Cholera is caused by Vibrio cholerae (bacterium). Malaria is caused by Plasmodium (protozoan).'},
+  ],
+  'jce/form1-cells':[
+    {q:'Which organelle is called the "powerhouse" of the cell?',opts:['Nucleus','Ribosome','Mitochondrion','Vacuole'],ans:2,exp:'Mitochondria carry out aerobic respiration, releasing energy (ATP) for the cell to use. Cells that need lots of energy (muscle cells, liver cells) have many mitochondria.'},
+    {q:'Which structure is found in plant cells but NOT in animal cells?',opts:['Nucleus','Cell wall','Mitochondria','Cell membrane'],ans:1,exp:'Plant cells have a cell wall (made of cellulose), chloroplasts, and a large permanent vacuole — all absent in animal cells. Both types have a nucleus, cell membrane, and mitochondria.'},
+    {q:'What does the nucleus of a cell contain?',opts:['ATP','Chlorophyll','DNA (genetic information)','Water and minerals'],ans:2,exp:'The nucleus contains DNA (chromosomes) which carries the genetic instructions for all the cell\'s activities. It controls what proteins the cell makes and therefore what the cell does.'},
+  ],
+  'jce/form1-chemistry-intro':[
+    {q:'Which change is a PHYSICAL change?',opts:['Burning wood','Rusting iron','Melting ice','Cooking an egg'],ans:2,exp:'Melting ice is physical — the water changes state but no new substance is made. Burning, rusting, and cooking all create NEW substances (chemical changes). Physical changes are reversible.'},
+    {q:'Which piece of apparatus measures the VOLUME of a liquid accurately?',opts:['Beaker','Measuring cylinder','Conical flask','Petri dish'],ans:1,exp:'A measuring cylinder has graduated markings and is designed to measure liquid volume accurately. A beaker and conical flask only have approximate markings.'},
+    {q:'What is the chemical symbol for iron?',opts:['Ir','Im','Fe','Io'],ans:2,exp:'Iron\'s symbol is Fe, from the Latin word "ferrum". Other Latin-origin symbols: sodium (Na = natrium), potassium (K = kalium), copper (Cu = cuprum), gold (Au = aurum).'},
+  ],
+  'jce/form1-si-units':[
+    {q:'What is the SI (base) unit of mass?',opts:['Gram','Pound','Kilogram','Newton'],ans:2,exp:'The kilogram (kg) is the SI base unit of mass. Note: grams are 1000 times smaller. Weight is a force measured in Newtons, not kilograms — a common exam trap!'},
+    {q:'What is the correct formula for density?',opts:['mass × volume','mass + volume','mass ÷ volume','volume ÷ mass'],ans:2,exp:'Density = mass ÷ volume (ρ = m/V). Units: g/cm³ or kg/m³. Dense materials have many particles packed into a small volume. Water has a density of 1 g/cm³.'},
+    {q:'Which instrument measures electrical current?',opts:['Voltmeter','Thermometer','Ammeter','Barometer'],ans:2,exp:'An ammeter measures electric current (in amperes, A) and is connected in SERIES in a circuit. A voltmeter measures voltage (V) and is connected in PARALLEL. A barometer measures atmospheric pressure.'},
+  ],
+  'jce/form2-photosynthesis':[
+    {q:'Where in a plant cell does photosynthesis occur?',opts:['Mitochondria','Nucleus','Ribosome','Chloroplast'],ans:3,exp:'Chloroplasts contain the green pigment chlorophyll, which absorbs sunlight. This light energy is used to convert CO₂ and water into glucose and oxygen.'},
+    {q:'What are the RAW MATERIALS for photosynthesis?',opts:['Glucose and water','Carbon dioxide, water, and light energy','Oxygen and glucose','Glucose and carbon dioxide'],ans:1,exp:'The equation is: 6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂. Raw materials are CO₂ (from air) and water (from soil). Light is the energy source, not a raw material.'},
+    {q:'What is the role of XYLEM vessels in a plant?',opts:['Makes food by photosynthesis','Transports water and minerals from roots to leaves','Stores glucose as starch','Absorbs light energy'],ans:1,exp:'Xylem vessels carry water and dissolved minerals UP from roots to leaves. Phloem tubes carry dissolved sugars (sucrose) made in leaves DOWN to all parts of the plant.'},
+  ],
+  'jce/form2-digestion':[
+    {q:'Which enzyme breaks down STARCH into sugars?',opts:['Protease','Lipase','Amylase','Pepsin'],ans:2,exp:'Amylase breaks starch → maltose (simple sugar). It is found in saliva and pancreatic juice. Protease breaks proteins; lipase breaks fats. Pepsin is a protease in the stomach.'},
+    {q:'In which organ is MOST of the absorption of nutrients into blood?',opts:['Stomach','Oesophagus','Large intestine','Small intestine'],ans:3,exp:'The small intestine\'s internal surface is covered with millions of villi (tiny projections), each with microvilli, giving a huge surface area for absorbing digested nutrients into blood capillaries.'},
+    {q:'What is the approximate pH of the stomach?',opts:['Neutral — pH 7','Alkaline — pH 8 to 9','Strongly acidic — pH 1 to 3','Slightly acidic — pH 6'],ans:2,exp:'The stomach produces hydrochloric acid (HCl), giving it a pH of 1–3. This kills bacteria in food, activates the enzyme pepsin, and provides the acidic conditions pepsin needs to work.'},
+  ],
+  'jce/form2-separation':[
+    {q:'Which method is used to separate an INSOLUBLE solid from a liquid?',opts:['Distillation','Crystallisation','Filtration','Chromatography'],ans:2,exp:'Filtration passes the mixture through filter paper. The insoluble solid (residue) is trapped on the filter paper; the liquid (filtrate) passes through. Example: separating sand from water.'},
+    {q:'What separation method obtains PURE WATER from salt water?',opts:['Filtration only','Simple distillation','Chromatography','Crystallisation'],ans:1,exp:'Distillation heats the mixture: water evaporates (salt stays), vapour travels through a condenser and cools back to liquid pure water. Filtration cannot separate dissolved substances.'},
+    {q:'Which technique separates different coloured INKS or dyes?',opts:['Evaporation','Filtration','Paper chromatography','Decanting'],ans:2,exp:'Chromatography separates mixtures based on how fast different substances travel through a medium (e.g. paper) carried by a solvent. Each component travels a different distance, forming separate spots.'},
+  ],
+  'jce/form2-forces':[
+    {q:'Newton\'s Second Law states that force equals:',opts:['mass × velocity','mass × distance','mass × acceleration','weight × height'],ans:2,exp:'F = ma (force = mass × acceleration). Units: N = kg × m/s². Doubling the mass doubles the force needed for the same acceleration. Doubling the force doubles the acceleration.'},
+    {q:'What is the SI unit of acceleration?',opts:['m/s','m/s²','N','kg⋅m/s'],ans:1,exp:'Acceleration = change in velocity ÷ time taken. Units: (m/s) ÷ s = m/s². A positive value means speeding up; negative means slowing down (deceleration).'},
+    {q:'A car of mass 1000 kg accelerates at 2 m/s². What net force acts on it?',opts:['500 N','1998 N','2000 N','1002 N'],ans:2,exp:'F = ma = 1000 kg × 2 m/s² = 2000 N. Remember to include the unit! This is the NET (resultant) force — the actual forward thrust must overcome friction to produce this net force.'},
+  ],
+  'jce/form3-circulatory':[
+    {q:'Which heart chamber pumps OXYGENATED blood to the whole body?',opts:['Right atrium','Left atrium','Right ventricle','Left ventricle'],ans:3,exp:'The left ventricle has the thickest walls because it pumps oxygenated blood out through the aorta to the entire body. The right ventricle only pumps blood to the lungs (a shorter distance).'},
+    {q:'Red blood cells carry oxygen using:',opts:['Haemoglobin','Fibrinogen','Insulin','Plasma proteins'],ans:0,exp:'Haemoglobin is a red protein in red blood cells that binds O₂ in the lungs to form oxyhaemoglobin. In body tissues where O₂ is low, it releases the oxygen. Each red cell has about 270 million haemoglobin molecules.'},
+    {q:'Blood travelling to the LUNGS to pick up oxygen passes through which circuit?',opts:['Systemic circuit','Portal circuit','Pulmonary circuit','Lymphatic circuit'],ans:2,exp:'The pulmonary circuit: right side of heart → pulmonary artery → lungs → pulmonary veins → left side of heart. The systemic circuit carries oxygenated blood from the left heart to the body and back.'},
+  ],
+  'jce/form3-respiration':[
+    {q:'The overall word equation for AEROBIC respiration is:',opts:['glucose → CO₂ + water + energy','CO₂ + water → glucose + O₂','glucose + oxygen → CO₂ + water + energy','glucose → lactic acid + energy'],ans:2,exp:'Aerobic respiration: glucose + oxygen → carbon dioxide + water + energy (ATP). It occurs in mitochondria and releases about 38 ATP per glucose molecule. "Aerobic" means oxygen is required.'},
+    {q:'Where does the KREBS cycle (citric acid cycle) take place?',opts:['Cytoplasm','Nucleus','Mitochondrial matrix','Ribosome'],ans:2,exp:'The Krebs cycle occurs in the matrix of the mitochondria. Glycolysis happens in the cytoplasm. The electron transport chain is on the inner mitochondrial membrane. Together they produce about 38 ATP.'},
+    {q:'What is produced in ANAEROBIC respiration in human muscle cells?',opts:['Ethanol and CO₂','CO₂ and water','Lactic acid','Oxygen and glucose'],ans:2,exp:'In muscles during intense exercise (when O₂ is insufficient), anaerobic respiration produces lactic acid. This builds up and causes muscle fatigue and pain. Lactic acid is later broken down in the liver.'},
+  ],
+  'jce/form3-energy':[
+    {q:'What is the SI unit of energy?',opts:['Newton','Watt','Joule','Pascal'],ans:2,exp:'Energy is measured in Joules (J). 1 Joule = 1 Newton × 1 metre = 1 kg⋅m²/s². Power is measured in Watts (W = J/s). 1 kJ = 1000 J; 1 MJ = 1,000,000 J.'},
+    {q:'A ball at the top of a slope has mainly which type of energy?',opts:['Kinetic energy','Chemical energy','Gravitational potential energy','Electrical energy'],ans:2,exp:'Gravitational potential energy (GPE) = mgh. At the top, speed is zero so KE = 0. As the ball rolls down, GPE converts to KE. At the bottom, almost all GPE has converted to KE (some lost to friction as heat).'},
+    {q:'The formula for KINETIC ENERGY is:',opts:['KE = mgh','KE = ½mv²','KE = Pt','KE = QV'],ans:1,exp:'KE = ½mv² where m = mass (kg) and v = velocity (m/s). Doubling the speed QUADRUPLES the kinetic energy. This is why speeding cars are so much more dangerous — twice the speed = four times the stopping distance.'},
+  ],
+  'jce/form3-sound':[
+    {q:'What TYPE of wave is sound?',opts:['Transverse','Electromagnetic','Longitudinal','Torsional'],ans:2,exp:'Sound is a longitudinal wave — particles vibrate PARALLEL to the direction of wave travel (compression and rarefaction). Light and water waves are transverse — particles vibrate perpendicular to travel direction.'},
+    {q:'What is the approximate speed of sound in air at room temperature?',opts:['300,000 km/s','340 m/s','1500 m/s','3400 m/s'],ans:1,exp:'Sound travels at about 340 m/s in air. It travels faster in liquids (~1500 m/s in water) and even faster in solids (~5000 m/s in steel). Light travels at 300,000 km/s — much faster than sound.'},
+    {q:'Which property of a sound wave determines its PITCH?',opts:['Amplitude','Speed','Wavelength','Frequency'],ans:3,exp:'Pitch is determined by frequency (Hz). High frequency = high pitch; low frequency = low pitch. Amplitude determines loudness — large amplitude = loud. The human ear hears frequencies from about 20 Hz to 20,000 Hz.'},
+  ],
+  'bgcse/bio-cell-transport':[
+    {q:'Osmosis is the net movement of water from:',opts:['High solute to low solute concentration','Low water potential to high water potential','High water potential to low water potential (across a semi-permeable membrane)','High pressure to low pressure always'],ans:2,exp:'Osmosis: water moves from high water potential (dilute solution) to low water potential (concentrated solution) across a partially permeable membrane. Pure water has the highest water potential (zero).'},
+    {q:'Which transport process REQUIRES energy (ATP)?',opts:['Diffusion','Osmosis','Active transport','Facilitated diffusion'],ans:2,exp:'Active transport uses ATP energy to move substances AGAINST their concentration gradient (low to high). Essential for root hair cells absorbing mineral ions from dilute soil water.'},
+    {q:'A plant cell placed in PURE WATER will:',opts:['Shrink and plasmolyse','Burst and die','Become turgid (swollen but not bursting) due to the cell wall','Stay exactly the same'],ans:2,exp:'Water enters by osmosis (high water potential outside → lower inside). The cell wall prevents bursting — the cell becomes turgid. Animal cells (no cell wall) would burst (lyse) in pure water.'},
+  ],
+  'bgcse/bio-respiration-advanced':[
+    {q:'How many ATP molecules are produced per glucose in AEROBIC respiration?',opts:['2','10','36 to 38','100'],ans:2,exp:'Aerobic respiration produces ~36-38 ATP per glucose: 2 from glycolysis, 2 from Krebs cycle, ~32-34 from the electron transport chain. Anaerobic respiration only produces 2 ATP per glucose.'},
+    {q:'Where does GLYCOLYSIS take place in the cell?',opts:['Mitochondrial matrix','Nucleus','Cytoplasm (cytosol)','Ribosome'],ans:2,exp:'Glycolysis occurs in the cytoplasm — it doesn\'t need oxygen and doesn\'t require mitochondria. It splits one glucose (6C) into two pyruvate molecules (3C each), producing 2 ATP and 2 NADH.'},
+    {q:'What is the FINAL electron acceptor in the electron transport chain?',opts:['Carbon dioxide (CO₂)','NAD⁺','Oxygen (O₂)','ATP'],ans:2,exp:'Oxygen is the final electron acceptor. It combines with electrons and hydrogen ions to form water (H₂O). This is why aerobic respiration requires oxygen — without it, the electron transport chain stops.'},
+  ],
+  'bgcse/bio-homeostasis':[
+    {q:'What type of feedback loop keeps blood glucose at a safe level?',opts:['Positive feedback','Negative feedback','No feedback — it rises constantly','Amplifying feedback'],ans:1,exp:'Negative feedback: when blood glucose RISES, insulin is released to lower it; when it FALLS, glucagon raises it. The response always OPPOSES the change — this is negative feedback. Positive feedback amplifies the change.'},
+    {q:'Which hormone LOWERS blood glucose concentration?',opts:['Glucagon','Adrenaline','Insulin','Thyroxin'],ans:2,exp:'Insulin (from beta cells of the pancreas) stimulates cells to take up glucose and the liver to convert glucose → glycogen (glycogenesis). Glucagon does the opposite — it raises blood glucose by glycogenolysis.'},
+    {q:'The body\'s thermostat — detecting core temperature — is located in the:',opts:['Skin receptors only','Hypothalamus of the brain','Kidneys','Liver'],ans:1,exp:'The hypothalamus acts as the body\'s thermostat. It detects blood temperature and sends nerve signals to effectors: sweat glands (cooling) and muscles (shivering for warming), and controls blood vessel dilation/constriction.'},
+  ],
+  'bgcse/bio-nervous-system':[
+    {q:'What is the GAP between two neurons called?',opts:['Node of Ranvier','Synapse','Axon terminal','Dendrite junction'],ans:1,exp:'A synapse is the gap between two neurons. A nerve impulse arriving at a synapse triggers release of neurotransmitter molecules (e.g. acetylcholine). These diffuse across the gap and bind to receptors on the next neuron.'},
+    {q:'The correct order of a REFLEX ARC is:',opts:['Brain → spinal cord → muscle','Receptor → sensory neuron → relay neuron → motor neuron → effector','Muscle → nerve → brain','Receptor → brain → effector → response'],ans:1,exp:'Reflex arc: receptor detects stimulus → sensory neuron → relay neuron in spinal cord → motor neuron → effector (muscle or gland) responds. The brain is NOT involved — this makes reflexes very fast.'},
+    {q:'Which division of the nervous system controls "fight or flight" responses?',opts:['Parasympathetic NS','Somatic NS','Sympathetic NS','Central NS'],ans:2,exp:'The sympathetic nervous system prepares the body for action: increases heart rate, dilates pupils, redirects blood to muscles, releases adrenaline. The parasympathetic system does the opposite — "rest and digest".'},
+  ],
+  'bgcse/bio-genetics':[
+    {q:'Alleles are:',opts:['Different chromosomes','Alternative forms of the same gene at the same locus','All of an organism\'s DNA','Different types of RNA'],ans:1,exp:'Alleles are different versions of a gene (e.g. T for tall, t for short). Each organism has two alleles for each gene (one from each parent). If both alleles are the same, the organism is homozygous; if different, heterozygous.'},
+    {q:'If T = tall (dominant) and t = short (recessive), what is the PHENOTYPE of genotype Tt?',opts:['Short','Tall','Medium (blend)','Cannot be determined'],ans:1,exp:'Tt is heterozygous. The dominant allele T masks the recessive allele t — so the phenotype is TALL. Recessive traits only appear when the organism has TWO recessive alleles (tt genotype).'},
+    {q:'Which process HALVES the chromosome number to produce gametes?',opts:['Mitosis','Binary fission','Meiosis','DNA replication'],ans:2,exp:'Meiosis produces 4 genetically different cells (gametes: sperm or eggs) with HALF the normal chromosome number (haploid). When two gametes fuse at fertilisation, the normal diploid number is restored.'},
+  ],
+  'bgcse/bio-ecosystems':[
+    {q:'The role of BACTERIA in the nitrogen cycle includes:',opts:['Fixing N₂ from the atmosphere AND decomposing proteins back to ammonia','Producing oxygen from CO₂','Photosynthesising to fix carbon','Consuming plant material as herbivores'],ans:0,exp:'Nitrogen-fixing bacteria (e.g. Rhizobium in legume roots) convert N₂ gas → ammonia/nitrates plants can use. Decomposing bacteria break dead organisms\' proteins → ammonia. Nitrifying bacteria convert ammonia → nitrates.'},
+    {q:'The efficiency of energy transfer between trophic levels is approximately:',opts:['100% — all energy is passed on','50% — half is lost','10% — most is lost as heat and respiration','1% — almost all is lost'],ans:2,exp:'Only about 10% of energy at one trophic level is transferred to the next. The rest is lost as heat (respiration), in uneaten body parts, or in excretion. This is why food chains rarely exceed 4-5 links.'},
+    {q:'Which ecological relationship benefits ONE organism and HARMS the other?',opts:['Mutualism','Commensalism','Parasitism','Predation only'],ans:2,exp:'Parasitism: one organism (parasite) benefits; the host is harmed but usually not killed immediately. Examples: tapeworm in gut, Plasmodium in blood, mistletoe on trees. (Predation kills the prey immediately — different.)'},
+  ],
+  'bgcse/chem-atomic-structure':[
+    {q:'Isotopes of an element have the same number of PROTONS but different numbers of:',opts:['Electrons','Protons','Neutrons','Quarks'],ans:2,exp:'Isotopes have the same atomic number (protons) but different mass numbers (due to different neutron counts). E.g. Carbon-12 and Carbon-14 are both carbon (6 protons) but C-14 has 8 neutrons instead of 6.'},
+    {q:'How many electrons can the SECOND electron shell hold?',opts:['2','8','18','32'],ans:1,exp:'Shell capacities: 1st shell = 2 electrons; 2nd shell = 8; 3rd shell = 8 (in GCSE/BGCSE context, up to 18 for transition metals at A-level). So sodium (11 electrons) has configuration 2,8,1.'},
+    {q:'The atomic NUMBER of an element equals:',opts:['Number of neutrons','Mass number','Number of protons (= number of electrons in a neutral atom)','Total number of protons + electrons'],ans:2,exp:'Atomic number = number of protons. In a neutral atom, protons = electrons. Mass number = protons + neutrons. The periodic table arranges elements in order of increasing atomic number.'},
+  ],
+  'bgcse/chem-bonding':[
+    {q:'Ionic bonding involves:',opts:['Sharing of electron pairs between atoms','Transfer of electrons from metal to non-metal','A sea of delocalised electrons','Weak van der Waals forces'],ans:1,exp:'Ionic bonds form when a metal LOSES electrons (becomes a positive ion) and a non-metal GAINS them (becomes a negative ion). The opposite charges attract. Example: Na→Na⁺, Cl→Cl⁻, forming NaCl.'},
+    {q:'Which substance has a SIMPLE MOLECULAR structure with a low melting point?',opts:['Diamond','Sodium chloride (NaCl)','Water (H₂O)','Iron'],ans:2,exp:'Water has small molecules with weak van der Waals forces between them — low melting/boiling point. Diamond and NaCl have giant structures requiring huge energy to break. Iron has metallic bonding.'},
+    {q:'What holds metal atoms together in METALLIC BONDING?',opts:['Shared electron pairs (covalent)','Transfer of electrons (ionic)','A sea of delocalised electrons attracted to positive metal ions','Van der Waals forces only'],ans:2,exp:'In metals, outer electrons leave their atoms and move freely (delocalised). The resulting sea of electrons bonds the positive metal ions together. This explains why metals conduct electricity and heat well.'},
+  ],
+  'bgcse/chem-quantitative':[
+    {q:'One mole of any substance contains approximately how many particles?',opts:['6.02 × 10²³','6.02 × 10²²','1000','12'],ans:0,exp:'Avogadro\'s number (Nₐ) = 6.02 × 10²³ particles per mole. This applies to atoms, molecules, ions, or any specified entity. It is the same for every substance — one mole of any substance always contains this many particles.'},
+    {q:'What is the relative formula mass (Mr) of water, H₂O? (H=1, O=16)',opts:['16','17','18','20'],ans:2,exp:'Mr(H₂O) = (2 × 1) + 16 = 18. This means one mole of water has a mass of 18 grams. Using n = m/Mr: 36 g of water = 36/18 = 2 moles of water.'},
+    {q:'How many moles are in 44 g of CO₂? (Mr of CO₂ = 12 + 32 = 44)',opts:['0.5 mol','1 mol','2 mol','44 mol'],ans:1,exp:'n = m ÷ Mr = 44 ÷ 44 = 1 mole. This is a key formula: n = m/Mr. Rearranging: m = n × Mr and Mr = m/n. Always start mole calculations with n = m/Mr.'},
+  ],
+  'bgcse/chem-rates':[
+    {q:'Increasing temperature speeds up a reaction because:',opts:['Particles get bigger','Particles collide more FREQUENTLY and with more ENERGY (more exceed activation energy)','Activation energy decreases permanently','There are more reactant molecules'],ans:1,exp:'Collision theory: higher temperature → particles have more kinetic energy → move faster → collide more often AND more energetically → more collisions exceed the activation energy → faster reaction rate.'},
+    {q:'What does a CATALYST do?',opts:['Increases the activation energy','Gets consumed in the reaction','Provides an alternative pathway with LOWER activation energy without being used up','Increases the amount of product formed'],ans:2,exp:'A catalyst provides an alternative reaction pathway with a lower activation energy. More collisions can now exceed this lower energy barrier. The catalyst is NOT consumed — it is unchanged at the end.'},
+    {q:'On a rate of reaction graph (product vs time), a steeper initial slope indicates:',opts:['A slower reaction','A faster reaction (higher rate)','No change in rate','The reaction has stopped'],ans:1,exp:'The gradient (slope) of a product vs. time graph equals the rate of reaction. Steeper = faster rate. The slope becomes less steep over time as reactants are used up. It becomes flat when the reaction is complete.'},
+  ],
+  'bgcse/chem-metals':[
+    {q:'Which metal is MOST reactive in the common reactivity series?',opts:['Iron','Copper','Potassium','Zinc'],ans:2,exp:'Reactivity series (most to least reactive): K > Na > Ca > Mg > Al > Zn > Fe > Ni > Sn > Pb > H > Cu > Ag > Au. Potassium is so reactive it explodes in water.'},
+    {q:'A more reactive metal displaces a less reactive metal from its salt solution. This is called:',opts:['Oxidation only','Reduction only','Displacement reaction','Electrolysis'],ans:2,exp:'Displacement: the more reactive metal loses electrons (is oxidised) and displaces the less reactive metal from solution (the less reactive metal is reduced). E.g. Zn + CuSO₄ → ZnSO₄ + Cu (orange solid).'},
+    {q:'Which metal is extracted from its ore by ELECTROLYSIS because it is too reactive for carbon reduction?',opts:['Iron','Copper','Aluminium','Zinc'],ans:2,exp:'Aluminium is above carbon in the reactivity series, so carbon cannot reduce Al₂O₃. Instead, molten Al₂O₃ is electrolysed (at about 900°C). Iron and zinc can be extracted using carbon/carbon monoxide in a blast furnace.'},
+  ],
+  'bgcse/chem-organic':[
+    {q:'What is the GENERAL FORMULA for alkanes?',opts:['CₙH₂ₙ','CₙH₂ₙ₊₂','CₙH₂ₙ₋₂','CₙHₙ'],ans:1,exp:'Alkanes: CₙH₂ₙ₊₂ (e.g. methane CH₄, ethane C₂H₆, propane C₃H₈). They are saturated — only single C-C bonds. Alkenes: CₙH₂ₙ (one C=C double bond). Alkynes: CₙH₂ₙ₋₂ (one triple bond).'},
+    {q:'Which functional group do ALCOHOLS contain?',opts:['-COOH','-CHO','-OH (hydroxyl)','-NH₂'],ans:2,exp:'Alcohols contain the hydroxyl group (-OH). E.g. ethanol C₂H₅OH. Carboxylic acids have -COOH; aldehydes have -CHO; amines have -NH₂. The functional group determines the chemical properties.'},
+    {q:'When alkenes react with bromine water, what type of reaction occurs?',opts:['Substitution','Combustion','Addition (across the C=C double bond)','Elimination'],ans:2,exp:'Alkenes undergo addition reactions because the C=C double bond can open up to add atoms across it. Bromine water (orange/brown) is decolourised — this is the test for a C=C double bond. Alkanes only undergo substitution.'},
+  ],
+  'bgcse/phys-mechanics':[
+    {q:'Momentum is calculated using:',opts:['p = F/t','p = mv (mass × velocity)','p = ma','p = mgh'],ans:1,exp:'Momentum (p) = mass (m) × velocity (v). Units: kg⋅m/s. The law of conservation of momentum states that total momentum before a collision = total momentum after (in a closed system). Newton\'s 2nd Law: F = Δ(mv)/Δt.'},
+    {q:'The GRADIENT of a velocity-time graph represents:',opts:['Distance travelled','Speed','Acceleration (or deceleration)','Displacement'],ans:2,exp:'On a v-t graph: gradient = Δv/Δt = acceleration. Area under the graph = distance travelled. A horizontal line means constant velocity (zero acceleration). A downward slope means deceleration.'},
+    {q:'A 2 kg object falls freely with g = 10 m/s². Its WEIGHT is:',opts:['0.2 N','12 N','5 N','20 N'],ans:3,exp:'Weight = mg = 2 kg × 10 m/s² = 20 N. Weight is a force (Newtons); mass is the amount of matter (kilograms). On the Moon (g ≈ 1.6 m/s²), the same object would weigh only 3.2 N but its mass remains 2 kg.'},
+  ],
+  'bgcse/phys-thermal':[
+    {q:'Which method of heat transfer does NOT require a medium (can travel through a vacuum)?',opts:['Conduction','Convection','Radiation','All require a medium'],ans:2,exp:'Radiation transfers energy as electromagnetic waves (infrared). It can travel through a vacuum — this is how the Sun\'s energy reaches Earth. Conduction and convection require particles (matter) to transfer energy.'},
+    {q:'The formula for HEAT ENERGY transferred is:',opts:['Q = mv','Q = mcΔT','Q = Pt','Q = Fd'],ans:1,exp:'Q = mcΔT where Q = heat energy (J), m = mass (kg), c = specific heat capacity (J/kg/°C), ΔT = temperature change (°C). Water has c = 4200 J/kg/°C — it takes a lot of energy to heat water.'},
+    {q:'Boyle\'s Law states that (at constant temperature) gas pressure and volume are:',opts:['Directly proportional (P ∝ V)','Inversely proportional (PV = constant)','Unrelated','Always equal'],ans:1,exp:'Boyle\'s Law: P₁V₁ = P₂V₂ at constant temperature and amount of gas. Doubling the pressure halves the volume. This is because compressing the gas into half the space means particles hit the walls twice as often.'},
+  ],
+  'bgcse/phys-waves':[
+    {q:'The wave equation relating speed, frequency and wavelength is:',opts:['v = fλ','v = λ/f','f = vλ','λ = vf'],ans:0,exp:'v = fλ (wave speed = frequency × wavelength). Rearranging: f = v/λ and λ = v/f. All electromagnetic waves travel at c = 3 × 10⁸ m/s in a vacuum. Radio waves have long wavelength/low frequency; gamma has short/high.'},
+    {q:'Light waves are classified as:',opts:['Longitudinal mechanical waves','Sound waves','Transverse electromagnetic waves','Pressure waves'],ans:2,exp:'Light is a transverse electromagnetic wave — the electric and magnetic fields oscillate perpendicular to the direction of travel. It requires NO medium. Sound is a longitudinal mechanical wave requiring a medium.'},
+    {q:'Which property of a light wave determines its COLOUR?',opts:['Amplitude','Speed in vacuum','Frequency (or wavelength)','Direction of polarisation'],ans:2,exp:'Colour is determined by frequency (or wavelength). Red light has the lowest frequency (~430 THz); violet has the highest (~750 THz). The amplitude of light determines its brightness, not colour.'},
+  ],
+  'bgcse/phys-electricity':[
+    {q:'Ohm\'s Law states:',opts:['V = IR (voltage = current × resistance)','I = VR','R = VI','P = IV'],ans:0,exp:'Ohm\'s Law: V = IR. Rearranging: I = V/R (current increases with voltage, decreases with resistance) and R = V/I. A graph of V vs. I for an ohmic conductor is a straight line through the origin.'},
+    {q:'In a PARALLEL circuit, the voltage across each branch is:',opts:['Split equally between branches','Reduced compared to the source','The same as the source voltage across each branch','Doubled in each branch'],ans:2,exp:'In a parallel circuit, each branch connects directly across the source, so voltage is the same across each component. Current splits between branches — branches with less resistance carry more current.'},
+    {q:'The unit of electrical RESISTANCE is the:',opts:['Volt (V)','Ohm (Ω)','Ampere (A)','Watt (W)'],ans:1,exp:'Resistance is measured in Ohms (Ω), named after Georg Ohm. 1 Ω = 1 V/A. Resistance depends on material, length, cross-sectional area, and temperature. Metals have low resistance; insulators have very high resistance.'},
+  ],
+  'bgcse/phys-nuclear':[
+    {q:'An ALPHA particle consists of:',opts:['2 protons and 2 neutrons (a helium-4 nucleus)','1 proton and 1 neutron','A high-energy electron','A high-energy photon'],ans:0,exp:'An alpha (α) particle is identical to a helium-4 nucleus: 2 protons + 2 neutrons, charge +2, mass 4. It is stopped by a few cm of air or a sheet of paper. Alpha decay: the parent nucleus loses 2 protons and 2 neutrons.'},
+    {q:'What is HALF-LIFE?',opts:['The time for ALL radioactive atoms to decay','The time for HALF the radioactive atoms in a sample to decay','Half the energy released by radiation','The time for activity to reach exactly zero'],ans:1,exp:'Half-life is the time for half of the radioactive atoms in any sample to decay. After 1 half-life: 50% remain; 2 half-lives: 25%; 3: 12.5%, etc. Half-life is constant and unaffected by temperature or pressure.'},
+    {q:'Which type of radiation is stopped by a sheet of PAPER?',opts:['Beta (β)','Gamma (γ)','Alpha (α)','X-rays'],ans:2,exp:'Alpha is the least penetrating — stopped by paper or a few cm of air. Beta is stopped by a few mm of aluminium. Gamma is the most penetrating — needs several cm of lead or metres of concrete to reduce significantly.'},
+  ],
+};
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let curLevel = null;
+let curSubj  = 'All';
+let dSearchQ = '';
+
+/* ══════════════════════════════════════════
+   LANDING → DASHBOARD
+══════════════════════════════════════════ */
+function openLevel(level) {
+  curLevel = level;
+  dSearchQ = '';
+  localStorage.setItem('bec-level', level);
+  applyTokens(level);
+  document.getElementById('v-land').classList.add('hidden');
+  document.getElementById('v-dash').classList.remove('hidden');
+  renderCategoryPicker(level);
+  window.scrollTo(0,0);
+  location.hash = level;
+}
+
+function openCategory(level, group) {
+  curLevel = level;
+  curSubj  = level === 'primary' ? 'Science' : 'All';
+  dSearchQ = '';
+  localStorage.setItem('bec-level', level);
+  localStorage.setItem('bec-cat-' + level, group);
+  applyTokens(level);
+  document.getElementById('v-land').classList.add('hidden');
+  document.getElementById('v-dash').classList.remove('hidden');
+  renderDashboard(level, group);
+  window.scrollTo(0,0);
+  location.hash = level + '/' + encodeURIComponent(group);
+}
+
+function goHome() {
+  document.getElementById('v-dash').classList.add('hidden');
+  document.getElementById('v-land').classList.remove('hidden');
+  renderLandingStats();
+  location.hash = '';
+  window.scrollTo(0,0);
+}
+
+/* Toggle level dropdown menu */
+function toggleLevelDropdown() {
+  const menu = document.getElementById('d-lvdrop-menu');
+  menu.classList.toggle('hidden');
+}
+
+/* Close dropdown when clicking elsewhere */
+document.addEventListener('click', e => {
+  const dropdown = document.getElementById('d-lvdrop');
+  if (dropdown && !dropdown.contains(e.target)) {
+    document.getElementById('d-lvdrop-menu').classList.add('hidden');
+  }
+});
+
+/* Category picker — shown when user clicks PSLE/JCE/BGCSE */
+function renderCategoryPicker(level) {
+  const m = META[level];
+  const data = ANIM[level];
+  const catLabel = level === 'primary' ? 'Standard' : level === 'junior' ? 'Form' : 'Subject';
+
+  // Hero
+  document.getElementById('d-hero-eyebrow').textContent = m.exam + ' · ' + m.grades;
+  document.getElementById('d-hero-h1').textContent = m.name;
+  document.getElementById('d-hero-p').textContent = 'Choose a ' + catLabel.toLowerCase() + ' to start:';
+  document.getElementById('d-hero-stats').innerHTML = '';
+
+  // Highlight active level button in dropdown
+  ['primary','junior','senior'].forEach(lv => {
+    const btn = document.getElementById('dlv-' + lv);
+    if (btn) btn.classList.toggle('on', lv === level);
+  });
+  // Update dropdown button label
+  const labels = {primary:'🏫 PSLE', junior:'📚 JCE', senior:'🎓 BGCSE'};
+  document.getElementById('d-lvdrop-toggle').textContent = labels[level] + ' ⌄';
+
+  // Subject filter — hide for category picker
+  document.getElementById('d-nav').innerHTML = '';
+
+  // Clear widgets & search
+  document.getElementById('d-widgets').innerHTML = '';
+  document.getElementById('d-srch2').value = '';
+
+  // Render big category buttons
+  const iconMap = {
+    'Standard 5':'🔵','Standard 6':'🟢','Standard 7':'🟡',
+    'Form 1':'📘','Form 2':'📗','Form 3':'📙',
+    'Biology':'🔬','Chemistry':'⚗️','Physics':'⚡',
+  };
+  document.getElementById('d-grid').innerHTML = `
+    <div style="display:flex;gap:16px;flex-wrap:wrap;padding:8px 0">
+      ${data.map(g => `
+        <div onclick="openCategory('${level}','${g.group.replace(/'/g,"\\'")}')
+" style="
+          flex:1;min-width:180px;max-width:340px;
+          background:#fff;border:2px solid #e0e0e0;border-radius:16px;
+          padding:28px 24px;cursor:pointer;transition:all .15s;
+          display:flex;flex-direction:column;align-items:flex-start;gap:10px"
+          onmouseover="this.style.borderColor='var(--c)';this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)'"
+          onmouseout="this.style.borderColor='#e0e0e0';this.style.transform='';this.style.boxShadow=''">
+          <span style="font-size:2.4rem">${iconMap[g.group]||'📂'}</span>
+          <div style="font-size:1.2rem;font-weight:800;color:#111">${g.group}</div>
+          <div style="font-size:.82rem;color:#666">${g.items.length} animation${g.items.length!==1?'s':''}</div>
+          <div style="margin-top:auto;font-size:.78rem;font-weight:700;color:var(--c)">Open →</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* Apply CSS colour tokens */
+function applyTokens(level) {
+  const m = META[level];
+  const r = document.documentElement.style;
+  r.setProperty('--c',      m.accent);
+  r.setProperty('--c-dark', m.dark);
+  r.setProperty('--c-mid',  m.mid);
+  r.setProperty('--c-light',m.light);
+}
+
+/* ══════════════════════════════════════════
+   RENDER DASHBOARD
+══════════════════════════════════════════ */
+function renderDashboard(level, group) {
+  const m    = META[level];
+  const data = ANIM[level];
+  // If a group is provided, filter to just that group's items
+  const filteredData = group ? data.filter(g => g.group === group) : data;
+  const all  = filteredData.flatMap(g => g.items);
+  const total = all.length;
+
+  // Hero — show breadcrumb when viewing a specific group
+  if (group) {
+    const catLabel = level === 'primary' ? 'Standards' : level === 'junior' ? 'Forms' : 'Subjects';
+    document.getElementById('d-hero-eyebrow').innerHTML =
+      `<span onclick="openLevel('${level}')" style="cursor:pointer;text-decoration:underline;opacity:.7">← Back to ${catLabel}</span>`;
+    document.getElementById('d-hero-h1').textContent = group;
+    document.getElementById('d-hero-p').textContent = total + ' animation' + (total!==1?'s':'') + ' · ' + m.name;
+    document.getElementById('d-hero-stats').innerHTML = '';
+  } else {
+    document.getElementById('d-hero-eyebrow').textContent = m.exam + ' · ' + m.grades;
+    document.getElementById('d-hero-h1').textContent = m.name;
+
+    // Dynamic description based on level
+    const levelDescription = {
+      'primary': 'Learn PSLE topics with interactive animations, 50+ quizzes, study guides, and fun achievements.',
+      'junior': 'Master JCE subjects through animated lessons, practice quizzes, comprehensive study materials, and badges.',
+      'senior': 'Ace your BGCSE exams with advanced animations, 50+ quizzes, detailed study resources, and streaks.'
+    };
+
+    document.getElementById('d-hero-p').textContent = levelDescription[level] || 'Master every topic with interactive animations, quizzes, detailed study guides, and achievements.';
+
+    // Calculate content statistics
+    const quizCount = total;  // Each animation has a corresponding quiz
+    const studyGuideCount = total; // Each animation has a study guide
+    const totalContentItems = total + quizCount + studyGuideCount;
+
+    document.getElementById('d-hero-stats').innerHTML = `
+      <div class="d-hstat" title="Interactive animated lessons">
+        <strong>${total}</strong>
+        <span>📚 Animations</span>
+      </div>
+      <div class="d-hstat" title="Interactive practice questions">
+        <strong>${quizCount}</strong>
+        <span>❓ Quizzes</span>
+      </div>
+      <div class="d-hstat" title="Comprehensive study materials">
+        <strong>${totalContentItems}</strong>
+        <span>📖 Total Items</span>
+      </div>
+      <div class="d-hstat" title="Unlock achievements & badges">
+        <strong>∞</strong>
+        <span>🏆 Achievements</span>
+      </div>
+    `;
+  }
+
+  // Game stats bar
+  if (typeof BEC !== 'undefined') BEC.renderStatsBar();
+
+  // Level switcher active state in dropdown
+  ['primary','junior','senior'].forEach(lv => {
+    const btn = document.getElementById('dlv-' + lv);
+    if (btn) btn.classList.toggle('on', lv === level);
+  });
+  // Update dropdown button label
+  const labels = {primary:'🏫 PSLE', junior:'📚 JCE', senior:'🎓 BGCSE'};
+  document.getElementById('d-lvdrop-toggle').textContent = labels[level] + ' ⌄';
+
+  // Subject filter nav — only show when not in a category view (or for senior where subjects = categories)
+  const nav = document.getElementById('d-nav');
+  nav.innerHTML = '';
+
+  // Widgets
+  renderWidgets(level, all);
+
+  // Grid — pass filtered data
+  renderGridFiltered(level, filteredData, '');
+
+  // Clear search inputs
+  document.getElementById('d-srch2').value = '';
+  document.getElementById('d-srch2-x').style.display = 'none';
+}
+
+/* ══════════════════════════════════════════
+   WIDGETS
+══════════════════════════════════════════ */
+function renderWidgets(level, all) {
+  const m = META[level];
+
+  // ── 1. Today's Spotlight ──────────────────
+  const dayIdx = (Math.floor(Date.now() / 86400000)) % all.length;
+  const spot   = all[dayIdx];
+  const spotHTML = `
+    <a class="wid-spot-card" href="${spot.url}" onclick="trackVisit('${spot.url}')">
+      <div class="wid-spot-icon">${spot.icon}</div>
+      <div class="wid-spot-title">${spot.title}</div>
+      <div class="wid-spot-sub">${spot.sub}</div>
+      <button class="wid-spot-btn" onclick="event.preventDefault();trackVisit('${spot.url}');location.href='${spot.url}'">Open Animation →</button>
+    </a>`;
+
+  // ── 2. Your Progress ─────────────────────
+  const visited  = getVisited(level);
+  const vCount   = visited.length;
+  const pct      = total => Math.round(vCount / total * 100);
+  const recentItems = visited.slice(0,3).map(url => {
+    const it = all.find(a => a.url === url);
+    return it ? `<a class="prog-recent-item" href="${it.url}" onclick="trackVisit('${it.url}')">`+
+      `<span class="prog-recent-icon">${it.icon}</span>${it.title}</a>` : '';
+  }).filter(Boolean).join('');
+  const progHTML = `
+    <div class="wid-prog-row">
+      <span class="wid-prog-nums">${vCount} <span class="wid-prog-of">/ ${all.length} opened</span></span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct(all.length)}%"></div></div>
+    <div class="prog-recent-hdr">Recently visited</div>
+    ${recentItems || '<div class="prog-empty">None yet — start exploring!</div>'}
+  `;
+
+  // ── 3. Study Tips ─────────────────────────
+  const tipsHTML = m.tips.map(t => {
+    const [emoji,...rest] = t.split(' ');
+    return `<div class="tip-item"><span class="tip-emoji">${emoji}</span><span>${rest.join(' ')}</span></div>`;
+  }).join('');
+
+  document.getElementById('d-widgets').innerHTML = `
+    <div class="wid">
+      <div class="wid-hdr"><span class="wid-hdr-icon">⭐</span>Today's Spotlight</div>
+      ${spotHTML}
+    </div>
+    <div class="wid">
+      <div class="wid-hdr"><span class="wid-hdr-icon">📊</span>Your Progress</div>
+      ${progHTML}
+    </div>
+    <div class="wid">
+      <div class="wid-hdr"><span class="wid-hdr-icon">💡</span>Study Tips</div>
+      ${tipsHTML}
+    </div>
+  `;
+}
+
+/* ══════════════════════════════════════════
+   ANIMATION GRID
+══════════════════════════════════════════ */
+function renderGrid(level, subj, query) {
+  const data = ANIM[level];
+  const ql   = query.trim().toLowerCase();
+  let anyVis = false;
+  let html   = '';
+
+  data.forEach(g => {
+    const items = g.items.filter(it => {
+      const subjOk = (subj === 'All' || subj === it.subj || level === 'primary');
+      const searchOk = !ql || it.title.toLowerCase().includes(ql) || it.sub.toLowerCase().includes(ql);
+      return subjOk && searchOk;
+    });
+    if (!items.length) return;
+    anyVis = true;
+
+    // Subject badge (only show for multi-subject levels when viewing All)
+    const showBadge = level !== 'primary' && subj === 'All';
+    html += `
+      <div class="sec-div">
+        <span class="sec-div-label">${g.group}</span>
+        <div class="sec-div-line"></div>
+        ${showBadge ? `<span class="sec-sub-badge">${items[0].subj}</span>` : ''}
+      </div>
+      <div class="card-grid">
+        ${items.map(it => {
+          const studyUrl = it.url.replace('.html', '-study.html');
+          const quizUrl  = it.url.replace('.html', '-quiz.html');
+          const slug     = it.url.replace('animations/','').replace('.html','');
+          const _bec       = typeof BEC !== 'undefined' ? BEC : null;
+          const crown      = _bec ? _bec.getCrown(slug) : 0;
+          const crownIcon  = _bec ? _bec.crownHtml(crown) : '';
+          const isUnlocked = isCardUnlocked(it.url);
+          const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
+          const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
+          const animClick = isUnlocked
+            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showAuthModal()`;
+          return `
+          <div class="acard">
+            <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
+            <div class="acard-icon">${it.icon}</div>
+            <div class="acard-title">${it.title}</div>
+            <div class="acard-sub">${it.sub}</div>
+            <div class="acard-btns">
+              <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="te-bar">
+        <span class="te-bar-label">Practice for ${g.group}</span>
+        <button class="te-btn te-btn-test" onclick="${currentUser ? `openTestModal('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
+        <button class="te-btn te-btn-exam" onclick="${currentUser ? `startExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
+      </div>`;
+  });
+
+  document.getElementById('d-grid').innerHTML = html;
+  document.getElementById('d-no-results').style.display = anyVis ? 'none' : 'block';
+  document.getElementById('d-nr-q').textContent = ql || subj;
+}
+
+/* Render grid from a pre-filtered data array (for category view) */
+function renderGridFiltered(level, filteredData, query) {
+  const ql = query.trim().toLowerCase();
+  let anyVis = false;
+  let html = '';
+
+  filteredData.forEach(g => {
+    const items = g.items.filter(it =>
+      !ql || it.title.toLowerCase().includes(ql) || it.sub.toLowerCase().includes(ql)
+    );
+    if (!items.length) return;
+    anyVis = true;
+    html += `
+      <div class="sec-div">
+        <span class="sec-div-label">${g.group}</span>
+        <div class="sec-div-line"></div>
+      </div>
+      <div class="card-grid">
+        ${items.map(it => {
+          const studyUrl = it.url.replace('.html', '-study.html');
+          const quizUrl  = it.url.replace('.html', '-quiz.html');
+          const slug     = it.url.replace('animations/','').replace('.html','');
+          const _bec     = typeof BEC !== 'undefined' ? BEC : null;
+          const crownIcon = _bec ? _bec.crownHtml(_bec.getCrown(slug)) : '';
+          const isUnlocked = isCardUnlocked(it.url);
+          const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
+          const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
+          const animClick = isUnlocked
+            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showAuthModal()`;
+          return `
+          <div class="acard">
+            <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
+            <div class="acard-icon">${it.icon}</div>
+            <div class="acard-title">${it.title}</div>
+            <div class="acard-sub">${it.sub}</div>
+            <div class="acard-btns">
+              <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="te-bar">
+        <span class="te-bar-label">Practice for ${g.group}</span>
+        <button class="te-btn te-btn-test" onclick="${currentUser ? `openTestModal('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
+        <button class="te-btn te-btn-exam" onclick="${currentUser ? `startExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
+      </div>`;
+  });
+
+  document.getElementById('d-grid').innerHTML = html;
+  document.getElementById('d-no-results').style.display = anyVis ? 'none' : 'block';
+}
+
+/* ══════════════════════════════════════════
+   SUBJECT FILTER
+══════════════════════════════════════════ */
+function filterSubj(subj) {
+  curSubj = subj;
+  document.querySelectorAll('.d-nbtn').forEach(b => b.classList.toggle('on', b.textContent === subj));
+  renderGrid(curLevel, subj, dSearchQ);
+}
+
+/* ══════════════════════════════════════════
+   SEARCH
+══════════════════════════════════════════ */
+function dSearch(q) {
+  dSearchQ = q;
+  // Sync both search inputs
+  const in2 = document.getElementById('d-srch2');
+  if (in2.value !== q) in2.value = q;
+  document.getElementById('d-srch2-x').style.display = q ? 'block' : 'none';
+  renderGrid(curLevel, curSubj, q);
+}
+
+function clearDSearch() {
+  dSearch('');
+}
+
+/* ══════════════════════════════════════════
+   RANDOM ANIMATION
+══════════════════════════════════════════ */
+function openRandom() {
+  const all = ANIM[curLevel].flatMap(g => g.items)
+    .filter(it => curSubj === 'All' || it.subj === curSubj || curLevel === 'primary');
+  if (!all.length) return;
+  const pick = all[Math.floor(Math.random() * all.length)];
+  trackVisit(pick.url);
+  location.href = pick.url;
+}
+
+/* ══════════════════════════════════════════
+   VISIT TRACKING (localStorage)
+══════════════════════════════════════════ */
+function trackVisit(url) {
+  const key = 'bec-visited-' + curLevel;
+  let v = JSON.parse(localStorage.getItem(key) || '[]');
+  v = [url, ...v.filter(u => u !== url)].slice(0, 20);
+  localStorage.setItem(key, JSON.stringify(v));
+  return true;
+}
+
+function getVisited(level) {
+  const all  = ANIM[level].flatMap(g => g.items).map(a => a.url);
+  const raw  = JSON.parse(localStorage.getItem('bec-visited-' + level) || '[]');
+  return [...new Set(raw)].filter(u => all.includes(u));
+}
+
+/* ══════════════════════════════════════════
+   TEST / EXAM SYSTEM
+══════════════════════════════════════════ */
+let _testGroup = null;
+let _testLevel = null;
+
+function openTestModal(groupName, level) {
+  _testGroup = groupName;
+  _testLevel = level;
+  const grp = ANIM[level].find(g => g.group === groupName);
+  if (!grp) return;
+  document.getElementById('te-modal-title').textContent = groupName + ' — Choose Topics';
+  document.getElementById('te-modal-sub').textContent =
+    'Tick the topics you want in your test (' + grp.items.length + ' topics available).';
+  document.getElementById('te-topic-list').innerHTML = grp.items.map((it, i) => {
+    const slug = it.url.replace('animations/','').replace('.html','');
+    const qCount = (QS[slug] || []).length;
+    return `<label class="te-topic-row">
+      <input type="checkbox" id="te-chk-${i}" value="${i}" checked>
+      <span style="font-size:1.2rem;flex-shrink:0">${it.icon}</span>
+      <span style="flex:1;min-width:0">
+        <span style="font-size:.88rem;font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.title}</span>
+      </span>
+      <small>${qCount} Q</small>
+    </label>`;
+  }).join('');
+  document.getElementById('te-overlay').classList.remove('hidden');
+}
+
+function closeTestModal() {
+  document.getElementById('te-overlay').classList.add('hidden');
+}
+
+function startSelectedTest() {
+  const grp = ANIM[_testLevel].find(g => g.group === _testGroup);
+  const selected = grp.items.filter((_, i) => {
+    const el = document.getElementById('te-chk-' + i);
+    return el && el.checked;
+  });
+  if (!selected.length) { alert('Please tick at least one topic.'); return; }
+  _launchTest(_testGroup + ' Test', selected, META[_testLevel].exam);
+  closeTestModal();
+}
+
+function startExam(level) {
+  const all = ANIM[level].flatMap(g => g.items);
+  _launchTest(META[level].exam + ' Full Exam', all, META[level].exam);
+}
+
+function _launchTest(title, items, examName) {
+  const qs = items.flatMap(it => {
+    const slug = it.url.replace('animations/','').replace('.html','');
+    return (QS[slug] || []).map(q => ({...q, topicTitle: it.title, topicIcon: it.icon}));
+  });
+  if (!qs.length) { alert('No questions available for selected topics yet.'); return; }
+  // Fisher-Yates shuffle
+  for (let i = qs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [qs[i], qs[j]] = [qs[j], qs[i]];
+  }
+  localStorage.setItem('bec-pending-test', JSON.stringify({title, examName, qs}));
+  location.href = 'animations/multi-quiz.html';
+}
+
+/* ══════════════════════════════════════════
+   LANDING STATS PANEL
+══════════════════════════════════════════ */
+function renderLandingStats() {
+  const el = document.getElementById('player-card');
+  if (!el || typeof BEC === 'undefined') return;
+  const s   = BEC.getState();
+  const lv  = BEC.getLevel(s.xp);
+  const nx  = BEC.getNextLevel(s.xp);
+  const pct = nx ? Math.round((s.xp - lv.min) / (nx.min - lv.min) * 100) : 100;
+  const HMAX = 5;
+
+  const earned   = BEC.BADGES.filter(b => s.badges.includes(b.id));
+  const nextBdg  = BEC.BADGES.find(b => !s.badges.includes(b.id));
+
+  const heartsHtml = Array.from({length: HMAX}, (_, i) =>
+    `<span style="color:${i < (s.hearts ?? HMAX) ? '#ef9a9a' : 'rgba(255,255,255,.15)'};font-size:.95rem">♥</span>`
+  ).join('');
+
+  const earnedIconsHtml = earned.slice(-5).map(b =>
+    `<span title="${b.name}" style="font-size:1.2rem">${b.icon}</span>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="pc-head">
+      <span class="pc-head-lbl">Your Progress</span>
+      <button class="pc-view-all" onclick="BEC._showProfile()">🏅 ${earned.length}/${BEC.BADGES.length} Badges →</button>
+    </div>
+    <div class="pc-body">
+      <span class="pc-lv-icon">${lv.icon}</span>
+      <div class="pc-lv-info">
+        <div class="pc-lv-name">${lv.name}</div>
+        <div class="pc-xp-bar-wrap"><div class="pc-xp-bar" style="width:${pct}%"></div></div>
+        <div class="pc-xp-txt">${s.xp} XP${nx ? ' · ' + (nx.min - s.xp) + ' to <strong style="color:rgba(255,255,255,.7)">' + nx.name + '</strong>' : ' · Max Level!'}</div>
+      </div>
+      <div class="pc-stats">
+        <div class="pc-stat-blk">
+          <span class="pc-stat-icon">🔥</span>
+          <span class="pc-stat-val">${s.streak}</span>
+          <span class="pc-stat-lbl">streak</span>
+        </div>
+        <div class="pc-stat-blk">
+          <div class="pc-hearts">${heartsHtml}</div>
+          <span class="pc-stat-val">${s.hearts ?? HMAX}/${HMAX}</span>
+          <span class="pc-stat-lbl">lives</span>
+        </div>
+        <button class="pc-badge-btn" onclick="BEC._showProfile()">
+          <span class="pc-badge-big">🏅 ${earned.length}</span>
+          <span class="pc-badge-lbl">of ${BEC.BADGES.length} badges</span>
+        </button>
+      </div>
+    </div>
+    ${nextBdg || earnedIconsHtml ? `
+    <div class="pc-foot">
+      ${nextBdg ? `<span class="pc-next-lbl">Next badge</span>
+        <span class="pc-next-badge">${nextBdg.icon} <strong style="color:rgba(255,255,255,.75)">${nextBdg.name}</strong> — ${nextBdg.desc}</span>` : ''}
+      ${earnedIconsHtml ? `<span class="pc-earned-icons">${earnedIconsHtml}</span>` : ''}
+    </div>` : ''}`;
+}
+
+/* ══════════════════════════════════════════
+   INIT — restore last level or show landing
+══════════════════════════════════════════ */
+(function init() {
+  function handleHash(h) {
+    if (!h) {
+      document.getElementById('v-dash').classList.add('hidden');
+      document.getElementById('v-land').classList.remove('hidden');
+      renderLandingStats();
+      return;
+    }
+    const slash = h.indexOf('/');
+    const level = slash !== -1 ? h.substring(0, slash) : h;
+    const group = slash !== -1 ? decodeURIComponent(h.substring(slash + 1)) : null;
+    if (!['primary','junior','senior'].includes(level)) return;
+    if (group) openCategory(level, group);
+    else openLevel(level);
+  }
+
+  const hash  = location.hash.slice(1);
+  const saved = localStorage.getItem('bec-level');
+  if (hash) {
+    handleHash(hash);
+  } else if (['primary','junior','senior'].includes(saved)) {
+    openLevel(saved);
+  } else {
+    // Show sign-up page on first visit
+    showAuthModal();
+  }
+
+  window.addEventListener('hashchange', () => handleHash(location.hash.slice(1)));
+
+  // Initialize Firebase Auth listener (async — re-renders grid when user state resolves)
+  initAuth();
+})();
+</script>
+</body>
+</html>

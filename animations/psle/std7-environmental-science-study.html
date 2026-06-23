@@ -1,0 +1,413 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Environmental Science — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Ecosystems and Biodiversity',
+content:`<h2>Life in Communities</h2>
+<p>An <strong>ecosystem</strong> is a community of living organisms (biotic) interacting with their non-living environment (abiotic — water, temperature, soil, sunlight).</p>
+<p><strong>Biodiversity</strong> is the variety of life in an ecosystem. High biodiversity means:</p>
+<ul>
+<li>🌿 Stable ecosystems — more resilience to changes</li>
+<li>🦠 More potential medicines and food sources</li>
+<li>🔄 Better nutrient cycling and purification</li>
+</ul>
+<p><strong>Threats to biodiversity:</strong></p>
+<ul>
+<li>🌳 Deforestation</li>
+<li>🌊 Habitat destruction</li>
+<li>☠️ Pollution</li>
+<li>🌡️ Climate change</li>
+<li>🐟 Overhunting/overfishing</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const species=[{e:'🌿',x:60,y:80},{e:'🌺',x:120,y:60},{e:'🦋',x:200,y:70},{e:'🐝',x:280,y:55},{e:'🐸',x:340,y:90},{e:'🐍',x:370,y:160},{e:'🦅',x:300,y:200},{e:'🐘',x:200,y:220},{e:'🐟',x:90,y:200},{e:'🌳',x:160,y:140},{e:'🍄',x:250,y:150}];
+  let t=0,threatened=false;
+  p.draw=()=>{
+    p.background(threatened?'#fff8f0':'#e8f5e9');
+    threatened=(Math.floor(t/120)%2===1);
+    species.forEach((s,i)=>{
+      if(threatened&&i%3===0)return;
+      p.textSize(24);p.noStroke();p.text(s.e,s.x,s.y);
+    });
+    p.noStroke();p.fill('#333');p.textSize(11);p.text(threatened?'Low biodiversity — many species lost!':'High biodiversity — ecosystem thriving!',210,265);
+    t++;
+  };
+}},
+{title:'The Carbon Cycle',
+content:`<h2>Carbon Moves Through Ecosystems</h2>
+<p>Carbon constantly cycles between the atmosphere, living things, and the Earth.</p>
+<p><strong>Processes that REMOVE CO₂ from air:</strong></p>
+<ul>
+<li>🌿 <strong>Photosynthesis</strong> — plants absorb CO₂</li>
+<li>🌊 <strong>Dissolved in oceans</strong> — absorbed by seawater</li>
+</ul>
+<p><strong>Processes that ADD CO₂ to air:</strong></p>
+<ul>
+<li>💨 <strong>Respiration</strong> — all organisms release CO₂</li>
+<li>🔥 <strong>Burning</strong> — combustion of wood and fossil fuels</li>
+<li>🍄 <strong>Decomposition</strong> — bacteria/fungi decompose dead matter</li>
+</ul>
+<p>Human burning of fossil fuels is <em>adding CO₂ faster than it is removed</em> → ENHANCED GREENHOUSE EFFECT → GLOBAL WARMING</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    // atmosphere band
+    p.fill('#e3f2fd');p.noStroke();p.rect(0,0,420,60);
+    p.fill('#1565c0');p.textSize(11);p.text('Atmosphere — CO₂',210,32);
+    // CO₂ level indicator
+    const level=2+p.sin(t*0.02)*1;
+    for(let i=0;i<Math.floor(level*6);i++){p.fill(p.color('#ef5350'));p.noStroke();p.ellipse(50+i*30,45,16,10);p.fill(255);p.textSize(7);p.text('CO₂',50+i*30,45);}
+    // tree
+    p.fill('#43a047');p.noStroke();p.ellipse(100,140,70,80);p.stroke('#5d4037');p.strokeWeight(4);p.line(100,180,100,220);
+    p.noStroke();p.fill('#333');p.textSize(9);p.text('Photosynthesis\n→',100,108);
+    // factory
+    p.fill('#607d8b');p.noStroke();p.rect(290,150,60,70);p.fill('#888');p.ellipse(310,150,20,20);p.ellipse(340,155,18,18);
+    p.fill('#555');p.textSize(9);p.text('Burning\n←',310,135);
+    // CO₂ arrows
+    const ap=t%100/100;
+    // photosynthesis — absorbing
+    p.stroke('#43a047');p.strokeWeight(2);p.line(100,100,100+ap*0,60-ap*30);
+    // burning — releasing
+    p.stroke('#e53935');p.strokeWeight(2);p.line(310,135,310-ap*10,60+ap*5);
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Carbon cycles between atmosphere and living things',210,268);
+    t++;
+  };
+}},
+{title:'The Greenhouse Effect',
+content:`<h2>How CO₂ Traps Heat</h2>
+<p>The <strong>greenhouse effect</strong> is a natural process that keeps Earth warm:</p>
+<ol>
+<li>☀️ Sunlight (short-wave radiation) passes through atmosphere → warms Earth</li>
+<li>🌍 Earth re-emits heat as infrared (long-wave radiation)</li>
+<li>🌫️ Greenhouse gases (CO₂, methane, water vapour) <strong>absorb and re-radiate</strong> this infrared → traps heat</li>
+</ol>
+<p><strong>Enhanced greenhouse effect</strong> — burning fossil fuels increases CO₂ → more heat trapped → <em>global warming</em></p>
+<p><strong>Consequences:</strong> rising sea levels, extreme weather, habitat loss, droughts, coral bleaching, species extinction.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(10,30,60);
+    // sun
+    p.fill('#ffd600');p.noStroke();p.ellipse(50,40,48,48);
+    // atmosphere layer
+    const ghg=0.4+0.3*Math.abs(Math.sin(t*0.02));
+    p.fill(100,180,255,60+ghg*80);p.noStroke();p.rect(0,80,420,40);
+    p.fill(255);p.textSize(10);p.text('Atmosphere (greenhouse gases)',210,100);
+    // Earth surface
+    p.fill('#1b5e20');p.noStroke();p.rect(0,200,420,70);p.fill('#43a047');p.textSize(11);p.text('Earth surface',210,230);
+    // sunlight arrow
+    p.stroke('#ffd600');p.strokeWeight(3);p.line(80,50,210,195);
+    p.fill('#ffd600');p.noStroke();p.textSize(9);p.text('Sunlight (short-wave)',140,110);
+    // reflected IR
+    const bounce=Math.abs(Math.sin(t*0.04))*60;
+    p.stroke('#ef5350');p.strokeWeight(3);p.line(250,200,250,125);p.line(250,125,250-bounce*0.5,80);
+    p.fill('#ef5350');p.noStroke();p.textSize(9);p.text('Infrared trapped!',320,115);
+    p.fill(255);p.textSize(11);p.text('More CO₂ = more heat trapped',210,260);
+    t++;
+  };
+}},
+{title:'Water Pollution — Eutrophication',
+content:`<h2>Fertilisers and Waterways</h2>
+<p><strong>Eutrophication</strong> is a serious form of water pollution caused by excess nutrients (especially nitrates and phosphates from fertilisers).</p>
+<p><strong>Step by step:</strong></p>
+<ol>
+<li>🌾 Farmers apply fertilisers to fields</li>
+<li>💧 Rain washes nitrates/phosphates into rivers and lakes (run-off)</li>
+<li>🌿 Rapid algae GROWTH (algal bloom) — blocks sunlight</li>
+<li>☠️ Aquatic plants beneath die (no light)</li>
+<li>🦠 Bacteria decompose dead plants — using up all dissolved O₂</li>
+<li>🐟 Fish and other aquatic animals SUFFOCATE and die</li>
+</ol>
+<p>Prevention: controlled use of fertilisers, buffer zones along waterways, treating wastewater.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,algaeLevel=0;
+  p.draw=()=>{
+    p.background(245);
+    algaeLevel=Math.min(t/300,1);
+    // water body
+    p.fill('#b3e5fc');p.stroke('#0288d1');p.strokeWeight(2);p.rect(60,100,300,140,8);
+    // algae bloom
+    p.fill(p.lerpColor(p.color('#b3e5fc'),p.color('#388e3c'),algaeLevel));p.noStroke();p.rect(60,100,300,40*algaeLevel+5,8,8,0,0);
+    p.fill(255);p.textSize(10);p.text(algaeLevel>0.5?'Algal bloom — blocking light!':'Lake',210,130);
+    // fish
+    if(algaeLevel<0.8){p.textSize(22);p.text('🐟',150,200);p.text('🐠',250,190);p.text('🐡',200,215);}
+    else{p.fill('#777');p.textSize(12);p.text('Fish dead — no oxygen!',210,205);}
+    // fertiliser
+    const fx=60+algaeLevel*200;
+    p.fill('#ffd600');p.stroke('#f57f17');p.strokeWeight(2);p.rect(fx-10,70,20,30,4);p.noStroke();p.fill('#333');p.textSize(9);p.text('Fertiliser\nrun-off',fx,60);
+    p.fill('#333');p.textSize(11);p.text('Eutrophication — excess nutrients kill aquatic life',210,258);
+    t++;
+  };
+}},
+{title:'Sustainability and Conservation',
+content:`<h2>Protecting Our Planet for the Future</h2>
+<p><strong>Sustainability</strong>: meeting the needs of the present without preventing future generations from meeting theirs.</p>
+<p><strong>Conservation strategies:</strong></p>
+<ul>
+<li>🌳 Reforestation — planting trees to replace those cut down</li>
+<li>🚯 Reducing pollution (cleaner production, waste management)</li>
+<li>♻️ Recycling and reducing waste</li>
+<li>☀️ Using renewable energy (solar, wind)</li>
+<li>🐘 Wildlife reserves and protected areas</li>
+<li>🎣 Sustainable fishing — leaving enough for populations to recover</li>
+</ul>
+<p>In Botswana, the Chobe National Park and Okavango Delta are examples of protected ecosystems preserving biodiversity.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const actions=[{e:'🌳',l:'Reforest',x:70,y:80},{e:'☀️',l:'Renewable',x:175,y:55},{e:'♻️',l:'Recycle',x:280,y:80},{e:'🐘',l:'Reserves',x:350,y:145},{e:'🚯',l:'No pollution',x:280,y:215},{e:'🎣',l:'Sustainable',x:130,y:215}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%80===0)active=(active+1)%actions.length;
+    p.fill('#2e7d32');p.noStroke();p.ellipse(210,145,90,90);p.textSize(28);p.text('🌍',210,145);
+    actions.forEach((ac,i)=>{
+      const isA=active===i;
+      p.fill(isA?'#2e7d32':'#ddd');p.noStroke();p.ellipse(ac.x,ac.y,isA?70:56,isA?44:36);
+      p.textSize(isA?20:16);p.text(ac.e,ac.x,ac.y-4);
+      p.fill(isA?255:'#888');p.textSize(isA?11:9);p.text(ac.l,ac.x,ac.y+12);
+      p.stroke('#ccc');p.strokeWeight(1);p.line(ac.x,ac.y,210,145);
+    });
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Sustainability — protecting Earth for future generations',210,258);
+    t++;
+  };
+}},
+{title:'Types of Pollution',
+content:`<h3>Four Major Types of Pollution</h3><p>Pollution occurs when harmful substances enter the environment. Each type affects different parts of the environment and has specific health and ecological impacts.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#e0f7fa"/>
+  <!-- Grid lines -->
+  <line x1="210" y1="10" x2="210" y2="240" stroke="#006064" stroke-width="1.5"/>
+  <line x1="10" y1="128" x2="410" y2="128" stroke="#006064" stroke-width="1.5"/>
+  <!-- AIR POLLUTION (top-left) -->
+  <rect x="10" y="10" width="195" height="113" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="107" y="26" text-anchor="middle" fill="#1565c0" font-size="10" font-weight="bold">AIR POLLUTION</text>
+  <!-- Factory smoke -->
+  <rect x="28" y="80" width="22" height="32" rx="2" fill="#607d8b"/>
+  <rect x="55" y="88" width="18" height="24" rx="2" fill="#607d8b"/>
+  <ellipse cx="35" cy="76" rx="7" ry="10" fill="#9e9e9e" opacity="0.8"/>
+  <ellipse cx="42" cy="68" rx="9" ry="13" fill="#9e9e9e" opacity="0.6"/>
+  <ellipse cx="50" cy="62" rx="11" ry="14" fill="#bdbdbd" opacity="0.5"/>
+  <ellipse cx="64" cy="82" rx="6" ry="9" fill="#9e9e9e" opacity="0.7"/>
+  <!-- Car -->
+  <rect x="108" y="96" width="40" height="16" rx="4" fill="#e53935"/>
+  <ellipse cx="118" cy="113" rx="6" ry="6" fill="#333"/>
+  <ellipse cx="138" cy="113" rx="6" ry="6" fill="#333"/>
+  <ellipse cx="105" cy="86" rx="7" ry="10" fill="#9e9e9e" opacity="0.6"/>
+  <text x="107" y="52" text-anchor="middle" fill="#333" font-size="8">factory smoke, car exhaust</text>
+  <text x="107" y="62" text-anchor="middle" fill="#e53935" font-size="7.5">→ respiratory disease,</text>
+  <text x="107" y="72" text-anchor="middle" fill="#e53935" font-size="7.5">global warming</text>
+  <!-- WATER POLLUTION (top-right) -->
+  <rect x="215" y="10" width="195" height="113" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="312" y="26" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">WATER POLLUTION</text>
+  <!-- River -->
+  <rect x="240" y="72" width="140" height="40" rx="4" fill="#b3e5fc" stroke="#0288d1" stroke-width="1"/>
+  <!-- Sewage pipe -->
+  <rect x="248" y="55" width="12" height="20" fill="#795548"/>
+  <ellipse cx="254" cy="77" rx="8" ry="6" fill="#8d6e63" opacity="0.8"/>
+  <text x="254" y="50" text-anchor="middle" fill="#795548" font-size="7.5">sewage</text>
+  <!-- Chemical barrel -->
+  <rect x="340" y="60" width="18" height="22" rx="2" fill="#f4511e"/>
+  <text x="349" y="73" text-anchor="middle" fill="white" font-size="7">!</text>
+  <text x="312" y="52" text-anchor="middle" fill="#333" font-size="8">sewage, chemical waste</text>
+  <text x="312" y="62" text-anchor="middle" fill="#e53935" font-size="7.5">→ kills aquatic life,</text>
+  <text x="312" y="116" text-anchor="middle" fill="#e53935" font-size="7.5">spreads cholera &amp; typhoid</text>
+  <!-- LAND POLLUTION (bottom-left) -->
+  <rect x="10" y="133" width="195" height="107" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="107" y="149" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">LAND/SOIL POLLUTION</text>
+  <!-- Rubbish pile -->
+  <ellipse cx="80" cy="210" rx="35" ry="18" fill="#9e9e9e"/>
+  <rect x="55" y="195" width="12" height="18" rx="2" fill="#e53935"/>
+  <rect x="70" y="198" width="10" height="16" rx="1" fill="#1e88e5"/>
+  <ellipse cx="95" cy="205" rx="14" ry="8" fill="#78909c"/>
+  <text x="107" y="165" text-anchor="middle" fill="#333" font-size="8">dumped rubbish, plastic, chemicals</text>
+  <text x="107" y="175" text-anchor="middle" fill="#e53935" font-size="7.5">→ kills plants, enters food chain,</text>
+  <text x="107" y="184" text-anchor="middle" fill="#e53935" font-size="7.5">poisons soil</text>
+  <!-- NOISE POLLUTION (bottom-right) -->
+  <rect x="215" y="133" width="195" height="107" rx="6" fill="#fce4ec" stroke="#ad1457" stroke-width="1.5"/>
+  <text x="312" y="149" text-anchor="middle" fill="#ad1457" font-size="10" font-weight="bold">NOISE POLLUTION</text>
+  <!-- Sound waves from truck -->
+  <rect x="240" y="185" width="50" height="28" rx="4" fill="#607d8b"/>
+  <ellipse cx="255" cy="214" rx="7" ry="7" fill="#333"/>
+  <ellipse cx="278" cy="214" rx="7" ry="7" fill="#333"/>
+  <path d="M292,196 Q300,188 308,196" fill="none" stroke="#ad1457" stroke-width="2"/>
+  <path d="M293,193 Q304,183 315,193" fill="none" stroke="#ad1457" stroke-width="2"/>
+  <path d="M294,190 Q308,178 322,190" fill="none" stroke="#ad1457" stroke-width="2"/>
+  <text x="312" y="165" text-anchor="middle" fill="#333" font-size="8">traffic, machinery, construction</text>
+  <text x="312" y="175" text-anchor="middle" fill="#e53935" font-size="7.5">→ hearing loss, stress,</text>
+  <text x="312" y="184" text-anchor="middle" fill="#e53935" font-size="7.5">sleep disturbance</text>
+</svg>`},
+{title:'The Carbon Cycle — Diagram',
+content:`<h3>How Carbon Moves Through the Environment</h3><p>Carbon atoms cycle continuously between the atmosphere, living organisms, soil, and oceans. Human activities (burning fossil fuels, deforestation) are disrupting this balance by adding extra CO&#8322;.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#006064"/></marker>
+    <marker id="b" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#e53935"/></marker>
+    <marker id="c" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,6 L6,3 L0,0 Z" fill="#43a047"/></marker>
+  </defs>
+  <rect width="420" height="250" fill="#e8f5e9"/>
+  <!-- Atmosphere -->
+  <rect x="100" y="8" width="220" height="38" rx="8" fill="#b3e5fc" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="24" text-anchor="middle" fill="#1565c0" font-size="10" font-weight="bold">ATMOSPHERE (CO&#8322;)</text>
+  <text x="210" y="38" text-anchor="middle" fill="#1565c0" font-size="8">carbon dioxide gas</text>
+  <!-- Plants -->
+  <ellipse cx="68" cy="130" rx="42" ry="32" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="68" y="126" text-anchor="middle" fill="#1b5e20" font-size="9" font-weight="bold">Plants</text>
+  <text x="68" y="138" text-anchor="middle" fill="#1b5e20" font-size="7.5">photosynthesis</text>
+  <!-- Animals -->
+  <ellipse cx="210" cy="145" rx="42" ry="28" fill="#ffe082" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="210" y="141" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Animals</text>
+  <text x="210" y="153" text-anchor="middle" fill="#e65100" font-size="7.5">respiration</text>
+  <!-- Dead matter/decomposers -->
+  <ellipse cx="68" cy="210" rx="42" ry="28" fill="#d7ccc8" stroke="#5d4037" stroke-width="1.5"/>
+  <text x="68" y="206" text-anchor="middle" fill="#4e342e" font-size="9" font-weight="bold">Dead matter</text>
+  <text x="68" y="218" text-anchor="middle" fill="#4e342e" font-size="7.5">decomposition</text>
+  <!-- Fossil fuels -->
+  <ellipse cx="352" cy="200" rx="50" ry="28" fill="#616161" stroke="#212121" stroke-width="1.5"/>
+  <text x="352" y="196" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Fossil Fuels</text>
+  <text x="352" y="207" text-anchor="middle" fill="#ccc" font-size="7.5">coal, oil, gas</text>
+  <!-- Factory (human activity) -->
+  <rect x="318" y="110" width="30" height="36" rx="2" fill="#607d8b"/>
+  <rect x="326" y="100" width="8" height="14" fill="#546e7a"/>
+  <rect x="338" y="96" width="8" height="18" fill="#546e7a"/>
+  <ellipse cx="330" cy="98" rx="6" ry="8" fill="#9e9e9e" opacity="0.8"/>
+  <ellipse cx="342" cy="94" rx="6" ry="10" fill="#9e9e9e" opacity="0.7"/>
+  <text x="352" y="128" text-anchor="middle" fill="#e53935" font-size="7.5">BURNING</text>
+  <text x="352" y="137" text-anchor="middle" fill="#e53935" font-size="7">+extra CO&#8322;</text>
+  <!-- Arrows -->
+  <!-- Plants absorb CO2 from atmosphere (photosynthesis) -->
+  <line x1="100" y1="32" x2="78" y2="100" stroke="#43a047" stroke-width="2" marker-end="url(#c)"/>
+  <text x="72" y="76" fill="#2e7d32" font-size="7.5" transform="rotate(-70,72,76)">photosynthesis</text>
+  <!-- Animals respire CO2 to atmosphere -->
+  <line x1="200" y1="118" x2="168" y2="46" stroke="#e53935" stroke-width="2" marker-end="url(#b)"/>
+  <text x="190" y="76" fill="#e53935" font-size="7.5">respiration</text>
+  <!-- Animals eat plants -->
+  <line x1="110" y1="132" x2="168" y2="140" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="138" y="128" fill="#006064" font-size="7">eating</text>
+  <!-- Dead matter decomposes -->
+  <line x1="68" y1="162" x2="68" y2="182" stroke="#e53935" stroke-width="2" marker-end="url(#b)"/>
+  <!-- Dead matter CO2 to atmosphere -->
+  <line x1="96" y1="190" x2="140" y2="46" stroke="#e53935" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#b)"/>
+  <text x="90" y="130" fill="#795548" font-size="7">decomp.</text>
+  <!-- Fossil fuels burning releases CO2 -->
+  <line x1="318" y1="106" x2="260" y2="46" stroke="#e53935" stroke-width="2.5" marker-end="url(#b)"/>
+  <text x="280" y="62" fill="#e53935" font-size="7.5">burning</text>
+  <!-- Fossil fuels form from dead matter -->
+  <line x1="110" y1="216" x2="300" y2="208" stroke="#006064" stroke-width="1" stroke-dasharray="2,3" marker-end="url(#a)"/>
+  <text x="210" y="225" text-anchor="middle" fill="#555" font-size="7">millions of years → fossil fuels</text>
+  <text x="210" y="243" text-anchor="middle" fill="#006064" font-size="9">Green arrows = CO&#8322; removed | Red arrows = CO&#8322; added to atmosphere</text>
+</svg>`},
+{title:'Renewable vs Non-Renewable Energy',
+content:`<h3>Energy Sources Compared</h3><p>Sustainable energy planning means shifting from finite fossil fuels to renewable sources that do not run out and produce less pollution. Burning fossil fuels is the main driver of climate change.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#e0f7fa"/>
+  <!-- Left column: Renewable -->
+  <rect x="10" y="10" width="190" height="220" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="105" y="28" text-anchor="middle" fill="#2e7d32" font-size="11" font-weight="bold">RENEWABLE</text>
+  <text x="105" y="40" text-anchor="middle" fill="#2e7d32" font-size="8">never runs out</text>
+  <!-- Solar -->
+  <circle cx="42" cy="70" r="14" fill="#ffd600"/>
+  <line x1="42" y1="50" x2="42" y2="44" stroke="#ffd600" stroke-width="2"/>
+  <line x1="42" y1="90" x2="42" y2="96" stroke="#ffd600" stroke-width="2"/>
+  <line x1="22" y1="70" x2="16" y2="70" stroke="#ffd600" stroke-width="2"/>
+  <line x1="62" y1="70" x2="68" y2="70" stroke="#ffd600" stroke-width="2"/>
+  <text x="90" y="67" fill="#1b5e20" font-size="10" font-weight="bold">Solar</text>
+  <text x="90" y="78" fill="#555" font-size="8">sun panels on roofs</text>
+  <!-- Wind -->
+  <line x1="42" y1="105" x2="42" y2="135" stroke="#607d8b" stroke-width="2"/>
+  <path d="M42,108 Q55,102 52,115 Q65,112 58,122 Q70,128 52,125 Z" fill="#90caf9"/>
+  <text x="90" y="112" fill="#1b5e20" font-size="10" font-weight="bold">Wind</text>
+  <text x="90" y="123" fill="#555" font-size="8">turbines on hills</text>
+  <!-- Hydro -->
+  <rect x="25" y="148" width="30" height="18" rx="2" fill="#1565c0"/>
+  <path d="M18,166 Q32,160 42,166 Q52,172 55,166" fill="none" stroke="#42a5f5" stroke-width="2"/>
+  <text x="90" y="155" fill="#1b5e20" font-size="10" font-weight="bold">Hydro/Water</text>
+  <text x="90" y="166" fill="#555" font-size="8">dams on rivers</text>
+  <!-- Geothermal -->
+  <path d="M30,185 Q42,175 54,185 Q42,188 30,185 Z" fill="#ef5350"/>
+  <path d="M36,185 Q42,172 48,185" fill="none" stroke="#ff7043" stroke-width="2"/>
+  <text x="90" y="192" fill="#1b5e20" font-size="10" font-weight="bold">Geothermal</text>
+  <text x="90" y="203" fill="#555" font-size="8">Earth's heat</text>
+  <!-- Right column: Non-Renewable -->
+  <rect x="220" y="10" width="190" height="220" rx="8" fill="#ffebee" stroke="#b71c1c" stroke-width="2"/>
+  <text x="315" y="28" text-anchor="middle" fill="#b71c1c" font-size="11" font-weight="bold">NON-RENEWABLE</text>
+  <text x="315" y="40" text-anchor="middle" fill="#b71c1c" font-size="8">finite — will run out</text>
+  <!-- Coal -->
+  <rect x="235" y="55" width="28" height="20" rx="2" fill="#424242"/>
+  <text x="310" y="63" fill="#b71c1c" font-size="10" font-weight="bold">Coal</text>
+  <text x="310" y="74" fill="#555" font-size="8">most CO&#8322; per unit</text>
+  <!-- Oil -->
+  <rect x="235" y="95" width="16" height="28" rx="2" fill="#212121"/>
+  <ellipse cx="243" cy="94" rx="8" ry="5" fill="#333"/>
+  <text x="310" y="106" fill="#b71c1c" font-size="10" font-weight="bold">Oil / Petroleum</text>
+  <text x="310" y="117" fill="#555" font-size="8">fuels &amp; plastics</text>
+  <!-- Natural Gas -->
+  <path d="M235,138 Q243,128 251,138 Q243,148 235,138 Z" fill="#ff8f00"/>
+  <text x="310" y="143" fill="#b71c1c" font-size="10" font-weight="bold">Natural Gas</text>
+  <text x="310" y="154" fill="#555" font-size="8">cleanest fossil fuel</text>
+  <!-- Nuclear -->
+  <circle cx="243" cy="190" r="12" fill="#7b1fa2"/>
+  <text x="243" y="194" text-anchor="middle" fill="white" font-size="9">&#9762;</text>
+  <text x="310" y="187" fill="#b71c1c" font-size="10" font-weight="bold">Nuclear</text>
+  <text x="310" y="198" fill="#555" font-size="8">no CO&#8322; but radioactive</text>
+  <!-- Bottom banner -->
+  <rect x="10" y="234" width="400" height="14" rx="4" fill="#e53935"/>
+  <text x="210" y="244" text-anchor="middle" fill="white" font-size="8.5">Burning fossil fuels → CO&#8322; → enhanced greenhouse effect → climate change</text>
+</svg>`},
+{title:'Conservation — The 3Rs and More',
+content:`<h3>Strategies to Protect the Environment</h3><p>The classic 3Rs (Reduce, Reuse, Recycle) are expanded here. In Botswana, examples include recycling at Gaborone collection points, replanting trees along the Limpopo, and national parks protecting wildlife.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,5 L5,2.5 L0,0 Z" fill="#006064"/></marker></defs>
+  <rect width="420" height="250" fill="#e0f7fa"/>
+  <!-- Central circle -->
+  <circle cx="210" cy="125" r="42" fill="#006064"/>
+  <text x="210" y="120" text-anchor="middle" fill="white" font-size="11" font-weight="bold">ENVIRON-</text>
+  <text x="210" y="133" text-anchor="middle" fill="white" font-size="11" font-weight="bold">MENT</text>
+  <!-- REDUCE (top) -->
+  <ellipse cx="210" cy="35" rx="52" ry="24" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="210" y="31" text-anchor="middle" fill="#1b5e20" font-size="10" font-weight="bold">REDUCE</text>
+  <text x="210" y="43" text-anchor="middle" fill="#1b5e20" font-size="7.5">use less → smaller bins</text>
+  <line x1="210" y1="59" x2="210" y2="83" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- REUSE (top-right) -->
+  <ellipse cx="352" cy="75" rx="52" ry="24" fill="#ffe082" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="352" y="71" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">REUSE</text>
+  <text x="352" y="83" text-anchor="middle" fill="#e65100" font-size="7.5">use again → bags, jars</text>
+  <line x1="307" y1="84" x2="255" y2="100" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- RECYCLE (bottom-right) -->
+  <ellipse cx="352" cy="175" rx="52" ry="24" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <text x="352" y="171" text-anchor="middle" fill="#01579b" font-size="10" font-weight="bold">RECYCLE</text>
+  <text x="352" y="183" text-anchor="middle" fill="#01579b" font-size="7.5">sort paper/plastic/glass</text>
+  <line x1="307" y1="166" x2="255" y2="150" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- REFUSE (top-left) -->
+  <ellipse cx="68" cy="75" rx="52" ry="24" fill="#fce4ec" stroke="#ad1457" stroke-width="1.5"/>
+  <text x="68" y="71" text-anchor="middle" fill="#880e4f" font-size="10" font-weight="bold">REFUSE</text>
+  <text x="68" y="83" text-anchor="middle" fill="#880e4f" font-size="7.5">say no to plastic bags</text>
+  <line x1="113" y1="84" x2="165" y2="100" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- RESTORE (bottom-left) -->
+  <ellipse cx="68" cy="175" rx="52" ry="24" fill="#d7ccc8" stroke="#5d4037" stroke-width="1.5"/>
+  <text x="68" y="171" text-anchor="middle" fill="#3e2723" font-size="10" font-weight="bold">RESTORE</text>
+  <text x="68" y="183" text-anchor="middle" fill="#3e2723" font-size="7.5">plant trees, clean rivers</text>
+  <line x1="113" y1="166" x2="165" y2="150" stroke="#006064" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Botswana examples note -->
+  <rect x="10" y="210" width="400" height="32" rx="6" fill="#006064" opacity="0.9"/>
+  <text x="210" y="224" text-anchor="middle" fill="white" font-size="8.5">Botswana: Chobe NP (RESTORE), Gaborone recycling (RECYCLE),</text>
+  <text x="210" y="236" text-anchor="middle" fill="#b2dfdb" font-size="8">refusing single-use plastics in shops (REFUSE)</text>
+</svg>`},
+{title:'Mini-Quiz: Carbon &amp; Greenhouse',
+mcq:[
+  {q:'Which process REMOVES CO₂ from the atmosphere?',opts:['Burning fossil fuels','Respiration','Photosynthesis','Decomposition'],ans:2,exp:'PHOTOSYNTHESIS removes CO₂ from the atmosphere — plants use it (along with water and sunlight) to make glucose and oxygen. All other options (burning, respiration, decomposition) ADD CO₂ to the atmosphere.'},
+  {q:'What is the main cause of the enhanced greenhouse effect?',opts:['Volcanic eruptions only','Deforestation only','Burning fossil fuels increasing CO₂','Natural variation in the Sun'],ans:2,exp:'The ENHANCED greenhouse effect is mainly caused by BURNING FOSSIL FUELS — coal, oil, and gas — which releases CO₂ that has been stored for millions of years. This rapidly increases greenhouse gas concentrations, trapping more heat and causing global warming.'},
+]},
+{title:'Mini-Quiz: Pollution &amp; Conservation',
+mcq:[
+  {q:'Eutrophication is caused by:',opts:['Plastic waste in water','Excess fertilisers running into water causing algal blooms','Oil spills','Acid rain'],ans:1,exp:'EUTROPHICATION is caused by EXCESS FERTILISERS (nitrates and phosphates) washing into rivers and lakes. This causes rapid algal growth → algae block light → plants die → bacteria decompose dead plants → use up all O₂ → fish suffocate.'},
+  {q:'Which of the following is a sustainable practice?',opts:['Burning forests to clear land','Dumping waste in rivers','Planting trees to replace cut ones (reforestation)','Using only non-renewable energy'],ans:2,exp:'REFORESTATION (planting trees) is SUSTAINABLE — it replaces what was removed, absorbs CO₂, prevents erosion, and restores habitat. Sustainable practices ensure resources are available for future generations.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#2e7d32',dark:'#005005',light:'#e8f5e9',title:'Environmental Science'});
+</script></body></html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Electricity — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Electric Current',
+content:`<h2>What Is Electricity?</h2>
+<p><strong>Electric current</strong> is the flow of electric charge (electrons) through a conductor.</p>
+<ul>
+<li>Current is measured in <strong>Amperes (A)</strong> — using an ammeter</li>
+<li>Voltage (potential difference) is measured in <strong>Volts (V)</strong> — using a voltmeter</li>
+<li>Resistance is measured in <strong>Ohms (Ω)</strong></li>
+</ul>
+<p>For current to flow, you need:</p>
+<ol>
+<li>A <strong>complete circuit</strong> (no breaks)</li>
+<li>A <strong>power source</strong> (battery/cell)</li>
+<li>A <strong>conductor</strong> (wire — usually copper)</li>
+</ol>
+<p>Conductors allow current to flow. Insulators do NOT.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let electrons=[],t=0;
+  for(let i=0;i<8;i++)electrons.push({pos:i/8});
+  p.draw=()=>{
+    p.background(245);
+    // circuit path
+    p.stroke('#888');p.strokeWeight(4);p.noFill();
+    p.rect(80,80,260,130,10);
+    // battery
+    p.fill('#ffd600');p.noStroke();p.rect(70,120,30,50,4);p.fill('#333');p.textSize(10);p.text('+',85,138);p.text('-',85,158);p.textSize(9);p.text('Battery',85,180);
+    // bulb
+    p.fill('#fff176');p.stroke('#f57f17');p.strokeWeight(2);p.ellipse(210,80,36,36);p.noStroke();p.fill('#333');p.textSize(9);p.text('Bulb',210,100);
+    // electrons moving
+    electrons.forEach(e=>{
+      e.pos=(e.pos+0.005)%1;
+      const path=getPath(e.pos);
+      p.fill('#1e88e5');p.noStroke();p.ellipse(path.x,path.y,10,10);
+    });
+    p.fill('#333');p.textSize(11);p.noStroke();p.text('Electrons flow through the complete circuit',210,250);
+    t++;
+  };
+  function getPath(pos){
+    // rough rectangular path
+    const perim=780;const d=pos*perim;
+    if(d<260)return{x:80+d,y:80};
+    else if(d<390)return{x:340,y:80+(d-260)};
+    else if(d<650)return{x:340-(d-390),y:210};
+    else return{x:80,y:210-(d-650)};
+  }
+}},
+{title:'Series and Parallel Circuits',
+content:`<h2>Two Ways to Connect Components</h2>
+<p><strong>Series circuit</strong> — one single loop:</p>
+<ul>
+<li>Same current flows through everything</li>
+<li>Voltage is SHARED between components</li>
+<li>One break → <strong>ALL components stop</strong></li>
+<li>Adding more bulbs → all get DIMMER</li>
+</ul>
+<p><strong>Parallel circuit</strong> — multiple branches:</p>
+<ul>
+<li>Current SPLITS between branches</li>
+<li>Each branch gets the FULL voltage</li>
+<li>One break → <strong>only THAT branch stops</strong></li>
+<li>Adding more branches → bulbs stay BRIGHT</li>
+</ul>
+<p>Household appliances are ALWAYS wired in parallel!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,bright=p.sin(t*0.05);
+  p.draw=()=>{
+    p.background(245);
+    bright=0.6+0.4*Math.abs(Math.sin(t*0.04));
+    // series
+    p.stroke('#888');p.strokeWeight(3);p.noFill();
+    p.rect(20,40,180,90,6);
+    p.fill(255*bright,255*bright,0);p.noStroke();
+    p.ellipse(75,40,24,24);p.ellipse(140,40,24,24);
+    p.fill('#333');p.textSize(11);p.text('SERIES',110,150);
+    p.textSize(9);p.text('Bulbs dimmer',110,166);
+    // parallel
+    p.stroke('#888');p.strokeWeight(3);p.noFill();
+    p.rect(220,40,180,90,6);
+    p.stroke('#888');p.line(270,40,270,130);p.line(350,40,350,130);
+    p.fill(255,255,0);p.noStroke();
+    p.ellipse(310,55,24,24);p.ellipse(310,110,24,24);
+    p.fill('#333');p.textSize(11);p.text('PARALLEL',310,155);
+    p.textSize(9);p.text('Bulbs stay bright',310,170);
+    // labels
+    p.fill('#e53935');p.textSize(10);p.text('One break → ALL off',110,185);
+    p.fill('#43a047');p.textSize(10);p.text('One break → only that branch',310,185);
+    t++;
+  };
+}},
+{title:"Ohm's Law",
+content:`<h2>V = I × R</h2>
+<p><strong>Ohm's Law</strong> relates voltage, current, and resistance:</p>
+<blockquote style="background:#fff8e1;border-left:4px solid #f57f17;padding:8px 12px;border-radius:4px;font-size:1.2em"><strong>V = I × R</strong><br><small>Voltage = Current × Resistance</small></blockquote>
+<p>Rearranged:</p>
+<ul>
+<li>I = V ÷ R (current = voltage ÷ resistance)</li>
+<li>R = V ÷ I (resistance = voltage ÷ current)</li>
+</ul>
+<p><strong>Example:</strong><br>V = 12V, R = 4Ω → I = 12 ÷ 4 = <strong>3A</strong></p>
+<p>More resistance = LESS current (for same voltage).<br>More voltage = MORE current (for same resistance).</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,R=4,V=12;
+  p.draw=()=>{
+    p.background(245);
+    R=3+3*Math.abs(Math.sin(t*0.03));
+    const I=V/R;
+    // triangle
+    const cx=210,cy=140,side=140;
+    p.fill('#ffd600');p.noStroke();
+    p.triangle(cx,cy-80,cx-side/2,cy+60,cx+side/2,cy+60);
+    // dividing line
+    p.stroke('#555');p.strokeWeight(2);p.line(cx-side/2,cy+5,cx+side/2,cy+5);
+    // V at top
+    p.noStroke();p.fill('#333');p.textSize(22);p.text('V',cx,cy-20);p.textSize(12);p.text('= '+V+' V',cx,cy+2);
+    // I left
+    p.textSize(18);p.text('I',cx-35,cy+42);p.textSize(11);p.text(p.nf(I,1,1)+'A',cx-35,cy+58);
+    // R right
+    p.textSize(18);p.text('R',cx+35,cy+42);p.textSize(11);p.text(p.nf(R,1,1)+'Ω',cx+35,cy+58);
+    p.textSize(11);p.fill('#555');p.text('(Resistance changing...)',210,245);
+    t++;
+  };
+}},
+{title:'Conductors and Insulators',
+content:`<h2>Which Materials Carry Current?</h2>
+<p><strong>Conductors</strong> allow electric current to flow — they have FREE electrons:</p>
+<ul>
+<li>✅ Copper, silver, aluminium, steel</li>
+<li>✅ Graphite (used in some resistors)</li>
+<li>✅ Saltwater</li>
+</ul>
+<p><strong>Insulators</strong> do NOT allow current to flow — electrons are bound:</p>
+<ul>
+<li>❌ Rubber, plastic, glass, wood</li>
+<li>❌ Pure water, ceramics</li>
+</ul>
+<p>Electrical cables use COPPER wire (conductor) covered in PLASTIC (insulator) for safety!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,260);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const mats=[{n:'Copper\n✅',c:'#ef6c00',conduct:true},{n:'Rubber\n❌',c:'#795548',conduct:false},{n:'Steel\n✅',c:'#607d8b',conduct:true},{n:'Glass\n❌',c:'#80deea',conduct:false},{n:'Plastic\n❌',c:'#ab47bc',conduct:false}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%80===0)active=(active+1)%5;
+    mats.forEach((m,i)=>{
+      const x=50+i*80;
+      const isA=active===i;
+      p.fill(isA?m.c:'#ddd');p.noStroke();p.rect(x-32,80,64,80,8);
+      p.fill(isA?255:'#555');p.textSize(isA?11:10);
+      m.n.split('\n').forEach((l,li)=>p.text(l,x,118+li*18));
+      if(isA&&m.conduct){
+        for(let e=0;e<4;e++){const ex=x-20+e*14,ey=80+20*p.sin(t*0.1+e);p.fill('#ffd600');p.noStroke();p.ellipse(ex,ey,8,8);}
+      }
+    });
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Conductors have free electrons; insulators do not',210,220);
+    t++;
+  };
+}},
+{title:'Fuses and Safety',
+content:`<h2>Protecting Circuits</h2>
+<p>A <strong>fuse</strong> is a thin wire inside a casing. If too much current flows through it, it MELTS and BREAKS the circuit — protecting the wiring and appliances.</p>
+<p>Why circuits can overload:</p>
+<ul>
+<li>Too many appliances on one circuit</li>
+<li>Short circuit (live and neutral wire touch)</li>
+<li>Faulty appliance drawing too much current</li>
+</ul>
+<p>Other safety devices:</p>
+<ul>
+<li>🔌 <strong>Circuit breaker</strong> — like a fuse, but can be RESET</li>
+<li>🟢 <strong>Earth wire</strong> — protects against electric shock (diverts current to earth)</li>
+<li>🔑 <strong>Insulation</strong> — plastic covering on wires</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,270);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,blown=false,blowTimer=0;
+  p.draw=()=>{
+    p.background(245);
+    // circuit
+    p.stroke('#888');p.strokeWeight(4);p.noFill();p.rect(60,80,300,120,8);
+    // fuse
+    const fc='#ffd600';
+    p.fill(blown?'#ccc':fc);p.stroke('#888');p.strokeWeight(2);p.rect(178,70,64,20,4);
+    p.fill('#333');p.noStroke();p.textSize(9);p.text('FUSE',210,82);
+    if(blown){p.stroke('#f44336');p.strokeWeight(2);p.line(190,80,200,78);p.line(200,78,218,82);p.line(218,82,230,80);}
+    else{p.stroke('#ffd600');p.strokeWeight(3);p.line(185,80,235,80);}
+    // current surge indicator
+    const surge=Math.abs(Math.sin(t*0.05))*8;
+    if(surge>7.5&&!blown){blown=true;blowTimer=120;}
+    if(blown&&blowTimer>0)blowTimer--;
+    if(blowTimer===0)blown=false;
+    p.fill(blown?'#e53935':'#43a047');p.noStroke();p.textSize(blown?13:11);p.text(blown?'⚡ FUSE BLOWN — Circuit broken!':'Current: '+p.nf(surge,1,1)+'A',210,240);
+    t++;
+  };
+}},
+{title:'Circuit Symbols Reference',
+content:`<h3>Standard Circuit Symbols</h3>
+<p>Every component in a circuit has a standard symbol used in circuit diagrams. Learn these 12 key symbols.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="260" fill="#e0f7fa" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#006064">Standard Circuit Symbols</text>
+  <!-- Row 1: Cell, Battery, Bulb, Switch -->
+  <!-- Cell -->
+  <rect x="8" y="25" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="38" y1="52" x2="68" y2="52" stroke="#006064" stroke-width="2"/>
+  <line x1="45" y1="44" x2="45" y2="61" stroke="#006064" stroke-width="3"/>
+  <line x1="61" y1="47" x2="61" y2="57" stroke="#006064" stroke-width="1.5"/>
+  <text x="53" y="72" text-anchor="middle" font-size="9" fill="#006064">Cell</text>
+  <!-- Battery -->
+  <rect x="108" y="25" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="122" y1="52" x2="188" y2="52" stroke="#006064" stroke-width="2"/>
+  <line x1="128" y1="44" x2="128" y2="61" stroke="#006064" stroke-width="3"/>
+  <line x1="138" y1="47" x2="138" y2="57" stroke="#006064" stroke-width="1.5"/>
+  <line x1="148" y1="44" x2="148" y2="61" stroke="#006064" stroke-width="3"/>
+  <line x1="158" y1="47" x2="158" y2="57" stroke="#006064" stroke-width="1.5"/>
+  <line x1="168" y1="44" x2="168" y2="61" stroke="#006064" stroke-width="3"/>
+  <line x1="178" y1="47" x2="178" y2="57" stroke="#006064" stroke-width="1.5"/>
+  <text x="153" y="72" text-anchor="middle" font-size="9" fill="#006064">Battery</text>
+  <!-- Bulb -->
+  <rect x="208" y="25" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <circle cx="253" cy="50" r="13" fill="none" stroke="#006064" stroke-width="2"/>
+  <line x1="244" y1="41" x2="262" y2="59" stroke="#006064" stroke-width="1.5"/>
+  <line x1="262" y1="41" x2="244" y2="59" stroke="#006064" stroke-width="1.5"/>
+  <line x1="240" y1="50" x2="228" y2="50" stroke="#006064" stroke-width="2"/>
+  <line x1="266" y1="50" x2="278" y2="50" stroke="#006064" stroke-width="2"/>
+  <text x="253" y="72" text-anchor="middle" font-size="9" fill="#006064">Bulb (Lamp)</text>
+  <!-- Switch -->
+  <rect x="308" y="25" width="104" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="320" y1="52" x2="340" y2="52" stroke="#006064" stroke-width="2"/>
+  <line x1="380" y1="52" x2="404" y2="52" stroke="#006064" stroke-width="2"/>
+  <circle cx="340" cy="52" r="3" fill="#006064"/>
+  <circle cx="380" cy="52" r="3" fill="#006064"/>
+  <line x1="340" y1="52" x2="375" y2="40" stroke="#006064" stroke-width="2"/>
+  <text x="360" y="72" text-anchor="middle" font-size="9" fill="#006064">Switch (open)</text>
+  <!-- Row 2: Resistor, Motor, Ammeter, Voltmeter -->
+  <!-- Resistor -->
+  <rect x="8" y="90" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="20" y1="117" x2="35" y2="117" stroke="#006064" stroke-width="2"/>
+  <rect x="35" y="109" width="36" height="16" fill="none" stroke="#006064" stroke-width="2"/>
+  <line x1="71" y1="117" x2="86" y2="117" stroke="#006064" stroke-width="2"/>
+  <text x="53" y="137" text-anchor="middle" font-size="9" fill="#006064">Resistor</text>
+  <!-- Motor -->
+  <rect x="108" y="90" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <circle cx="153" cy="117" r="14" fill="none" stroke="#006064" stroke-width="2"/>
+  <text x="153" y="121" text-anchor="middle" font-size="12" font-weight="bold" fill="#006064">M</text>
+  <line x1="122" y1="117" x2="139" y2="117" stroke="#006064" stroke-width="2"/>
+  <line x1="167" y1="117" x2="184" y2="117" stroke="#006064" stroke-width="2"/>
+  <text x="153" y="137" text-anchor="middle" font-size="9" fill="#006064">Motor</text>
+  <!-- Ammeter -->
+  <rect x="208" y="90" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <circle cx="253" cy="117" r="14" fill="none" stroke="#006064" stroke-width="2"/>
+  <text x="253" y="121" text-anchor="middle" font-size="12" font-weight="bold" fill="#006064">A</text>
+  <line x1="222" y1="117" x2="239" y2="117" stroke="#006064" stroke-width="2"/>
+  <line x1="267" y1="117" x2="284" y2="117" stroke="#006064" stroke-width="2"/>
+  <text x="253" y="137" text-anchor="middle" font-size="9" fill="#006064">Ammeter</text>
+  <!-- Voltmeter -->
+  <rect x="308" y="90" width="104" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <circle cx="360" cy="117" r="14" fill="none" stroke="#006064" stroke-width="2"/>
+  <text x="360" y="121" text-anchor="middle" font-size="12" font-weight="bold" fill="#006064">V</text>
+  <line x1="322" y1="117" x2="346" y2="117" stroke="#006064" stroke-width="2"/>
+  <line x1="374" y1="117" x2="398" y2="117" stroke="#006064" stroke-width="2"/>
+  <text x="360" y="137" text-anchor="middle" font-size="9" fill="#006064">Voltmeter</text>
+  <!-- Row 3: Wire, Fuse, LED, Buzzer -->
+  <!-- Wire -->
+  <rect x="8" y="155" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="20" y1="182" x2="86" y2="182" stroke="#006064" stroke-width="2.5"/>
+  <text x="53" y="202" text-anchor="middle" font-size="9" fill="#006064">Wire (conductor)</text>
+  <!-- Fuse -->
+  <rect x="108" y="155" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <line x1="120" y1="182" x2="138" y2="182" stroke="#006064" stroke-width="2"/>
+  <rect x="138" y="174" width="32" height="16" fill="none" stroke="#006064" stroke-width="2"/>
+  <line x1="154" y1="174" x2="154" y2="190" stroke="#006064" stroke-width="1.5"/>
+  <line x1="170" y1="182" x2="186" y2="182" stroke="#006064" stroke-width="2"/>
+  <text x="153" y="202" text-anchor="middle" font-size="9" fill="#006064">Fuse</text>
+  <!-- LED -->
+  <rect x="208" y="155" width="90" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <polygon points="238,170 238,194 258,182" fill="none" stroke="#006064" stroke-width="2"/>
+  <line x1="258" y1="170" x2="258" y2="194" stroke="#006064" stroke-width="2"/>
+  <line x1="222" y1="182" x2="238" y2="182" stroke="#006064" stroke-width="2"/>
+  <line x1="258" y1="182" x2="274" y2="182" stroke="#006064" stroke-width="2"/>
+  <line x1="263" y1="170" x2="270" y2="163" stroke="#006064" stroke-width="1.5"/>
+  <line x1="268" y1="175" x2="275" y2="168" stroke="#006064" stroke-width="1.5"/>
+  <text x="253" y="202" text-anchor="middle" font-size="9" fill="#006064">LED</text>
+  <!-- Buzzer -->
+  <rect x="308" y="155" width="104" height="55" rx="4" fill="white" stroke="#006064" stroke-width="1.2"/>
+  <rect x="335" y="170" width="22" height="24" fill="none" stroke="#006064" stroke-width="2"/>
+  <path d="M357 174 Q372 182 357 190" fill="none" stroke="#006064" stroke-width="1.8"/>
+  <path d="M357 170 Q378 182 357 194" fill="none" stroke="#006064" stroke-width="1.5"/>
+  <line x1="322" y1="182" x2="335" y2="182" stroke="#006064" stroke-width="2"/>
+  <line x1="357" y1="182" x2="390" y2="182" stroke="#006064" stroke-width="2"/>
+  <text x="360" y="202" text-anchor="middle" font-size="9" fill="#006064">Buzzer</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="222" width="420" height="38" rx="0" fill="#006064"/>
+  <text x="210" y="238" text-anchor="middle" font-size="10" fill="white">Tip: In diagrams, wires are straight lines — corners have right angles</text>
+  <text x="210" y="252" text-anchor="middle" font-size="10" fill="#b2ebf2">Ammeter in SERIES | Voltmeter in PARALLEL across component</text>
+</svg>`},
+{title:'Series Circuit — One Path',
+content:`<h3>Series Circuit</h3>
+<p>In a series circuit, all components are connected in a <strong>single loop</strong>. Current has only ONE path to follow.</p>`,
+visual:`<svg viewBox="0 0 420 255" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e65100"/>
+    </marker>
+  </defs>
+  <rect width="420" height="255" fill="#e0f7fa" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#006064">Series Circuit — One Single Path</text>
+  <!-- Main circuit wires -->
+  <!-- Top wire -->
+  <line x1="40" y1="50" x2="380" y2="50" stroke="#555" stroke-width="3"/>
+  <!-- Right wire -->
+  <line x1="380" y1="50" x2="380" y2="170" stroke="#555" stroke-width="3"/>
+  <!-- Bottom wire -->
+  <line x1="380" y1="170" x2="40" y2="170" stroke="#555" stroke-width="3"/>
+  <!-- Left wire (battery) -->
+  <line x1="40" y1="50" x2="40" y2="170" stroke="#555" stroke-width="3"/>
+  <!-- Battery (left side) -->
+  <rect x="25" y="90" width="30" height="50" rx="3" fill="#ffd600" stroke="#888" stroke-width="1.5"/>
+  <line x1="32" y1="100" x2="58" y2="100" stroke="#333" stroke-width="2"/>
+  <line x1="32" y1="115" x2="58" y2="115" stroke="#333" stroke-width="1"/>
+  <line x1="32" y1="127" x2="58" y2="127" stroke="#333" stroke-width="2"/>
+  <line x1="32" y1="142" x2="58" y2="142" stroke="#333" stroke-width="1"/>
+  <text x="40" y="80" text-anchor="middle" font-size="9" fill="#006064">Battery</text>
+  <text x="40" y="155" text-anchor="middle" font-size="8" fill="#555">6 V</text>
+  <!-- Switch (top wire near battery) -->
+  <circle cx="90" cy="50" r="3" fill="#333"/>
+  <circle cx="120" cy="50" r="3" fill="#333"/>
+  <line x1="90" y1="50" x2="118" y2="38" stroke="#333" stroke-width="2"/>
+  <text x="105" y="35" text-anchor="middle" font-size="9" fill="#006064">Switch</text>
+  <!-- Ammeter (top wire) -->
+  <circle cx="165" cy="50" r="12" fill="white" stroke="#006064" stroke-width="2"/>
+  <text x="165" y="54" text-anchor="middle" font-size="10" font-weight="bold" fill="#006064">A</text>
+  <text x="165" y="35" text-anchor="middle" font-size="8" fill="#006064">2A</text>
+  <!-- Bulb 1 -->
+  <circle cx="240" cy="50" r="13" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="232" y1="42" x2="248" y2="58" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="248" y1="42" x2="232" y2="58" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="240" y="34" text-anchor="middle" font-size="9" fill="#006064">Bulb 1</text>
+  <!-- Bulb 2 -->
+  <circle cx="310" cy="50" r="13" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="302" y1="42" x2="318" y2="58" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="318" y1="42" x2="302" y2="58" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="310" y="34" text-anchor="middle" font-size="9" fill="#006064">Bulb 2</text>
+  <!-- Bulb 3 (on right wire) -->
+  <circle cx="380" cy="110" r="13" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="372" y1="102" x2="388" y2="118" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="388" y1="102" x2="372" y2="118" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="400" y="113" text-anchor="start" font-size="9" fill="#006064">Bulb 3</text>
+  <!-- Current direction arrow -->
+  <line x1="190" y1="170" x2="230" y2="170" stroke="#e65100" stroke-width="2.5" marker-end="url(#a)"/>
+  <text x="210" y="185" text-anchor="middle" font-size="9" fill="#e65100">Current direction</text>
+  <!-- Labels panel -->
+  <rect x="5" y="192" width="410" height="58" rx="4" fill="#006064"/>
+  <text x="210" y="207" text-anchor="middle" font-size="9.5" font-weight="bold" fill="white">Same current (2A) flows through ALL components</text>
+  <text x="210" y="221" text-anchor="middle" font-size="9" fill="#b2ebf2">Voltage SPLITS: each bulb gets 6V ÷ 3 = 2V</text>
+  <text x="210" y="235" text-anchor="middle" font-size="9" fill="#ffcc80">If ONE bulb breaks → ALL bulbs go out (circuit is open)</text>
+  <text x="210" y="249" text-anchor="middle" font-size="9" fill="#b2ebf2">Ammeter placed in SERIES — reads total current</text>
+</svg>`},
+{title:'Parallel Circuit — Multiple Paths',
+content:`<h3>Parallel Circuit</h3>
+<p>In a parallel circuit, components are on <strong>separate branches</strong>. Current can take more than one path.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e65100"/>
+    </marker>
+    <marker id="b" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <rect width="420" height="260" fill="#e0f7fa" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#006064">Parallel Circuit — Multiple Paths</text>
+  <!-- Main rails -->
+  <!-- Top rail -->
+  <line x1="50" y1="40" x2="370" y2="40" stroke="#555" stroke-width="3"/>
+  <!-- Bottom rail -->
+  <line x1="50" y1="180" x2="370" y2="180" stroke="#555" stroke-width="3"/>
+  <!-- Left wire (battery) -->
+  <line x1="50" y1="40" x2="50" y2="180" stroke="#555" stroke-width="3"/>
+  <!-- Battery -->
+  <rect x="28" y="85" width="28" height="50" rx="3" fill="#ffd600" stroke="#888" stroke-width="1.5"/>
+  <line x1="35" y1="95" x2="60" y2="95" stroke="#333" stroke-width="2"/>
+  <line x1="35" y1="107" x2="60" y2="107" stroke="#333" stroke-width="1"/>
+  <line x1="35" y1="119" x2="60" y2="119" stroke="#333" stroke-width="2"/>
+  <line x1="35" y1="131" x2="60" y2="131" stroke="#333" stroke-width="1"/>
+  <text x="42" y="75" text-anchor="middle" font-size="9" fill="#006064">Battery</text>
+  <text x="42" y="170" text-anchor="middle" font-size="8" fill="#555">6 V</text>
+  <!-- Right wire -->
+  <line x1="370" y1="40" x2="370" y2="180" stroke="#555" stroke-width="3"/>
+  <!-- Branch 1 (top) -->
+  <line x1="130" y1="40" x2="130" y2="80" stroke="#555" stroke-width="2"/>
+  <line x1="130" y1="120" x2="130" y2="180" stroke="#555" stroke-width="2"/>
+  <circle cx="130" cy="100" r="14" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="122" y1="92" x2="138" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="138" y1="92" x2="122" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="130" y="72" text-anchor="middle" font-size="9" fill="#006064">Bulb 1</text>
+  <!-- Branch 2 (middle) -->
+  <line x1="230" y1="40" x2="230" y2="80" stroke="#555" stroke-width="2"/>
+  <line x1="230" y1="120" x2="230" y2="180" stroke="#555" stroke-width="2"/>
+  <circle cx="230" cy="100" r="14" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="222" y1="92" x2="238" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="238" y1="92" x2="222" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="230" y="72" text-anchor="middle" font-size="9" fill="#006064">Bulb 2</text>
+  <!-- Branch 3 (right) -->
+  <line x1="320" y1="40" x2="320" y2="80" stroke="#555" stroke-width="2"/>
+  <line x1="320" y1="120" x2="320" y2="180" stroke="#555" stroke-width="2"/>
+  <circle cx="320" cy="100" r="14" fill="#fff9c4" stroke="#f57f17" stroke-width="2"/>
+  <line x1="312" y1="92" x2="328" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <line x1="328" y1="92" x2="312" y2="108" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="320" y="72" text-anchor="middle" font-size="9" fill="#006064">Bulb 3</text>
+  <!-- Voltmeter across branch 2 -->
+  <circle cx="280" cy="100" r="11" fill="white" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="280" y="104" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">V</text>
+  <line x1="280" y1="89" x2="280" y2="40" stroke="#1565c0" stroke-width="1" stroke-dasharray="3,2"/>
+  <line x1="280" y1="111" x2="280" y2="180" stroke="#1565c0" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="296" y="100" text-anchor="start" font-size="8" fill="#1565c0">6V</text>
+  <!-- Current arrows splitting at junction -->
+  <line x1="80" y1="40" x2="100" y2="40" stroke="#e65100" stroke-width="2" marker-end="url(#a)"/>
+  <text x="90" y="32" text-anchor="middle" font-size="8" fill="#e65100">6A total</text>
+  <line x1="130" y1="55" x2="130" y2="68" stroke="#e65100" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="230" y1="55" x2="230" y2="68" stroke="#e65100" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="320" y1="55" x2="320" y2="68" stroke="#e65100" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="130" y="138" text-anchor="middle" font-size="8" fill="#555">2A</text>
+  <text x="230" y="138" text-anchor="middle" font-size="8" fill="#555">2A</text>
+  <text x="320" y="138" text-anchor="middle" font-size="8" fill="#555">2A</text>
+  <!-- Labels panel -->
+  <rect x="5" y="192" width="410" height="63" rx="4" fill="#006064"/>
+  <text x="210" y="208" text-anchor="middle" font-size="9.5" font-weight="bold" fill="white">Current SPLITS at junction — 2A through each branch</text>
+  <text x="210" y="222" text-anchor="middle" font-size="9" fill="#b2ebf2">Same VOLTAGE (6V) across every branch</text>
+  <text x="210" y="236" text-anchor="middle" font-size="9" fill="#ffcc80">If one bulb breaks → others STAY ON (other paths still complete)</text>
+  <text x="210" y="250" text-anchor="middle" font-size="9" fill="#b2ebf2">Voltmeter placed in PARALLEL — reads branch voltage</text>
+</svg>`},
+{title:'Conductors and Insulators — Visual Guide',
+content:`<h3>Conductors and Insulators</h3>
+<p><strong>Conductors</strong> have free electrons that carry current. <strong>Insulators</strong> hold their electrons tightly — no current flows.</p>`,
+visual:`<svg viewBox="0 0 420 255" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="255" fill="#e0f7fa" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#006064">Conductors vs Insulators</text>
+  <!-- Left column: Conductors -->
+  <rect x="8" y="25" width="196" height="170" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="106" y="42" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">CONDUCTORS</text>
+  <text x="106" y="55" text-anchor="middle" font-size="9" fill="#2e7d32">Electrons can flow freely</text>
+  <!-- Copper wire -->
+  <rect x="18" y="62" width="176" height="28" rx="4" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/>
+  <line x1="28" y1="76" x2="120" y2="76" stroke="#ef6c00" stroke-width="4" stroke-linecap="round"/>
+  <text x="145" y="80" text-anchor="middle" font-size="10" fill="#333">Copper wire ✓</text>
+  <!-- Iron nail -->
+  <rect x="18" y="96" width="176" height="28" rx="4" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1"/>
+  <rect x="28" y="104" width="80" height="8" rx="2" fill="#607d8b"/>
+  <polygon points="108,108 118,104 118,112" fill="#607d8b"/>
+  <text x="155" y="115" text-anchor="middle" font-size="10" fill="#333">Iron nail ✓</text>
+  <!-- Aluminium foil -->
+  <rect x="18" y="130" width="176" height="28" rx="4" fill="#f0f4f8" stroke="#90a4ae" stroke-width="1"/>
+  <rect x="28" y="137" width="80" height="12" rx="1" fill="#b0bec5"/>
+  <text x="155" y="149" text-anchor="middle" font-size="10" fill="#333">Aluminium foil ✓</text>
+  <!-- Graphite -->
+  <rect x="18" y="164" width="176" height="24" rx="4" fill="#fffde7" stroke="#f9a825" stroke-width="1"/>
+  <rect x="28" y="170" width="70" height="8" rx="3" fill="#424242"/>
+  <text x="155" y="181" text-anchor="middle" font-size="10" fill="#333">Graphite (pencil) ✓</text>
+  <!-- Right column: Insulators -->
+  <rect x="216" y="25" width="196" height="170" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="314" y="42" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">INSULATORS</text>
+  <text x="314" y="55" text-anchor="middle" font-size="9" fill="#c62828">Electrons cannot flow</text>
+  <!-- Plastic -->
+  <rect x="226" y="62" width="176" height="28" rx="4" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1"/>
+  <rect x="236" y="68" width="80" height="16" rx="3" fill="#ab47bc"/>
+  <text x="353" y="80" text-anchor="middle" font-size="10" fill="#333">Plastic ✗</text>
+  <!-- Rubber -->
+  <rect x="226" y="96" width="176" height="28" rx="4" fill="#fff8e1" stroke="#f9a825" stroke-width="1"/>
+  <ellipse cx="276" cy="110" rx="38" ry="8" fill="#795548"/>
+  <text x="353" y="115" text-anchor="middle" font-size="10" fill="#333">Rubber ✗</text>
+  <!-- Wood -->
+  <rect x="226" y="130" width="176" height="28" rx="4" fill="#efebe9" stroke="#795548" stroke-width="1"/>
+  <rect x="236" y="136" width="80" height="16" rx="2" fill="#a1887f"/>
+  <line x1="236" y1="141" x2="316" y2="141" stroke="#795548" stroke-width="0.5"/>
+  <line x1="236" y1="146" x2="316" y2="146" stroke="#795548" stroke-width="0.5"/>
+  <text x="353" y="149" text-anchor="middle" font-size="10" fill="#333">Wood ✗</text>
+  <!-- Glass -->
+  <rect x="226" y="164" width="176" height="24" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <rect x="236" y="169" width="70" height="14" rx="2" fill="#b3e5fc" fill-opacity="0.7" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="353" y="181" text-anchor="middle" font-size="10" fill="#333">Glass ✗</text>
+  <!-- Bottom rule -->
+  <rect x="0" y="200" width="420" height="55" rx="0" fill="#006064"/>
+  <text x="210" y="216" text-anchor="middle" font-size="10" font-weight="bold" fill="white">RULE: Most METALS are conductors — most NON-METALS are insulators</text>
+  <text x="210" y="231" text-anchor="middle" font-size="9" fill="#b2ebf2">Exception: graphite (carbon) conducts | Exception: pure water insulates</text>
+  <text x="210" y="246" text-anchor="middle" font-size="9" fill="#ffcc80">Cables = copper wire (conductor) inside plastic sheath (insulator)</text>
+</svg>`},
+{title:'Electromagnet — How It Works',
+content:`<h3>Electromagnet</h3>
+<p>An <strong>electromagnet</strong> is made by passing electric current through a coil of wire wrapped around an iron core. The magnetic field can be switched on and off.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#e65100"/>
+    </marker>
+  </defs>
+  <rect width="420" height="260" fill="#e0f7fa" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#006064">Electromagnet — How It Works</text>
+  <!-- Iron core (left diagram) -->
+  <rect x="100" y="75" width="140" height="30" rx="4" fill="#b0bec5" stroke="#607d8b" stroke-width="2"/>
+  <text x="170" y="95" text-anchor="middle" font-size="10" fill="#333">Iron core</text>
+  <!-- Coil loops drawn as ellipses -->
+  <ellipse cx="115" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="130" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="145" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="160" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="175" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="190" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="205" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <ellipse cx="220" cy="90" rx="10" ry="18" fill="none" stroke="#ef6c00" stroke-width="2.5"/>
+  <!-- Battery -->
+  <rect x="25" y="78" width="24" height="44" rx="3" fill="#ffd600" stroke="#888" stroke-width="1.5"/>
+  <text x="37" y="68" text-anchor="middle" font-size="9" fill="#006064">Battery</text>
+  <line x1="37" y1="78" x2="37" y2="45" stroke="#555" stroke-width="2"/>
+  <line x1="37" y1="45" x2="108" y2="45" stroke="#555" stroke-width="2"/>
+  <line x1="37" y1="122" x2="37" y2="148" stroke="#555" stroke-width="2"/>
+  <line x1="37" y1="148" x2="228" y2="148" stroke="#555" stroke-width="2"/>
+  <line x1="228" y1="148" x2="228" y2="108" stroke="#555" stroke-width="2"/>
+  <line x1="108" y1="45" x2="108" y2="72" stroke="#555" stroke-width="2"/>
+  <!-- Magnetic field lines around the electromagnet -->
+  <path d="M82 90 Q60 55 82 20 Q170 0 258 20 Q280 55 258 90" fill="none" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <path d="M82 90 Q55 90 82 130 Q170 150 258 130 Q285 90 258 90" fill="none" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <!-- N and S poles -->
+  <rect x="58" y="78" width="28" height="24" rx="3" fill="#e53935"/>
+  <text x="72" y="95" text-anchor="middle" font-size="13" font-weight="bold" fill="white">N</text>
+  <rect x="254" y="78" width="28" height="24" rx="3" fill="#1565c0"/>
+  <text x="268" y="95" text-anchor="middle" font-size="13" font-weight="bold" fill="white">S</text>
+  <!-- Current arrow -->
+  <line x1="100" y1="45" x2="130" y2="45" stroke="#e65100" stroke-width="2" marker-end="url(#a)"/>
+  <text x="115" y="38" text-anchor="middle" font-size="8" fill="#e65100">current</text>
+  <!-- Compass needle deflecting -->
+  <circle cx="170" cy="175" r="16" fill="white" stroke="#555" stroke-width="1.5"/>
+  <line x1="162" y1="175" x2="178" y2="175" stroke="#9e9e9e" stroke-width="1"/>
+  <polygon points="170,162 166,175 174,175" fill="#e53935"/>
+  <polygon points="170,188 166,175 174,175" fill="#1565c0"/>
+  <text x="170" y="202" text-anchor="middle" font-size="9" fill="#006064">Compass deflects</text>
+  <!-- Strength factors box (right) -->
+  <rect x="295" y="50" width="118" height="100" rx="5" fill="white" stroke="#006064" stroke-width="1.5"/>
+  <text x="354" y="67" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#006064">Stronger magnet if:</text>
+  <text x="305" y="83" font-size="9" fill="#333">&#9679; More coil turns</text>
+  <text x="305" y="98" font-size="9" fill="#333">&#9679; Larger current</text>
+  <text x="305" y="113" font-size="9" fill="#333">&#9679; Soft iron core</text>
+  <text x="305" y="128" font-size="9" fill="#333">&#9679; Shorter core</text>
+  <text x="354" y="143" text-anchor="middle" font-size="8" fill="#888">(vs no iron = weaker)</text>
+  <!-- Bottom summary -->
+  <rect x="0" y="210" width="420" height="50" rx="0" fill="#006064"/>
+  <text x="210" y="226" text-anchor="middle" font-size="9.5" font-weight="bold" fill="white">Current flows → magnetic field forms around coil → iron core magnetised</text>
+  <text x="210" y="240" text-anchor="middle" font-size="9" fill="#b2ebf2">Switch off current → magnetism disappears (unlike permanent magnet)</text>
+  <text x="210" y="254" text-anchor="middle" font-size="9" fill="#ffcc80">Uses: cranes, electric bells, loudspeakers, MRI machines</text>
+</svg>`},
+{title:'Mini-Quiz: Circuits',
+mcq:[
+  {q:'In a series circuit, if one bulb is removed:',opts:['All other bulbs get brighter','Only that bulb goes off','All bulbs go out','Nothing changes'],ans:2,exp:'In a SERIES circuit there is only ONE path. Removing one bulb BREAKS the circuit — no current can flow anywhere → ALL bulbs go out. In PARALLEL circuits, removing one bulb only breaks that branch, others continue.'},
+  {q:'A circuit has V=6V and R=3Ω. The current is:',opts:['18A','0.5A','2A','9A'],ans:2,exp:'Using Ohm\'s Law: I = V ÷ R = 6 ÷ 3 = 2A. Remember the triangle: V at top, I×R at the bottom. Cover what you want to find to see the formula.'},
+]},
+{title:'Mini-Quiz: Safety & Materials',
+mcq:[
+  {q:'Which material is the best conductor of electricity?',opts:['Rubber','Wood','Copper','Glass'],ans:2,exp:'COPPER is an excellent ELECTRICAL CONDUCTOR because its outer electrons are FREE to move, carrying electric current easily. That is why copper wire is used in most electrical wiring.'},
+  {q:'The main purpose of a fuse is to:',opts:['Increase the current','Measure voltage','Protect the circuit by breaking it if current is too high','Store electrical energy'],ans:2,exp:'A FUSE is a SAFETY DEVICE. If current exceeds a safe level (due to short circuit or overload), the fuse wire MELTS and BREAKS the circuit, preventing fire or damage to appliances.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#f57f17',dark:'#bc5100',light:'#fff8e1',title:'Electricity'});
+</script></body></html>

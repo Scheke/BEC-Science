@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Waves — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,14,24]))}
+
+const STEPS=[
+  {
+    title:'Wave Properties',
+    body:`A <strong>wave</strong> transfers energy without transferring matter.
+    <br><br>
+    Key properties:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Amplitude (A)</strong> — maximum displacement from rest position</li>
+      <li><strong>Wavelength (λ)</strong> — distance between two identical points (e.g. crest to crest)</li>
+      <li><strong>Frequency (f)</strong> — number of complete waves per second (Hz)</li>
+      <li><strong>Period (T)</strong> — time for one complete wave (T = 1/f)</li>
+      <li><strong>Wave speed (v)</strong> — v = fλ</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const A=H*0.22,lam=W*0.45,cy=H/2;
+      sk.stroke(52,152,219,220);sk.strokeWeight(2.5);sk.noFill();
+      sk.beginShape();
+      for(let x=0;x<W;x+=2){
+        const y=cy+A*Math.sin(x*sk.TWO_PI/lam-t*4);
+        sk.vertex(x,y);
+      }sk.endShape();
+      // Amplitude label
+      const ax=W*0.25;
+      const ay=cy+A*Math.sin(ax*sk.TWO_PI/lam-t*4);
+      sk.stroke(231,76,60,180);sk.strokeWeight(1.5);
+      sk.line(ax,cy,ax,ay);
+      sk.fill(231,76,60);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('A',ax+4,cy+(ay-cy)/2);
+      // Wavelength label
+      const wx=W*0.1;
+      sk.stroke(46,204,113,180);sk.strokeWeight(1.5);
+      sk.line(wx,cy-A-18,wx+lam,cy-A-18);
+      sk.fill(46,204,113);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('λ (wavelength)',wx+lam/2,cy-A-28);
+      // v = fλ
+      sk.fill(255,220,50);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('v = f × λ',W/2,H*0.92);sk.textStyle(sk.NORMAL);
+      // Rest position
+      sk.stroke(255,255,255,30);sk.strokeWeight(1);
+      sk.line(0,cy,W,cy);
+    }
+  },
+  {
+    title:'Transverse vs Longitudinal Waves',
+    body:`<strong>Transverse waves</strong>: oscillation is <em>perpendicular</em> to the direction of energy travel.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Examples: light, water waves, radio waves, seismic S-waves</li>
+      <li>Have crests and troughs</li>
+    </ul>
+    <strong>Longitudinal waves</strong>: oscillation is <em>parallel</em> to the direction of energy travel.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Examples: sound waves, seismic P-waves</li>
+      <li>Have compressions and rarefactions</li>
+      <li>Cannot travel through a vacuum</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,14,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.03;
+      // Transverse wave (top)
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('TRANSVERSE',W*0.04,H*0.12);sk.textStyle(sk.NORMAL);
+      sk.stroke(52,152,219,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.beginShape();
+      for(let x=0;x<W;x+=2){
+        const y=H*0.26+H*0.1*Math.sin(x*0.04-t*3);
+        sk.vertex(x,y);
+      }sk.endShape();
+      sk.stroke(231,76,60,120);sk.strokeWeight(1);
+      sk.line(W*0.6,H*0.26-H*0.1-5,W*0.6,H*0.26+H*0.1+5);
+      sk.fill(231,76,60);sk.textSize(8);sk.textAlign(sk.CENTER);sk.text('↕ oscillation',W*0.6,H*0.42);
+      sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(0,H*0.26,W,H*0.26);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.RIGHT);sk.text('→ energy',W-4,H*0.23);
+      // Longitudinal wave (bottom) - compression waves
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('LONGITUDINAL',W*0.04,H*0.56);sk.textStyle(sk.NORMAL);
+      const n=24;
+      for(let i=0;i<n;i++){
+        const x=W*0.04+i*(W*0.92/n);
+        const disp=Math.sin((i/n)*sk.TWO_PI*2-t*3)*12;
+        sk.fill(46,204,113,200);sk.noStroke();sk.circle(x+disp,H*0.72,7);
+      }
+      sk.fill(255,220,50);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('← compression →   ← rarefaction →   ← compression →',W/2,H*0.84);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.RIGHT);sk.text('→ energy',W-4,H*0.68);
+    }
+  },
+  {
+    title:'Reflection & Refraction',
+    body:`<strong>Reflection</strong>: wave bounces off a surface. Angle of incidence = angle of reflection (measured from the <em>normal</em>).
+    <br><br>
+    <strong>Refraction</strong>: wave changes direction when it crosses from one medium to another due to a change in speed.
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Glass is denser — light slows down, bends towards normal</li>
+      <li>Air is less dense — light speeds up, bends away from normal</li>
+    </ul>
+    <strong>Total internal reflection</strong> occurs when:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Light hits the boundary from the denser medium</li>
+      <li>The angle of incidence exceeds the <em>critical angle</em></li>
+      <li>Used in optical fibres and periscopes</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[12,18,30]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const mx=W/2,my=H*0.45;
+      // Interface
+      sk.fill(30,60,100,60);sk.noStroke();sk.rect(0,my,W,H-my);
+      sk.stroke(255,255,255,40);sk.strokeWeight(1.5);sk.line(0,my,W,my);
+      sk.fill(255,255,255,60);sk.noStroke();sk.textSize(8.5);
+      sk.textAlign(sk.LEFT);sk.text('Air (n=1.0)',4,my-8);
+      sk.textAlign(sk.LEFT);sk.text('Glass (n=1.5)',4,my+16);
+      // Normal
+      sk.stroke(255,255,255,30);sk.strokeWeight(1);sk.setLineDash&&sk.setLineDash([4,4]);
+      sk.line(mx,H*0.05,mx,H*0.88);
+      // Incident ray
+      const ang=0.4+Math.sin(t*0.5)*0.2;
+      const irx=mx-H*0.4*Math.sin(ang),iry=my-H*0.4*Math.cos(ang);
+      sk.stroke(255,220,50,200);sk.strokeWeight(2.5);sk.noFill();sk.setLineDash&&sk.setLineDash([]);
+      sk.line(irx,iry,mx,my);
+      // Refracted ray (bends towards normal in glass)
+      const refAng=ang*0.65;
+      const rrx=mx+H*0.35*Math.sin(refAng),rry=my+H*0.35*Math.cos(refAng);
+      sk.stroke(52,152,219,200);
+      sk.line(mx,my,rrx,rry);
+      // Reflected ray
+      sk.stroke(231,76,60,160);
+      sk.line(mx,my,mx+H*0.3*Math.sin(ang),my-H*0.3*Math.cos(ang));
+      // Labels
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Incident',irx-40,iry);
+      sk.fill(231,76,60);sk.text('Reflected',mx+60,my-80);
+      sk.fill(52,152,219);sk.text('Refracted\n(bends toward normal)',mx+20,rry-20);
+    }
+  },
+  {
+    title:'🎮 Check — Wave Properties',
+    body:'Test your knowledge of wave types, reflection and refraction.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the wave equation?',opts:['v = m/a','v = f × λ','v = P/t','v = Q/t'],ans:1,exp:'v = f × λ, where v = wave speed (m/s), f = frequency (Hz), λ = wavelength (m).'},
+      {q:'Sound waves are longitudinal because:',opts:['They travel through vacuum','Particles oscillate perpendicular to wave direction','Particles oscillate parallel to wave direction','They cannot be reflected'],ans:2,exp:'Sound is a LONGITUDINAL wave — air particles vibrate back and forth in the SAME direction as the wave travels, creating compressions and rarefactions.'},
+      {q:'Total internal reflection occurs when light:',opts:['Hits a boundary at 0° (straight on)','Travels from less dense to more dense medium at any angle','Travels from dense to less dense medium beyond the critical angle','Passes through a flat glass panel'],ans:2,exp:'TIR happens when light in the DENSER medium hits the boundary at an angle GREATER than the critical angle. All light reflects back instead of refracting.'},
+      {q:'When light enters glass from air, it:',opts:['Speeds up and bends away from normal','Slows down and bends towards normal','Slows down and bends away from normal','Does not change direction'],ans:1,exp:'Glass is optically denser — light slows down when entering glass. Slowing causes the ray to bend TOWARDS the normal (closer to the perpendicular line).'},
+    ]}
+  },
+  {
+    title:'The Electromagnetic Spectrum',
+    body:`All electromagnetic (EM) waves:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Travel at the speed of light (3 × 10⁸ m/s) in a vacuum</li>
+      <li>Are transverse waves</li>
+      <li>Carry energy</li>
+    </ul>
+    <strong>The EM spectrum (low frequency → high frequency):</strong>
+    <br>
+    Radio → Microwave → Infrared → Visible → UV → X-ray → Gamma
+    <br><br>
+    Higher frequency = higher energy = shorter wavelength
+    <br><br>
+    Gamma rays are the most energetic and penetrating; radio waves are the least.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const types=[
+        {n:'Radio',c:[100,100,200],w:50},{n:'Micro',c:[52,152,219],w:40},
+        {n:'IR',c:[180,80,0],w:35},{n:'Visible',c:[150,100,200],w:28},
+        {n:'UV',c:[150,50,200],w:22},{n:'X-ray',c:[200,200,200],w:16},
+        {n:'Gamma',c:[231,76,60],w:12},
+      ];
+      const totalW=types.reduce((s,t)=>s+t.w,0);
+      let curX=W*0.04;
+      types.forEach(tp=>{
+        const bw=(tp.w/totalW)*W*0.92;
+        sk.fill(...tp.c,180);sk.noStroke();sk.rect(curX,H*0.32,bw,H*0.36,2);
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);
+        if(bw>25)sk.text(tp.n,curX+bw/2,H*0.5);
+        curX+=bw;
+      });
+      // Frequency arrow
+      sk.stroke(255,220,50,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.04,H*0.2,W*0.96,H*0.2);
+      sk.fill(255,220,50,180);sk.noStroke();
+      sk.triangle(W*0.96,H*0.2,W*0.88,H*0.2-5,W*0.88,H*0.2+5);
+      sk.fill(255,220,50);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Frequency increases → (Energy increases →)',W/2,H*0.14);
+      // Wavelength arrow
+      sk.stroke(52,152,219,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.96,H*0.82,W*0.04,H*0.82);
+      sk.fill(52,152,219,180);sk.noStroke();
+      sk.triangle(W*0.04,H*0.82,W*0.12,H*0.82-5,W*0.12,H*0.82+5);
+      sk.fill(52,152,219);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('← Wavelength increases',W/2,H*0.9);
+    }
+  },
+  {
+    title:'Uses & Dangers of EM Waves',
+    body:`Each type of EM radiation has specific uses:
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li><strong>Radio</strong> — TV/radio broadcasting</li>
+      <li><strong>Microwave</strong> — cooking (absorbed by water), satellite communication</li>
+      <li><strong>Infrared</strong> — thermal imaging, TV remotes, optical fibres</li>
+      <li><strong>Visible light</strong> — sight, photography, lasers</li>
+      <li><strong>UV</strong> — sterilisation, detecting fake bank notes, tanning</li>
+      <li><strong>X-ray</strong> — medical imaging (bones), airport security</li>
+      <li><strong>Gamma</strong> — cancer treatment, sterilising food/equipment</li>
+    </ul>
+    <strong>Higher frequency = more dangerous</strong> — UV, X-rays and gamma can ionise atoms, damaging DNA.`,
+    draw:(sk)=>{
+      bg(sk,[12,18,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const apps=[
+        {icon:'📻',label:'Radio\nBroadcasting',c:[100,100,200],x:0.15,y:0.38},
+        {icon:'📡',label:'Microwave\nSatellites',c:[52,152,219],x:0.38,y:0.28},
+        {icon:'🌡️',label:'IR\nThermal',c:[180,80,0],x:0.62,y:0.38},
+        {icon:'☀️',label:'UV\nSterilisation',c:[150,50,200],x:0.85,y:0.28},
+        {icon:'🦴',label:'X-ray\nMedical',c:[200,200,200],x:0.25,y:0.72},
+        {icon:'⚕️',label:'Gamma\nCancer Rx',c:[231,76,60],x:0.72,y:0.72},
+      ];
+      apps.forEach((a,i)=>{
+        const pulse=1+Math.sin(t*1.5+i)*0.07;
+        sk.fill(...a.c,40);sk.noStroke();sk.ellipse(a.x*W,a.y*H,105*pulse,72*pulse);
+        sk.fill(...a.c,180);sk.ellipse(a.x*W,a.y*H,86,58);
+        sk.fill(255);sk.textSize(16);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(a.icon,a.x*W,a.y*H-8);
+        sk.fill(255);sk.textSize(8);sk.text(a.label,a.x*W,a.y*H+12);
+      });
+    }
+  },
+  {
+    q:'Transverse vs Longitudinal Waves — Labeled Diagram',
+    content:`<h3>Transverse vs Longitudinal Waves</h3><p>All waves transfer energy without transferring matter, but they differ in the direction of oscillation relative to the direction of energy travel. This distinction classifies every wave in physics into one of two fundamental types.</p><ul><li><strong>Transverse waves:</strong> oscillation is perpendicular to energy travel; examples include light, water waves, and all EM waves; they have crests and troughs.</li><li><strong>Longitudinal waves:</strong> oscillation is parallel to energy travel; examples include sound; they have compressions (close particles) and rarefactions (spread particles).</li><li>Only transverse waves can be polarised; longitudinal waves cannot be polarised.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+  <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="270" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Wave Types — Labeled Diagrams</text>
+  <!-- TRANSVERSE wave (top half) -->
+  <rect x="10" y="26" width="400" height="108" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="42" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">TRANSVERSE WAVE</text>
+  <text x="210" y="54" text-anchor="middle" font-size="9.5" fill="#333">Oscillation perpendicular to energy travel direction</text>
+  <!-- Wave shape using path -->
+  <path d="M20,90 Q57,60 95,90 Q132,120 170,90 Q207,60 245,90 Q282,120 320,90 Q357,60 395,90" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+  <!-- Rest position line -->
+  <line x1="20" y1="90" x2="395" y2="90" stroke="#90a4ae" stroke-width="0.8" stroke-dasharray="4,3"/>
+  <!-- Amplitude label -->
+  <line x1="57" y1="90" x2="57" y2="60" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrR)"/>
+  <text x="62" y="72" font-size="9" fill="#c62828" font-weight="bold">Amplitude (A)</text>
+  <!-- Wavelength label -->
+  <line x1="20" y1="108" x2="170" y2="108" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="20" y1="103" x2="20" y2="113" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="170" y1="103" x2="170" y2="113" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="95" y="122" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Wavelength (λ)</text>
+  <!-- Crest / trough labels -->
+  <text x="57" y="58" text-anchor="middle" font-size="8" fill="#1565c0">Crest</text>
+  <text x="132" y="126" text-anchor="middle" font-size="8" fill="#1565c0">Trough</text>
+  <!-- Energy direction -->
+  <line x1="320" y1="75" x2="390" y2="75" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="355" y="71" text-anchor="middle" font-size="8.5" fill="#e65100">Energy</text>
+  <!-- LONGITUDINAL wave (bottom half) -->
+  <rect x="10" y="142" width="400" height="118" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="158" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">LONGITUDINAL WAVE (Sound)</text>
+  <text x="210" y="170" text-anchor="middle" font-size="9.5" fill="#333">Oscillation parallel to energy travel direction</text>
+  <!-- Particles: compression and rarefaction pattern -->
+  <!-- Compression zone 1 -->
+  <circle cx="32" cy="200" r="7" fill="#283593"/><circle cx="48" cy="200" r="7" fill="#283593"/>
+  <circle cx="64" cy="200" r="7" fill="#283593"/>
+  <text x="48" y="218" text-anchor="middle" font-size="8" fill="#283593">C</text>
+  <!-- Rarefaction zone -->
+  <circle cx="88" cy="200" r="7" fill="#90a4ae"/>
+  <circle cx="115" cy="200" r="7" fill="#90a4ae"/>
+  <circle cx="142" cy="200" r="7" fill="#90a4ae"/>
+  <text x="115" y="218" text-anchor="middle" font-size="8" fill="#7986cb">R</text>
+  <!-- Compression zone 2 -->
+  <circle cx="166" cy="200" r="7" fill="#283593"/><circle cx="182" cy="200" r="7" fill="#283593"/>
+  <circle cx="198" cy="200" r="7" fill="#283593"/>
+  <text x="182" y="218" text-anchor="middle" font-size="8" fill="#283593">C</text>
+  <!-- Rarefaction zone 2 -->
+  <circle cx="222" cy="200" r="7" fill="#90a4ae"/>
+  <circle cx="249" cy="200" r="7" fill="#90a4ae"/>
+  <circle cx="276" cy="200" r="7" fill="#90a4ae"/>
+  <text x="249" y="218" text-anchor="middle" font-size="8" fill="#7986cb">R</text>
+  <!-- Compression zone 3 -->
+  <circle cx="300" cy="200" r="7" fill="#283593"/><circle cx="316" cy="200" r="7" fill="#283593"/>
+  <circle cx="332" cy="200" r="7" fill="#283593"/>
+  <text x="316" y="218" text-anchor="middle" font-size="8" fill="#283593">C</text>
+  <circle cx="356" cy="200" r="7" fill="#90a4ae"/><circle cx="383" cy="200" r="7" fill="#90a4ae"/>
+  <text x="370" y="218" text-anchor="middle" font-size="8" fill="#7986cb">R</text>
+  <!-- Key -->
+  <text x="30" y="232" font-size="8.5" fill="#283593" font-weight="bold">C = Compression (close together)</text>
+  <text x="30" y="244" font-size="8.5" fill="#7986cb" font-weight="bold">R = Rarefaction (spread out)</text>
+  <!-- Energy direction -->
+  <line x1="300" y1="228" x2="392" y2="228" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="346" y="242" text-anchor="middle" font-size="8.5" fill="#e65100">Energy →</text>
+</svg>`
+  },
+  {
+    q:'The Electromagnetic Spectrum',
+    content:`<h3>The Electromagnetic Spectrum</h3><p>The electromagnetic (EM) spectrum is a continuous range of transverse waves that all travel at 3×10⁸ m/s in a vacuum. They are ordered by frequency (and therefore energy and wavelength). Understanding the spectrum is essential for explaining uses and hazards of each wave type.</p><ul><li>From lowest to highest frequency: Radio → Microwave → Infrared → Visible → UV → X-ray → Gamma.</li><li>Higher frequency = higher energy = shorter wavelength; gamma rays are the most energetic.</li><li>UV, X-rays, and gamma rays are ionising — they can damage DNA and cause cancer.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker>
+  <marker id="arrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1565c0"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">The Electromagnetic Spectrum</text>
+  <!-- Frequency arrow -->
+  <line x1="15" y1="32" x2="405" y2="32" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="210" y="28" text-anchor="middle" font-size="9" fill="#e65100">Frequency increases →</text>
+  <!-- Wavelength arrow -->
+  <line x1="405" y1="44" x2="15" y2="44" stroke="#1565c0" stroke-width="2" marker-end="url(#arrB)"/>
+  <text x="210" y="40" text-anchor="middle" font-size="9" fill="#1565c0">← Wavelength increases</text>
+  <!-- EM band boxes -->
+  <!-- Radio -->
+  <rect x="10" y="50" width="56" height="90" rx="4" fill="#5c6bc0" stroke="#283593" stroke-width="1.5"/>
+  <text x="38" y="70" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Radio</text>
+  <text x="38" y="84" text-anchor="middle" font-size="8" fill="#e8eaf6">TV &amp;</text>
+  <text x="38" y="95" text-anchor="middle" font-size="8" fill="#e8eaf6">Radio</text>
+  <text x="38" y="106" text-anchor="middle" font-size="8" fill="#e8eaf6">broadcast</text>
+  <text x="38" y="132" text-anchor="middle" font-size="8" fill="#c5cae9">λ: km–m</text>
+  <!-- Microwave -->
+  <rect x="68" y="50" width="52" height="90" rx="4" fill="#42a5f5" stroke="#283593" stroke-width="1.5"/>
+  <text x="94" y="68" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">Micro-</text>
+  <text x="94" y="79" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">wave</text>
+  <text x="94" y="93" text-anchor="middle" font-size="8" fill="#e8eaf6">Cooking</text>
+  <text x="94" y="104" text-anchor="middle" font-size="8" fill="#e8eaf6">Satellite</text>
+  <text x="94" y="132" text-anchor="middle" font-size="8" fill="#e3f2fd">λ: cm</text>
+  <!-- IR -->
+  <rect x="122" y="50" width="52" height="90" rx="4" fill="#ef6c00" stroke="#283593" stroke-width="1.5"/>
+  <text x="148" y="68" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">Infra-</text>
+  <text x="148" y="79" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">red</text>
+  <text x="148" y="93" text-anchor="middle" font-size="8" fill="#fff">Heat</text>
+  <text x="148" y="104" text-anchor="middle" font-size="8" fill="#fff">TV remote</text>
+  <text x="148" y="132" text-anchor="middle" font-size="8" fill="#ffe0b2">λ: µm</text>
+  <!-- Visible -->
+  <rect x="176" y="50" width="60" height="90" rx="4" stroke="#283593" stroke-width="1.5">
+    <animate attributeName="fill" values="#ff0000;#ff7700;#ffff00;#00ff00;#0000ff;#8800ff;#ff0000" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <text x="206" y="68" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">Visible</text>
+  <text x="206" y="82" text-anchor="middle" font-size="8" fill="#fff">ROY G BIV</text>
+  <text x="206" y="93" text-anchor="middle" font-size="8" fill="#fff">Sight</text>
+  <text x="206" y="104" text-anchor="middle" font-size="8" fill="#fff">Photography</text>
+  <text x="206" y="132" text-anchor="middle" font-size="8" fill="#fff">λ: 400–700nm</text>
+  <!-- UV -->
+  <rect x="238" y="50" width="48" height="90" rx="4" fill="#7b1fa2" stroke="#283593" stroke-width="1.5"/>
+  <text x="262" y="68" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">Ultra-</text>
+  <text x="262" y="79" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#fff">violet</text>
+  <text x="262" y="93" text-anchor="middle" font-size="8" fill="#e1bee7">Sterilise</text>
+  <text x="262" y="104" text-anchor="middle" font-size="8" fill="#e1bee7">Fake notes</text>
+  <text x="262" y="132" text-anchor="middle" font-size="8" fill="#e1bee7">λ: nm</text>
+  <!-- X-ray -->
+  <rect x="288" y="50" width="52" height="90" rx="4" fill="#546e7a" stroke="#283593" stroke-width="1.5"/>
+  <text x="314" y="68" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">X-ray</text>
+  <text x="314" y="84" text-anchor="middle" font-size="8" fill="#cfd8dc">Medical</text>
+  <text x="314" y="95" text-anchor="middle" font-size="8" fill="#cfd8dc">imaging</text>
+  <text x="314" y="106" text-anchor="middle" font-size="8" fill="#cfd8dc">Airport</text>
+  <text x="314" y="132" text-anchor="middle" font-size="8" fill="#cfd8dc">λ: pm</text>
+  <!-- Gamma -->
+  <rect x="342" y="50" width="68" height="90" rx="4" fill="#b71c1c" stroke="#283593" stroke-width="1.5"/>
+  <text x="376" y="68" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Gamma</text>
+  <text x="376" y="84" text-anchor="middle" font-size="8" fill="#ffcdd2">Cancer Rx</text>
+  <text x="376" y="95" text-anchor="middle" font-size="8" fill="#ffcdd2">Sterilise</text>
+  <text x="376" y="106" text-anchor="middle" font-size="8" fill="#ffcdd2">food</text>
+  <text x="376" y="132" text-anchor="middle" font-size="8" fill="#ffcdd2">λ: pm-fm</text>
+  <!-- Common properties box -->
+  <rect x="10" y="148" width="400" height="30" rx="4" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="162" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#283593">All EM waves: transverse | travel at 3×10⁸ m/s in vacuum | carry energy</text>
+  <text x="210" y="175" text-anchor="middle" font-size="9" fill="#283593">Ionising (damage DNA): UV, X-rays, Gamma — higher energy = more dangerous</text>
+  <!-- Ionising danger bar -->
+  <rect x="10" y="184" width="400" height="15" rx="4">
+    <defs><linearGradient id="dn" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#a5d6a7"/><stop offset="60%" stop-color="#fff176"/><stop offset="100%" stop-color="#ef5350"/></linearGradient></defs>
+  </rect>
+  <rect x="10" y="184" width="400" height="15" rx="4" fill="url(#dn)" stroke="#283593" stroke-width="1"/>
+  <text x="210" y="196" text-anchor="middle" font-size="8.5" fill="#333">Safe ←————————————→ Ionising / Dangerous</text>
+  <!-- Penetration summary -->
+  <rect x="10" y="205" width="400" height="52" rx="5" fill="#fff" stroke="#283593" stroke-width="1"/>
+  <text x="210" y="220" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Penetration (increasing →)</text>
+  <text x="210" y="235" text-anchor="middle" font-size="9" fill="#333">Radio/Micro: pass through most materials &nbsp;|&nbsp; IR/Visible: absorbed by many materials</text>
+  <text x="210" y="249" text-anchor="middle" font-size="9" fill="#333">UV: absorbed by glass &nbsp;|&nbsp; X-rays: absorbed by dense materials (bone)</text>
+  <text x="210" y="261" text-anchor="middle" font-size="9" fill="#c62828">Gamma: needs thick lead or concrete to absorb</text>
+</svg>`
+  },
+  {
+    q:'Reflection and Refraction — Ray Diagram',
+    content:`<h3>Reflection and Refraction — Ray Diagrams</h3><p>Reflection and refraction describe how waves behave at boundaries between different media. Ray diagrams use the normal (a line perpendicular to the surface) as a reference for measuring all angles. These principles underpin mirrors, lenses, optical fibres, and many other technologies.</p><ul><li><strong>Reflection:</strong> angle of incidence = angle of reflection (both measured from the normal).</li><li><strong>Refraction:</strong> light slows and bends toward the normal when entering a denser medium (e.g. air to glass).</li><li><strong>Total internal reflection (TIR):</strong> occurs when light in a denser medium hits the boundary beyond the critical angle — used in optical fibres.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrY" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f9a825"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+  <marker id="arrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1565c0"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Reflection and Refraction</text>
+  <!-- REFLECTION (left panel) -->
+  <rect x="8" y="24" width="195" height="198" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="105" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Reflection</text>
+  <!-- Mirror surface -->
+  <rect x="18" y="128" width="175" height="8" rx="2" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <text x="105" y="148" text-anchor="middle" font-size="9" fill="#333">Mirror / Reflective surface</text>
+  <!-- Normal (dashed) -->
+  <line x1="105" y1="50" x2="105" y2="128" stroke="#90a4ae" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="110" y="66" font-size="9" fill="#7986cb">Normal</text>
+  <!-- Incident ray -->
+  <line x1="42" y1="58" x2="105" y2="128" stroke="#f9a825" stroke-width="2.5" marker-end="url(#arrY)"/>
+  <text x="50" y="72" font-size="9" fill="#f9a825" font-weight="bold">Incident ray</text>
+  <!-- Reflected ray -->
+  <line x1="105" y1="128" x2="170" y2="58" stroke="#c62828" stroke-width="2.5" marker-end="url(#arrR)"/>
+  <text x="132" y="72" font-size="9" fill="#c62828" font-weight="bold">Reflected ray</text>
+  <!-- Angle labels -->
+  <path d="M 105,128 m -18,-30 a 30,30 0 0,0 0,-8" fill="none" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="72" y="108" font-size="9" fill="#f9a825">i</text>
+  <path d="M 105,128 m 14,-30 a 30,30 0 0,1 0,-8" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <text x="125" y="108" font-size="9" fill="#c62828">r</text>
+  <text x="105" y="165" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#283593">∠i = ∠r</text>
+  <text x="105" y="180" text-anchor="middle" font-size="9" fill="#333">Angle of incidence =</text>
+  <text x="105" y="193" text-anchor="middle" font-size="9" fill="#333">Angle of reflection</text>
+  <text x="105" y="207" text-anchor="middle" font-size="8.5" fill="#555">(both measured from Normal)</text>
+  <!-- REFRACTION (right panel) -->
+  <rect x="217" y="24" width="195" height="198" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="314" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">Refraction</text>
+  <!-- Boundary -->
+  <rect x="227" y="118" width="175" height="80" rx="0" fill="#e3f2fd" opacity="0.7"/>
+  <line x1="227" y1="118" x2="402" y2="118" stroke="#283593" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="237" y="114" font-size="8.5" fill="#333">Air (less dense, faster)</text>
+  <text x="237" y="130" font-size="8.5" fill="#1565c0">Glass (denser, slower)</text>
+  <!-- Normal -->
+  <line x1="314" y1="45" x2="314" y2="195" stroke="#90a4ae" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="318" y="62" font-size="9" fill="#7986cb">Normal</text>
+  <!-- Incident ray -->
+  <line x1="248" y1="52" x2="314" y2="118" stroke="#f9a825" stroke-width="2.5" marker-end="url(#arrY)"/>
+  <text x="254" y="70" font-size="9" fill="#f9a825" font-weight="bold">Incident</text>
+  <!-- Refracted ray (bends toward normal) -->
+  <line x1="314" y1="118" x2="340" y2="195" stroke="#1565c0" stroke-width="2.5" marker-end="url(#arrB)"/>
+  <text x="348" y="168" font-size="9" fill="#1565c0" font-weight="bold">Refracted</text>
+  <text x="348" y="180" font-size="9" fill="#1565c0">(bends toward</text>
+  <text x="348" y="191" font-size="9" fill="#1565c0">normal)</text>
+  <!-- Angle labels -->
+  <text x="290" y="108" font-size="9" fill="#f9a825">θ₁</text>
+  <text x="320" y="142" font-size="9" fill="#1565c0">θ₂</text>
+  <text x="314" y="165" text-anchor="middle" font-size="9" fill="#c62828">θ₂ &lt; θ₁</text>
+  <!-- Summary row -->
+  <rect x="8" y="228" width="404" height="30" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="243" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#283593">Snell's Law: n₁sinθ₁ = n₂sinθ₂ &nbsp;|&nbsp; Total Internal Reflection: θ &gt; critical angle (used in optical fibres)</text>
+  <text x="210" y="255" text-anchor="middle" font-size="9" fill="#333">Light slows and bends toward normal entering glass; speeds up and bends away leaving glass.</text>
+</svg>`
+  },
+  {
+    q:'Diffraction — Waves Through a Gap',
+    content:`<h3>Diffraction — Waves Through a Gap</h3><p>Diffraction is the spreading of waves when they pass through a gap or around an obstacle. It is a property of all waves and explains why sound can be heard around corners and why radio waves can reach areas behind hills.</p><ul><li>Diffraction is greatest when the gap width is approximately equal to the wavelength (gap ≈ λ).</li><li>A wider gap produces less diffraction — waves pass through almost as straight lines.</li><li>Light diffracts noticeably only through very narrow slits because its wavelength is extremely small (~500 nm).</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Diffraction — Waves Through a Gap</text>
+  <!-- LEFT panel: narrow gap (more diffraction) -->
+  <rect x="10" y="28" width="190" height="195" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="105" y="46" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Narrow gap (≈ λ)</text>
+  <text x="105" y="59" text-anchor="middle" font-size="9" fill="#333">Maximum diffraction</text>
+  <!-- Barrier left panel -->
+  <rect x="18" y="68" width="80" height="140" rx="2" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <rect x="98" y="68" width="12" height="52" rx="1" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <rect x="98" y="156" width="12" height="52" rx="1" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <!-- Gap label -->
+  <line x1="112" y1="120" x2="112" y2="156" stroke="#c62828" stroke-width="2"/>
+  <text x="115" y="142" font-size="8.5" fill="#c62828">gap ≈ λ</text>
+  <!-- Plane waves arriving -->
+  <line x1="18" y1="105" x2="96" y2="105" stroke="#1565c0" stroke-width="1.5"/>
+  <line x1="18" y1="120" x2="96" y2="120" stroke="#1565c0" stroke-width="1.5"/>
+  <line x1="18" y1="135" x2="96" y2="135" stroke="#1565c0" stroke-width="1.5"/>
+  <!-- Diffracted circular waves through gap -->
+  <path d="M110,138 Q130,120 150,90" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <path d="M110,138 Q142,118 165,100" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <path d="M110,138 Q148,132 182,128" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <path d="M110,138 Q148,145 182,150" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <path d="M110,138 Q140,156 162,174" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <path d="M110,138 Q128,158 148,186" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="152" y="90" font-size="8" fill="#1565c0">Waves</text>
+  <text x="152" y="100" font-size="8" fill="#1565c0">spread</text>
+  <text x="152" y="110" font-size="8" fill="#1565c0">widely</text>
+  <!-- RIGHT panel: wide gap (less diffraction) -->
+  <rect x="215" y="28" width="195" height="195" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="312" y="46" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">Wide gap (&gt;&gt; λ)</text>
+  <text x="312" y="59" text-anchor="middle" font-size="9" fill="#333">Minimal diffraction</text>
+  <!-- Barrier right panel -->
+  <rect x="223" y="68" width="80" height="140" rx="2" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <rect x="303" y="68" width="20" height="38" rx="1" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <rect x="303" y="168" width="20" height="38" rx="1" fill="#90a4ae" stroke="#283593" stroke-width="1.5"/>
+  <!-- Gap label -->
+  <line x1="325" y1="106" x2="325" y2="168" stroke="#c62828" stroke-width="2"/>
+  <text x="328" y="142" font-size="8.5" fill="#c62828">wide</text>
+  <text x="328" y="153" font-size="8.5" fill="#c62828">gap</text>
+  <!-- Plane waves through wide gap: mostly straight -->
+  <line x1="223" y1="118" x2="301" y2="118" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="223" y1="130" x2="301" y2="130" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="223" y1="143" x2="301" y2="143" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Straight-ish waves after gap with slight curl at edges -->
+  <line x1="323" y1="118" x2="400" y2="118" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="323" y1="130" x2="400" y2="130" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="323" y1="143" x2="400" y2="143" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Only slight bending at edges -->
+  <path d="M323,118 Q330,112 346,108" fill="none" stroke="#c62828" stroke-width="1.2"/>
+  <path d="M323,143 Q330,152 346,158" fill="none" stroke="#c62828" stroke-width="1.2"/>
+  <!-- Bottom rule -->
+  <rect x="10" y="228" width="400" height="26" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="242" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Rule: Greatest diffraction when gap width ≈ wavelength (λ)</text>
+  <text x="210" y="253" text-anchor="middle" font-size="9" fill="#333">Examples: Sound diffracts around corners; light diffracts through very narrow slits.</text>
+</svg>`
+  },
+  {
+    q:'Sound Wave Properties — Frequency, Pitch &amp; Loudness',
+    content:`<h3>Sound Wave Properties — Frequency, Pitch and Loudness</h3><p>Sound is a longitudinal wave that requires a medium to travel through. Its key properties — frequency and amplitude — determine how we perceive it as pitch and loudness respectively. Understanding this link between wave properties and perception is a core BGCSE topic.</p><ul><li><strong>Frequency</strong> determines <strong>pitch</strong> — high frequency = high-pitched sound (e.g. 880 Hz); low frequency = low-pitched (e.g. 110 Hz).</li><li><strong>Amplitude</strong> determines <strong>loudness</strong> — larger amplitude = louder sound; measured in decibels (dB).</li><li>Human hearing range: 20 Hz – 20,000 Hz; above 20,000 Hz is ultrasound (used in medical imaging and sonar).</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="17" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Sound Wave Properties</text>
+  <!-- HIGH frequency / HIGH pitch (left top) -->
+  <rect x="10" y="26" width="195" height="95" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="107" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">HIGH Frequency = HIGH Pitch</text>
+  <line x1="22" y1="74" x2="198" y2="74" stroke="#90a4ae" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <path d="M22,74 Q30,52 38,74 Q46,96 54,74 Q62,52 70,74 Q78,96 86,74 Q94,52 102,74 Q110,96 118,74 Q126,52 134,74 Q142,96 150,74 Q158,52 166,74 Q174,96 182,74 Q190,52 198,74" fill="none" stroke="#1565c0" stroke-width="2"/>
+  <text x="107" y="105" text-anchor="middle" font-size="9" fill="#333">Many waves per second (Hz high)</text>
+  <text x="107" y="115" text-anchor="middle" font-size="9" fill="#1565c0">e.g. 880 Hz — high note</text>
+  <!-- LOW frequency / LOW pitch (right top) -->
+  <rect x="215" y="26" width="195" height="95" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="312" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">LOW Frequency = LOW Pitch</text>
+  <line x1="225" y1="74" x2="402" y2="74" stroke="#90a4ae" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <path d="M225,74 Q248,45 272,74 Q295,103 318,74 Q341,45 365,74 Q388,103 402,74" fill="none" stroke="#c62828" stroke-width="2"/>
+  <text x="312" y="105" text-anchor="middle" font-size="9" fill="#333">Few waves per second (Hz low)</text>
+  <text x="312" y="115" text-anchor="middle" font-size="9" fill="#c62828">e.g. 110 Hz — low note</text>
+  <!-- LOUD (left bottom) -->
+  <rect x="10" y="130" width="195" height="95" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="107" y="146" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">LOUD — High Amplitude</text>
+  <line x1="22" y1="178" x2="198" y2="178" stroke="#90a4ae" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <path d="M22,178 Q46,138 70,178 Q94,218 118,178 Q142,138 166,178 Q190,218 198,178" fill="none" stroke="#e65100" stroke-width="2.5"/>
+  <!-- Amplitude arrow -->
+  <line x1="46" y1="178" x2="46" y2="138" stroke="#e65100" stroke-width="1.5"/>
+  <text x="52" y="158" font-size="8" fill="#e65100">A large</text>
+  <text x="107" y="212" text-anchor="middle" font-size="9" fill="#333">Large amplitude = more energy</text>
+  <text x="107" y="222" text-anchor="middle" font-size="9" fill="#e65100">Measured in decibels (dB)</text>
+  <!-- QUIET (right bottom) -->
+  <rect x="215" y="130" width="195" height="95" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="312" y="146" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">QUIET — Low Amplitude</text>
+  <line x1="225" y1="178" x2="402" y2="178" stroke="#90a4ae" stroke-width="0.8" stroke-dasharray="3,3"/>
+  <path d="M225,178 Q248,168 272,178 Q295,188 318,178 Q341,168 365,178 Q388,188 402,178" fill="none" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Amplitude arrow -->
+  <line x1="248" y1="178" x2="248" y2="168" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="258" y="173" font-size="8" fill="#2e7d32">A small</text>
+  <text x="312" y="212" text-anchor="middle" font-size="9" fill="#333">Small amplitude = less energy</text>
+  <text x="312" y="222" text-anchor="middle" font-size="9" fill="#2e7d32">Normal conversation ≈ 60 dB</text>
+  <!-- Summary bar -->
+  <rect x="10" y="232" width="400" height="28" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="246" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Frequency → Pitch &nbsp;|&nbsp; Amplitude → Loudness &nbsp;|&nbsp; Speed of sound ≈ 340 m/s in air</text>
+  <text x="210" y="258" text-anchor="middle" font-size="9" fill="#333">Human hearing range: 20 Hz – 20,000 Hz &nbsp;|&nbsp; Above 20,000 Hz = Ultrasound</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Waves & EM Spectrum',
+    body:'Apply your knowledge of waves, refraction, and the EM spectrum.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which type of EM wave has the HIGHEST frequency?',opts:['Radio waves','Microwaves','Visible light','Gamma rays'],ans:3,exp:'Gamma rays are at the high-frequency end of the EM spectrum — highest frequency, shortest wavelength, most energy, and most penetrating.'},
+      {q:'A wave has frequency 500 Hz and wavelength 0.4 m. Its speed is:',opts:['1250 m/s','500 m/s','200 m/s','0.0008 m/s'],ans:2,exp:'v = f × λ = 500 × 0.4 = 200 m/s.'},
+      {q:'Optical fibres use which phenomenon?',opts:['Refraction only','Diffraction','Total internal reflection','Dispersion'],ans:2,exp:'Optical fibres rely on TOTAL INTERNAL REFLECTION. Light signals bounce repeatedly off the inner surface of the fibre, staying inside and carrying data with very little loss.'},
+      {q:'Which EM wave is used for medical imaging of bones?',opts:['Infrared','Microwaves','Ultraviolet','X-rays'],ans:3,exp:'X-rays are used in medical imaging because they can penetrate soft tissue but are absorbed by dense bones — producing shadow images of the skeleton on a detector.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#00695c',dark:'#003d33',light:'#e0f2f1',
+  title:'Waves & EM Spectrum — Properties, Reflection & Refraction',
+});
+</script></body></html>

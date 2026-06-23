@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photosynthesis — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #f0f7f0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 40px;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      width: 100%;
+      background: #1b5e20;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar .logo {
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+    .topbar a {
+      color: #a5d6a7;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .topbar a:hover { color: #fff; }
+
+    /* ── Topic header ── */
+    .topic-header {
+      width: 100%;
+      background: #2e7d32;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topic-header .label {
+      background: #66bb6a;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
+    }
+    .topic-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    /* ── Canvas wrapper ── */
+    #sketch {
+      margin-top: 18px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.14);
+      border: 2px solid #c8e6c9;
+    }
+
+    /* ── Controls ── */
+    #controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: center;
+    }
+    #controls .label {
+      font-size: 0.82rem;
+      color: #555;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .btn {
+      padding: 8px 20px;
+      border: 2.5px solid;
+      border-radius: 24px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.15s;
+      user-select: none;
+      letter-spacing: 0.3px;
+    }
+    .btn-l       { border-color: #f9a825; color: #f9a825; background: #fff; }
+    .btn-l.on    { background: #f9a825; color: #fff; }
+    .btn-w       { border-color: #1976d2; color: #1976d2; background: #fff; }
+    .btn-w.on    { background: #1976d2; color: #fff; }
+    .btn-c       { border-color: #616161; color: #616161; background: #fff; }
+    .btn-c.on    { background: #616161; color: #fff; }
+
+    /* ── Info strip ── */
+    .info-strip {
+      margin-top: 14px;
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.82rem;
+      color: #2e7d32;
+      max-width: 880px;
+      width: 100%;
+      line-height: 1.5;
+    }
+    .info-strip strong { color: #1b5e20; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html">&#8592; All Topics</a>
+  <button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button>
+</div>
+
+<div class="topic-header">
+  <span class="label">JCE · Form 2 Biology</span>
+  <h1>Plant Nutrition &amp; Photosynthesis</h1>
+</div>
+
+<div id="sketch"></div>
+
+<div id="controls">
+  <span class="label">Toggle inputs:</span>
+  <button class="btn btn-l on" id="b-l" onclick="tog('light')">&#9728; Sunlight</button>
+  <button class="btn btn-w on" id="b-w" onclick="tog('water')">&#9650; Water</button>
+  <button class="btn btn-c on" id="b-c" onclick="tog('co2')">CO&#8322; in</button>
+  <button class="btn btn-c" id="b-prac" onclick="setPractice(!mcqMode)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+
+<div class="info-strip">
+  <strong>Photosynthesis equation:</strong>
+  &nbsp; 6CO&#8322; + 6H&#8322;O + Light energy &nbsp;&#8594;&nbsp; C&#8322;H&#8321;&#8322;O&#8326; (glucose) + 6O&#8322;
+  &nbsp;&nbsp;|&nbsp;&nbsp; Turn off any input above to see what stops.
+</div>
+
+<script>
+const S = { light: true, water: true, co2: true };
+function printNotes(){
+  let html='<html><head><title>Photosynthesis Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#2e7d32;border-bottom:2px solid #2e7d32;padding-bottom:8px}h2{color:#388e3c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Plant Nutrition &amp; Photosynthesis — Study Notes</h1>';
+  html+='<h2>The Photosynthesis Equation</h2><p><strong>6CO₂ + 6H₂O + Light energy → C₆H₁₂O₆ (glucose) + 6O₂</strong></p>';
+  html+='<h2>Requirements for Photosynthesis</h2><ul><li>Light energy (from sunlight — absorbed by chlorophyll)</li><li>Water (absorbed by roots, transported up xylem)</li><li>Carbon dioxide (enters through stomata in leaves)</li><li>Chlorophyll (green pigment in chloroplasts)</li></ul>';
+  html+='<h2>Products of Photosynthesis</h2><ul><li>Glucose (C₆H₁₂O₆) — used for energy, stored as starch</li><li>Oxygen (O₂) — released through stomata (by-product)</li></ul>';
+  html+='<h2>Limiting Factors</h2><ul><li>Light intensity — more light = faster photosynthesis (up to a limit)</li><li>CO₂ concentration — more CO₂ = faster photosynthesis</li><li>Temperature — enzyme-controlled; stops at extremes</li></ul>';
+  html+='<h2>Leaf Structure</h2><ul><li>Xylem transports water UP to leaves</li><li>Phloem transports glucose DOWN from leaves</li><li>Stomata: pores that let CO₂ in and O₂ out</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let mcqMode=false;
+const MCQ_Q=[
+  {q:'What is the correct photosynthesis equation?',opts:['6CO₂+6H₂O+Light→C₆H₁₂O₆+6O₂','C₆H₁₂O₆+6O₂→6CO₂+6H₂O+Energy','6O₂+Glucose→6CO₂+6H₂O','CO₂+H₂O→O₂+Glucose'],c:0,tip:'6 molecules each of CO₂ and H₂O plus light produce glucose and 6O₂.'},
+  {q:'Where does photosynthesis take place inside a plant cell?',opts:['Chloroplast','Nucleus','Mitochondrion','Vacuole'],c:0,tip:'Chloroplasts contain chlorophyll which captures light energy.'},
+  {q:'Which gas is ABSORBED by leaves during photosynthesis?',opts:['Carbon dioxide (CO₂)','Oxygen (O₂)','Nitrogen (N₂)','Hydrogen (H₂)'],c:0,tip:'CO₂ enters through stomata and is used to make glucose.'},
+  {q:'What does a plant use glucose for?',opts:['Energy (respiration) and stored as starch','Only as a waste product','To make CO₂','To absorb water'],c:0,tip:'Glucose is respired for energy or stored as starch in roots and seeds.'},
+  {q:'Which vessel transports water from roots to leaves?',opts:['Xylem','Phloem','Artery','Vein'],c:0,tip:'Xylem carries water and minerals upward; phloem carries glucose downward.'},
+  {q:'What is a LIMITING FACTOR for photosynthesis?',opts:['Light intensity','Amount of glucose produced','Number of stomata','Leaf colour'],c:0,tip:'Light, CO₂ concentration, and temperature are the three main limiting factors.'},
+  {q:'What happens to photosynthesis rate when CO₂ is removed?',opts:['It slows down or stops','It speeds up','It stays the same','It produces more oxygen'],c:0,tip:'CO₂ is a raw material for photosynthesis — without it, the reaction stops.'},
+  {q:'Which part of the leaf allows gas exchange?',opts:['Stomata','Xylem','Chloroplasts','Cell wall'],c:0,tip:'Stomata are tiny pores on the underside of leaves that open and close.'},
+];
+let mcqIdx=0,mcqSel=-1,mcqScore=0,mcqDone=false,mcqFeedback=null;
+function setPractice(on){ mcqMode=on; document.getElementById('b-prac').classList.toggle('on',on); document.getElementById('b-prac').style.background=on?'#f9a825':''; document.getElementById('b-prac').style.color=on?'#fff':'#f9a825'; if(on){mcqIdx=0;mcqSel=-1;mcqScore=0;mcqDone=false;mcqFeedback=null;} }
+function drawMCQ(s){
+  s.background(245,252,245);
+  if(mcqDone){
+    s.fill(27,94,32);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+mcqScore+'/'+MCQ_Q.length,440,210);
+    let msg=mcqScore===MCQ_Q.length?'Perfect! You know photosynthesis!':mcqScore>=6?'Great job!':'Keep studying the equation!';
+    s.text(msg,440,242);
+    s.fill(100,180,100);s.noStroke();s.rect(310,270,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,292+4);
+    return;
+  }
+  let q=MCQ_Q[mcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(mcqIdx/MCQ_Q.length),10,5);
+  s.fill(27,94,32);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(mcqIdx+1)+' of '+MCQ_Q.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+  s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let bx=60,by=110+i*80,bw=760,bh=64;
+    let isSel=mcqSel===i,correct=mcqFeedback!==null&&i===q.c,wrong=mcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[245,250,245]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||mcqFeedback!==null&&i===q.c?2.5:1.5);
+    s.rect(bx,by,bw,bh,10);s.noStroke();
+    s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,bx+16,by+bh/2,bw-32,bh-8);
+  });
+  if(mcqFeedback){
+    s.fill(mcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(mcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,445,820,40);
+    s.fill(180,240,180);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function mcqClick(mx,my){
+  if(mcqDone){if(mx>310&&mx<570&&my>270&&my<314){mcqIdx=0;mcqSel=-1;mcqScore=0;mcqDone=false;mcqFeedback=null;}return;}
+  let q=MCQ_Q[mcqIdx];
+  if(mcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){mcqFeedback=null;mcqSel=-1;mcqIdx++;if(mcqIdx>=MCQ_Q.length)mcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&mcqFeedback===null){mcqSel=i;mcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)mcqScore++;}});
+}
+function tog(k) {
+  S[k] = !S[k];
+  const ids = { light: 'b-l', water: 'b-w', co2: 'b-c' };
+  document.getElementById(ids[k]).classList.toggle('on', S[k]);
+}
+
+new p5(function(p) {
+  const W = 880, H = 480;
+  const SOIL_Y = 340;
+  const SX = 440;   // stem centre x
+  const SW = 32;    // stem width
+  const ST = 178;   // stem top y
+
+  const LEAVES = [
+    { cx: 298, cy: 244, rw: 72, rh: 27, ang: -32, py: 244 },
+    { cx: 584, cy: 288, rw: 72, rh: 27, ang:  27, py: 288 },
+    { cx: 440, cy: 168, rw: 58, rh: 22, ang:  -2, py: 178 },
+  ];
+
+  const ROOTS = [
+    [SX,        SOIL_Y + 112],
+    [SX - 62,   SOIL_Y + 82 ],
+    [SX + 74,   SOIL_Y + 76 ],
+    [SX - 112,  SOIL_Y + 48 ],
+    [SX + 118,  SOIL_Y + 44 ],
+    [SX - 85,   SOIL_Y + 122],
+    [SX + 50,   SOIL_Y + 130],
+  ];
+
+  // Colours — bright, educational
+  const COL = {
+    sky1: [178, 224, 245],
+    sky2: [224, 244, 255],
+    soil1: [121, 85, 55],
+    soil2: [95,  62, 36],
+    soilDeep: [70, 42, 18],
+    leafFill: [39, 174, 96],
+    leafHL:   [88, 214, 141],
+    leafDark: [27, 120, 65],
+    stemBrd:  [30, 110, 50],
+    xylem:    [41, 128, 185],
+    phloem:   [211, 84, 0],
+    sun:      [253, 196, 0],
+    water:    [52,  152, 219],
+    co2:      [127, 140, 141],
+    o2:       [26,  188, 156],
+    glucose:  [230, 126, 34],
+  };
+
+  let soilDots = [];
+  let rootHairs = [];
+  let particles = [];
+  let tick = 0;
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+
+    for (let i = 0; i < 90; i++) {
+      soilDots.push([p.random(W), SOIL_Y + p.random(H - SOIL_Y), p.random(3, 8), p.random(2, 5)]);
+    }
+    for (let [rx, ry] of ROOTS) {
+      let hairs = [];
+      for (let j = 0; j < 4; j++) {
+        let a = p.radians(75 + j * 30) + (rx < SX ? p.PI : 0);
+        hairs.push([rx + p.cos(a) * p.random(8, 18), ry + p.sin(a) * p.random(5, 12)]);
+      }
+      rootHairs.push(hairs);
+    }
+  };
+
+  p.draw = function() {
+    if(mcqMode){ drawMCQ(p); return; }
+    tick += 0.05;
+    let rate = (S.light ? 1 : 0) * (S.water ? 1 : 0) * (S.co2 ? 1 : 0);
+
+    drawBg();
+    if (S.light) drawLightRays();
+    drawSun();
+    drawRoots();
+    drawStem();
+    drawLeaves(rate);
+
+    if (p.frameCount % 20 === 0) spawnParticles(rate);
+    updateParticles(rate);
+    drawParticles();
+
+    drawLegend();
+    drawStatusPanel(rate);
+    drawLabels();
+  };
+
+  // ─── Background ────────────────────────────────────────────────
+  function drawBg() {
+    let ctx = p.drawingContext;
+
+    // Sky gradient
+    let sg = ctx.createLinearGradient(0, 0, 0, SOIL_Y);
+    sg.addColorStop(0, 'rgb(178,224,245)');
+    sg.addColorStop(1, 'rgb(224,244,255)');
+    ctx.fillStyle = sg;
+    ctx.fillRect(0, 0, W, SOIL_Y);
+
+    // Soil layers
+    p.noStroke();
+    p.fill(...COL.soil1); p.rect(0, SOIL_Y, W, H - SOIL_Y);
+    p.fill(138, 97, 62);  p.rect(0, SOIL_Y, W, 14);
+    p.fill(...COL.soilDeep); p.rect(0, SOIL_Y + 82, W, H - SOIL_Y - 82);
+
+    // Small soil pebbles/dots
+    p.fill(100, 65, 35, 90);
+    for (let [dx, dy, dw, dh] of soilDots) p.ellipse(dx, dy, dw, dh);
+  }
+
+  // ─── Sun ───────────────────────────────────────────────────────
+  function drawSun() {
+    let sx = 84, sy = 74;
+    let pulse = p.sin(tick) * 2.5;
+    let alpha = S.light ? 255 : 60;
+
+    p.noStroke();
+    // Glow
+    p.fill(253, 196, 0, S.light ? 40 : 8);
+    p.ellipse(sx, sy, 100 + pulse);
+    p.fill(253, 196, 0, S.light ? 70 : 12);
+    p.ellipse(sx, sy, 74 + pulse);
+
+    // Disc
+    p.fill(253, 196, 0, alpha);
+    p.ellipse(sx, sy, 48 + pulse, 48 + pulse);
+    p.fill(255, 235, 100, alpha * 0.55);
+    p.ellipse(sx - 7, sy - 7, 16, 16);
+
+    // Rays
+    if (S.light) {
+      p.stroke(253, 196, 0, 200);
+      p.strokeWeight(2.5);
+      for (let i = 0; i < 8; i++) {
+        let a = (i / 8) * p.TWO_PI + tick * 0.22;
+        p.line(sx + p.cos(a)*(27+pulse), sy + p.sin(a)*(27+pulse),
+               sx + p.cos(a)*(44+pulse), sy + p.sin(a)*(44+pulse));
+      }
+      p.noStroke();
+      // Label
+      p.fill(180, 120, 0); p.textSize(10); p.textAlign(p.LEFT);
+      p.text('Sunlight', sx + 30, sy - 8);
+    }
+    p.noStroke();
+  }
+
+  // ─── Dashed light rays to leaves ───────────────────────────────
+  function drawLightRays() {
+    let sx = 84, sy = 74;
+    p.drawingContext.setLineDash([7, 5]);
+    for (let lf of LEAVES) {
+      let a = 38 + p.sin(tick * 1.2 + lf.cx * 0.01) * 16;
+      p.stroke(253, 196, 0, a);
+      p.strokeWeight(1.5);
+      p.line(sx + 22, sy + 10, lf.cx, lf.cy);
+    }
+    p.drawingContext.setLineDash([]);
+    p.noStroke();
+  }
+
+  // ─── Roots ─────────────────────────────────────────────────────
+  function drawRoots() {
+    p.noFill();
+    for (let i = 0; i < ROOTS.length; i++) {
+      let [rx, ry] = ROOTS[i];
+      p.stroke(155, 108, 65); p.strokeWeight(3);
+      p.beginShape();
+      p.vertex(SX, SOIL_Y + 4);
+      p.quadraticVertex(SX + (rx - SX) * 0.38, SOIL_Y + 26, rx, ry);
+      p.endShape();
+      p.stroke(130, 88, 50, 170); p.strokeWeight(1.2);
+      for (let [hx, hy] of rootHairs[i]) p.line(rx, ry, hx, hy);
+    }
+    p.noStroke();
+  }
+
+  // ─── Stem ──────────────────────────────────────────────────────
+  function drawStem() {
+    let x = SX - SW/2, hw = SW/2, h = SOIL_Y - ST;
+    p.noStroke();
+    p.fill(...COL.xylem, 200);  p.rect(x,      ST, hw, h);
+    p.fill(...COL.phloem, 200); p.rect(x + hw, ST, hw, h);
+
+    // Outline
+    p.stroke(...COL.stemBrd); p.strokeWeight(2); p.noFill();
+    p.rect(x, ST, SW, h, 3, 3, 0, 0);
+
+    // Divider
+    p.stroke(255, 255, 255, 80); p.strokeWeight(1);
+    p.line(SX, ST, SX, SOIL_Y);
+    p.noStroke();
+  }
+
+  // ─── Leaves ────────────────────────────────────────────────────
+  function drawLeaves(rate) {
+    let glow = rate * (0.45 + p.sin(tick * 1.5) * 0.45);
+    for (let lf of LEAVES) {
+      // Petiole
+      p.stroke(...COL.stemBrd); p.strokeWeight(2.5);
+      p.line(SX, lf.py, lf.cx, lf.cy); p.noStroke();
+
+      p.push();
+      p.translate(lf.cx, lf.cy);
+      p.rotate(p.radians(lf.ang));
+
+      // Photosynthesis glow (light around leaf when active)
+      if (glow > 0.05) {
+        p.fill(88, 214, 141, glow * 60);
+        p.ellipse(0, 0, lf.rw * 2.8, lf.rh * 2.8);
+      }
+
+      // Leaf body
+      p.fill(...COL.leafFill);
+      p.ellipse(0, 0, lf.rw * 2, lf.rh * 2);
+
+      // Highlight
+      p.fill(...COL.leafHL, 80);
+      p.ellipse(-lf.rw*.18, -lf.rh*.28, lf.rw*.85, lf.rh*.6);
+
+      // Midrib
+      p.stroke(...COL.leafDark); p.strokeWeight(1.5);
+      p.line(-lf.rw + 5, 0, lf.rw - 5, 0);
+
+      // Lateral veins
+      p.strokeWeight(0.9); p.stroke(...COL.leafDark, 140);
+      for (let v = -2; v <= 2; v++) {
+        if (v === 0) continue;
+        let vx = v * lf.rw * 0.42;
+        p.line(vx, 0, vx + (vx < 0 ? -5 : 5), -lf.rh * 0.6);
+      }
+
+      // Stomata (tiny dots on underside)
+      p.noStroke(); p.fill(...COL.leafDark, 130);
+      for (let s = -2; s <= 2; s++) p.ellipse(s * lf.rw * 0.35, lf.rh * 0.42, 3, 1.4);
+
+      p.pop();
+    }
+    p.noStroke();
+  }
+
+  // ─── Particles ─────────────────────────────────────────────────
+  function spawnParticles(rate) {
+    if (S.water) {
+      let [rx, ry] = ROOTS[p.floor(p.random(ROOTS.length))];
+      particles.push({ t:'water', ph:0,
+        x:rx, y:ry, spd:p.random(1.8,2.8), sz:8, a:255,
+        lf:LEAVES[p.floor(p.random(LEAVES.length))] });
+    }
+    if (S.co2) {
+      let lf = LEAVES[p.floor(p.random(LEAVES.length))];
+      particles.push({ t:'co2',
+        x:lf.cx + p.random(-85,85), y:lf.cy - p.random(22,60),
+        tx:lf.cx + p.random(-10,10), ty:lf.cy + 4,
+        spd:p.random(0.65,1.3), sz:8, a:230 });
+    }
+    if (rate > 0) {
+      if (p.random() < 0.7) {
+        let lf = LEAVES[p.floor(p.random(LEAVES.length))];
+        particles.push({ t:'o2',
+          x:lf.cx + p.random(-20,20), y:lf.cy - 6,
+          vx:p.random(-0.45,0.45), vy:p.random(-1.5,-2.6),
+          sz:8, a:240 });
+      }
+      if (p.random() < 0.6) {
+        particles.push({ t:'glucose', x:SX+SW/4, y:ST+16,
+          spd:p.random(1.4,2.2), sz:7, a:240 });
+      }
+    }
+  }
+
+  function updateParticles(rate) {
+    particles = particles.filter(pt => pt.a > 4);
+    for (let pt of particles) {
+      if (pt.t === 'water') {
+        if (pt.ph === 0) {
+          let dx = SX-SW/4-pt.x, dy = SOIL_Y-6-pt.y;
+          let d = p.sqrt(dx*dx+dy*dy);
+          if (d < 6) { pt.ph = 1; continue; }
+          pt.x += dx/d*pt.spd; pt.y += dy/d*pt.spd;
+        } else if (pt.ph === 1) {
+          pt.y -= pt.spd;
+          pt.x = SX-SW/4 + p.sin(tick*1.1+pt.y*0.05)*1.5;
+          if (pt.y <= ST+10) pt.ph = 2;
+        } else if (pt.ph === 2) {
+          let dx = pt.lf.cx-pt.x, dy = pt.lf.cy-pt.y;
+          let d = p.sqrt(dx*dx+dy*dy);
+          if (d < 10) pt.ph = 3;
+          else { pt.x += dx/d*pt.spd; pt.y += dy/d*pt.spd; }
+        } else { pt.a -= rate > 0 ? 13 : 5; }
+      } else if (pt.t === 'co2') {
+        let dx = pt.tx-pt.x, dy = pt.ty-pt.y;
+        let d = p.sqrt(dx*dx+dy*dy);
+        if (d < 8) { pt.a -= rate > 0 ? 15 : 4; continue; }
+        pt.x += dx/d*pt.spd + p.random(-0.18,0.18);
+        pt.y += dy/d*pt.spd;
+      } else if (pt.t === 'o2') {
+        pt.x += pt.vx; pt.y += pt.vy;
+        pt.vx += p.random(-0.04,0.04); pt.vy += 0.025;
+        pt.a -= 1.8;
+      } else if (pt.t === 'glucose') {
+        pt.y += pt.spd;
+        pt.x = SX+SW/4 + p.sin(tick+pt.y*0.11)*2;
+        if (pt.y >= SOIL_Y-5) pt.a -= 16;
+      }
+    }
+  }
+
+  function drawParticles() {
+    const COLS = {
+      water:   COL.water,
+      co2:     COL.co2,
+      o2:      COL.o2,
+      glucose: COL.glucose,
+    };
+    for (let pt of particles) {
+      let [r,g,b] = COLS[pt.t];
+      // Drop shadow
+      p.noStroke(); p.fill(0, 0, 0, pt.a * 0.12);
+      p.ellipse(pt.x + 1, pt.y + 1.5, pt.sz + 2);
+      // Fill
+      p.fill(r, g, b, pt.a); p.ellipse(pt.x, pt.y, pt.sz);
+      // White border
+      p.stroke(255, 255, 255, pt.a * 0.7); p.strokeWeight(1.5);
+      p.noFill(); p.ellipse(pt.x, pt.y, pt.sz);
+      // Specular
+      p.noStroke(); p.fill(255, 255, 255, pt.a * 0.5);
+      p.ellipse(pt.x - pt.sz*.2, pt.y - pt.sz*.22, pt.sz * 0.32);
+    }
+    p.noStroke();
+  }
+
+  // ─── Legend ────────────────────────────────────────────────────
+  function drawLegend() {
+    let lx = 10, ly = H - 106, lw = 170, lh = 96;
+    // White panel
+    p.fill(255, 255, 255, 220); p.stroke(200, 220, 200); p.strokeWeight(1);
+    p.rect(lx, ly, lw, lh, 6);
+    p.noStroke();
+
+    const ITEMS = [
+      { c:COL.water,   l:'Water (H₂O) ↑'       },
+      { c:COL.co2,     l:'Carbon dioxide (CO₂) →'},
+      { c:COL.o2,      l:'Oxygen (O₂) ↑'        },
+      { c:COL.glucose, l:'Glucose ↓'                  },
+    ];
+    p.textSize(10); p.textAlign(p.LEFT);
+    p.fill(80, 80, 80); p.textStyle(p.BOLD);
+    p.text('Particle key', lx + 10, ly + 14);
+    p.textStyle(p.NORMAL);
+    for (let i = 0; i < ITEMS.length; i++) {
+      let iy = ly + 28 + i * 18;
+      let [r,g,b] = ITEMS[i].c;
+      p.fill(r, g, b); p.ellipse(lx + 14, iy, 9, 9);
+      p.fill(40, 40, 40); p.text(ITEMS[i].l, lx + 24, iy + 4);
+    }
+  }
+
+  // ─── Status panel ──────────────────────────────────────────────
+  function drawStatusPanel(rate) {
+    let px = W - 228, py = H - 106, pw = 218, ph = 96;
+    let active = rate > 0;
+
+    p.fill(255, 255, 255, 220);
+    p.stroke(active ? 39 : 189, active ? 174 : 189, active ? 96 : 189);
+    p.strokeWeight(2); p.rect(px, py, pw, ph, 6); p.noStroke();
+
+    p.textAlign(p.CENTER); p.textSize(10); p.textStyle(p.BOLD);
+    p.fill(active ? 27 : 100, active ? 120 : 100, active ? 65 : 100);
+    p.text(active ? 'Photosynthesis occurring' : 'Photosynthesis stopped', px+pw/2, py+16);
+    p.textStyle(p.NORMAL);
+
+    // Show which inputs are on/off
+    let items = [
+      { k:'light', label:'Sunlight', col:[253,196,0] },
+      { k:'water', label:'Water',    col:[52,152,219] },
+      { k:'co2',   label:'CO₂', col:[127,140,141] },
+    ];
+    for (let i = 0; i < items.length; i++) {
+      let it = items[i], on = S[it.k];
+      let iy = py + 30 + i * 20;
+      p.fill(on ? it.col[0] : 200, on ? it.col[1] : 200, on ? it.col[2] : 200);
+      p.ellipse(px + 16, iy, 10, 10);
+      p.stroke(on ? it.col[0] : 200, on ? it.col[1] : 200, on ? it.col[2] : 200);
+      p.strokeWeight(1); p.noFill();
+      p.ellipse(px + 16, iy, 10, 10); p.noStroke();
+      p.fill(on ? 40 : 160, on ? 40 : 160, on ? 40 : 160);
+      p.textAlign(p.LEFT); p.textSize(10);
+      p.text(it.label + (on ? ' ✓' : ' ✗ (off)'), px + 26, iy + 4);
+    }
+
+    // Equation
+    p.textAlign(p.CENTER); p.textSize(9.5);
+    p.fill(active ? 39 : 160, active ? 120 : 160, active ? 34 : 160);
+    p.text('6CO₂ + 6H₂O + Light → Glucose + 6O₂', px+pw/2, py+ph-8);
+  }
+
+  p.mouseClicked=function(){ if(mcqMode){ mcqClick(p.mouseX,p.mouseY); return; } };
+
+  // ─── Structure labels ──────────────────────────────────────────
+  function drawLabels() {
+    // Helper: white label box with text
+    function lbl(txt, x, y, align) {
+      p.textSize(10); p.textAlign(align);
+      let tw = p.textWidth(txt);
+      let bx = align === p.RIGHT ? x - tw - 4 : x - 4;
+      p.fill(255, 255, 255, 210); p.noStroke();
+      p.rect(bx, y - 12, tw + 8, 15, 3);
+      p.fill(40, 40, 40); p.text(txt, x, y);
+    }
+
+    // Xylem
+    p.stroke(...COL.xylem, 160); p.strokeWeight(1.2);
+    p.line(SX-SW/4, ST+72, SX-SW/2-8, ST+72); p.noStroke();
+    lbl('Xylem (water ↑)', SX-SW/2-10, ST+75, p.RIGHT);
+
+    // Phloem
+    p.stroke(...COL.phloem, 160); p.strokeWeight(1.2);
+    p.line(SX+SW/4, ST+122, SX+SW/2+8, ST+122); p.noStroke();
+    lbl('Phloem (glucose ↓)', SX+SW/2+10, ST+125, p.LEFT);
+
+    // Chloroplasts
+    p.stroke(...COL.leafFill, 150); p.strokeWeight(1.2);
+    p.line(LEAVES[0].cx-30, LEAVES[0].cy-4, 272, 225); p.noStroke();
+    lbl('Chloroplasts', 270, 228, p.RIGHT);
+
+    // Stomata
+    p.stroke(...COL.leafDark, 150); p.strokeWeight(1.2);
+    p.line(LEAVES[1].cx+22, LEAVES[1].cy+8, LEAVES[1].cx+78, LEAVES[1].cy+8); p.noStroke();
+    lbl('Stomata', LEAVES[1].cx+80, LEAVES[1].cy+11, p.LEFT);
+
+    // Soil minerals label
+    lbl('Minerals & water in soil', W - 12, SOIL_Y + 22, p.RIGHT);
+  }
+
+});
+</script>
+</body>
+</html>

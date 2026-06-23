@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Circulatory System — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[18,8,8]))}
+
+const STEPS=[
+  {
+    title:'The Heart — Structure & Function',
+    body:`The <strong>heart</strong> is a muscular pump that circulates blood around the body.
+    <br><br>
+    Four chambers:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Right atrium</strong> — receives deoxygenated blood from body (via vena cava)</li>
+      <li><strong>Right ventricle</strong> — pumps blood to the lungs (via pulmonary artery)</li>
+      <li><strong>Left atrium</strong> — receives oxygenated blood from lungs (via pulmonary vein)</li>
+      <li><strong>Left ventricle</strong> — pumps oxygenated blood to the body (via aorta); thickest wall</li>
+    </ul>
+    <strong>Valves</strong> (bicuspid, tricuspid, semi-lunar) prevent backflow of blood.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const beat=Math.sin(t*3)*0.1+0.95;
+      // Heart outline
+      sk.fill(180,30,30,180);sk.noStroke();
+      sk.arc(W*0.38,H*0.38,W*0.22*beat,H*0.3*beat,sk.PI,0);
+      sk.arc(W*0.52,H*0.38,W*0.22*beat,H*0.3*beat,sk.PI,0);
+      sk.triangle(W*0.27*beat+W*(1-beat)*0.27,H*0.38,W*0.63*beat+W*(1-beat)*0.63,H*0.38,W*0.45,H*0.72*beat+H*(1-beat)*0.72);
+      // Right / Left sides divider
+      sk.stroke(100,0,0,200);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.45,H*0.3,W*0.45,H*0.7);
+      // Chambers
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('RA',W*0.35,H*0.35);
+      sk.text('LA',W*0.55,H*0.35);
+      sk.text('RV',W*0.36,H*0.56);
+      sk.text('LV',W*0.54,H*0.56);
+      // Vessels
+      // Vena cava → RA
+      sk.stroke(52,100,200,200);sk.strokeWeight(5);sk.noFill();
+      sk.line(W*0.22,H*0.35,W*0.32,H*0.35);
+      sk.fill(52,100,200);sk.textSize(7.5);sk.textAlign(sk.RIGHT);sk.text('Vena\ncava',W*0.2,H*0.35);
+      // Pulmonary artery → lungs
+      sk.stroke(52,100,200,200);sk.strokeWeight(4);
+      sk.line(W*0.36,H*0.28,W*0.24,H*0.18);
+      sk.fill(52,100,200);sk.textSize(7.5);sk.textAlign(sk.LEFT);sk.text('Pulm.\nartery',W*0.13,H*0.16);
+      // Pulmonary vein → LA
+      sk.stroke(220,50,50,200);sk.strokeWeight(4);
+      sk.line(W*0.76,H*0.18,W*0.6,H*0.28);
+      sk.fill(220,50,50);sk.textAlign(sk.RIGHT);sk.text('Pulm.\nvein',W*0.88,H*0.16);
+      // Aorta
+      sk.stroke(220,50,50,200);sk.strokeWeight(5);
+      sk.line(W*0.54,H*0.28,W*0.7,H*0.28);
+      sk.fill(220,50,50);sk.textAlign(sk.LEFT);sk.text('Aorta',W*0.72,H*0.28);
+      // Animated blood drops
+      const bloodT=(t*0.4)%1;
+      sk.fill(220,50,50,200);sk.noStroke();sk.circle(W*0.64+bloodT*W*0.08,H*0.28,8);
+      sk.fill(52,100,200,200);sk.circle(W*0.22+bloodT*W*0.1,H*0.35,8);
+    }
+  },
+  {
+    title:'Blood Vessels',
+    body:`Three types of blood vessels:
+    <br><br>
+    <table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:4px">
+      <thead><tr style="background:#880000;color:#fff"><th style="padding:5px 8px;border:1px solid #444">Vessel</th><th style="padding:5px 8px;border:1px solid #444">Direction</th><th style="padding:5px 8px;border:1px solid #444">Wall</th><th style="padding:5px 8px;border:1px solid #444">Other features</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Artery</td><td style="padding:4px 8px;border:1px solid #ddd">Away from heart</td><td style="padding:4px 8px;border:1px solid #ddd">Thick, muscular, elastic</td><td style="padding:4px 8px;border:1px solid #ddd">High pressure, no valves</td></tr>
+        <tr style="background:#1a0a0a"><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Vein</td><td style="padding:4px 8px;border:1px solid #ddd">Toward heart</td><td style="padding:4px 8px;border:1px solid #ddd">Thin, less muscle</td><td style="padding:4px 8px;border:1px solid #ddd">Low pressure, HAS valves, wide lumen</td></tr>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Capillary</td><td style="padding:4px 8px;border:1px solid #ddd">Between artery/vein</td><td style="padding:4px 8px;border:1px solid #ddd">One cell thick</td><td style="padding:4px 8px;border:1px solid #ddd">Exchange of O₂, CO₂, glucose, waste</td></tr>
+      </tbody>
+    </table>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const vessels=[
+        {n:'ARTERY',c:[220,50,50],x:0.2,wall:18,lumen:16,desc:'Thick walls\nHigh pressure\nNo valves'},
+        {n:'VEIN',c:[52,100,200],x:0.5,wall:8,lumen:22,desc:'Thin walls\nLow pressure\nHas valves'},
+        {n:'CAPILLARY',c:[200,150,150],x:0.8,wall:1,lumen:6,desc:'1 cell thick\nExchange\nsite'},
+      ];
+      vessels.forEach((v,i)=>{
+        const cx=v.x*W,cy=H*0.5;
+        const pulse=v.n==='ARTERY'?1+Math.sin(t*3)*0.08:1;
+        // Outer wall
+        sk.fill(...v.c,80);sk.noStroke();sk.circle(cx,cy,(v.lumen+v.wall*2)*pulse);
+        // Lumen
+        sk.fill(180,0,0,160);sk.circle(cx,cy,v.lumen*pulse);
+        // Animated blood cell
+        const bAngle=t*2+i*2;
+        const bx=cx+Math.cos(bAngle)*v.lumen*0.3*pulse;
+        const by=cy+Math.sin(bAngle)*v.lumen*0.3*pulse;
+        sk.fill(255,100,100,220);sk.circle(bx,by,v.lumen*0.35*pulse);
+        // Label
+        sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(v.n,cx,H*0.15);
+        sk.textSize(8);sk.textStyle(sk.NORMAL);sk.text(v.desc,cx,H*0.76);
+      });
+    }
+  },
+  {
+    title:'Blood — Components & Functions',
+    body:`Blood has four main components:
+    <br><br>
+    <ol style="margin:6px 0 0 18px;line-height:2.3">
+      <li><strong>Red blood cells (RBCs)</strong> — biconcave, no nucleus; carry haemoglobin (Hb) to transport O₂ and some CO₂</li>
+      <li><strong>White blood cells (WBCs)</strong> — larger, have nucleus; defend against infection by phagocytosis or producing antibodies</li>
+      <li><strong>Platelets</strong> — tiny cell fragments; clotting to prevent blood loss</li>
+      <li><strong>Plasma</strong> — liquid portion (~55% of blood); transports dissolved substances (glucose, hormones, CO₂, urea, ions, antibodies)</li>
+    </ol>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Plasma
+      sk.fill(255,220,100,30);sk.noStroke();sk.rect(W*0.08,H*0.18,W*0.84,H*0.65,8);
+      sk.fill(255,220,100,100);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Plasma (55%)',W*0.5,H*0.12);
+      // RBCs
+      for(let i=0;i<12;i++){
+        const x=W*0.12+i%6*(W*0.13),y=H*0.3+Math.floor(i/6)*H*0.12;
+        const pulse=1+Math.sin(t+i*0.5)*0.07;
+        sk.fill(220,60,60,200);sk.noStroke();sk.ellipse(x,y,24*pulse,16*pulse);
+        sk.fill(220,60,60,40);sk.ellipse(x,y,10*pulse,8*pulse);
+      }
+      sk.fill(220,60,60);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('RBCs (O₂ transport)',W*0.42,H*0.52);
+      // WBCs
+      for(let i=0;i<3;i++){
+        const x=W*0.66+i*W*0.1,y=H*0.36+Math.sin(t+i)*8;
+        const pulse=1+Math.sin(t*1.2+i)*0.08;
+        sk.fill(200,230,200,200);sk.noStroke();sk.circle(x,y,28*pulse);
+        // Lobed nucleus
+        sk.fill(100,160,100,200);sk.circle(x-5,y-3,14*pulse);
+        sk.circle(x+5,y+3,12*pulse);
+      }
+      sk.fill(200,230,200);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('WBCs (defence)',W*0.75,H*0.52);
+      // Platelets
+      for(let i=0;i<6;i++){
+        const x=W*0.12+i*W*0.13,y=H*0.65+Math.sin(t*2+i)*6;
+        sk.fill(255,200,100,200);sk.noStroke();sk.circle(x,y,8);
+      }
+      sk.fill(255,200,100);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Platelets (clotting)',W*0.5,H*0.78);
+    }
+  },
+  {
+    title:'The Heart — 4 Chambers Labeled',
+    content:`<h3 style="color:#2e7d32;margin:0 0 6px">Heart Cross-Section: 4 Chambers</h3><p style="margin:0;font-size:.85rem">The heart has two sides separated by the septum. The <strong>right side</strong> handles deoxygenated blood (shown in blue); the <strong>left side</strong> handles oxygenated blood (shown in red). Valves prevent backflow at every exit.</p>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-r" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#c62828"/>
+    </marker>
+    <marker id="arr-b" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- Heart outline -->
+  <ellipse cx="210" cy="125" rx="110" ry="100" fill="#b71c1c" opacity="0.18" stroke="#b71c1c" stroke-width="2"/>
+  <!-- Septum -->
+  <line x1="210" y1="48" x2="210" y2="210" stroke="#7f0000" stroke-width="3"/>
+  <!-- RIGHT side (blue deoxygenated) -->
+  <rect x="105" y="60" width="100" height="55" rx="10" fill="#1565c0" opacity="0.75"/>
+  <text x="155" y="82" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">RIGHT ATRIUM</text>
+  <text x="155" y="95" text-anchor="middle" font-size="8" fill="#bbdefb">Receives deoxy blood</text>
+  <text x="155" y="106" text-anchor="middle" font-size="8" fill="#bbdefb">from vena cava</text>
+  <rect x="105" y="128" width="100" height="70" rx="10" fill="#1e88e5" opacity="0.75"/>
+  <text x="155" y="152" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">RIGHT VENTRICLE</text>
+  <text x="155" y="165" text-anchor="middle" font-size="8" fill="#bbdefb">Pumps to lungs via</text>
+  <text x="155" y="176" text-anchor="middle" font-size="8" fill="#bbdefb">pulmonary artery</text>
+  <text x="155" y="187" text-anchor="middle" font-size="8" fill="#e3f2fd">(thin walls)</text>
+  <!-- LEFT side (red oxygenated) -->
+  <rect x="215" y="60" width="100" height="55" rx="10" fill="#c62828" opacity="0.75"/>
+  <text x="265" y="82" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">LEFT ATRIUM</text>
+  <text x="265" y="95" text-anchor="middle" font-size="8" fill="#ffcdd2">Receives oxy blood</text>
+  <text x="265" y="106" text-anchor="middle" font-size="8" fill="#ffcdd2">from pulm. veins</text>
+  <rect x="215" y="128" width="100" height="70" rx="10" fill="#e53935" opacity="0.75"/>
+  <text x="265" y="150" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">LEFT VENTRICLE</text>
+  <text x="265" y="163" text-anchor="middle" font-size="8" fill="#ffcdd2">Pumps to whole body</text>
+  <text x="265" y="174" text-anchor="middle" font-size="8" fill="#ffcdd2">via aorta</text>
+  <text x="265" y="185" text-anchor="middle" font-size="8" fill="#ffebee">(THICKEST walls)</text>
+  <!-- Tricuspid valve label -->
+  <line x1="210" y1="117" x2="175" y2="130" stroke="#ffd54f" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="130" y="124" font-size="7.5" fill="#ffd54f">Tricuspid</text>
+  <!-- Bicuspid valve label -->
+  <line x1="210" y1="117" x2="245" y2="130" stroke="#ffd54f" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="248" y="124" font-size="7.5" fill="#ffd54f">Bicuspid/Mitral</text>
+  <!-- Vessels labels -->
+  <text x="50" y="45" font-size="8" fill="#90caf9" text-anchor="middle">Vena Cava</text>
+  <line x1="50" y1="48" x2="105" y2="75" stroke="#1565c0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="155" y="25" font-size="8" fill="#90caf9" text-anchor="middle">Pulmonary Artery</text>
+  <line x1="145" y1="28" x2="135" y2="58" stroke="#1565c0" stroke-width="2" marker-end="url(#arr-b)"/>
+  <text x="265" y="25" font-size="8" fill="#ef9a9a" text-anchor="middle">Pulmonary Veins</text>
+  <line x1="265" y1="28" x2="265" y2="58" stroke="#c62828" stroke-width="2" marker-end="url(#arr-r)"/>
+  <text x="370" y="45" font-size="8" fill="#ef9a9a" text-anchor="middle">Aorta</text>
+  <line x1="355" y1="48" x2="315" y2="75" stroke="#c62828" stroke-width="2" marker-end="url(#arr-r)"/>
+  <!-- Semilunar valve note -->
+  <text x="210" y="230" text-anchor="middle" font-size="8" fill="#a5d6a7">Semilunar valves at exits to pulmonary artery &amp; aorta prevent backflow</text>
+</svg>`
+  },
+  {
+    title:'Double Circulation — Pulmonary and Systemic',
+    content:`<h3 style="color:#2e7d32;margin:0 0 6px">Double Circulation: Figure-8 Pattern</h3><p style="margin:0;font-size:.85rem">Blood passes through the heart <strong>twice</strong> per complete circuit. This maintains high pressure when delivering blood to all body organs. Blue = deoxygenated; Red = oxygenated.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-red" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#c62828"/>
+    </marker>
+    <marker id="arr-blue2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <polygon points="0 0, 7 3.5, 0 7" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- HEART centre -->
+  <rect x="160" y="98" width="100" height="54" rx="14" fill="#7f0000" stroke="#c62828" stroke-width="2"/>
+  <text x="210" y="118" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">HEART</text>
+  <text x="210" y="133" text-anchor="middle" font-size="8.5" fill="#ffcdd2">Right side | Left side</text>
+  <line x1="210" y1="98" x2="210" y2="152" stroke="#ffcdd2" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <!-- LUNGS top -->
+  <rect x="145" y="15" width="130" height="44" rx="12" fill="#1565c0" opacity="0.7"/>
+  <text x="210" y="34" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">LUNGS</text>
+  <text x="210" y="47" text-anchor="middle" font-size="8" fill="#bbdefb">Picks up O&#x2082;, drops CO&#x2082;</text>
+  <!-- BODY bottom -->
+  <rect x="145" y="191" width="130" height="44" rx="12" fill="#2e7d32" opacity="0.7"/>
+  <text x="210" y="210" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">BODY ORGANS</text>
+  <text x="210" y="224" text-anchor="middle" font-size="8" fill="#a5d6a7">Drops O&#x2082;, picks up CO&#x2082;</text>
+  <!-- PULMONARY LOOP arrows -->
+  <!-- Right heart → Lungs (deoxygenated, blue, left path) -->
+  <path d="M178 98 Q120 80 158 59" fill="none" stroke="#1565c0" stroke-width="3" marker-end="url(#arr-blue2)"/>
+  <text x="118" y="73" font-size="8" fill="#90caf9" text-anchor="middle">Pulmonary</text>
+  <text x="118" y="83" font-size="8" fill="#90caf9" text-anchor="middle">Artery</text>
+  <!-- Lungs → Left heart (oxygenated, red, right path) -->
+  <path d="M263 59 Q300 80 242 98" fill="none" stroke="#c62828" stroke-width="3" marker-end="url(#arr-red)"/>
+  <text x="303" y="73" font-size="8" fill="#ef9a9a" text-anchor="middle">Pulmonary</text>
+  <text x="303" y="83" font-size="8" fill="#ef9a9a" text-anchor="middle">Vein</text>
+  <!-- SYSTEMIC LOOP arrows -->
+  <!-- Left heart → Body (oxygenated, red, right path) -->
+  <path d="M242 152 Q300 168 263 191" fill="none" stroke="#c62828" stroke-width="3" marker-end="url(#arr-red)"/>
+  <text x="304" y="167" font-size="8" fill="#ef9a9a" text-anchor="middle">Aorta</text>
+  <!-- Body → Right heart (deoxygenated, blue, left path) -->
+  <path d="M158 191 Q120 168 178 152" fill="none" stroke="#1565c0" stroke-width="3" marker-end="url(#arr-blue2)"/>
+  <text x="115" y="167" font-size="8" fill="#90caf9" text-anchor="middle">Vena Cava</text>
+  <!-- Labels -->
+  <rect x="2" y="48" width="95" height="28" rx="6" fill="#0d47a1" opacity="0.5"/>
+  <text x="49" y="60" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e3f2fd">PULMONARY</text>
+  <text x="49" y="72" text-anchor="middle" font-size="8" fill="#bbdefb">CIRCULATION</text>
+  <rect x="323" y="158" width="95" height="28" rx="6" fill="#1b5e20" opacity="0.5"/>
+  <text x="370" y="170" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#e8f5e9">SYSTEMIC</text>
+  <text x="370" y="182" text-anchor="middle" font-size="8" fill="#a5d6a7">CIRCULATION</text>
+  <text x="210" y="244" text-anchor="middle" font-size="7.5" fill="#aaa">Blood visits heart TWICE per complete circuit — maintains pressure for efficient delivery</text>
+</svg>`
+  },
+  {
+    title:'Blood Vessels — Artery, Vein, Capillary',
+    content:`<h3 style="color:#2e7d32;margin:0 0 6px">Three Types of Blood Vessel — Cross Sections</h3><p style="margin:0;font-size:.85rem">Each vessel is adapted to its function. Arteries withstand high pressure; veins return blood against gravity; capillaries are the actual exchange sites.</p>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- ARTERY -->
+  <text x="70" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">ARTERY</text>
+  <!-- Outer wall thick -->
+  <circle cx="70" cy="100" r="52" fill="#ef9a9a" opacity="0.5" stroke="#c62828" stroke-width="2"/>
+  <!-- Muscle layer -->
+  <circle cx="70" cy="100" r="44" fill="#e57373" opacity="0.5"/>
+  <!-- Lumen small -->
+  <circle cx="70" cy="100" r="22" fill="#c62828"/>
+  <!-- Blood inside -->
+  <circle cx="70" cy="100" r="18" fill="#b71c1c"/>
+  <!-- Labels -->
+  <text x="70" y="29" text-anchor="middle" font-size="8" fill="#ef9a9a">Thick elastic wall</text>
+  <line x1="90" y1="80" x2="108" y2="64" stroke="#ef9a9a" stroke-width="1"/>
+  <text x="115" y="62" font-size="7.5" fill="#ef9a9a">Muscle layer</text>
+  <text x="70" y="168" text-anchor="middle" font-size="7.5" fill="#ffcdd2">Small lumen</text>
+  <text x="70" y="180" text-anchor="middle" font-size="7.5" fill="#ffcdd2">HIGH PRESSURE</text>
+  <text x="70" y="192" text-anchor="middle" font-size="7.5" fill="#ffcdd2">Carries blood AWAY</text>
+  <text x="70" y="203" text-anchor="middle" font-size="7.5" fill="#ffcdd2">from heart</text>
+  <!-- VEIN -->
+  <text x="210" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">VEIN</text>
+  <!-- Outer wall thin -->
+  <circle cx="210" cy="100" r="52" fill="#90caf9" opacity="0.4" stroke="#1565c0" stroke-width="1.5"/>
+  <circle cx="210" cy="100" r="46" fill="#64b5f6" opacity="0.25"/>
+  <!-- Wide lumen -->
+  <circle cx="210" cy="100" r="36" fill="#1565c0"/>
+  <circle cx="210" cy="100" r="30" fill="#1e88e5"/>
+  <!-- Valve flaps -->
+  <path d="M195 90 Q205 100 195 110" fill="none" stroke="#fff" stroke-width="2"/>
+  <path d="M225 90 Q215 100 225 110" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="210" y="168" text-anchor="middle" font-size="7.5" fill="#bbdefb">Wide lumen</text>
+  <text x="210" y="180" text-anchor="middle" font-size="7.5" fill="#bbdefb">LOW PRESSURE</text>
+  <text x="210" y="192" text-anchor="middle" font-size="7.5" fill="#bbdefb">Has VALVES (shown)</text>
+  <text x="210" y="203" text-anchor="middle" font-size="7.5" fill="#bbdefb">Carries blood TO heart</text>
+  <!-- CAPILLARY -->
+  <text x="350" y="18" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">CAPILLARY</text>
+  <!-- Very thin wall -->
+  <circle cx="350" cy="100" r="16" fill="#ef9a9a" opacity="0.8" stroke="#2e7d32" stroke-width="1"/>
+  <circle cx="350" cy="100" r="12" fill="#c62828"/>
+  <!-- One cell thick label -->
+  <line x1="362" y1="90" x2="390" y2="70" stroke="#a5d6a7" stroke-width="1"/>
+  <text x="393" y="68" font-size="7" fill="#a5d6a7">1 cell</text>
+  <text x="393" y="78" font-size="7" fill="#a5d6a7">thick</text>
+  <!-- Exchange arrows -->
+  <text x="350" y="140" text-anchor="middle" font-size="8" fill="#a5d6a7">&#x2194; exchange</text>
+  <text x="350" y="168" text-anchor="middle" font-size="7.5" fill="#a5d6a7">Tiny lumen</text>
+  <text x="350" y="180" text-anchor="middle" font-size="7.5" fill="#a5d6a7">ONE cell thick wall</text>
+  <text x="350" y="192" text-anchor="middle" font-size="7.5" fill="#a5d6a7">O&#x2082;/CO&#x2082;/glucose</text>
+  <text x="350" y="203" text-anchor="middle" font-size="7.5" fill="#a5d6a7">exchange with cells</text>
+  <!-- Dividers -->
+  <line x1="140" y1="10" x2="140" y2="230" stroke="#444" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="280" y1="10" x2="280" y2="230" stroke="#444" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="210" y="230" text-anchor="middle" font-size="8" fill="#888">No valves in arteries — valves only in veins &amp; heart</text>
+</svg>`
+  },
+  {
+    title:'Blood Components and Their Functions',
+    content:`<h3 style="color:#2e7d32;margin:0 0 6px">Four Components of Blood</h3><p style="margin:0;font-size:.85rem">Blood is a tissue made of plasma (liquid) and three types of cells/fragments, each with a specific role in transport, defence, or clotting.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Quadrant borders -->
+  <line x1="210" y1="0" x2="210" y2="250" stroke="#444" stroke-width="1.5"/>
+  <line x1="0" y1="125" x2="420" y2="125" stroke="#444" stroke-width="1.5"/>
+  <!-- TOP-LEFT: PLASMA -->
+  <rect x="2" y="2" width="206" height="121" rx="0" fill="#f9a825" opacity="0.1"/>
+  <text x="105" y="18" text-anchor="middle" font-size="10" font-weight="bold" fill="#f9a825">PLASMA (55%)</text>
+  <!-- wavy liquid lines -->
+  <path d="M15 35 Q30 28 45 35 Q60 42 75 35 Q90 28 105 35 Q120 42 135 35 Q150 28 165 35 Q180 42 195 35" fill="none" stroke="#f9a825" stroke-width="1.5" opacity="0.6"/>
+  <path d="M15 48 Q30 41 45 48 Q60 55 75 48 Q90 41 105 48 Q120 55 135 48 Q150 41 165 48 Q180 55 195 48" fill="none" stroke="#f9a825" stroke-width="1.5" opacity="0.4"/>
+  <path d="M15 61 Q30 54 45 61 Q60 68 75 61 Q90 54 105 61 Q120 68 135 61 Q150 54 165 61 Q180 68 195 61" fill="none" stroke="#f9a825" stroke-width="1.5" opacity="0.3"/>
+  <text x="105" y="80" text-anchor="middle" font-size="7.5" fill="#ffe082">Pale yellow liquid</text>
+  <text x="105" y="91" text-anchor="middle" font-size="7.5" fill="#ffe082">Transports: digested food,</text>
+  <text x="105" y="102" text-anchor="middle" font-size="7.5" fill="#ffe082">CO&#x2082;, hormones, heat,</text>
+  <text x="105" y="113" text-anchor="middle" font-size="7.5" fill="#ffe082">urea, antibodies</text>
+  <!-- TOP-RIGHT: RED BLOOD CELLS -->
+  <rect x="212" y="2" width="206" height="121" rx="0" fill="#c62828" opacity="0.1"/>
+  <text x="315" y="18" text-anchor="middle" font-size="10" font-weight="bold" fill="#ef5350">RED BLOOD CELLS</text>
+  <!-- Biconcave discs -->
+  <ellipse cx="250" cy="55" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="250" cy="55" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <ellipse cx="280" cy="45" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="280" cy="45" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <ellipse cx="310" cy="60" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="310" cy="60" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <ellipse cx="340" cy="48" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="340" cy="48" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <ellipse cx="265" cy="78" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="265" cy="78" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <ellipse cx="325" cy="80" rx="18" ry="12" fill="#c62828" opacity="0.8"/>
+  <ellipse cx="325" cy="80" rx="8" ry="5" fill="#b71c1c" opacity="0.8"/>
+  <text x="315" y="100" text-anchor="middle" font-size="7.5" fill="#ffcdd2">Biconcave disc, no nucleus</text>
+  <text x="315" y="111" text-anchor="middle" font-size="7.5" fill="#ffcdd2">Haemoglobin carries O&#x2082;</text>
+  <!-- BOTTOM-LEFT: WHITE BLOOD CELLS -->
+  <rect x="2" y="127" width="206" height="121" rx="0" fill="#2e7d32" opacity="0.1"/>
+  <text x="105" y="143" text-anchor="middle" font-size="10" font-weight="bold" fill="#66bb6a">WHITE BLOOD CELLS</text>
+  <!-- Irregular shaped WBC -->
+  <circle cx="70" cy="190" r="26" fill="#388e3c" opacity="0.7"/>
+  <circle cx="65" cy="183" r="16" fill="#1b5e20" opacity="0.8"/>
+  <circle cx="75" cy="195" r="12" fill="#1b5e20" opacity="0.8"/>
+  <text x="70" y="228" text-anchor="middle" font-size="7" fill="#a5d6a7">Phagocyte</text>
+  <text x="70" y="238" text-anchor="middle" font-size="7" fill="#a5d6a7">(engulfs bacteria)</text>
+  <circle cx="145" cy="190" r="22" fill="#43a047" opacity="0.7"/>
+  <circle cx="145" cy="188" r="12" fill="#1b5e20" opacity="0.8"/>
+  <text x="145" y="228" text-anchor="middle" font-size="7" fill="#a5d6a7">Lymphocyte</text>
+  <text x="145" y="238" text-anchor="middle" font-size="7" fill="#a5d6a7">(makes antibodies)</text>
+  <text x="105" y="165" text-anchor="middle" font-size="7.5" fill="#c8e6c9">Larger, has nucleus — defend vs infection</text>
+  <!-- BOTTOM-RIGHT: PLATELETS -->
+  <rect x="212" y="127" width="206" height="121" rx="0" fill="#7b1fa2" opacity="0.1"/>
+  <text x="315" y="143" text-anchor="middle" font-size="10" font-weight="bold" fill="#ce93d8">PLATELETS</text>
+  <!-- Tiny dots near wound line -->
+  <line x1="230" y1="185" x2="405" y2="185" stroke="#ef5350" stroke-width="2"/>
+  <text x="265" y="175" font-size="7.5" fill="#ef9a9a">wound</text>
+  <!-- Platelet dots -->
+  <circle cx="250" cy="183" r="5" fill="#ba68c8"/>
+  <circle cx="265" cy="188" r="4" fill="#ba68c8"/>
+  <circle cx="280" cy="182" r="5" fill="#ba68c8"/>
+  <circle cx="295" cy="187" r="4" fill="#ba68c8"/>
+  <circle cx="310" cy="183" r="5" fill="#ba68c8"/>
+  <circle cx="325" cy="189" r="4" fill="#ba68c8"/>
+  <circle cx="340" cy="182" r="5" fill="#ba68c8"/>
+  <!-- fibrin mesh -->
+  <path d="M248 183 Q268 178 288 185 Q308 190 328 182 Q348 175 368 183" fill="none" stroke="#ce93d8" stroke-width="1.5" opacity="0.7"/>
+  <text x="315" y="207" text-anchor="middle" font-size="7.5" fill="#e1bee7">Tiny fragments, trigger</text>
+  <text x="315" y="218" text-anchor="middle" font-size="7.5" fill="#e1bee7">blood clotting at wounds</text>
+  <text x="315" y="229" text-anchor="middle" font-size="7.5" fill="#e1bee7">(fibrin mesh forms scab)</text>
+</svg>`
+  },
+  {
+    title:'The Cardiac Cycle — Heartbeat Sequence',
+    content:`<h3 style="color:#2e7d32;margin:0 0 6px">The Cardiac Cycle: 3 Phases</h3><p style="margin:0;font-size:.85rem">One complete heartbeat = one cardiac cycle. Normal rate = <strong>60–100 beats per minute</strong>. The ECG records the electrical activity driving each cycle.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-wh" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 6 3, 0 6" fill="#fff"/>
+    </marker>
+  </defs>
+  <!-- Phase circles -->
+  <!-- Phase 1: DIASTOLE -->
+  <circle cx="105" cy="90" r="60" fill="#1b5e20" opacity="0.5" stroke="#2e7d32" stroke-width="2"/>
+  <text x="105" y="68" text-anchor="middle" font-size="9" font-weight="bold" fill="#a5d6a7">Phase 1</text>
+  <text x="105" y="82" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">DIASTOLE</text>
+  <text x="105" y="97" text-anchor="middle" font-size="8" fill="#c8e6c9">All chambers</text>
+  <text x="105" y="109" text-anchor="middle" font-size="8" fill="#c8e6c9">RELAX</text>
+  <text x="105" y="121" text-anchor="middle" font-size="8" fill="#c8e6c9">Blood flows in</text>
+  <text x="105" y="133" text-anchor="middle" font-size="8" fill="#c8e6c9">from veins</text>
+  <!-- Phase 2: ATRIAL SYSTOLE -->
+  <circle cx="210" cy="90" r="60" fill="#0d47a1" opacity="0.5" stroke="#1565c0" stroke-width="2"/>
+  <text x="210" y="68" text-anchor="middle" font-size="9" font-weight="bold" fill="#90caf9">Phase 2</text>
+  <text x="210" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">ATRIAL</text>
+  <text x="210" y="93" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">SYSTOLE</text>
+  <text x="210" y="108" text-anchor="middle" font-size="8" fill="#bbdefb">Atria contract</text>
+  <text x="210" y="120" text-anchor="middle" font-size="8" fill="#bbdefb">push blood into</text>
+  <text x="210" y="132" text-anchor="middle" font-size="8" fill="#bbdefb">ventricles</text>
+  <!-- Phase 3: VENTRICULAR SYSTOLE -->
+  <circle cx="315" cy="90" r="60" fill="#7f0000" opacity="0.5" stroke="#c62828" stroke-width="2"/>
+  <text x="315" y="68" text-anchor="middle" font-size="9" font-weight="bold" fill="#ef9a9a">Phase 3</text>
+  <text x="315" y="80" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">VENTRICULAR</text>
+  <text x="315" y="93" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">SYSTOLE</text>
+  <text x="315" y="108" text-anchor="middle" font-size="8" fill="#ffcdd2">Ventricles contract</text>
+  <text x="315" y="120" text-anchor="middle" font-size="8" fill="#ffcdd2">push blood out to</text>
+  <text x="315" y="132" text-anchor="middle" font-size="8" fill="#ffcdd2">arteries</text>
+  <!-- Cycle arrows -->
+  <path d="M162 70 L155 70" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr-wh)" fill="none"/>
+  <path d="M161 65 Q183 48 202 65" fill="none" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr-wh)"/>
+  <path d="M267 65 Q289 48 308 65" fill="none" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr-wh)"/>
+  <path d="M340 145 Q340 168 210 168 Q80 168 80 145" fill="none" stroke="#aaa" stroke-width="1.5" marker-end="url(#arr-wh)" stroke-dasharray="4,3"/>
+  <text x="210" y="183" text-anchor="middle" font-size="8" fill="#aaa">→ back to Diastole (cycle repeats)</text>
+  <!-- ECG section -->
+  <text x="210" y="200" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">ECG Wave Shape</text>
+  <!-- ECG baseline + wave -->
+  <polyline points="10,225 50,225 65,210 80,240 95,195 115,255 130,225 180,225 195,210 210,240 225,195 245,255 260,225 310,225 325,210 340,240 355,195 375,255 390,225 410,225" fill="none" stroke="#4caf50" stroke-width="2"/>
+  <!-- P QRS T labels -->
+  <text x="58" y="206" font-size="7.5" fill="#81c784">P</text>
+  <text x="94" y="192" font-size="7.5" fill="#81c784">QRS</text>
+  <text x="128" y="221" font-size="7.5" fill="#81c784">T</text>
+  <text x="210" y="248" text-anchor="middle" font-size="7.5" fill="#888">Normal rate: 60–100 bpm | Pulse = arterial wall expanding with each heartbeat</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Heart, Blood &amp; Vessels',
+    body:'Test your understanding of the heart, blood vessels and blood components.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which chamber of the heart has the THICKEST wall?',opts:['Right atrium','Right ventricle','Left atrium','Left ventricle'],ans:3,exp:'The LEFT VENTRICLE has the thickest muscular wall because it must pump blood around the ENTIRE body (systemic circulation), requiring much more force than the right ventricle which only pumps blood to the nearby lungs.'},
+      {q:'Which blood vessels carry blood AWAY from the heart?',opts:['Veins','Capillaries','Arteries','Lacteals'],ans:2,exp:'ARTERIES carry blood AWAY from the heart. They have thick, elastic, muscular walls to withstand the high pressure generated by the heart. The main artery from the left ventricle is the AORTA.'},
+      {q:'What is the function of white blood cells?',opts:['Carry oxygen using haemoglobin','Transport glucose to cells','Defend the body against infection and disease','Help blood to clot'],ans:2,exp:'WHITE BLOOD CELLS (leucocytes) defend against infection by: (1) PHAGOCYTOSIS — engulfing and destroying pathogens, and (2) producing ANTIBODIES that target specific pathogens. They have a nucleus (unlike RBCs).'},
+      {q:'What substance in red blood cells carries oxygen?',opts:['Glucose','Haemoglobin','Plasma','Fibrinogen'],ans:1,exp:'HAEMOGLOBIN is the protein in red blood cells that carries oxygen. In the lungs (high O₂), haemoglobin combines with O₂ to form OXYHAEMOGLOBIN. In tissues (low O₂), oxyhaemoglobin releases the oxygen.'},
+    ]}
+  },
+  {
+    title:'Double Circulation',
+    body:`Humans have <strong>double circulation</strong> — blood passes through the heart TWICE for every complete circuit of the body.
+    <br><br>
+    <strong>Circuit 1 — Pulmonary circulation</strong>: Right side of heart → Lungs (to pick up O₂ and lose CO₂) → Left side of heart
+    <br><br>
+    <strong>Circuit 2 — Systemic circulation</strong>: Left side of heart → Body (delivers O₂, picks up CO₂) → Right side of heart
+    <br><br>
+    Advantage: Blood re-pressurised by the heart before going to body → maintains high pressure for efficient delivery to all organs.`,
+    draw:(sk)=>{
+      bg(sk,[8,10,18]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Heart centre
+      sk.fill(180,30,30,200);sk.noStroke();sk.ellipse(W*0.5,H*0.5,60,60);
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Heart',W*0.5,H*0.5);
+      // Lungs (top)
+      sk.fill(100,180,255,140);sk.noStroke();sk.ellipse(W*0.5,H*0.15,80,44);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Lungs',W*0.5,H*0.15);
+      // Body (bottom)
+      sk.fill(100,200,100,100);sk.noStroke();sk.ellipse(W*0.5,H*0.85,80,44);
+      sk.fill(255);sk.text('Body',W*0.5,H*0.85);
+      // Pulmonary circuit arrows (left side)
+      const pProg=(t*0.25)%1;
+      // Heart → Lungs (right side / blue arrow)
+      sk.stroke(52,100,200,200);sk.strokeWeight(2.5);sk.noFill();
+      // Going UP (deoxygenated, right side)
+      const upP=sk.createVector(W*0.38,H*0.47);
+      const upE=sk.createVector(W*0.38,H*0.18);
+      sk.line(upP.x,upP.y,upE.x,upE.y);
+      sk.fill(52,100,200,200);sk.noStroke();
+      sk.circle(upP.x,upP.y+(upE.y-upP.y)*pProg,8);
+      sk.fill(52,100,200);sk.textSize(7.5);sk.textAlign(sk.RIGHT);
+      sk.text('Deoxyg.\nblood',W*0.34,H*0.32);
+      // Lungs → Heart (oxygenated, right side)
+      sk.stroke(220,50,50,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.58,H*0.18,W*0.58,H*0.47);
+      sk.fill(220,50,50,200);sk.noStroke();
+      sk.circle(W*0.58,H*0.18+(H*0.29)*pProg,8);
+      sk.fill(220,50,50);sk.textSize(7.5);sk.textAlign(sk.LEFT);
+      sk.text('Oxyg.\nblood',W*0.6,H*0.32);
+      // Systemic circuit
+      const sProg=(t*0.25+0.5)%1;
+      sk.stroke(220,50,50,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.62,H*0.53,W*0.62,H*0.82);
+      sk.fill(220,50,50,200);sk.noStroke();
+      sk.circle(W*0.62,H*0.53+(H*0.29)*sProg,8);
+      sk.stroke(52,100,200,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(W*0.38,H*0.82,W*0.38,H*0.53);
+      sk.fill(52,100,200,200);sk.noStroke();
+      sk.circle(W*0.38,H*0.82-(H*0.29)*sProg,8);
+      // Labels
+      sk.fill(255,220,50);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Pulmonary\n(to lungs)',W*0.2,H*0.3);
+      sk.text('Systemic\n(to body)',W*0.8,H*0.68);
+    }
+  },
+  {
+    title:'Health & Heart Disease',
+    body:`A healthy heart is essential for life. Common problems:
+    <br><br>
+    <strong>Coronary heart disease (CHD)</strong>: Arteries supplying the heart muscle become narrowed by <strong>atherosclerosis</strong> (fatty plaque build-up, especially cholesterol).
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Reduces blood flow to heart muscle → chest pain (angina)</li>
+      <li>Complete blockage → heart attack (myocardial infarction)</li>
+    </ul>
+    <br>
+    Risk factors: <strong>high blood pressure, smoking, high cholesterol, poor diet (high saturated fat), lack of exercise, obesity, diabetes, stress</strong>.
+    <br><br>
+    Prevention: healthy diet (less saturated fat), regular exercise, not smoking, maintaining healthy weight.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Healthy artery (left)
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Healthy Artery',W*0.25,H*0.12);
+      sk.fill(220,60,60,80);sk.noStroke();sk.circle(W*0.25,H*0.45,70);
+      sk.fill(220,60,60,200);sk.circle(W*0.25,H*0.45,50);
+      // RBCs inside
+      for(let i=0;i<4;i++){
+        const ang=t*2+i*sk.HALF_PI;
+        const rx=W*0.25+Math.cos(ang)*16,ry=H*0.45+Math.sin(ang)*16;
+        sk.fill(255,100,100,200);sk.noStroke();sk.ellipse(rx,ry,12,8);
+      }
+      sk.fill(46,204,113);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('Wide lumen\nGood blood flow',W*0.25,H*0.75);
+      // Blocked artery (right)
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Blocked Artery (CHD)',W*0.72,H*0.12);
+      sk.fill(220,60,60,80);sk.noStroke();sk.circle(W*0.72,H*0.45,70);
+      // Plaque
+      const pAngle=t*0.3;
+      sk.fill(255,200,50,180);sk.noStroke();sk.arc(W*0.72,H*0.45,60,60,pAngle,pAngle+sk.PI*1.6);
+      sk.fill(220,180,30,220);sk.arc(W*0.72,H*0.45,55,55,pAngle,pAngle+sk.PI*1.6);
+      // Narrow lumen
+      sk.fill(220,60,60,200);sk.noStroke();sk.circle(W*0.72,H*0.45,22);
+      for(let i=0;i<2;i++){
+        const ang=t*2+i*sk.PI;
+        const rx=W*0.72+Math.cos(ang)*6,ry=H*0.45+Math.sin(ang)*6;
+        sk.fill(255,100,100,200);sk.noStroke();sk.ellipse(rx,ry,8,5);
+      }
+      sk.fill(231,76,60);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);
+      sk.text('Plaque build-up!\nNarrow lumen',W*0.72,H*0.75);
+    }
+  },
+  {
+    title:'🎮 Final — Circulation &amp; Health',
+    body:'Final challenge on double circulation, blood vessels, and heart health.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the advantage of double circulation over single circulation?',opts:['The heart only needs to pump once','Blood is re-pressurised before being sent to the body, maintaining high pressure','It uses less blood','Blood never reaches the lungs'],ans:1,exp:'In DOUBLE CIRCULATION, blood passes through the heart TWICE per circuit. The right side pumps blood to the lungs (low pressure journey), and the left side REPRESSURISES it before sending it around the entire body — ensuring efficient, high-pressure delivery.'},
+      {q:'What is atherosclerosis?',opts:['Thinning of artery walls','Build-up of fatty plaques (especially cholesterol) inside artery walls','Blood clotting in veins','Inflammation of the heart valves'],ans:1,exp:'ATHEROSCLEROSIS is the build-up of FATTY PLAQUES (mainly cholesterol) inside artery walls. This narrows the lumen, reduces blood flow, increases blood pressure, and can lead to blood clots, angina, or heart attack.'},
+      {q:'Why do veins have valves?',opts:['To increase blood pressure','To prevent backflow of blood as it travels back to the heart against gravity','To help with gas exchange','To increase speed of blood flow'],ans:1,exp:'Veins carry blood back to the heart at LOW pressure — often against gravity. VALVES prevent blood from flowing BACKWARDS. When muscles contract, they squeeze blood upward in the vein; valves stop it from falling back down.'},
+      {q:'Which of these is a lifestyle risk factor for coronary heart disease?',opts:['Being tall','Having type A blood','Smoking and eating a diet high in saturated fat','Being young'],ans:2,exp:'MODIFIABLE (lifestyle) risk factors for CHD include: SMOKING, HIGH SATURATED FAT diet, lack of exercise, obesity, high stress. These can be controlled. Non-modifiable risks include age, genetics, and sex.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#2e7d32',dark:'#1b5e20',light:'#e8f5e9',
+  title:'Circulatory System — Heart, Blood &amp; Vessels',
+});
+</script></body></html>

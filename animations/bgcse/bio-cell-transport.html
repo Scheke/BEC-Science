@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cell Transport — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#1b5e20;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#a5d6a7;color:#1b5e20;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #c8e6c9}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s}
+    .btn-d{border-color:#1565c0;color:#1565c0;background:#fff}.btn-d.on{background:#1565c0;color:#fff}
+    .btn-o{border-color:#006064;color:#006064;background:#fff}.btn-o.on{background:#006064;color:#fff}
+    .btn-a{border-color:#c62828;color:#c62828;background:#fff}.btn-a.on{background:#c62828;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Cell Transport</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn btn-d on" id="b0" onclick="setMode(0)">→ Diffusion</button>
+  <button class="btn btn-o"    id="b1" onclick="setMode(1)">💧 Osmosis</button>
+  <button class="btn btn-a"    id="b2" onclick="setMode(2)">⚡ Active Transport</button>
+  <button class="btn" id="b-prac" onclick="setCellTransPractice(!cellTransMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let mode=0;
+let particles=[];
+function setMode(n){mode=n;[0,1,2].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));initParticles();}
+
+function initParticles(){
+  particles=[];
+  if(mode===0){
+    for(let i=0;i<30;i++) particles.push({x:80+Math.random()*150,y:60+Math.random()*360,vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,type:'solute'});
+    for(let i=0;i<8;i++) particles.push({x:285+Math.random()*120,y:60+Math.random()*360,vx:(Math.random()-.5)*1.5,vy:(Math.random()-.5)*1.5,type:'solute'});
+  } else if(mode===1){
+    for(let i=0;i<40;i++) particles.push({x:40+Math.random()*185,y:60+Math.random()*360,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,type:'water'});
+    for(let i=0;i<15;i++) particles.push({x:40+Math.random()*185,y:60+Math.random()*360,vx:0,vy:0,type:'solute',stuck:true});
+    for(let i=0;i<20;i++) particles.push({x:255+Math.random()*150,y:60+Math.random()*360,vx:(Math.random()-.5)*1.2,vy:(Math.random()-.5)*1.2,type:'water'});
+    for(let i=0;i<35;i++) particles.push({x:255+Math.random()*150,y:60+Math.random()*360,vx:0,vy:0,type:'solute2',stuck:true});
+  } else {
+    for(let i=0;i<12;i++) particles.push({x:80+Math.random()*145,y:60+Math.random()*360,vx:(Math.random()-.5)*1,vy:(Math.random()-.5)*1,type:'solute'});
+    for(let i=0;i<32;i++) particles.push({x:275+Math.random()*130,y:60+Math.random()*360,vx:(Math.random()-.5)*1,vy:(Math.random()-.5)*1,type:'solute'});
+  }
+}
+initParticles();
+
+const INFO=[
+  {title:'Diffusion',col:[30,80,200],
+   def:'Movement of particles from HIGH concentration to LOW concentration.',
+   req:'No energy (ATP) required — PASSIVE process.',
+   dir:'High → Low concentration (down gradient)',
+   ex:'O₂ diffusing from alveoli into blood; CO₂ from cells into blood.'},
+  {title:'Osmosis',col:[0,96,100],
+   def:'Diffusion of WATER through a semi-permeable membrane from dilute (high water) to concentrated solution (low water).',
+   req:'No energy required — PASSIVE process.',
+   dir:'High water potential → Low water potential',
+   ex:'Water entering root hair cells from soil; plant cells becoming turgid.'},
+  {title:'Active Transport',col:[180,20,20],
+   def:'Movement of particles from LOW to HIGH concentration against the gradient.',
+   req:'ENERGY (ATP) required — ACTIVE process. Uses protein pumps.',
+   dir:'Low → High concentration (against gradient)',
+   ex:'Mineral ions absorbed by root hair cells; glucose absorbed in gut.'},
+];
+
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Cell Transport</h2><ul><li><b>Diffusion</b>: Movement from high to low concentration, no energy needed.</li><li><b>Osmosis</b>: Diffusion of water through a semi-permeable membrane from high to low water potential.</li><li><b>Active Transport</b>: Movement against gradient — requires ATP and carrier proteins.</li><li><b>Turgid</b>: Plant cell full of water. <b>Plasmolysed</b>: cytoplasm shrinks from wall.</li><li><b>Crenated</b>: Animal cell shrinks. <b>Lysis</b>: Animal cell bursts in hypotonic solution.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let cellTransMcq=false;
+const CELL_TRANS_MCQ=[
+  {q:'Which process moves molecules from high to low concentration without energy?',opts:['Diffusion','Active transport','Osmosis','Endocytosis'],c:0,tip:'Diffusion is passive — no ATP needed.'},
+  {q:'Osmosis is the movement of which molecule through a semi-permeable membrane?',opts:['Water','Glucose','Protein','Sodium ions'],c:0,tip:'Osmosis specifically involves water molecules.'},
+  {q:'Active transport requires which energy molecule?',opts:['ATP','ADP','NADH','GTP'],c:0,tip:'ATP (adenosine triphosphate) powers active transport.'},
+  {q:'A plant cell placed in concentrated salt solution becomes:',opts:['Plasmolysed','Turgid','Lysed','Crenated'],c:0,tip:'Plant cells plasmolyse — cytoplasm shrinks from wall.'},
+  {q:'An animal cell placed in distilled water may undergo:',opts:['Lysis','Crenation','Plasmolysis','Turgor'],c:0,tip:'Animal cells burst (lyse) in hypotonic solutions.'},
+  {q:'What makes active transport different from diffusion?',opts:['Uses carrier proteins and ATP','Moves with concentration gradient','Requires no energy','Only moves water'],c:0,tip:'Active transport uses energy and carriers to move against the gradient.'},
+  {q:'In osmosis, water moves from a region of _____ water potential:',opts:['High → Low','Low → High','Equal → Equal','Low → Equal'],c:0,tip:'Water always moves from high to low water potential.'}
+];
+let cellTransMcqIdx=0,cellTransMcqSel=-1,cellTransMcqScore=0,cellTransMcqDone=false,cellTransMcqFeedback=null;
+function setCellTransPractice(on){cellTransMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){cellTransMcqIdx=0;cellTransMcqSel=-1;cellTransMcqScore=0;cellTransMcqDone=false;cellTransMcqFeedback=null;}}
+function drawCellTransMCQ(s){s.background(252,252,240);if(cellTransMcqDone){s.fill(27,94,32);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+cellTransMcqScore+'/'+CELL_TRANS_MCQ.length,440,215);let msg=cellTransMcqScore===CELL_TRANS_MCQ.length?'Perfect! You know Cell Transport!':cellTransMcqScore>=5?'Great job!':'Review diffusion, osmosis & active transport.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=CELL_TRANS_MCQ[cellTransMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(cellTransMcqIdx/CELL_TRANS_MCQ.length),10,5);s.fill(27,94,32);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(cellTransMcqIdx+1)+' of '+CELL_TRANS_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=cellTransMcqSel===i,correct=cellTransMcqFeedback!==null&&i===q.c,wrong=cellTransMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(cellTransMcqFeedback){s.fill(cellTransMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(cellTransMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function cellTransMcqClick(mx,my){if(cellTransMcqDone){if(mx>310&&mx<570&&my>290&&my<334){cellTransMcqIdx=0;cellTransMcqSel=-1;cellTransMcqScore=0;cellTransMcqDone=false;cellTransMcqFeedback=null;}return;}if(cellTransMcqFeedback!==null){cellTransMcqIdx++;cellTransMcqSel=-1;cellTransMcqFeedback=null;if(cellTransMcqIdx>=CELL_TRANS_MCQ.length)cellTransMcqDone=true;return;}CELL_TRANS_MCQ[cellTransMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){cellTransMcqSel=i;cellTransMcqFeedback=i===CELL_TRANS_MCQ[cellTransMcqIdx].c?'correct':'wrong';if(i===CELL_TRANS_MCQ[cellTransMcqIdx].c)cellTransMcqScore++;}});}
+
+new p5(sk=>{
+  const W=880,H=510;
+  const MX=240; // membrane x
+  let tick=0;
+  let pumpPulse=0;
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{
+    if(cellTransMcq){ drawCellTransMCQ(sk); return; }
+    tick+=0.04;pumpPulse=(pumpPulse+0.06)%(Math.PI*2);
+    sk.background(248,252,248);
+    drawCellRegion();
+    updateParticles();
+    drawParticles();
+    drawInfoPanel();
+  };
+
+  function drawCellRegion(){
+    // Left region
+    sk.fill(mode===0?[220,235,255]:mode===1?[220,240,255]:[220,240,255]);
+    sk.noStroke();sk.rect(12,50,MX-18,410,8);
+    // Right region
+    sk.fill(mode===0?[235,245,220]:mode===1?[255,230,200]:[255,225,215]);
+    sk.rect(MX+6,50,390,410,8);
+
+    // Membrane
+    let mCol=mode===2?[200,40,40]:[80,140,80];
+    sk.fill(mCol[0],mCol[1],mCol[2]);sk.noStroke();sk.rect(MX-6,50,12,410,3);
+    // Phospholipid heads on membrane
+    for(let y=65;y<455;y+=18){
+      sk.fill(80,200,80);sk.ellipse(MX-2,y,8,8);
+      sk.fill(80,200,80);sk.ellipse(MX+2,y,8,8);
+    }
+
+    // Concentration gradient arrows
+    if(mode===0||mode===2){
+      let dir=mode===0?1:-1;
+      sk.fill(mode===0?[30,80,200]:[180,20,20]);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(mode===0?'HIGH [S]':'LOW [S]',125,44);
+      sk.text(mode===0?'LOW [S]':'HIGH [S]',MX+200,44);
+      sk.textStyle(sk.NORMAL);
+    } else {
+      sk.fill(0,96,100);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Pure water / Dilute',100,44);sk.text('Concentrated solution',MX+190,44);
+      sk.textStyle(sk.NORMAL);
+    }
+
+    // Labels
+    sk.fill(60);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.text('Semi-permeable\nmembrane',MX,476);
+
+    // Active transport protein pump
+    if(mode===2){
+      let py=240+Math.sin(pumpPulse)*5;
+      sk.fill(220,60,60,220);sk.stroke(180,20,20);sk.strokeWeight(2);
+      sk.rect(MX-12,py-20,24,40,8);sk.noStroke();
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('ATP',MX,py-8);sk.text('pump',MX,py+6);sk.textStyle(sk.NORMAL);
+      // ATP particle
+      let atpX=MX+25+Math.sin(pumpPulse*2)*15;
+      sk.fill(255,200,0,200);sk.ellipse(atpX,py,16,16);
+      sk.fill(100,60,0);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.text('ATP',atpX,py+3);sk.textStyle(sk.NORMAL);
+    }
+
+    // Direction arrow
+    let arrowCol=INFO[mode].col;
+    sk.stroke(arrowCol[0],arrowCol[1],arrowCol[2],200);sk.strokeWeight(3);sk.noFill();
+    let ax1=mode===2?MX+40:80,ax2=mode===2?90:MX+40;
+    sk.line(ax1,256,ax2,256);
+    sk.fill(arrowCol[0],arrowCol[1],arrowCol[2]);sk.noStroke();
+    let adir=mode===2?-1:1;
+    sk.triangle(ax2,256,ax2-adir*14,249,ax2-adir*14,263);
+    sk.fill(arrowCol[0],arrowCol[1],arrowCol[2],180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(mode===2?'Against gradient →':'Net movement →',(ax1+ax2)/2,244);sk.textStyle(sk.NORMAL);
+  }
+
+  function updateParticles(){
+    for(let p of particles){
+      if(p.stuck) continue;
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx+=(Math.random()-.5)*0.3;p.vy+=(Math.random()-.5)*0.3;
+      p.vx=Math.max(-2,Math.min(2,p.vx));p.vy=Math.max(-2,Math.min(2,p.vy));
+      // Boundaries
+      if(p.y<54||p.y>456){p.vy*=-1;}
+      // Membrane crossing for diffusion (net movement toward equilibrium)
+      if(mode===0){
+        if(p.x<MX-3){if(p.x<14){p.vx=Math.abs(p.vx);} else if(Math.random()<0.005&&p.type==='solute'){p.x=MX+8;}}
+        else if(p.x>MX+3){if(p.x>440){p.vx=-Math.abs(p.vx);} }
+      } else if(mode===1){
+        // Water crosses membrane freely toward concentrated side
+        if(p.type==='water'&&p.x<MX-3&&Math.random()<0.003){p.x=MX+8;p.vx=Math.abs(p.vx);}
+        if(p.x<14){p.vx=Math.abs(p.vx);}if(p.x>440){p.vx=-Math.abs(p.vx);}
+        if(p.type==='solute') p.vx=0;
+      } else {
+        // Active transport: particles move from low (left) to high (right) against gradient
+        if(p.x<MX-3){if(p.x<14) p.vx=Math.abs(p.vx);}
+        else{if(p.x>440) p.vx=-Math.abs(p.vx);}
+        if(p.x>MX-3&&p.x<MX+9&&Math.random()<0.003&&p.type==='solute'){p.x=MX+10;}
+      }
+    }
+  }
+
+  function drawParticles(){
+    for(let p of particles){
+      if(p.type==='water'){sk.fill(80,160,240,180);sk.noStroke();sk.ellipse(p.x,p.y,10);}
+      else if(p.type==='solute'){sk.fill(220,80,40,200);sk.noStroke();sk.ellipse(p.x,p.y,10);}
+      else if(p.type==='solute2'){sk.fill(180,100,20,200);sk.noStroke();sk.ellipse(p.x,p.y,13);}
+    }
+    // Legend
+    let lx=18,ly=462;
+    sk.fill(mode===1?80:220,mode===1?160:80,mode===1?240:40,200);sk.ellipse(lx+5,ly,10);
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.text(mode===1?'Water molecule':'Solute molecule',lx+12,ly+4);
+    if(mode===1){
+      sk.fill(180,100,20,200);sk.ellipse(lx+130,ly,13);
+      sk.fill(30);sk.text('Solute (too large to cross)',lx+140,ly+4);
+    }
+  }
+
+  function drawInfoPanel(){
+    let inf=INFO[mode];
+    let px=498,py=8,pw=374,ph=494;
+    sk.fill(255,255,255,240);sk.stroke(inf.col[0],inf.col[1],inf.col[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(inf.col[0],inf.col[1],inf.col[2],210);sk.rect(px+8,py+8,pw-16,36,7);sk.noStroke();
+    sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(inf.title,px+pw/2,py+31);sk.textStyle(sk.NORMAL);
+    let sy=py+54;
+    [{t:'Definition',b:inf.def,c:[240,248,255],tc:[0,60,160]},
+     {t:'Energy',b:inf.req,c:[240,255,240],tc:[0,100,30]},
+     {t:'Direction',b:inf.dir,c:[255,248,220],tc:[120,80,0]},
+     {t:'Examples',b:inf.ex,c:[248,240,255],tc:[80,0,160]},
+    ].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*16+8;
+      sk.fill(box.c[0],box.c[1],box.c[2],200);sk.stroke(box.tc[0],box.tc[1],box.tc[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(box.tc[0],box.tc[1],box.tc[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*16));
+      sy+=bh+8;
+    });
+    // Comparison table
+    sy+=4;
+    sk.fill(250,250,250);sk.stroke(180);sk.strokeWeight(1);sk.rect(px+10,sy,pw-20,100,6);sk.noStroke();
+    sk.fill(55,71,79,200);sk.rect(px+11,sy,pw-22,22,6,6,0,0);sk.noStroke();
+    sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('',px+60,sy+14);sk.text('Diffusion',px+132,sy+14);sk.text('Osmosis',px+234,sy+14);sk.text('Active',px+336,sy+14);
+    [['Direction','High→Low','High→Low','Low→High'],['Energy','No ATP','No ATP','ATP needed'],['Substance','Any','Water only','Specific']].forEach((r,i)=>{
+      if(i%2===0){sk.fill(245);sk.noStroke();sk.rect(px+11,sy+22+i*22,pw-22,22);}
+      sk.fill(60);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text(r[0],px+60,sy+37+i*22);sk.text(r[1],px+132,sy+37+i*22);sk.text(r[2],px+234,sy+37+i*22);sk.text(r[3],px+336,sy+37+i*22);
+    });
+    // Fun fact
+    let ffy=sy+110;
+    sk.fill(255,253,231,220);sk.stroke(255,213,79);sk.strokeWeight(1.5);
+    sk.rect(px+10,ffy,pw-20,ph-(ffy-py)-14,6);sk.noStroke();
+    sk.fill(130,100,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('💡 Osmosis key terms:',px+16,ffy+14);sk.textStyle(sk.NORMAL);sk.fill(60);sk.textSize(10);
+    sk.text('Turgid: Plant cell full of water (firm). Healthy.',px+16,ffy+30);
+    sk.text('Plasmolysed: Plant cell loses water (wilts). Dangerous.',px+16,ffy+45);
+    sk.text('Crenated: Animal cell loses water (shrinks).',px+16,ffy+60);
+    sk.text('Lysis: Animal cell takes in too much water (bursts).',px+16,ffy+75);
+  }
+  sk.mouseClicked=()=>{ if(cellTransMcq){ cellTransMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

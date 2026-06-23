@@ -1,0 +1,397 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classification — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#2e7d32;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#a5d6a7;color:#1b5e20;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #c8e6c9}
+    .print-btn{margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
+    .print-btn:hover{background:#81c784}
+    .controls{display:flex;justify-content:center;gap:10px;margin-top:10px}
+    .btn{padding:7px 22px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s}
+    .btn.anim{background:#2e7d32;color:#fff}.btn.anim:hover{background:#1b5e20}
+    .btn.practice{background:#f9a825;color:#fff}.btn.practice:hover{background:#f57f17}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#primary/Standard%205">&#8592; All Topics</a></div>
+<div class="topic-header"><span class="label">PSLE · Standard 5 Science</span><h1>Classification of Living Things</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div class="controls">
+  <button class="btn anim" onclick="setMode(0)">&#9654; Animation</button>
+  <button class="btn practice" onclick="setMode(1)">&#127918; Sort the Organisms</button>
+</div>
+<script>
+let gameMode=0;
+function setMode(m){ gameMode=m; if(m===1) resetSortGame(); }
+function printNotes(){
+  let html='<html><head><title>Classification Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1b5e20;border-bottom:2px solid #1b5e20;padding-bottom:8px}h2{color:#2e7d32;margin-top:16px}ul{margin:4px 0 8px 20px}li{margin:2px 0}.tag{display:inline-block;background:#e8f5e9;color:#1b5e20;border-radius:4px;padding:2px 8px;font-size:.85em}@media print{body{padding:10px}}    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }</style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>';
+  html+='<h1>Classification of Living Things — Study Notes</h1>';
+  Object.values(GROUPS).forEach(g=>{
+    html+=`<h2>${g.emoji} ${g.name}</h2><ul>`;
+    g.feat.forEach(f=>html+=`<li>${f}</li>`);
+    html+=`</ul><p><span class="tag">Examples:</span> ${g.ex}</p>`;
+  });
+  html+='<h2>Vertebrates vs Invertebrates</h2><ul><li>Vertebrates have a backbone (fish, amphibians, reptiles, birds, mammals)</li><li>Invertebrates have no backbone (insects, arachnids)</li><li>Plants make their own food using sunlight (photosynthesis)</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+const SORT_ITEMS=[
+  {name:'Tilapia',emoji:'🐟',cat:0},{name:'Frog',emoji:'🐸',cat:0},
+  {name:'Eagle',emoji:'🦅',cat:0},{name:'Lion',emoji:'🦁',cat:0},{name:'Snake',emoji:'🐍',cat:0},
+  {name:'Bee',emoji:'🐝',cat:1},{name:'Spider',emoji:'🕷',cat:1},{name:'Scorpion',emoji:'🦂',cat:1},
+  {name:'Grass',emoji:'🌿',cat:2},{name:'Cactus',emoji:'🌵',cat:2},{name:'Fern',emoji:'🌱',cat:2},
+];
+const SORT_CATS=['Vertebrates','Invertebrates','Plants'];
+const SORT_ZX=[20,310,598],SORT_ZW=262,SORT_ZY=48,SORT_ZH=308;
+const SORT_ZCOL=[[30,100,180],[140,80,0],[60,150,60]];
+let sortCards,sortDrag,sortDone;
+function resetSortGame(){
+  let sh=[...SORT_ITEMS].sort(()=>Math.random()-0.5).slice(0,9);
+  sortCards=sh.map((item,j)=>{
+    let sx=j<5?65+j*155:110+(j-5)*168, sy=j<5?395:445;
+    return {name:item.name,emoji:item.emoji,cat:item.cat,x:sx,y:sy,sx,sy,col:-1,correct:null,rx:sx,ry:sy,ox:0,oy:0};
+  });
+  sortDrag=null; sortDone=false;
+}
+const GROUPS={
+  fish:{name:'Fish',col:[30,120,220],emoji:'🐟',
+    feat:['Live in water','Breathe through GILLS','Cold-blooded','Scales on body','Lay eggs in water'],
+    ex:'Tilapia, shark, catfish, salmon'},
+  amphibia:{name:'Amphibians',col:[60,180,80],emoji:'🐸',
+    feat:['Live in water AND land','Breathe through gills (young) then lungs','Cold-blooded','Moist skin (no scales)','Lay eggs in water'],
+    ex:'Frog, toad, salamander, newt'},
+  reptilia:{name:'Reptiles',col:[200,140,0],emoji:'🦎',
+    feat:['Live on land (mostly)','Breathe through LUNGS','Cold-blooded','Dry scaly skin','Lay eggs on land'],
+    ex:'Lizard, snake, crocodile, tortoise'},
+  aves:{name:'Birds',col:[180,60,180],emoji:'🦅',
+    feat:['Live on land/air','Breathe through LUNGS','Warm-blooded','Feathers','Lay eggs (hard shell)','Two wings, two legs'],
+    ex:'Eagle, sparrow, ostrich, penguin'},
+  mammalia:{name:'Mammals',col:[210,80,30],emoji:'🦁',
+    feat:['Live on land/water','Breathe through LUNGS','Warm-blooded','Have fur/hair','Give birth to live young','Feed young on milk'],
+    ex:'Lion, elephant, whale, human, bat'},
+  insects:{name:'Insects',col:[180,120,20],emoji:'🐝',
+    feat:['6 legs','3 body parts (head, thorax, abdomen)','Most have wings','Exoskeleton (no backbone)'],
+    ex:'Bee, ant, butterfly, beetle, mosquito'},
+  arachnids:{name:'Arachnids',col:[120,40,140],emoji:'🕷',
+    feat:['8 legs','2 body parts','No wings','Exoskeleton','Most are predators'],
+    ex:'Spider, scorpion, tick, mite'},
+};
+let selected='mammalia';
+new p5(sk=>{
+  const W=880,H=510;
+  let tick=0;
+  const hitTargets=[];
+
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+
+  sk.draw=()=>{
+    tick+=0.04;
+    if(gameMode===1){ drawSortGame(); return; }
+    hitTargets.length=0;
+    sk.background(248,252,248);
+    drawTree();
+    drawInfoPanel();
+    drawAnimalAnim();
+  };
+
+  sk.mouseClicked=()=>{
+    for(let h of hitTargets){
+      if(sk.mouseX>h.x&&sk.mouseX<h.x+h.w&&sk.mouseY>h.y&&sk.mouseY<h.y+h.h){
+        selected=h.id;break;
+      }
+    }
+  };
+
+  function drawTree(){
+    let cx=248;
+    // Title root
+    node(cx,22,130,28,'LIVING THINGS','all',[60,100,60]);
+    // Vertebrates / Invertebrates
+    sk.stroke(120);sk.strokeWeight(1.5);
+    sk.line(cx,50,cx-80,72);sk.line(cx,50,cx+80,72);
+    node(cx-80,72,110,26,'Vertebrates','vert',[30,100,180]);
+    node(cx+80,72,110,26,'Invertebrates','invert',[140,80,0]);
+    // Vertebrate classes
+    const vc=[['fish',cx-210,160],['amphibia',cx-115,160],['reptilia',cx-20,160],['aves',cx+75,160],['mammalia',cx+170,160]];
+    vc.forEach(([id,x,y])=>{
+      sk.stroke(80,120,180);sk.strokeWeight(1.2);sk.line(cx-80,98,x,y);
+      let g=GROUPS[id],active=selected===id;
+      sk.fill(g.col[0],g.col[1],g.col[2],active?220:70);
+      sk.stroke(g.col[0],g.col[1],g.col[2]);sk.strokeWeight(active?2.5:1.5);
+      sk.rect(x-38,y,76,30,7);
+      sk.fill(active?255:g.col[0]);sk.noStroke();sk.textSize(9.5);sk.textStyle(active?sk.BOLD:sk.NORMAL);
+      sk.textAlign(sk.CENTER);sk.text(g.emoji+' '+g.name,x,y+19);sk.textStyle(sk.NORMAL);
+      hitTargets.push({id,x:x-38,y:y,w:76,h:30});
+      // Feature boxes below
+      if(active){
+        g.feat.forEach((f,i)=>{
+          sk.fill(g.col[0],g.col[1],g.col[2],25);sk.stroke(g.col[0],g.col[1],g.col[2],60);sk.strokeWeight(1);
+          sk.rect(x-72,y+40+i*26,144,22,4);sk.noStroke();
+          sk.fill(30);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text(f,x,y+55+i*26);
+        });
+      }
+    });
+    // Invertebrate subgroups
+    const ic=[['insects',cx+40,160],['arachnids',cx+120,160]];
+    ic.forEach(([id,x,y])=>{
+      sk.stroke(140,100,20);sk.strokeWeight(1.2);sk.line(cx+80,98,x,y);
+      let g=GROUPS[id],active=selected===id;
+      sk.fill(g.col[0],g.col[1],g.col[2],active?200:60);
+      sk.stroke(g.col[0],g.col[1],g.col[2]);sk.strokeWeight(active?2.5:1.5);
+      sk.rect(x-40,y,80,30,7);
+      sk.fill(active?255:g.col[0]);sk.noStroke();sk.textSize(9);sk.textStyle(active?sk.BOLD:sk.NORMAL);
+      sk.textAlign(sk.CENTER);sk.text(g.emoji+' '+g.name,x,y+19);sk.textStyle(sk.NORMAL);
+      hitTargets.push({id,x:x-40,y:y,w:80,h:30});
+    });
+    sk.fill(80);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.noStroke();sk.text('← Click a group to see its features',cx,488);
+  }
+
+  function node(x,y,w,h,label,id,col){
+    sk.fill(col[0],col[1],col[2],180);sk.stroke(col[0]-20,col[1]-20,col[2]-20);sk.strokeWeight(2);
+    sk.rect(x-w/2,y,w,h,8);
+    sk.fill(255);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(label,x,y+h/2+4);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawAnimalAnim(){
+    if(!selected)return;
+    let g=GROUPS[selected];
+    // Floating emoji animation in bottom-left if no features shown
+  }
+
+  function drawInfoPanel(){
+    if(!selected)return;
+    let g=GROUPS[selected];
+    let px=500,py=8,pw=372,ph=494;
+    sk.fill(255,255,255,240);sk.stroke(g.col[0],g.col[1],g.col[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+
+    // Header
+    sk.fill(g.col[0],g.col[1],g.col[2],210);sk.rect(px+8,py+8,pw-16,48,7);sk.noStroke();
+    sk.textSize(28);sk.textAlign(sk.LEFT);sk.text(g.emoji,px+18,py+46);
+    sk.fill(255);sk.textSize(15);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text(g.name,px+56,py+36);sk.textStyle(sk.NORMAL);
+    let isVert=['fish','amphibia','reptilia','aves','mammalia'].includes(selected);
+    sk.fill(255,255,255,160);sk.textSize(9.5);sk.text(isVert?'Vertebrate (has backbone)':'Invertebrate (no backbone)',px+56,py+52);
+
+    let sy=py+68;
+    // Features
+    sk.fill(240,248,255,200);sk.stroke(g.col[0],g.col[1],g.col[2],80);sk.strokeWeight(1);
+    sk.rect(px+10,sy,pw-20,g.feat.length*26+22,6);sk.noStroke();
+    sk.fill(0,60,160);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('FEATURES:',px+16,sy+14);sk.textStyle(sk.NORMAL);
+    g.feat.forEach((f,i)=>{
+      sk.fill(g.col[0],g.col[1],g.col[2],200);sk.ellipse(px+22,sy+28+i*26,8);
+      sk.fill(30);sk.textSize(11);sk.text(f,px+30,sy+32+i*26);
+    });
+
+    sy+=g.feat.length*26+32;
+    // Examples
+    sk.fill(240,255,240,200);sk.stroke(60,150,60,80);sk.strokeWeight(1);
+    sk.rect(px+10,sy,pw-20,46,6);sk.noStroke();
+    sk.fill(0,100,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EXAMPLES:',px+16,sy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);sk.text(g.ex,px+16,sy+30);
+
+    sy+=60;
+    // Vert/Invert comparison table
+    sk.fill(250,250,250,200);sk.stroke(180);sk.strokeWeight(1);
+    sk.rect(px+10,sy,pw-20,130,6);sk.noStroke();
+    sk.fill(40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('VERTEBRATES vs INVERTEBRATES',px+pw/2,sy+14);sk.textStyle(sk.NORMAL);
+    const rows=[
+      ['Feature','Vertebrates','Invertebrates'],
+      ['Backbone','Yes ✓','No ✗'],
+      ['Body support','Internal skeleton','Exoskeleton / hydrostatic'],
+      ['Examples','Fish, Frogs, Birds...','Insects, Worms, Molluscs...'],
+    ];
+    rows.forEach((r,i)=>{
+      let ry=sy+22+i*24;
+      if(i===0){sk.fill(g.col[0],g.col[1],g.col[2],160);sk.rect(px+11,ry,pw-22,22,4,4,0,0);}
+      else if(i%2===0){sk.fill(240,240,240,150);sk.rect(px+11,ry,pw-22,22);}
+      sk.fill(i===0?255:30);sk.textSize(i===0?9:9.5);sk.textStyle(i===0?sk.BOLD:sk.NORMAL);
+      let colW=(pw-24)/3;
+      sk.textAlign(sk.LEFT);sk.text(r[0],px+16,ry+15);
+      sk.textAlign(sk.CENTER);sk.text(r[1],px+16+colW*1.5,ry+15);
+      sk.text(r[2],px+16+colW*2.5,ry+15);
+    });
+    sk.textStyle(sk.NORMAL);
+  }
+
+  function drawSortGame(){
+    sk.background(245,250,245);
+    sk.fill(27,94,32); sk.noStroke(); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Sort the Organisms — drag each card into the correct group',440,24);
+    // Column zones
+    SORT_CATS.forEach((cat,i)=>{
+      let zx=SORT_ZX[i],c=SORT_ZCOL[i];
+      sk.fill(c[0],c[1],c[2],28); sk.stroke(c[0],c[1],c[2]); sk.strokeWeight(2);
+      sk.rect(zx,SORT_ZY,SORT_ZW,SORT_ZH,8);
+      sk.fill(c[0],c[1],c[2]); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text(cat,zx+SORT_ZW/2,SORT_ZY+18);
+    });
+    // Placed cards
+    let colCount=[0,0,0];
+    sortCards.forEach(c=>{
+      if(c.col<0||c===sortDrag) return;
+      let ci=c.col,zx=SORT_ZX[ci],row=colCount[ci]++;
+      let cx=zx+SORT_ZW/2, cy=SORT_ZY+40+row*62;
+      c.rx=cx; c.ry=cy;
+      drawSortCard(cx,cy,c);
+    });
+    // Pool area
+    sk.fill(220,240,220,120); sk.noStroke(); sk.rect(30,372,820,116,8);
+    sk.fill(30); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT,sk.TOP);
+    sk.text('Drag organisms to the correct group above:',46,384);
+    // Pool cards
+    sortCards.forEach(c=>{
+      if(c.col>=0||c===sortDrag) return;
+      c.rx=c.sx; c.ry=c.sy;
+      drawSortCard(c.sx,c.sy,c);
+    });
+    // Dragged card
+    if(sortDrag) drawSortCard(sortDrag.x,sortDrag.y,sortDrag);
+    // All placed?
+    let allPlaced=sortCards.every(c=>c.col>=0);
+    if(allPlaced){
+      let score=sortCards.filter(c=>c.correct).length,n=sortCards.length;
+      sk.fill(0,0,0,155); sk.noStroke(); sk.rect(240,150,400,130,12);
+      sk.fill(255,235,59); sk.textSize(18); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.BASELINE);
+      sk.text(score+'/'+n+' Correct!',440,195);
+      sk.fill(220,255,220); sk.textSize(11); sk.textStyle(sk.NORMAL);
+      sk.text(score===n?'Perfect! All organisms sorted correctly!':'Check the highlighted cards and try again.',440,220);
+      if(score<n){ sk.fill(255,200,200); sk.textSize(10); sk.text('Red cards are in the wrong group.',440,238); }
+      sk.fill(180,240,180); sk.noStroke(); sk.rect(355,244,170,34,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',440,261);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawSortCard(x,y,c){
+    let bg=c.col>=0?(c.correct?[200,255,200]:[255,200,200]):[255,255,255];
+    sk.fill(bg[0],bg[1],bg[2]); sk.stroke(160); sk.strokeWeight(1.5);
+    sk.rect(x-40,y-28,80,56,7);
+    sk.noStroke(); sk.textSize(20); sk.textAlign(sk.CENTER,sk.CENTER); sk.text(c.emoji,x,y-7);
+    sk.fill(30); sk.textSize(8.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.BASELINE); sk.text(c.name,x,y+26);
+  }
+
+  sk.mousePressed=function(){
+    if(gameMode!==1) return;
+    let mx=sk.mouseX,my=sk.mouseY;
+    let allPlaced=sortCards.every(c=>c.col>=0);
+    if(allPlaced&&mx>355&&mx<525&&my>244&&my<278){ resetSortGame(); return; }
+    // Pick up placed card
+    for(let c of sortCards){
+      if(c.col<0) continue;
+      if(sk.dist(mx,my,c.rx,c.ry)<34){ sortDrag=c; c.ox=c.rx-mx; c.oy=c.ry-my; c.col=-1; c.correct=null; return; }
+    }
+    // Pick up pool card
+    for(let c of sortCards){
+      if(c.col>=0) continue;
+      if(sk.dist(mx,my,c.sx,c.sy)<38){ sortDrag=c; c.ox=c.sx-mx; c.oy=c.sy-my; return; }
+    }
+  };
+  sk.mouseDragged=function(){ if(gameMode!==1||!sortDrag) return; sortDrag.x=sk.mouseX+sortDrag.ox; sortDrag.y=sk.mouseY+sortDrag.oy; };
+  sk.mouseReleased=function(){
+    if(gameMode!==1||!sortDrag) return;
+    let placed=false;
+    for(let i=0;i<3;i++){
+      let zx=SORT_ZX[i];
+      if(sortDrag.x>zx&&sortDrag.x<zx+SORT_ZW&&sortDrag.y>SORT_ZY&&sortDrag.y<SORT_ZY+SORT_ZH){
+        sortDrag.col=i; sortDrag.correct=(sortDrag.cat===i); placed=true; break;
+      }
+    }
+    if(!placed){ sortDrag.x=sortDrag.sx; sortDrag.y=sortDrag.sy; sortDrag.col=-1; sortDrag.correct=null; }
+    sortDrag=null;
+  };
+});
+</script>
+</body>
+</html>
+
+
+
+

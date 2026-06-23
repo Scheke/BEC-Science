@@ -1,0 +1,475 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Food Chains — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'What Is a Food Chain?',
+content:`<h2>Energy Flows Through Food Chains</h2>
+<p>A <strong>food chain</strong> shows WHO EATS WHOM and the <strong>direction of energy flow</strong>.</p>
+<p>The arrow (→) means <em>"is eaten by"</em> or <em>"energy flows to"</em>:</p>
+<blockquote style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;border-radius:4px">Grass → Grasshopper → Frog → Snake → Eagle</blockquote>
+<ul>
+<li>🌿 <strong>Grass</strong> = PRODUCER (makes food by photosynthesis)</li>
+<li>🦗 <strong>Grasshopper</strong> = PRIMARY consumer (eats plants)</li>
+<li>🐸 <strong>Frog</strong> = SECONDARY consumer (eats grasshopper)</li>
+<li>🐍 <strong>Snake</strong> = TERTIARY consumer (eats frog)</li>
+<li>🦅 <strong>Eagle</strong> = TOP predator</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const chain=[{n:'Grass 🌿',c:'#43a047'},{n:'Grasshopper 🦗',c:'#8bc34a'},{n:'Frog 🐸',c:'#26a69a'},{n:'Snake 🐍',c:'#8e24aa'},{n:'Eagle 🦅',c:'#f4511e'}];
+  let t=0,pulse=0;
+  p.draw=()=>{
+    p.background(245);
+    const w=60,gap=16,startX=28;
+    chain.forEach((c,i)=>{
+      const x=startX+i*(w+gap+10);
+      const active=Math.floor(t/60)%5===i;
+      const sc=active?1.18:1;
+      p.fill(c.c);p.noStroke();p.rect(x,120-24*sc,w*sc,48*sc,8);
+      p.fill(255);p.textSize(active?11:10);p.text(c.n,x+w*sc/2,120+4);
+      if(i<4){p.fill('#555');p.noStroke();p.textSize(18);p.text('→',x+w*sc+4,120);}
+    });
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Energy flows in the direction of the arrows',210,200);
+    t++;
+  };
+}},
+{title:'Producers and Consumers',
+content:`<h2>Feeding Roles in an Ecosystem</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#33691e;color:#fff;padding:6px">Role</th><th style="background:#33691e;color:#fff;padding:6px">Description</th><th style="background:#33691e;color:#fff;padding:6px">Examples</th></tr>
+<tr style="background:#f1f8e9"><td style="padding:6px"><strong>Producer</strong></td><td style="padding:6px">Makes food via photosynthesis</td><td style="padding:6px">Grass, trees, algae</td></tr>
+<tr><td style="padding:6px"><strong>Primary Consumer</strong></td><td style="padding:6px">Herbivore — eats plants</td><td style="padding:6px">Rabbit, cow, caterpillar</td></tr>
+<tr style="background:#f1f8e9"><td style="padding:6px"><strong>Secondary Consumer</strong></td><td style="padding:6px">Carnivore/omnivore — eats primary consumer</td><td style="padding:6px">Fox, frog, small fish</td></tr>
+<tr><td style="padding:6px"><strong>Tertiary Consumer</strong></td><td style="padding:6px">Eats secondary consumer</td><td style="padding:6px">Eagle, shark, lion</td></tr>
+<tr style="background:#f1f8e9"><td style="padding:6px"><strong>Decomposer</strong></td><td style="padding:6px">Breaks down dead matter</td><td style="padding:6px">Bacteria, fungi, worms</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const pyramid=[{n:'Tertiary (Eagle)',c:'#e53935',h:36},{n:'Secondary (Snake)',c:'#f4511e',h:52},{n:'Primary (Grasshopper)',c:'#43a047',h:68},{n:'Producer (Grass)',c:'#1b5e20',h:84}];
+    let y=230;
+    pyramid.forEach((lvl,i)=>{
+      const w=p.map(i,0,3,120,360);
+      const x=(420-w)/2;
+      p.fill(lvl.c);p.noStroke();p.rect(x,y-lvl.h,w,lvl.h-4,4);
+      p.fill(255);p.textSize(11);p.text(lvl.n,210,y-lvl.h/2);
+      y-=lvl.h+2;
+    });
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Energy Pyramid — widest at base (most energy)',210,260);
+    t++;
+  };
+}},
+{title:'Food Webs',
+content:`<h2>Real Ecosystems Are More Complex</h2>
+<p>In real ecosystems, most animals eat MORE than one thing. A <strong>food web</strong> shows all the feeding relationships linked together.</p>
+<p>Why food webs are better than food chains:</p>
+<ul>
+<li>More realistic — animals have multiple food sources</li>
+<li>Show how ecosystems are INTERCONNECTED</li>
+<li>Help us predict what happens when ONE organism is removed</li>
+</ul>
+<p><strong>If frogs were removed:</strong> grasshoppers would INCREASE (no predator); snakes would DECREASE (less food). This "chain reaction" is called a <em>trophic cascade</em>.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const nodes=[{n:'Grass',x:210,y:240,c:'#43a047'},{n:'Grasshopper',x:100,y:175,c:'#8bc34a'},{n:'Mouse',x:320,y:175,c:'#795548'},{n:'Frog',x:100,y:110,c:'#26a69a'},{n:'Snake',x:210,y:60,c:'#8e24aa'},{n:'Eagle',x:320,y:60,c:'#f4511e'}];
+  const edges=[[0,1],[0,2],[1,2],[1,3],[2,4],[3,4],[4,5],[3,5]];
+  let t=0,hi=Math.floor(t/60)%6;
+  p.draw=()=>{
+    p.background(245);
+    hi=Math.floor(t/60)%6;
+    edges.forEach(([a,b])=>{
+      const na=nodes[a],nb=nodes[b];
+      p.stroke(a===hi||b===hi?'#e53935':'#aaa');p.strokeWeight(a===hi||b===hi?3:1.5);
+      p.line(na.x,na.y,nb.x,nb.y);
+    });
+    nodes.forEach((nd,i)=>{
+      const isH=i===hi;
+      p.fill(isH?nd.c:'#ccc');p.noStroke();p.ellipse(nd.x,nd.y,isH?72:60,isH?40:32);
+      p.fill(isH?255:'#555');p.textSize(isH?12:10);p.text(nd.n,nd.x,nd.y);
+    });
+    t++;
+  };
+}},
+{title:'Energy Loss in Food Chains',
+content:`<h2>Why Energy Decreases Up the Chain</h2>
+<p>Energy is <strong>LOST</strong> at each level of a food chain. Only about <strong>10%</strong> passes to the next level. The rest is used for:</p>
+<ul>
+<li>🔥 Respiration (keeping warm, moving)</li>
+<li>💩 Waste (urine, faeces)</li>
+<li>🌡️ Heat released by the body</li>
+</ul>
+<p><strong>Example:</strong></p>
+<ul>
+<li>Grass stores 10,000 J</li>
+<li>Grasshopper gets 1,000 J (10%)</li>
+<li>Frog gets 100 J (10%)</li>
+<li>Snake gets 10 J (10%)</li>
+</ul>
+<p>This is why there are always <em>fewer top predators</em> — there's very little energy left for them!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const levels=[{label:'Grass',E:10000,c:'#43a047'},{label:'Grasshopper',E:1000,c:'#8bc34a'},{label:'Frog',E:100,c:'#26a69a'},{label:'Snake',E:10,c:'#8e24aa'}];
+    const maxE=10000,maxW=340;
+    levels.forEach((lv,i)=>{
+      const w=(lv.E/maxE)*maxW;
+      const y=60+i*52;
+      const revealed=t>(i*80);
+      if(revealed){
+        p.fill(lv.c);p.noStroke();p.rect(40,y,w,38,4);
+        p.fill(255);p.textSize(11);p.text(lv.label+' — '+lv.E+' J',40+w/2,y+20);
+        if(i<3){p.fill('#888');p.textSize(18);p.text('↓ 10%',210,y+50);}
+      }
+    });
+    t++;
+  };
+}},
+{title:'Decomposers',
+content:`<h2>Nature's Recyclers</h2>
+<p><strong>Decomposers</strong> break down dead plants and animals, returning nutrients to the soil for plants to use again. Without them, nutrients would be locked up in dead matter forever!</p>
+<p>Main decomposers:</p>
+<ul>
+<li>🦠 <strong>Bacteria</strong> — break down most organic matter</li>
+<li>🍄 <strong>Fungi</strong> — especially good at breaking down tough materials like wood</li>
+<li>🪱 <strong>Earthworms</strong> — physically break up soil</li>
+</ul>
+<p>Decomposition is why:</p>
+<ul>
+<li>Fallen leaves disappear over time</li>
+<li>Compost heaps produce rich soil</li>
+<li>Nutrients cycle through the ecosystem</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    // cycle: plant → animal → dead → decompose → nutrients → plant
+    const cx=210,cy=140,r=100;
+    const steps=['Plant 🌿','Animal 🦓','Dead matter','Decomposers 🍄','Nutrients in soil'];
+    const cols=['#43a047','#795548','#666','#8e24aa','#1e88e5'];
+    const active=Math.floor(t/60)%5;
+    steps.forEach((s,i)=>{
+      const a=p.TWO_PI*(i/5)-p.HALF_PI;
+      const x=cx+r*p.cos(a),y=cy+r*p.sin(a);
+      const isA=active===i;
+      p.fill(isA?cols[i]:'#ddd');p.noStroke();p.ellipse(x,y,isA?84:68,isA?50:40);
+      p.fill(isA?255:'#555');p.textSize(isA?11:10);p.text(s,x,y);
+      const a2=p.TWO_PI*((i+1)/5)-p.HALF_PI;
+      const x2=cx+r*p.cos(a2),y2=cy+r*p.sin(a2);
+      p.stroke('#bbb');p.strokeWeight(2);p.line(x,y,x2,y2);
+    });
+    p.noStroke();p.fill('#333');p.textSize(12);p.text('Nutrient Cycle',cx,cy);
+    t++;
+  };
+}},
+{title:'A Simple Food Chain',
+content:`<h3>Structure of a Food Chain</h3>
+<p>A food chain is a sequence showing how energy passes from one organism to the next through feeding. Each position in the chain is called a <strong>trophic level</strong>.</p>
+<ul>
+<li><strong>Sun</strong> — source of all energy</li>
+<li><strong>Producer</strong> — captures solar energy via photosynthesis</li>
+<li><strong>Primary Consumer</strong> — herbivore that eats the producer</li>
+<li><strong>Secondary Consumer</strong> — carnivore that eats the primary consumer</li>
+<li><strong>Tertiary Consumer / Top Predator</strong> — feeds at the top of the chain</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#555"/></marker>
+    <marker id="b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f9a825"/></marker>
+  </defs>
+  <!-- Title -->
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">A Simple Food Chain</text>
+  <!-- Sun -->
+  <circle cx="30" cy="68" r="20" fill="#fdd835" stroke="#f9a825" stroke-width="2"/>
+  <text x="30" y="72" text-anchor="middle" font-size="10" fill="#5d4037">Sun</text>
+  <!-- Energy arrow from sun to grass -->
+  <line x1="52" y1="68" x2="70" y2="68" stroke="#f9a825" stroke-width="2" marker-end="url(#b)"/>
+  <!-- Boxes for chain -->
+  <!-- Grass -->
+  <rect x="72" y="50" width="60" height="36" rx="6" fill="#43a047"/>
+  <text x="102" y="68" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Grass</text>
+  <!-- Arrow -->
+  <line x1="134" y1="68" x2="148" y2="68" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Grasshopper -->
+  <rect x="150" y="50" width="60" height="36" rx="6" fill="#8bc34a"/>
+  <text x="180" y="68" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Grasshopper</text>
+  <!-- Arrow -->
+  <line x1="212" y1="68" x2="226" y2="68" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Frog -->
+  <rect x="228" y="50" width="48" height="36" rx="6" fill="#26a69a"/>
+  <text x="252" y="68" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Frog</text>
+  <!-- Arrow -->
+  <line x1="278" y1="68" x2="290" y2="68" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Snake -->
+  <rect x="292" y="50" width="50" height="36" rx="6" fill="#8e24aa"/>
+  <text x="317" y="68" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Snake</text>
+  <!-- Arrow -->
+  <line x1="344" y1="68" x2="356" y2="68" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Eagle -->
+  <rect x="358" y="50" width="50" height="36" rx="6" fill="#f4511e"/>
+  <text x="383" y="68" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Eagle</text>
+  <!-- Labels below boxes -->
+  <text x="102" y="100" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Producer</text>
+  <text x="180" y="100" text-anchor="middle" font-size="9" fill="#558b2f" font-weight="bold">Primary</text>
+  <text x="180" y="111" text-anchor="middle" font-size="9" fill="#558b2f" font-weight="bold">Consumer</text>
+  <text x="252" y="100" text-anchor="middle" font-size="9" fill="#00695c" font-weight="bold">Secondary</text>
+  <text x="252" y="111" text-anchor="middle" font-size="9" fill="#00695c" font-weight="bold">Consumer</text>
+  <text x="317" y="100" text-anchor="middle" font-size="9" fill="#6a1b9a" font-weight="bold">Tertiary</text>
+  <text x="317" y="111" text-anchor="middle" font-size="9" fill="#6a1b9a" font-weight="bold">Consumer</text>
+  <text x="383" y="100" text-anchor="middle" font-size="9" fill="#bf360c" font-weight="bold">Top</text>
+  <text x="383" y="111" text-anchor="middle" font-size="9" fill="#bf360c" font-weight="bold">Predator</text>
+  <!-- "eaten by" labels on arrows -->
+  <text x="141" y="62" text-anchor="middle" font-size="7" fill="#777">eaten by</text>
+  <text x="219" y="62" text-anchor="middle" font-size="7" fill="#777">eaten by</text>
+  <text x="284" y="62" text-anchor="middle" font-size="7" fill="#777">eaten by</text>
+  <text x="350" y="62" text-anchor="middle" font-size="7" fill="#777">eaten by</text>
+  <!-- Energy flow label -->
+  <line x1="72" y1="130" x2="408" y2="130" stroke="#f9a825" stroke-width="1.5" marker-end="url(#b)" stroke-dasharray="4,3"/>
+  <text x="240" y="145" text-anchor="middle" font-size="10" fill="#f57f17">Energy flows this way →</text>
+  <!-- Bottom summary bar -->
+  <rect x="0" y="210" width="420" height="30" rx="0" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Arrow direction = direction of ENERGY FLOW (from eaten to eater)</text>
+</svg>`},
+{title:'A Food Web — Multiple Chains',
+content:`<h3>Food Webs Show Real Complexity</h3>
+<p>Most organisms eat more than one thing. A <strong>food web</strong> links many food chains together to show all feeding relationships in an ecosystem.</p>
+<ul>
+<li><strong>Green = Producers</strong> (make their own food)</li>
+<li><strong>Orange = Consumers</strong> (eat other organisms)</li>
+<li>Removing one organism affects many others — called a <em>trophic cascade</em></li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#888"/></marker>
+  </defs>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">A Food Web — Multiple Chains</text>
+  <!-- Producers (bottom row) -->
+  <rect x="60" y="185" width="70" height="30" rx="6" fill="#2e7d32"/>
+  <text x="95" y="204" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Grass</text>
+  <rect x="160" y="185" width="70" height="30" rx="6" fill="#388e3c"/>
+  <text x="195" y="204" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Maize</text>
+  <!-- Primary consumers -->
+  <rect x="20" y="120" width="70" height="28" rx="6" fill="#e65100"/>
+  <text x="55" y="138" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">Grasshopper</text>
+  <rect x="115" y="120" width="60" height="28" rx="6" fill="#f57c00"/>
+  <text x="145" y="138" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Mouse</text>
+  <rect x="200" y="120" width="60" height="28" rx="6" fill="#fb8c00"/>
+  <text x="230" y="138" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Rabbit</text>
+  <!-- Secondary consumers -->
+  <rect x="30" y="62" width="56" height="28" rx="6" fill="#6a1b9a"/>
+  <text x="58" y="80" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Frog</text>
+  <rect x="120" y="62" width="56" height="28" rx="6" fill="#7b1fa2"/>
+  <text x="148" y="80" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Snake</text>
+  <rect x="290" y="62" width="80" height="28" rx="6" fill="#bf360c"/>
+  <text x="330" y="80" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Hawk</text>
+  <!-- Arrows: producers to primary consumers -->
+  <line x1="95" y1="184" x2="55" y2="150" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="95" y1="184" x2="145" y2="150" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="195" y1="184" x2="145" y2="150" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="195" y1="184" x2="230" y2="150" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Arrows: primary to secondary -->
+  <line x1="55" y1="120" x2="58" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="55" y1="120" x2="148" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="145" y1="120" x2="148" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="145" y1="120" x2="330" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="230" y1="120" x2="330" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="58" y1="120" x2="330" y2="92" stroke="#888" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Key -->
+  <rect x="280" y="185" width="16" height="12" rx="3" fill="#2e7d32"/>
+  <text x="300" y="195" font-size="9" fill="#333">= Producer</text>
+  <rect x="280" y="202" width="16" height="12" rx="3" fill="#e65100"/>
+  <text x="300" y="212" font-size="9" fill="#333">= Consumer</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="218" width="420" height="22" fill="#e0f7fa"/>
+  <text x="210" y="233" text-anchor="middle" font-size="9" fill="#006064">Arrows show energy flow. Many connections = more stable ecosystem.</text>
+</svg>`},
+{title:'Producers, Consumers and Decomposers',
+content:`<h3>Three Roles in Every Ecosystem</h3>
+<p>Every organism in an ecosystem plays one of these key roles:</p>
+<ul>
+<li><strong>Producers</strong> — plants that make food using sunlight, CO&#x2082; and water</li>
+<li><strong>Consumers</strong> — animals that eat producers or other consumers</li>
+<li><strong>Decomposers</strong> — bacteria and fungi that break down dead matter and return nutrients to the soil</li>
+</ul>
+<p>Decomposers close the nutrient cycle — without them nutrients would be locked up forever in dead organisms.</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+    <marker id="c" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1e88e5"/></marker>
+  </defs>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">Producers, Consumers &amp; Decomposers</text>
+  <!-- Zone backgrounds -->
+  <rect x="4" y="24" width="120" height="150" rx="8" fill="#e8f5e9" stroke="#43a047" stroke-width="1.5"/>
+  <rect x="150" y="24" width="120" height="150" rx="8" fill="#fff3e0" stroke="#f57c00" stroke-width="1.5"/>
+  <rect x="295" y="24" width="120" height="150" rx="8" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+  <!-- Zone titles -->
+  <text x="64" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">PRODUCER</text>
+  <text x="210" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">CONSUMER</text>
+  <text x="355" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#6a1b9a">DECOMPOSER</text>
+  <!-- Plant drawing -->
+  <line x1="64" y1="150" x2="64" y2="100" stroke="#43a047" stroke-width="2.5"/>
+  <ellipse cx="64" cy="88" rx="18" ry="14" fill="#66bb6a"/>
+  <ellipse cx="50" cy="108" rx="12" ry="9" fill="#81c784"/>
+  <ellipse cx="78" cy="108" rx="12" ry="9" fill="#81c784"/>
+  <text x="64" y="165" text-anchor="middle" font-size="9" fill="#2e7d32">Grass / Plant</text>
+  <!-- Sun + CO2 arrows into plant -->
+  <circle cx="30" cy="58" r="12" fill="#fdd835"/>
+  <text x="30" y="62" text-anchor="middle" font-size="8" fill="#5d4037">Sun</text>
+  <line x1="42" y1="65" x2="54" y2="82" stroke="#f9a825" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="100" y="58" text-anchor="middle" font-size="8" fill="#1565c0">CO&#x2082;</text>
+  <line x1="96" y1="63" x2="78" y2="80" stroke="#1565c0" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Consumer chain -->
+  <rect x="158" y="60" width="46" height="26" rx="5" fill="#ff8f00"/>
+  <text x="181" y="77" text-anchor="middle" font-size="9" fill="#fff">Herbivore</text>
+  <line x1="181" y1="88" x2="181" y2="100" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="158" y="102" width="46" height="26" rx="5" fill="#e65100"/>
+  <text x="181" y="119" text-anchor="middle" font-size="9" fill="#fff">Carnivore</text>
+  <text x="181" y="155" text-anchor="middle" font-size="9" fill="#e65100">eats plants</text>
+  <text x="181" y="165" text-anchor="middle" font-size="9" fill="#e65100">eats herbivore</text>
+  <!-- Decomposer zone -->
+  <ellipse cx="355" cy="90" rx="28" ry="20" fill="#ce93d8"/>
+  <text x="355" y="86" text-anchor="middle" font-size="9" fill="#4a148c">Fungi /</text>
+  <text x="355" y="98" text-anchor="middle" font-size="9" fill="#4a148c">Bacteria</text>
+  <text x="355" y="125" text-anchor="middle" font-size="9" fill="#6a1b9a">Dead matter</text>
+  <text x="355" y="137" text-anchor="middle" font-size="9" fill="#6a1b9a">broken down</text>
+  <text x="355" y="155" text-anchor="middle" font-size="9" fill="#6a1b9a">→ nutrients</text>
+  <!-- Arrow from decomposer back to soil/plant (curved) -->
+  <path d="M330,160 Q230,200 90,160" fill="none" stroke="#1e88e5" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#c)"/>
+  <text x="210" y="198" text-anchor="middle" font-size="9" fill="#1565c0">nutrients returned to soil → absorbed by plants</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="212" width="420" height="28" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Decomposers close the nutrient cycle — nothing is wasted!</text>
+</svg>`},
+{title:'The Energy Pyramid',
+content:`<h3>Energy Decreases Up the Pyramid</h3>
+<p>At each level of the food chain only about <strong>10%</strong> of energy is passed to the next level. The other 90% is:</p>
+<ul>
+<li>Used in <strong>respiration</strong> (movement, body heat, growth)</li>
+<li>Lost as <strong>heat</strong> to the environment</li>
+<li>Excreted as <strong>waste</strong></li>
+</ul>
+<p>This explains why there are always many more producers than top predators — there is very little energy left at the top.</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+    <marker id="h" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e53935"/></marker>
+  </defs>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">The Energy Pyramid</text>
+  <!-- Pyramid levels (trapezoids) bottom to top -->
+  <!-- Level 1: Producers (widest) -->
+  <polygon points="50,195 370,195 330,155 90,155" fill="#1b5e20"/>
+  <text x="210" y="178" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">Producers (Grass)</text>
+  <text x="210" y="191" text-anchor="middle" font-size="9" fill="#c8e6c9">10,000 J — many individuals</text>
+  <!-- Level 2: Primary consumers -->
+  <polygon points="90,153 330,153 295,116 125,116" fill="#388e3c"/>
+  <text x="210" y="135" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Primary Consumers</text>
+  <text x="210" y="148" text-anchor="middle" font-size="9" fill="#dcedc8">1,000 J — Grasshoppers, Rabbits</text>
+  <!-- Level 3: Secondary consumers -->
+  <polygon points="125,114 295,114 265,80 155,80" fill="#43a047"/>
+  <text x="210" y="95" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Secondary Consumers</text>
+  <text x="210" y="108" text-anchor="middle" font-size="9" fill="#f1f8e9">100 J — Frogs, Snakes</text>
+  <!-- Level 4: Top predators (narrow) -->
+  <polygon points="155,78 265,78 240,46 180,46" fill="#e53935"/>
+  <text x="210" y="66" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Top Predators</text>
+  <text x="210" y="78" text-anchor="middle" font-size="9" fill="#ffcdd2">10 J — Eagle</text>
+  <!-- 10% arrows on right side -->
+  <line x1="345" y1="175" x2="345" y2="130" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="378" y="155" text-anchor="middle" font-size="9" fill="#555">10%</text>
+  <line x1="310" y1="135" x2="310" y2="100" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="343" y="120" text-anchor="middle" font-size="9" fill="#555">10%</text>
+  <line x1="278" y1="97" x2="278" y2="66" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="311" y="84" text-anchor="middle" font-size="9" fill="#555">10%</text>
+  <!-- 90% heat lost labels on left -->
+  <text x="42" y="160" text-anchor="middle" font-size="8" fill="#e53935">90%</text>
+  <text x="42" y="170" text-anchor="middle" font-size="8" fill="#e53935">heat</text>
+  <line x1="55" y1="175" x2="35" y2="185" stroke="#e53935" stroke-width="1" marker-end="url(#h)" stroke-dasharray="3,2"/>
+  <text x="80" y="125" text-anchor="middle" font-size="8" fill="#e53935">90% heat</text>
+  <line x1="95" y1="130" x2="75" y2="140" stroke="#e53935" stroke-width="1" marker-end="url(#h)" stroke-dasharray="3,2"/>
+  <text x="116" y="90" text-anchor="middle" font-size="8" fill="#e53935">90% heat</text>
+  <line x1="130" y1="95" x2="110" y2="103" stroke="#e53935" stroke-width="1" marker-end="url(#h)" stroke-dasharray="3,2"/>
+  <!-- Bottom bar -->
+  <rect x="0" y="210" width="420" height="30" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Only 10% of energy transfers to the next level — 90% lost as heat</text>
+</svg>`},
+{title:'Habitat and Ecosystem',
+content:`<h3>Where Organisms Live and How They Interact</h3>
+<p>A <strong>habitat</strong> is where an organism lives. An <strong>ecosystem</strong> includes all living organisms AND their non-living environment interacting together.</p>
+<ul>
+<li><strong>Abiotic factors</strong> (non-living): sunlight, water, soil, air, temperature</li>
+<li><strong>Biotic factors</strong> (living): plants, animals, fungi, bacteria</li>
+</ul>
+<p>All factors interact — e.g. rain fills a pond (abiotic) which supports fish (biotic) which feeds a heron (biotic).</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker>
+    <marker id="b" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#1e88e5"/></marker>
+  </defs>
+  <text x="210" y="16" text-anchor="middle" font-size="13" font-weight="bold" fill="#006064">Habitat and Ecosystem</text>
+  <!-- Sky background -->
+  <rect x="0" y="22" width="420" height="110" rx="0" fill="#e3f2fd"/>
+  <!-- Ground layer -->
+  <rect x="0" y="132" width="420" height="36" fill="#795548"/>
+  <!-- Soil layer label -->
+  <text x="70" y="154" text-anchor="middle" font-size="9" fill="#fff">Soil layer</text>
+  <!-- Underground (decomposers) -->
+  <rect x="0" y="168" width="420" height="36" fill="#5d4037"/>
+  <text x="210" y="190" text-anchor="middle" font-size="9" fill="#d7ccc8">Decomposers (fungi, bacteria, earthworms) break down dead matter</text>
+  <!-- Sun -->
+  <circle cx="50" cy="50" r="22" fill="#fdd835" stroke="#f9a825" stroke-width="2"/>
+  <text x="50" y="54" text-anchor="middle" font-size="9" fill="#5d4037" font-weight="bold">Sun</text>
+  <!-- Rain/water -->
+  <text x="370" y="42" text-anchor="middle" font-size="20" fill="#1e88e5">&#x2601;</text>
+  <text x="370" y="62" text-anchor="middle" font-size="9" fill="#1565c0">Rain</text>
+  <!-- Plant 1 -->
+  <line x1="160" y1="132" x2="160" y2="80" stroke="#43a047" stroke-width="3"/>
+  <ellipse cx="155" cy="70" rx="22" ry="16" fill="#66bb6a"/>
+  <ellipse cx="175" cy="72" rx="18" ry="13" fill="#81c784"/>
+  <!-- Plant 2 -->
+  <line x1="230" y1="132" x2="230" y2="90" stroke="#388e3c" stroke-width="2.5"/>
+  <ellipse cx="225" cy="80" rx="18" ry="12" fill="#43a047"/>
+  <ellipse cx="243" cy="82" rx="15" ry="10" fill="#66bb6a"/>
+  <!-- Animal silhouette (bird) -->
+  <ellipse cx="310" cy="85" rx="18" ry="11" fill="#8e24aa"/>
+  <text x="310" y="89" text-anchor="middle" font-size="9" fill="#fff">Bird</text>
+  <!-- Animal (rabbit) -->
+  <ellipse cx="280" cy="125" rx="15" ry="10" fill="#795548"/>
+  <text x="280" y="129" text-anchor="middle" font-size="8" fill="#fff">Rabbit</text>
+  <!-- Abiotic factor labels -->
+  <text x="8" y="30" font-size="9" fill="#1565c0" font-weight="bold">ABIOTIC:</text>
+  <!-- Sun label line -->
+  <line x1="72" y1="50" x2="108" y2="50" stroke="#f9a825" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a)"/>
+  <text x="114" y="46" font-size="8" fill="#f57f17">Sunlight</text>
+  <!-- Water label -->
+  <line x1="370" y1="66" x2="370" y2="86" stroke="#1e88e5" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#b)"/>
+  <text x="355" y="76" font-size="8" fill="#1565c0">Water</text>
+  <!-- Soil label -->
+  <line x1="80" y1="145" x2="30" y2="145" stroke="#fff" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- Biotic factor labels -->
+  <text x="8" y="72" font-size="9" fill="#2e7d32" font-weight="bold">BIOTIC:</text>
+  <line x1="150" y1="76" x2="115" y2="76" stroke="#43a047" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="8" y="80" font-size="8" fill="#388e3c">Plants</text>
+  <line x1="298" y1="85" x2="338" y2="85" stroke="#8e24aa" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="340" y="89" font-size="8" fill="#6a1b9a">Animals</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="210" width="420" height="30" fill="#e0f7fa"/>
+  <text x="210" y="230" text-anchor="middle" font-size="10" fill="#006064">Ecosystem = biotic factors + abiotic factors all interacting together</text>
+</svg>`},
+{title:'Mini-Quiz: Producers & Energy',
+mcq:[
+  {q:'In a food chain, the arrow shows:',opts:['Which animal is largest','The direction of energy flow','Which animal wins a fight','Who lays eggs'],ans:1,exp:'The ARROW in a food chain shows the direction of ENERGY FLOW — from the organism being eaten to the one eating it. Energy flows from producer to primary consumer to secondary consumer, etc.'},
+  {q:'Only about 10% of energy passes from one level to the next because the rest is:',opts:['Stored underground','Used for respiration and lost as heat','Gained from the air','Given to decomposers directly'],ans:1,exp:'About 90% of energy is LOST at each level — used in RESPIRATION (movement, warmth, body functions) and released as HEAT. Only about 10% is stored in the body and passed to the next level.'},
+]},
+{title:'Mini-Quiz: Food Webs',
+mcq:[
+  {q:'Which organism in a food chain is always a plant (or alga)?',opts:['Primary consumer','Top predator','Producer','Decomposer'],ans:2,exp:'The PRODUCER is always a plant, alga, or other photosynthetic organism. Producers make their own food using sunlight and are always at the BASE of every food chain.'},
+  {q:'What would happen to grass if all grasshoppers were removed from the ecosystem?',opts:['Grass would decrease','Grass would increase','Nothing would change','Grass would produce fruit'],ans:1,exp:'If grasshoppers (primary consumers of grass) were removed, GRASS would INCREASE — it would no longer be eaten. However, frogs (which eat grasshoppers) would decrease due to less food — a trophic cascade.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#33691e',dark:'#1b5000',light:'#f1f8e9',title:'Food Chains & Webs'});
+</script></body></html>

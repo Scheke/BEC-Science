@@ -1,0 +1,476 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Human Body — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+{title:'Body Systems Overview',
+content:`<h2>Systems That Work Together</h2>
+<p>Your body is made of <strong>organ systems</strong> — groups of organs that work together. The main ones are:</p>
+<ul>
+<li>🍽️ <strong>Digestive system</strong> — breaks down food</li>
+<li>❤️ <strong>Circulatory system</strong> — moves blood around</li>
+<li>🫁 <strong>Respiratory system</strong> — gas exchange (O₂/CO₂)</li>
+<li>🦴 <strong>Skeletal system</strong> — support and protection</li>
+<li>💪 <strong>Muscular system</strong> — movement</li>
+<li>🧠 <strong>Nervous system</strong> — control and coordination</li>
+<li>🚿 <strong>Excretory system</strong> — removes waste</li>
+</ul>
+<p>All systems work together to keep you alive and healthy!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const systems=[{n:'Digestive',c:'#e65100',x:90,y:80},{n:'Circulatory',c:'#e53935',x:210,y:80},{n:'Respiratory',c:'#1e88e5',x:330,y:80},{n:'Skeletal',c:'#795548',x:90,y:190},{n:'Nervous',c:'#8e24aa',x:210,y:190},{n:'Excretory',c:'#43a047',x:330,y:190}];
+  let t=0,active=0;
+  p.draw=()=>{
+    p.background(245);
+    if(t%80===0)active=(active+1)%6;
+    systems.forEach((s,i)=>{
+      const isA=active===i;
+      p.fill(isA?s.c:'#ddd');p.noStroke();p.ellipse(s.x,s.y,isA?100:84,isA?54:44);
+      p.fill(isA?255:'#555');p.textSize(isA?12:10);p.text(s.n,s.x,s.y);
+    });
+    p.fill('#333');p.noStroke();p.textSize(13);p.text('Body Systems',210,255);
+    t++;
+  };
+}},
+{title:'The Digestive System',
+content:`<h2>Breaking Down Food</h2>
+<p>Digestion breaks food into <strong>small, soluble molecules</strong> that can be absorbed into the blood.</p>
+<p><strong>Path of food:</strong></p>
+<ol>
+<li>👄 <strong>Mouth</strong> — teeth chew; saliva softens and contains amylase (breaks starch)</li>
+<li>🔀 <strong>Oesophagus</strong> — muscular tube; peristalsis pushes food down</li>
+<li>💊 <strong>Stomach</strong> — acid kills bacteria; protease breaks proteins</li>
+<li>🌀 <strong>Small intestine</strong> — bile emulsifies fat; enzymes complete digestion; <strong>ABSORPTION</strong> occurs here</li>
+<li>💧 <strong>Large intestine</strong> — absorbs water; forms faeces</li>
+<li>🚽 <strong>Rectum/Anus</strong> — egestion (removal of faeces)</li>
+</ol>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const organs=[{n:'Mouth',x:210,y:30},{n:'Oesophagus',x:210,y:80},{n:'Stomach',x:210,y:130},{n:'Small intestine',x:210,y:185},{n:'Large intestine',x:210,y:235}];
+  const cols=['#e53935','#f4511e','#ffd600','#43a047','#1e88e5'];
+  let t=0,food=0;
+  p.draw=()=>{
+    p.background(245);
+    organs.forEach((o,i)=>{p.fill(cols[i]);p.noStroke();p.rect(o.x-60,o.y-16,120,28,8);p.fill(255);p.textSize(10);p.text(o.n,o.x,o.y);});
+    // food particle moving down
+    const fi=Math.floor(food/40)%5;
+    const fy=organs[fi].y;
+    p.fill('#fff176');p.stroke('#f57f17');p.strokeWeight(2);p.ellipse(210,fy,20,20);
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Food being digested...',210,275);
+    food++;t++;
+  };
+}},
+{title:'The Respiratory System',
+content:`<h2>Getting Oxygen into the Blood</h2>
+<p>The lungs are the site of <strong>gas exchange</strong>:</p>
+<ul>
+<li>O₂ moves from air → blood</li>
+<li>CO₂ moves from blood → air</li>
+</ul>
+<p>This happens at the <strong>alveoli</strong> — tiny air sacs that are:</p>
+<ul>
+<li>Very numerous (huge surface area)</li>
+<li>One cell thick (short diffusion distance)</li>
+<li>Moist (gases dissolve to diffuse)</li>
+<li>Surrounded by capillaries (blood supply)</li>
+</ul>
+<p><strong>Inhalation:</strong> diaphragm contracts + ribs rise → lungs expand → air rushes in<br>
+<strong>Exhalation:</strong> diaphragm relaxes + ribs fall → lungs compress → air pushed out</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const breath=(p.sin(t*0.04)+1)/2;
+    const lw=60+breath*30,lh=90+breath*40;
+    // lungs
+    p.fill('#ef9a9a');p.stroke('#c62828');p.strokeWeight(2);
+    p.ellipse(175,130,lw,lh);p.ellipse(245,130,lw,lh);
+    // trachea
+    p.stroke('#795548');p.strokeWeight(4);p.line(210,40,210,80);
+    // diaphragm
+    const dy=200+breath*20;
+    p.stroke('#1565c0');p.strokeWeight(3);p.noFill();
+    p.beginShape();for(let x=100;x<=320;x+=10)p.vertex(x,dy+8*p.sin((x-100)*0.05));p.endShape();
+    p.noStroke();p.fill('#333');p.textSize(11);
+    p.text(breath>0.5?'Inhaling — diaphragm down, lungs expand':'Exhaling — diaphragm up, lungs compress',210,260);
+    t++;
+  };
+}},
+{title:'The Skeletal System',
+content:`<h2>Your Body's Framework</h2>
+<p>The skeleton has 4 main functions:</p>
+<ol>
+<li>🏗️ <strong>Support</strong> — holds the body upright</li>
+<li>🛡️ <strong>Protection</strong> — skull protects brain; ribcage protects heart and lungs</li>
+<li>🏃 <strong>Movement</strong> — bones with joints and muscles</li>
+<li>🔴 <strong>Blood cell production</strong> — red bone marrow makes blood cells</li>
+</ol>
+<p><strong>Types of joints:</strong></p>
+<ul>
+<li>🔄 <strong>Hinge joint</strong> — movement in one plane (knee, elbow)</li>
+<li>🌐 <strong>Ball and socket</strong> — movement in all directions (hip, shoulder)</li>
+<li>🔒 <strong>Fixed joint</strong> — no movement (skull bones)</li>
+</ul>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0,angle=0;
+  p.draw=()=>{
+    p.background(245);
+    angle=p.QUARTER_PI*p.sin(t*0.04);
+    // simple skeleton
+    p.stroke('#795548');p.strokeWeight(4);
+    // skull
+    p.fill('#ffccbc');p.ellipse(210,50,50,50);
+    // spine
+    p.line(210,75,210,175);
+    // ribs
+    for(let i=0;i<4;i++){p.line(210,90+i*16,170,95+i*16);p.line(210,90+i*16,250,95+i*16);}
+    // hinge joint animation (arm)
+    const sx=250,sy=100;
+    p.line(sx,sy,sx+35,sy+60);
+    const ex=sx+35+40*p.sin(angle),ey=sy+60+40*p.cos(angle);
+    p.line(sx+35,sy+60,ex,ey);
+    p.fill('#f4511e');p.noStroke();p.ellipse(sx+35,sy+60,16,16);
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Hinge joint at elbow',315,170);
+    t++;
+  };
+}},
+{title:'The Kidneys',
+content:`<h2>Filtering Your Blood</h2>
+<p>The <strong>kidneys</strong> are the main excretory organs. Each minute, they filter about 1 litre of blood!</p>
+<p><strong>What the kidneys remove:</strong></p>
+<ul>
+<li>💧 Excess water</li>
+<li>🧂 Excess salts</li>
+<li>☠️ <strong>Urea</strong> — produced when the liver breaks down excess amino acids</li>
+</ul>
+<p>These form <strong>urine</strong>, which is stored in the <strong>bladder</strong> until you urinate.</p>
+<p>The kidneys also help maintain the right balance of water in the body — crucial for all cell functions!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    // blood in
+    const bx=210,by=140;
+    p.fill('#ef5350');p.stroke('#c62828');p.strokeWeight(3);
+    p.ellipse(130,140,80,110);p.ellipse(290,140,80,110);
+    p.noStroke();p.fill(255);p.textSize(11);p.text('Left\nKidney',130,138);p.text('Right\nKidney',290,138);
+    // blood arrows
+    p.stroke('#e53935');p.strokeWeight(3);p.line(60,140,90,140);
+    p.stroke('#1e88e5');p.strokeWeight(3);p.line(330,140,370,140);
+    // urine arrow
+    p.stroke('#fdd835');p.strokeWeight(3);p.line(130,190,130,240);p.line(290,190,290,240);
+    p.noStroke();p.fill('#e65100');p.textSize(11);p.text('Blood in',50,128);
+    p.fill('#1e88e5');p.text('Clean blood\nout',385,128);
+    p.fill('#fdd835');p.text('Urine out',130,255);p.text('Urine out',290,255);
+    p.fill('#333');p.textSize(11);p.text('Kidneys filter ~1 litre of blood every minute!',210,30);
+    t++;
+  };
+}},
+{title:'The Digestive System — Labeled',
+content:`<h3>Organs of Digestion</h3><p>Food travels through the alimentary canal from mouth to anus. Each organ has a specific role, and <strong>enzymes</strong> are chemicals that speed up digestion at key points.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#006064"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">The Digestive System — Labeled</text>
+  <!-- Body outline (torso) -->
+  <ellipse cx="210" cy="145" rx="68" ry="90" fill="#e0f7fa" stroke="#00363a" stroke-width="2"/>
+  <!-- Head circle -->
+  <ellipse cx="210" cy="46" rx="22" ry="24" fill="#ffe0b2" stroke="#00363a" stroke-width="1.5"/>
+  <!-- Dotted food path -->
+  <path d="M210,68 L210,78 L210,95 L208,110 L205,128 L203,148 L205,168 L208,182 L210,192 L210,205 L210,218" stroke="#f57f17" stroke-width="2" stroke-dasharray="4,3" fill="none"/>
+  <!-- Mouth label -->
+  <text x="210" y="72" text-anchor="middle" fill="#00363a" font-size="9" font-weight="bold">MOUTH</text>
+  <line x1="210" y1="63" x2="148" y2="56" stroke="#006064" stroke-width="1"/>
+  <text x="100" y="54" text-anchor="middle" fill="#006064" font-size="8">Teeth &amp; salivary glands</text>
+  <text x="100" y="64" text-anchor="middle" fill="#e65100" font-size="8">Amylase (starch)</text>
+  <!-- Oesophagus -->
+  <rect x="204" y="76" width="12" height="20" rx="3" fill="#80cbc4" stroke="#006064" stroke-width="1"/>
+  <line x1="210" y1="80" x2="290" y2="70" stroke="#006064" stroke-width="1"/>
+  <text x="322" y="68" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Oesophagus</text>
+  <text x="322" y="78" text-anchor="middle" fill="#555" font-size="7">(peristalsis)</text>
+  <!-- Stomach -->
+  <ellipse cx="205" cy="120" rx="22" ry="18" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <text x="205" y="122" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">Stomach</text>
+  <line x1="183" y1="120" x2="135" y2="115" stroke="#006064" stroke-width="1"/>
+  <text x="100" y="110" text-anchor="middle" fill="#006064" font-size="8">Acid + Pepsin</text>
+  <text x="100" y="120" text-anchor="middle" fill="#e65100" font-size="8">(protein digest)</text>
+  <!-- Small intestine -->
+  <path d="M203,140 C195,148 215,155 205,163 C195,170 215,178 207,185" stroke="#66bb6a" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <line x1="210" y1="163" x2="290" y2="163" stroke="#006064" stroke-width="1"/>
+  <text x="335" y="158" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Small Intestine</text>
+  <text x="335" y="168" text-anchor="middle" fill="#2e7d32" font-size="8">ABSORPTION here</text>
+  <!-- Large intestine -->
+  <path d="M208,188 C215,198 225,204 210,210 C195,216 185,210 183,198" stroke="#1e88e5" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <line x1="195" y1="205" x2="140" y2="215" stroke="#006064" stroke-width="1"/>
+  <text x="98" y="212" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Large Intestine</text>
+  <text x="98" y="222" text-anchor="middle" fill="#555" font-size="7">(water absorbed)</text>
+  <!-- Rectum -->
+  <rect x="205" y="212" width="10" height="15" rx="2" fill="#795548" stroke="#3e2723" stroke-width="1"/>
+  <line x1="210" y1="220" x2="290" y2="230" stroke="#006064" stroke-width="1"/>
+  <text x="325" y="228" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Rectum / Anus</text>
+  <text x="325" y="238" text-anchor="middle" fill="#555" font-size="7">(egestion)</text>
+  <!-- Summary bar -->
+  <rect x="0" y="244" width="420" height="16" fill="#00363a"/>
+  <text x="210" y="255" text-anchor="middle" fill="white" font-size="9">Path: Mouth → Oesophagus → Stomach → Small Intestine → Large Intestine → Rectum</text>
+</svg>`},
+{title:'The Respiratory System',
+content:`<h3>From Air to Blood</h3><p>The respiratory system moves oxygen into the blood and removes carbon dioxide. Gas exchange happens at the <strong>alveoli</strong> — tiny air sacs deep in the lungs.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#006064"/>
+    </marker>
+    <marker id="r" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#c62828"/>
+    </marker>
+    <marker id="b" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">The Respiratory System</text>
+  <!-- Body torso outline -->
+  <ellipse cx="185" cy="148" rx="65" ry="88" fill="#e0f7fa" stroke="#00363a" stroke-width="2"/>
+  <!-- Head -->
+  <ellipse cx="185" cy="46" rx="20" ry="22" fill="#ffe0b2" stroke="#00363a" stroke-width="1.5"/>
+  <text x="185" y="50" text-anchor="middle" fill="#333" font-size="9">Nose/Mouth</text>
+  <!-- Trachea -->
+  <rect x="181" y="66" width="8" height="30" rx="3" fill="#b0bec5" stroke="#546e7a" stroke-width="1.5"/>
+  <line x1="185" y1="72" x2="250" y2="68" stroke="#006064" stroke-width="1"/>
+  <text x="295" y="66" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Trachea</text>
+  <!-- Bronchi lines -->
+  <line x1="182" y1="96" x2="158" y2="110" stroke="#546e7a" stroke-width="3"/>
+  <line x1="188" y1="96" x2="212" y2="110" stroke="#546e7a" stroke-width="3"/>
+  <line x1="185" y1="96" x2="250" y2="88" stroke="#006064" stroke-width="1"/>
+  <text x="290" y="86" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Bronchi</text>
+  <!-- Left lung -->
+  <ellipse cx="158" cy="150" rx="30" ry="44" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5" opacity="0.85"/>
+  <text x="158" y="148" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">Left</text>
+  <text x="158" y="158" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">Lung</text>
+  <!-- Right lung -->
+  <ellipse cx="212" cy="150" rx="30" ry="44" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5" opacity="0.85"/>
+  <text x="212" y="148" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">Right</text>
+  <text x="212" y="158" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">Lung</text>
+  <!-- Ribs (simplified) -->
+  <path d="M132,115 C122,120 118,135 125,140" stroke="#78909c" stroke-width="2" fill="none"/>
+  <path d="M132,125 C120,132 116,147 124,153" stroke="#78909c" stroke-width="2" fill="none"/>
+  <path d="M238,115 C248,120 252,135 245,140" stroke="#78909c" stroke-width="2" fill="none"/>
+  <path d="M238,125 C250,132 254,147 246,153" stroke="#78909c" stroke-width="2" fill="none"/>
+  <!-- Diaphragm -->
+  <path d="M125,196 Q185,214 245,196" stroke="#1565c0" stroke-width="3" fill="none"/>
+  <line x1="185" y1="205" x2="250" y2="218" stroke="#006064" stroke-width="1"/>
+  <text x="290" y="213" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">Diaphragm</text>
+  <text x="290" y="223" text-anchor="middle" fill="#555" font-size="7">Contract = breathe in</text>
+  <text x="290" y="232" text-anchor="middle" fill="#555" font-size="7">Relax = breathe out</text>
+  <!-- Alveolus inset box -->
+  <rect x="300" y="95" width="112" height="100" rx="6" fill="#fff9c4" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="356" y="108" text-anchor="middle" fill="#e65100" font-size="8" font-weight="bold">Alveolus (zoomed)</text>
+  <circle cx="356" cy="148" r="24" fill="#e0f7fa" stroke="#006064" stroke-width="1.5"/>
+  <text x="356" y="147" text-anchor="middle" fill="#006064" font-size="7">Air sac</text>
+  <!-- Capillary beside alveolus -->
+  <rect x="382" y="128" width="10" height="40" rx="4" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+  <text x="400" y="145" text-anchor="start" fill="#c62828" font-size="7">Blood</text>
+  <text x="400" y="153" text-anchor="start" fill="#c62828" font-size="7">capillary</text>
+  <!-- O2 arrow in -->
+  <line x1="381" y1="138" x2="372" y2="142" stroke="#43a047" stroke-width="2" marker-end="url(#a)"/>
+  <text x="370" y="132" text-anchor="middle" fill="#43a047" font-size="7">O&#x2082; in</text>
+  <!-- CO2 arrow out -->
+  <line x1="372" y1="155" x2="381" y2="159" stroke="#e53935" stroke-width="2" marker-end="url(#r)"/>
+  <text x="368" y="168" text-anchor="middle" fill="#e53935" font-size="7">CO&#x2082; out</text>
+  <!-- Summary bar -->
+  <rect x="0" y="244" width="420" height="16" fill="#00363a"/>
+  <text x="210" y="255" text-anchor="middle" fill="white" font-size="9">Nose/Mouth → Trachea → Bronchi → Lungs (alveoli) — O&#x2082; in, CO&#x2082; out</text>
+</svg>`},
+{title:'The Circulatory System — Blood Flow Path',
+content:`<h3>Two Loops, One Heart</h3><p>The heart pumps blood around two circuits: the <strong>pulmonary loop</strong> (heart to lungs and back) and the <strong>systemic loop</strong> (heart to body and back). Arteries carry blood away from the heart; veins carry it back.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ra" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#c62828"/>
+    </marker>
+    <marker id="ba" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">The Circulatory System — Blood Flow Path</text>
+  <!-- Heart (center) -->
+  <rect x="174" y="110" width="72" height="60" rx="10" fill="#c62828" stroke="#7f0000" stroke-width="2"/>
+  <text x="210" y="138" text-anchor="middle" fill="white" font-size="12" font-weight="bold">HEART</text>
+  <text x="210" y="152" text-anchor="middle" fill="#ffcdd2" font-size="9">pump</text>
+  <!-- LUNGS (top) -->
+  <rect x="155" y="36" width="110" height="40" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="210" y="55" text-anchor="middle" fill="#1565c0" font-size="11" font-weight="bold">LUNGS</text>
+  <text x="210" y="68" text-anchor="middle" fill="#1565c0" font-size="8">picks up O&#x2082;</text>
+  <!-- BODY (bottom) -->
+  <rect x="145" y="200" width="130" height="40" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+  <text x="210" y="218" text-anchor="middle" fill="#c62828" font-size="11" font-weight="bold">BODY ORGANS</text>
+  <text x="210" y="231" text-anchor="middle" fill="#c62828" font-size="8">delivers O&#x2082;</text>
+  <!-- PULMONARY loop — heart to lungs (artery, deoxygenated, blue) -->
+  <path d="M192,110 L192,76" stroke="#1565c0" stroke-width="3" fill="none" marker-end="url(#ba)"/>
+  <text x="155" y="97" text-anchor="middle" fill="#1565c0" font-size="8" font-weight="bold">Pulmonary</text>
+  <text x="155" y="106" text-anchor="middle" fill="#1565c0" font-size="8">artery</text>
+  <!-- lungs to heart (vein, oxygenated, red) -->
+  <path d="M228,76 L228,110" stroke="#c62828" stroke-width="3" fill="none" marker-end="url(#ra)"/>
+  <text x="262" y="97" text-anchor="middle" fill="#c62828" font-size="8" font-weight="bold">Pulmonary</text>
+  <text x="262" y="106" text-anchor="middle" fill="#c62828" font-size="8">vein</text>
+  <!-- SYSTEMIC loop — heart to body (artery, oxygenated, red) -->
+  <path d="M228,170 L228,200" stroke="#c62828" stroke-width="3" fill="none" marker-end="url(#ra)"/>
+  <text x="268" y="188" text-anchor="middle" fill="#c62828" font-size="8" font-weight="bold">Aorta</text>
+  <!-- body to heart (vein, deoxygenated, blue) -->
+  <path d="M192,200 L192,170" stroke="#1565c0" stroke-width="3" fill="none" marker-end="url(#ba)"/>
+  <text x="152" y="188" text-anchor="middle" fill="#1565c0" font-size="8" font-weight="bold">Vena Cava</text>
+  <!-- Loop labels -->
+  <rect x="6" y="60" width="110" height="30" rx="5" fill="#e0f7fa" stroke="#006064" stroke-width="1"/>
+  <text x="61" y="73" text-anchor="middle" fill="#006064" font-size="8" font-weight="bold">PULMONARY loop</text>
+  <text x="61" y="84" text-anchor="middle" fill="#555" font-size="7">heart ↔ lungs</text>
+  <rect x="304" y="60" width="110" height="30" rx="5" fill="#fce4ec" stroke="#c62828" stroke-width="1"/>
+  <text x="359" y="73" text-anchor="middle" fill="#c62828" font-size="8" font-weight="bold">SYSTEMIC loop</text>
+  <text x="359" y="84" text-anchor="middle" fill="#555" font-size="7">heart ↔ body</text>
+  <!-- Color key -->
+  <rect x="6" y="168" width="110" height="50" rx="5" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="61" y="182" text-anchor="middle" fill="#333" font-size="8" font-weight="bold">Colour Key</text>
+  <line x1="16" y1="192" x2="50" y2="192" stroke="#c62828" stroke-width="3"/>
+  <text x="95" y="195" text-anchor="middle" fill="#c62828" font-size="8">Arteries (O&#x2082;-rich)</text>
+  <line x1="16" y1="207" x2="50" y2="207" stroke="#1565c0" stroke-width="3"/>
+  <text x="95" y="210" text-anchor="middle" fill="#1565c0" font-size="8">Veins (CO&#x2082;-rich)</text>
+  <!-- Summary bar -->
+  <rect x="0" y="244" width="420" height="16" fill="#00363a"/>
+  <text x="210" y="255" text-anchor="middle" fill="white" font-size="9">Arteries carry blood FROM heart; veins carry blood TO heart</text>
+</svg>`},
+{title:'Inside the Heart — 4 Chambers',
+content:`<h3>The Heart's Four Rooms</h3><p>The heart is divided into four chambers. The <strong>right side</strong> handles deoxygenated blood (going to lungs); the <strong>left side</strong> handles oxygenated blood (going to the body). Valves stop blood flowing backwards.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ra" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#c62828"/>
+    </marker>
+    <marker id="ba" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M1,1 L7,4 L1,7 Z" fill="#1565c0"/>
+    </marker>
+  </defs>
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Inside the Heart — 4 Chambers</text>
+  <!-- Heart outer shape -->
+  <path d="M130,50 C80,50 60,100 80,140 C100,180 180,220 210,235 C240,220 320,180 340,140 C360,100 340,50 290,50 C270,50 250,62 210,85 C170,62 150,50 130,50 Z" fill="#ffcdd2" stroke="#b71c1c" stroke-width="2.5"/>
+  <!-- Septum (divider) -->
+  <line x1="210" y1="70" x2="210" y2="225" stroke="#7f0000" stroke-width="3"/>
+  <!-- Right Atrium (top-right of viewer = anatomical right) -->
+  <rect x="86" y="58" width="110" height="72" rx="8" fill="#90caf9" stroke="#1565c0" stroke-width="1.5" opacity="0.85"/>
+  <text x="141" y="85" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="bold">Right Atrium</text>
+  <text x="141" y="97" text-anchor="middle" fill="#0d47a1" font-size="7">receives deoxygenated</text>
+  <text x="141" y="107" text-anchor="middle" fill="#0d47a1" font-size="7">blood from body</text>
+  <!-- Left Atrium (top-left of viewer = anatomical left) -->
+  <rect x="224" y="58" width="110" height="72" rx="8" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5" opacity="0.85"/>
+  <text x="279" y="85" text-anchor="middle" fill="#7f0000" font-size="9" font-weight="bold">Left Atrium</text>
+  <text x="279" y="97" text-anchor="middle" fill="#7f0000" font-size="7">receives oxygenated</text>
+  <text x="279" y="107" text-anchor="middle" fill="#7f0000" font-size="7">blood from lungs</text>
+  <!-- Valves -->
+  <rect x="124" y="128" width="74" height="8" rx="3" fill="#f57f17" stroke="#e65100" stroke-width="1"/>
+  <text x="161" y="135" text-anchor="middle" fill="white" font-size="7" font-weight="bold">valve</text>
+  <rect x="222" y="128" width="74" height="8" rx="3" fill="#f57f17" stroke="#e65100" stroke-width="1"/>
+  <text x="259" y="135" text-anchor="middle" fill="white" font-size="7" font-weight="bold">valve</text>
+  <!-- Right Ventricle -->
+  <path d="M86,136 L196,136 L188,220 Q130,228 100,200 Z" fill="#64b5f6" stroke="#1565c0" stroke-width="1.5" opacity="0.9"/>
+  <text x="141" y="168" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="bold">Right Ventricle</text>
+  <text x="141" y="180" text-anchor="middle" fill="#0d47a1" font-size="7">pumps to lungs</text>
+  <!-- Left Ventricle (thicker walls) -->
+  <path d="M224,136 L334,136 L320,200 Q280,230 232,220 Z" fill="#e57373" stroke="#c62828" stroke-width="2.5" opacity="0.9"/>
+  <text x="279" y="168" text-anchor="middle" fill="#7f0000" font-size="9" font-weight="bold">Left Ventricle</text>
+  <text x="279" y="180" text-anchor="middle" fill="#7f0000" font-size="7">pumps to body</text>
+  <text x="279" y="190" text-anchor="middle" fill="#7f0000" font-size="7">(thickest walls)</text>
+  <!-- Blood flow arrows -->
+  <line x1="141" y1="58" x2="141" y2="44" stroke="#1565c0" stroke-width="2" marker-end="url(#ba)"/>
+  <text x="95" y="40" text-anchor="middle" fill="#1565c0" font-size="7">from body</text>
+  <line x1="279" y1="58" x2="279" y2="44" stroke="#c62828" stroke-width="2" marker-end="url(#ra)"/>
+  <text x="325" y="40" text-anchor="middle" fill="#c62828" font-size="7">from lungs</text>
+  <line x1="141" y1="222" x2="141" y2="238" stroke="#1565c0" stroke-width="2" marker-end="url(#ba)"/>
+  <text x="95" y="242" text-anchor="middle" fill="#1565c0" font-size="7">to lungs</text>
+  <line x1="279" y1="218" x2="279" y2="238" stroke="#c62828" stroke-width="2" marker-end="url(#ra)"/>
+  <text x="325" y="242" text-anchor="middle" fill="#c62828" font-size="7">to body</text>
+  <!-- Summary bar -->
+  <rect x="0" y="245" width="420" height="15" fill="#00363a"/>
+  <text x="210" y="255" text-anchor="middle" fill="white" font-size="8">Blue = deoxygenated (right side)   Red = oxygenated (left side)</text>
+</svg>`},
+{title:'Body Systems — Functions Summary',
+content:`<h3>Three Key Systems at a Glance</h3><p>Knowing each system's organs and function helps you answer exam questions quickly. Study this table and connect each system to its job in keeping the body alive.</p>`,
+visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <rect x="0" y="0" width="420" height="28" fill="#006064"/>
+  <text x="210" y="18" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Body Systems — Functions Summary</text>
+  <!-- Table header row -->
+  <rect x="8" y="34" width="120" height="24" rx="4" fill="#00363a"/>
+  <rect x="132" y="34" width="138" height="24" rx="4" fill="#00363a"/>
+  <rect x="274" y="34" width="138" height="24" rx="4" fill="#00363a"/>
+  <text x="68" y="50" text-anchor="middle" fill="white" font-size="10" font-weight="bold">System</text>
+  <text x="201" y="50" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Main Organs</text>
+  <text x="343" y="50" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Function</text>
+  <!-- ROW 1: Digestive -->
+  <rect x="8" y="62" width="120" height="52" rx="4" fill="#e65100" opacity="0.15" stroke="#e65100" stroke-width="1"/>
+  <rect x="132" y="62" width="138" height="52" rx="4" fill="#fff8f5" stroke="#e65100" stroke-width="1"/>
+  <rect x="274" y="62" width="138" height="52" rx="4" fill="#fff8f5" stroke="#e65100" stroke-width="1"/>
+  <!-- icon: fork -->
+  <circle cx="30" cy="88" r="14" fill="#e65100" opacity="0.2"/>
+  <text x="30" y="93" text-anchor="middle" font-size="16">&#x1F374;</text>
+  <text x="72" y="84" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Digestive</text>
+  <text x="201" y="77" text-anchor="middle" fill="#333" font-size="8">Mouth, Oesophagus,</text>
+  <text x="201" y="89" text-anchor="middle" fill="#333" font-size="8">Stomach, Small &amp;</text>
+  <text x="201" y="101" text-anchor="middle" fill="#333" font-size="8">Large Intestine, Anus</text>
+  <text x="343" y="77" text-anchor="middle" fill="#333" font-size="8">Breaks down food into</text>
+  <text x="343" y="89" text-anchor="middle" fill="#333" font-size="8">small molecules absorbed</text>
+  <text x="343" y="101" text-anchor="middle" fill="#333" font-size="8">into the bloodstream</text>
+  <!-- ROW 2: Respiratory -->
+  <rect x="8" y="118" width="120" height="52" rx="4" fill="#1565c0" opacity="0.12" stroke="#1565c0" stroke-width="1"/>
+  <rect x="132" y="118" width="138" height="52" rx="4" fill="#f0f4ff" stroke="#1565c0" stroke-width="1"/>
+  <rect x="274" y="118" width="138" height="52" rx="4" fill="#f0f4ff" stroke="#1565c0" stroke-width="1"/>
+  <circle cx="30" cy="144" r="14" fill="#1565c0" opacity="0.15"/>
+  <text x="30" y="149" text-anchor="middle" font-size="16">&#x1FAB8;</text>
+  <text x="72" y="140" text-anchor="middle" fill="#1565c0" font-size="10" font-weight="bold">Respiratory</text>
+  <text x="201" y="133" text-anchor="middle" fill="#333" font-size="8">Nose, Trachea, Bronchi,</text>
+  <text x="201" y="145" text-anchor="middle" fill="#333" font-size="8">Lungs (alveoli),</text>
+  <text x="201" y="157" text-anchor="middle" fill="#333" font-size="8">Diaphragm</text>
+  <text x="343" y="133" text-anchor="middle" fill="#333" font-size="8">Gas exchange: O&#x2082; enters</text>
+  <text x="343" y="145" text-anchor="middle" fill="#333" font-size="8">blood; CO&#x2082; removed;</text>
+  <text x="343" y="157" text-anchor="middle" fill="#333" font-size="8">breathing in/out</text>
+  <!-- ROW 3: Circulatory -->
+  <rect x="8" y="174" width="120" height="52" rx="4" fill="#c62828" opacity="0.12" stroke="#c62828" stroke-width="1"/>
+  <rect x="132" y="174" width="138" height="52" rx="4" fill="#fff5f5" stroke="#c62828" stroke-width="1"/>
+  <rect x="274" y="174" width="138" height="52" rx="4" fill="#fff5f5" stroke="#c62828" stroke-width="1"/>
+  <circle cx="30" cy="200" r="14" fill="#c62828" opacity="0.15"/>
+  <text x="30" y="205" text-anchor="middle" font-size="16">&#x2764;</text>
+  <text x="72" y="196" text-anchor="middle" fill="#c62828" font-size="10" font-weight="bold">Circulatory</text>
+  <text x="201" y="189" text-anchor="middle" fill="#333" font-size="8">Heart, Arteries, Veins,</text>
+  <text x="201" y="201" text-anchor="middle" fill="#333" font-size="8">Capillaries,</text>
+  <text x="201" y="213" text-anchor="middle" fill="#333" font-size="8">Blood</text>
+  <text x="343" y="189" text-anchor="middle" fill="#333" font-size="8">Pumps blood carrying O&#x2082;,</text>
+  <text x="343" y="201" text-anchor="middle" fill="#333" font-size="8">nutrients and waste to/from</text>
+  <text x="343" y="213" text-anchor="middle" fill="#333" font-size="8">all body cells</text>
+  <!-- Summary bar -->
+  <rect x="0" y="230" width="420" height="30" fill="#00363a"/>
+  <text x="210" y="243" text-anchor="middle" fill="white" font-size="8">All three systems work together — no system can function without the others</text>
+  <text x="210" y="255" text-anchor="middle" fill="#80cbc4" font-size="8">Digestive supplies nutrients | Respiratory supplies O&#x2082; | Circulatory delivers both</text>
+</svg>`},
+{title:'Mini-Quiz: Digestive &amp; Respiratory',
+mcq:[
+  {q:'Absorption of digested nutrients into the blood occurs mainly in the:',opts:['Stomach','Large intestine','Small intestine','Mouth'],ans:2,exp:'The SMALL INTESTINE is where most ABSORPTION occurs. Its walls are lined with villi (tiny finger-like projections) which give a huge surface area and are richly supplied with blood vessels.'},
+  {q:'Gas exchange in the lungs takes place at the:',opts:['Trachea','Bronchi','Diaphragm','Alveoli'],ans:3,exp:'ALVEOLI are the tiny air sacs in the lungs where GAS EXCHANGE occurs. They have a large surface area, thin walls, and a rich blood supply — perfect for O₂ to diffuse into blood and CO₂ to diffuse out.'},
+]},
+{title:'Mini-Quiz: Skeleton &amp; Kidneys',
+mcq:[
+  {q:'Which part of the bone produces blood cells?',opts:['Hard outer bone','Cartilage','Red bone marrow','Compact bone'],ans:2,exp:'RED BONE MARROW (inside the bone) produces RED BLOOD CELLS, white blood cells, and platelets. This is one of the skeleton\'s 4 main functions: support, protection, movement, and blood cell production.'},
+  {q:'What is the main waste product removed by the kidneys?',opts:['Glucose','Urea','Carbon dioxide','Vitamins'],ans:1,exp:'UREA is the main nitrogenous waste product removed by the kidneys. It is produced in the liver when excess amino acids (proteins) are broken down. Urea is dissolved in water to make URINE.'},
+]},
+];
+new StudyEngine(STEPS,{color:'#880e4f',dark:'#560027',light:'#fce4ec',title:'Human Body Systems'});
+</script></body></html>

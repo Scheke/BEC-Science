@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atomic Structure — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#e65100;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ffcc80;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffcc80}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #e65100;border-radius:24px;cursor:pointer;font-size:.85rem;font-weight:700;background:#fff;color:#e65100;transition:all .15s}
+    .btn.on{background:#e65100;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Atomic Structure &amp; Periodic Table</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">⚛️ Bohr Model</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🔢 Electron Config</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">📊 Periodic Trends</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">☢️ Isotopes & Ions</button>
+  <button class="btn" id="b-prac" onclick="setAtomPractice(!atomMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;let selElement=6;
+const ELEMENTS=[
+  {sym:'H',name:'Hydrogen',Z:1,mass:1,shells:[1],col:[200,60,60]},
+  {sym:'He',name:'Helium',Z:2,mass:4,shells:[2],col:[180,180,60]},
+  {sym:'Li',name:'Lithium',Z:3,mass:7,shells:[2,1],col:[180,60,180]},
+  {sym:'C',name:'Carbon',Z:6,mass:12,shells:[2,4],col:[60,60,60]},
+  {sym:'N',name:'Nitrogen',Z:7,mass:14,shells:[2,5],col:[30,80,200]},
+  {sym:'O',name:'Oxygen',Z:8,mass:16,shells:[2,6],col:[200,30,30]},
+  {sym:'Na',name:'Sodium',Z:11,mass:23,shells:[2,8,1],col:[180,100,0]},
+  {sym:'Cl',name:'Chlorine',Z:17,mass:35,shells:[2,8,7],col:[30,140,30]},
+  {sym:'Ca',name:'Calcium',Z:20,mass:40,shells:[2,8,8,2],col:[100,60,0]},
+  {sym:'Fe',name:'Iron',Z:26,mass:56,shells:[2,8,14,2],col:[100,100,120]},
+];
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Atomic Structure</h2><ul><li><b>Nucleus</b>: Contains protons (+) and neutrons (0). Electrons (−) orbit in shells.</li><li><b>Proton number</b>: Number of protons = number of electrons in a neutral atom.</li><li><b>Mass number</b>: Protons + neutrons.</li><li><b>Isotopes</b>: Same element, different number of neutrons (same proton number).</li><li><b>Electron configuration</b>: Shells fill as 2, 8, 8... e.g. Na = 2,8,1.</li><li><b>Ions</b>: Atoms that have gained or lost electrons. Cations (+) lost electrons; anions (−) gained.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let atomMcq=false;
+const ATOM_MCQ=[
+  {q:'Where are protons and neutrons found in an atom?',opts:['In the nucleus','In the electron shells','Around the nucleus','In the valence shell'],c:0,tip:'Protons and neutrons are in the nucleus; electrons orbit in shells.'},
+  {q:'What is the relative mass of a neutron?',opts:['1','0','-1','0.0005'],c:0,tip:'Both protons and neutrons have a relative mass of 1; electrons are negligible (0.0005).'},
+  {q:'Isotopes of the same element differ in the number of:',opts:['Neutrons','Protons','Electrons','Shells'],c:0,tip:'Isotopes have the same proton number but different numbers of neutrons.'},
+  {q:'An element with electron configuration 2,8,1 is:',opts:['Sodium (Na)','Chlorine (Cl)','Potassium (K)','Lithium (Li)'],c:0,tip:'2+8+1 = 11 protons = Sodium.'},
+  {q:'An ion with a 2+ charge has:',opts:['Lost 2 electrons','Gained 2 electrons','Lost 2 neutrons','Gained 2 protons'],c:0,tip:'Positive ions are formed when atoms LOSE electrons.'},
+  {q:'Elements in Period 3 have electrons in how many shells?',opts:['3 shells','2 shells','4 shells','1 shell'],c:0,tip:'Period number = number of occupied electron shells.'},
+  {q:'What is the relative charge of an electron?',opts:['-1','+1','0','+2'],c:0,tip:'Electrons carry a charge of -1; protons carry +1.'}
+];
+let atomMcqIdx=0,atomMcqSel=-1,atomMcqScore=0,atomMcqDone=false,atomMcqFeedback=null;
+function setAtomPractice(on){atomMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){atomMcqIdx=0;atomMcqSel=-1;atomMcqScore=0;atomMcqDone=false;atomMcqFeedback=null;}}
+function drawAtomMCQ(s){s.background(252,252,240);if(atomMcqDone){s.fill(230,81,0);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+atomMcqScore+'/'+ATOM_MCQ.length,440,215);let msg=atomMcqScore===ATOM_MCQ.length?'Perfect! You know Atomic Structure!':atomMcqScore>=5?'Great job!':'Review protons, isotopes & electron config.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=ATOM_MCQ[atomMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(atomMcqIdx/ATOM_MCQ.length),10,5);s.fill(230,81,0);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(atomMcqIdx+1)+' of '+ATOM_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=atomMcqSel===i,correct=atomMcqFeedback!==null&&i===q.c,wrong=atomMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(atomMcqFeedback){s.fill(atomMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(atomMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function atomMcqClick(mx,my){if(atomMcqDone){if(mx>310&&mx<570&&my>290&&my<334){atomMcqIdx=0;atomMcqSel=-1;atomMcqScore=0;atomMcqDone=false;atomMcqFeedback=null;}return;}if(atomMcqFeedback!==null){atomMcqIdx++;atomMcqSel=-1;atomMcqFeedback=null;if(atomMcqIdx>=ATOM_MCQ.length)atomMcqDone=true;return;}ATOM_MCQ[atomMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){atomMcqSel=i;atomMcqFeedback=i===ATOM_MCQ[atomMcqIdx].c?'correct':'wrong';if(i===ATOM_MCQ[atomMcqIdx].c)atomMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;let hitTargets=[];
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(atomMcq){ drawAtomMCQ(sk); return; }tick+=0.03;hitTargets=[];sk.background(255,250,245);
+    if(tab===0) drawBohr();
+    else if(tab===1) drawConfig();
+    else if(tab===2) drawTrends();
+    else drawIsotopes();
+    drawInfoPanel();
+  };
+  sk.mouseClicked=()=>{
+    if(atomMcq){ atomMcqClick(sk.mouseX,sk.mouseY); return; }
+    hitTargets.forEach(h=>{
+      if(sk.mouseX>h.x&&sk.mouseX<h.x+h.w&&sk.mouseY>h.y&&sk.mouseY<h.y+h.h) selElement=h.id;
+    });
+  };
+
+  function drawBohr(){
+    let el=ELEMENTS[selElement<ELEMENTS.length?selElement:0];
+    let cx=248,cy=265;
+    // Element selector
+    ELEMENTS.forEach((e,i)=>{
+      let ex=14+i*45,ey=12;
+      let sel=selElement===i;
+      sk.fill(sel?e.col:[220,220,220]);sk.stroke(sel?e.col:[180,180,180]);sk.strokeWeight(sel?2:1);
+      sk.rect(ex,ey,40,28,5);
+      hitTargets.push({x:ex,y:ey,w:40,h:28,id:i});
+      sk.noStroke();sk.fill(sel?255:60);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(e.sym,ex+20,ey+19);sk.textStyle(sk.NORMAL);
+    });
+    // Nucleus
+    sk.fill(220,60,30,220);sk.stroke(180,30,0);sk.strokeWeight(2);sk.ellipse(cx,cy,48,48);
+    sk.noStroke();sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text(el.Z+'p',cx,cy-3);sk.text((el.mass-el.Z)+'n',cx,cy+10);sk.textStyle(sk.NORMAL);
+    // Electron shells
+    let shellR=[55,85,115,145];let c=el.col;
+    el.shells.forEach((n,si)=>{
+      sk.noFill();sk.stroke(c[0],c[1],c[2],80);sk.strokeWeight(1.5);sk.setLineDash([3,3]);
+      sk.ellipse(cx,cy,shellR[si]*2,shellR[si]*2);sk.setLineDash([]);
+      for(let ei=0;ei<n;ei++){
+        let a=tick+ei*(sk.TWO_PI/n)+(si*0.5);
+        let ex=cx+Math.cos(a)*shellR[si],ey=cy+Math.sin(a)*shellR[si];
+        sk.fill(c[0],c[1],c[2],230);sk.noStroke();sk.ellipse(ex,ey,11,11);
+      }
+    });
+    // Electron shell label
+    el.shells.forEach((n,si)=>{
+      sk.fill(100);sk.textSize(8.5);sk.textStyle(sk.ITALIC);sk.textAlign(sk.LEFT);
+      sk.text('Shell '+(si+1)+' ('+n+'e⁻)',cx+shellR[si]+6,cy-4);sk.textStyle(sk.NORMAL);
+    });
+    // Element name & numbers
+    sk.fill(c[0],c[1],c[2]);sk.textSize(30);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(el.sym,40,190);
+    sk.textSize(13);sk.text(el.name,40,210);sk.textStyle(sk.NORMAL);
+    sk.fill(60);sk.textSize(11);sk.text('Atomic number: '+el.Z,40,230);
+    sk.text('Mass number: '+el.mass,40,248);
+    sk.text('Electrons: '+el.shells.join(', '),40,266);
+    sk.text('Protons: '+el.Z+' Neutrons: '+(el.mass-el.Z),40,284);
+    // Subatomic particle table
+    let ty=380;
+    sk.fill(245,240,230,220);sk.stroke(180,80,0,80);sk.strokeWeight(1);sk.rect(14,ty,462,110,7);sk.noStroke();
+    sk.fill(150,50,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text('SUBATOMIC PARTICLES:',20,ty+14);sk.textStyle(sk.NORMAL);
+    [['Particle','Charge','Mass (amu)','Location'],['Proton (p⁺)','+1','1','Nucleus'],['Neutron (n⁰)','0','1','Nucleus'],['Electron (e⁻)','-1','~0','Shells (orbitals)']].forEach((r,i)=>{
+      if(i===0) sk.textStyle(sk.BOLD);else{sk.textStyle(sk.NORMAL);sk.fill(30);}
+      if(i===0) sk.fill(150,50,0);
+      ['Particle','Charge','Mass (amu)','Location'].forEach((col,ci)=>{
+        sk.textSize(9.5);sk.textAlign(ci===0?sk.LEFT:sk.CENTER);
+        sk.text(r[ci],ci===0?20:130+ci*60,ty+28+i*22);
+      });
+    });sk.textStyle(sk.NORMAL);
+  }
+
+  function drawConfig(){
+    sk.fill(180,60,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Electron Configuration — Click element above',248,22);sk.textStyle(sk.NORMAL);
+    // Periodic table mini
+    const periods=[[1,2],[3,4,5,6,7,8,9,10],[11,12,13,14,15,16,17,18]];
+    const syms=['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar'];
+    const configs=['1','2','2,1','2,2','2,3','2,4','2,5','2,6','2,7','2,8','2,8,1','2,8,2','2,8,3','2,8,4','2,8,5','2,8,6','2,8,7','2,8,8'];
+    const gcols=[[200,60,60],[180,180,60],[180,60,180],[180,60,180],[100,100,200],[60,60,60],[30,80,200],[200,30,30],[30,140,30],[180,180,60],[180,80,0],[100,60,0],[100,100,200],[60,60,60],[200,100,0],[30,140,30],[30,140,30],[180,180,60]];
+    periods.forEach((row,ri)=>{
+      row.forEach((Z,ci)=>{
+        let i=Z-1;let ex=14+(ci+(ri===0?ri:ri===1?0:0))*45,ey=50+ri*48;
+        if(ri===0) ex=14+ci*45+(ci===1?8*45:0);
+        if(ri===1) ex=14+ci*45;
+        if(ri===2) ex=14+ci*45;
+        sk.fill(gcols[i][0],gcols[i][1],gcols[i][2],40);sk.stroke(gcols[i][0],gcols[i][1],gcols[i][2]);sk.strokeWeight(1.5);
+        sk.rect(ex,ey,40,40,5);sk.noStroke();
+        sk.fill(gcols[i][0],gcols[i][1],gcols[i][2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(syms[i],ex+20,ey+16);
+        sk.fill(60);sk.textSize(8);sk.textStyle(sk.NORMAL);sk.text(configs[i],ex+20,ey+30);
+      });
+    });
+    // Shell diagram
+    let cx=300,cy=280;
+    const shells=[[2,8,18,32],[50,80,110,140]];
+    const shcols=[[200,60,30],[30,100,200],[0,140,60],[120,0,180]];
+    shcols.forEach((c,i)=>{
+      sk.noFill();sk.stroke(c[0],c[1],c[2],100);sk.strokeWeight(2);sk.setLineDash([4,4]);
+      sk.ellipse(cx,cy,(shells[1][i])*2,(shells[1][i])*2);sk.setLineDash([]);
+      sk.fill(c[0],c[1],c[2]);sk.noStroke();sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('Shell '+(i+1)+': max '+shells[0][i]+' e⁻',cx+shells[1][i]+6,cy+i*18-28);sk.textStyle(sk.NORMAL);
+    });
+    sk.fill(180,50,0,220);sk.noStroke();sk.ellipse(cx,cy,24,24);
+    sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Nucleus',cx,cy+3);sk.textStyle(sk.NORMAL);
+    // Rules box
+    let ry=390;
+    sk.fill(240,235,220,220);sk.stroke(160,80,0,80);sk.strokeWeight(1);sk.rect(14,ry,462,105,7);sk.noStroke();
+    sk.fill(150,50,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ELECTRON FILLING RULES:',20,ry+14);sk.textStyle(sk.NORMAL);
+    ['Shell 1: holds max 2 electrons','Shell 2: holds max 8 electrons','Shell 3: holds max 8 electrons (first 18 elements)','Fill lowest energy shell first (inward → outward)','Valence electrons = electrons in OUTERMOST shell → determines reactivity'].forEach((r,i)=>{
+      sk.fill(30);sk.textSize(10);sk.text(r,20,ry+30+i*16);
+    });
+  }
+
+  function drawTrends(){
+    sk.fill(180,60,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Periodic Table Trends',248,20);sk.textStyle(sk.NORMAL);
+    // Trend arrows across period
+    const trends=[
+      {name:'Atomic Radius',desc:'Decreases across period\n(more protons pull electrons closer)',direction:'←',col:[200,60,30]},
+      {name:'Ionisation Energy',desc:'Increases across period\n(electrons harder to remove)',direction:'→',col:[30,80,200]},
+      {name:'Electronegativity',desc:'Increases across period\n(fluorine most electronegative)',direction:'→',col:[0,140,60]},
+      {name:'Metallic Character',desc:'Decreases across period\n(left = metals, right = non-metals)',direction:'←',col:[160,80,0]},
+    ];
+    let ty=48;
+    trends.forEach((t,i)=>{
+      let y=ty+i*106;sk.fill(t.col[0],t.col[1],t.col[2],25);sk.stroke(t.col[0],t.col[1],t.col[2],80);
+      sk.strokeWeight(1.5);sk.rect(14,y,462,96,7);sk.noStroke();
+      sk.fill(t.col[0],t.col[1],t.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(t.name,20,y+16);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10);t.desc.split('\n').forEach((l,li)=>sk.text(l,20,y+32+li*16));
+      // Arrow
+      let ax=250,aw=160;
+      sk.stroke(t.col[0],t.col[1],t.col[2],180);sk.strokeWeight(3);
+      if(t.direction==='→'){sk.line(ax,y+68,ax+aw,y+68);sk.noStroke();sk.fill(t.col[0],t.col[1],t.col[2]);sk.triangle(ax+aw,y+62,ax+aw,y+74,ax+aw+12,y+68);}
+      else{sk.line(ax+aw,y+68,ax,y+68);sk.noStroke();sk.fill(t.col[0],t.col[1],t.col[2]);sk.triangle(ax,y+62,ax,y+74,ax-12,y+68);}
+      sk.fill(t.col[0],t.col[1],t.col[2]);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+      sk.text(t.direction==='→'?'Li → Na → K':'F → Cl → Br',ax+aw/2,y+82);sk.textStyle(sk.NORMAL);
+    });
+    // Period vs Group
+    sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Across a PERIOD (→): atomic number increases, same number of shells',248,480);
+    sk.text('Down a GROUP (↓): same valence electrons, more shells added',248,496);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawIsotopes(){
+    // Isotopes
+    let iy=60;
+    sk.fill(30,80,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Isotopes — atoms of same element, different neutron count',248,22);sk.textStyle(sk.NORMAL);
+    // Carbon isotopes
+    const isotopes=[{sym:'¹²C',p:6,n:6,pct:'98.9%'},{sym:'¹³C',p:6,n:7,pct:'1.1%'},{sym:'¹⁴C',p:6,n:8,pct:'trace\n(radioactive)'}];
+    isotopes.forEach((iso,i)=>{
+      let nx=70+i*130,ny=iy+100;
+      sk.fill(60,60,60,40);sk.stroke(60,60,60);sk.strokeWeight(1.5);sk.ellipse(nx,ny,56,56);
+      sk.noFill();sk.stroke(30,80,200,120);sk.strokeWeight(1.5);sk.ellipse(nx,ny,90,90);
+      sk.fill(200,60,30,200);sk.noStroke();sk.ellipse(nx,ny,28);
+      sk.fill(255);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('6p',nx,ny-2);sk.text(iso.n+'n',nx,ny+8);sk.textStyle(sk.NORMAL);
+      // Electron
+      sk.fill(30,80,200,220);sk.noStroke();sk.ellipse(nx,ny-45,10);
+      sk.fill(30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(iso.sym,nx,ny+55);sk.textStyle(sk.NORMAL);
+      sk.fill(80);sk.textSize(8.5);sk.text('6p '+iso.n+'n',nx,ny+68);
+      sk.fill(0,80,160);sk.text('Abundance: '+iso.pct,nx,ny+82);
+    });
+    // Same vs different
+    sk.fill(30,80,180,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('SAME: protons (6), electrons (6), element (Carbon)',248,300);
+    sk.text('DIFFERENT: neutrons → different mass number',248,318);sk.textStyle(sk.NORMAL);
+    // Ions
+    let ty=345;
+    sk.fill(245,240,225,220);sk.stroke(160,80,0,80);sk.strokeWeight(1);sk.rect(14,ty,462,75,7);sk.noStroke();
+    sk.fill(150,50,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('IONS — atoms that have gained or lost electrons:',20,ty+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Cation (+): atom LOSES electrons → more protons than electrons (e.g. Na⁺: 11p, 10e⁻)',20,ty+30);
+    sk.text('Anion (−): atom GAINS electrons → more electrons than protons (e.g. Cl⁻: 17p, 18e⁻)',20,ty+48);
+    sk.text('Ionic charge = number of electrons lost or gained',20,ty+66);
+    // Relative atomic mass
+    let ray=430;
+    sk.fill(240,245,255,220);sk.stroke(30,80,200,80);sk.strokeWeight(1);sk.rect(14,ray,462,68,7);sk.noStroke();
+    sk.fill(20,60,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('RELATIVE ATOMIC MASS (Ar):',20,ray+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Weighted average of masses of all isotopes, accounting for abundance.',20,ray+30);
+    sk.text('Example: Ar(Cl) = (35 × 75%) + (37 × 25%) = 35.5',20,ray+48);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[200,70,0];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Atomic Structure','Electron Configuration','Periodic Trends','Isotopes & Ions'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Atomic Number & Mass Number',b:'Atomic number (Z): number of protons.\nMass number (A): protons + neutrons.\nNeutrons = A − Z.'},{t:'Neutral Atom',b:'In a neutral atom: protons = electrons.\nProtons (+) = electrons (−), so overall charge = 0.'},{t:'Nuclear Model',b:'Bohr model: electrons in shells/energy levels.\nNucleus is very small but contains most mass.\nAtom is mostly empty space.'},{t:'Periodic Table',b:'Elements arranged by increasing atomic number.\nPeriods = rows (same number of shells).\nGroups = columns (same valence electrons).'}],
+      [{t:'Valence Electrons',b:'Outermost shell electrons.\nDetermine chemical reactivity.\nGroup number = number of valence electrons.'},{t:'Full Outer Shell',b:'Noble gases have full outer shells → very stable.\nOther atoms react to gain/lose/share electrons.\nOctet rule: tend towards 8 valence electrons.'},{t:'Electron Configuration Notation',b:'Written as electrons per shell: 2, 8, 1 (Sodium).\nOr using subshells: 1s² 2s² 2p⁶ 3s¹.'},{t:'Energy Levels',b:'Electrons fill lowest energy shells first.\nMore shells = further from nucleus = higher energy.\nJumping shells requires absorbing/releasing energy.'}],
+      [{t:'Across a Period (→)',b:'Atomic number increases.\nMore protons → stronger nuclear attraction.\nAtomic radius DECREASES.\nIonisation energy INCREASES.'},{t:'Down a Group (↓)',b:'More electron shells added.\nElectrons further from nucleus.\nAtomic radius INCREASES.\nIonisation energy DECREASES.'},{t:'Metallic Properties',b:'Metals: left side of periodic table.\nLose electrons easily → low ionisation energy.\nNon-metals: right side, gain/share electrons.'},{t:'Periodicity',b:'Properties repeat in a regular pattern.\nE.g. all Group 1 metals react similarly with water.\nAll Group 7 (halogens) are diatomic non-metals.'}],
+      [{t:'Isotopes',b:'Same element (same protons), different neutrons.\nSame chemical properties.\nDifferent physical properties (mass, density).'},{t:'Radioactive Isotopes',b:'Unstable isotopes emit radiation to become stable.\n¹⁴C used in radiocarbon dating.\n¹³¹I used in treating thyroid cancer.'},{t:'Ion Formation',b:'Metals lose electrons → cations (positive).\nNon-metals gain electrons → anions (negative).\nIons have different properties from neutral atoms.'},{t:'Relative Atomic Mass',b:'Takes into account all isotopes + their abundance.\nFound on periodic table under element symbol.\nUsed in calculating molar masses.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

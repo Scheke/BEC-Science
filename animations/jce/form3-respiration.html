@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Respiration &amp; Gas Exchange — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#006064; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#80deea; color:#004d40; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #b2dfdb; }
+    #controls { display:flex; gap:12px; margin-top:14px; align-items:center; }
+    .btn { padding:8px 22px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.9rem; font-weight:700; transition:all 0.15s; }
+    .btn-aero { border-color:#006064; color:#006064; background:#fff; }
+    .btn-aero.on { background:#006064; color:#fff; }
+    .btn-ana { border-color:#bf360c; color:#bf360c; background:#fff; }
+    .btn-ana.on { background:#bf360c; color:#fff; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#80deea;color:#004d40;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 3 Biology</span>
+  <h1>Respiration &amp; Gas Exchange</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-aero on" id="b-aero" onclick="setMode(true)">&#9679; Aerobic Respiration</button>
+  <button class="btn btn-ana" id="b-ana" onclick="setMode(false)">&#9679; Anaerobic Respiration</button>
+  <button class="btn btn-aero" id="b-prac-r" onclick="setRespPractice(!respMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Respiration Quiz</button>
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Respiration Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#006064;border-bottom:2px solid #006064;padding-bottom:8px}h2{color:#00838f;margin-top:14px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#006064;color:#fff}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Respiration &amp; Gas Exchange — Study Notes</h1>';
+  html+='<h2>Aerobic Respiration</h2><p><strong>Equation:</strong> Glucose + Oxygen → Carbon dioxide + Water + Energy (ATP)</p><p>C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 38 ATP</p><ul><li>Occurs in mitochondria</li><li>Releases large amounts of energy (38 ATP)</li><li>Requires oxygen</li></ul>';
+  html+='<h2>Anaerobic Respiration</h2><p><strong>In animals:</strong> Glucose → Lactic acid + Energy (2 ATP)</p><p><strong>In yeast:</strong> Glucose → Ethanol + CO₂ + Energy (2 ATP)</p><ul><li>Occurs in cytoplasm</li><li>Releases small amounts of energy (2 ATP)</li><li>Does NOT require oxygen</li><li>Lactic acid causes muscle fatigue</li></ul>';
+  html+='<h2>Gas Exchange (Alveoli)</h2><ul><li>O₂ diffuses from alveoli into blood capillaries</li><li>CO₂ diffuses from blood into alveoli (exhaled)</li><li>Alveoli have large surface area, thin walls, moist lining, good blood supply</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let respMcq=false;
+const RESP_MCQ=[
+  {q:'The equation for AEROBIC respiration is:',opts:['Glucose + O₂ → CO₂ + H₂O + Energy','Glucose → Lactic acid + Energy','Glucose → Ethanol + CO₂','CO₂ + H₂O → Glucose + O₂'],c:0,tip:'Aerobic respiration uses oxygen to completely oxidise glucose, releasing maximum energy.'},
+  {q:'Where does aerobic respiration mainly occur?',opts:['Mitochondria','Nucleus','Ribosomes','Vacuole'],c:0,tip:'Mitochondria are the "powerhouse" of the cell where most ATP is produced.'},
+  {q:'What does anaerobic respiration produce in ANIMALS?',opts:['Lactic acid + energy','Ethanol + CO₂','Glucose + O₂','Carbon dioxide + water'],c:0,tip:'Lactic acid builds up in muscles during intense exercise, causing the burning sensation.'},
+  {q:'How much ATP is produced in AEROBIC vs ANAEROBIC respiration?',opts:['Aerobic: 38 ATP; Anaerobic: 2 ATP','Both produce 38 ATP','Aerobic: 2 ATP; Anaerobic: 38 ATP','Both produce 2 ATP'],c:0,tip:'Aerobic respiration is MUCH more efficient, producing 38 ATP vs only 2 in anaerobic.'},
+  {q:'What is the function of alveoli in the lungs?',opts:['Gas exchange (O₂ in, CO₂ out)','Blood pumping','Food digestion','Hormone production'],c:0,tip:'Alveoli are tiny air sacs with huge surface area for efficient diffusion of gases.'},
+  {q:'Which gas ENTERS the blood in the alveoli?',opts:['Oxygen (O₂)','Carbon dioxide (CO₂)','Nitrogen (N₂)','Hydrogen (H₂)'],c:0,tip:'O₂ diffuses from alveoli into blood (high to low concentration), while CO₂ moves in the opposite direction.'},
+  {q:'Yeast produces which products in anaerobic respiration?',opts:['Ethanol + Carbon dioxide','Lactic acid only','Water + CO₂','Glucose + O₂'],c:0,tip:'Yeast fermentation produces ethanol and CO₂ — this is used in bread-making and brewing.'},
+];
+let respMcqIdx=0,respMcqSel=-1,respMcqScore=0,respMcqDone=false,respMcqFeedback=null;
+function setRespPractice(on){ respMcq=on; let b=document.getElementById('b-prac-r'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){respMcqIdx=0;respMcqSel=-1;respMcqScore=0;respMcqDone=false;respMcqFeedback=null;} }
+function drawRespMCQ(s){
+  s.background(240,255,255);
+  if(respMcqDone){
+    s.fill(0,96,100);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+respMcqScore+'/'+RESP_MCQ.length,440,210);
+    s.text(respMcqScore>=6?'Excellent! You breathe knowledge!':respMcqScore>=4?'Good work!':'Review respiration!',440,240);
+    s.fill(0,131,143);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=RESP_MCQ[respMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(0,131,143);s.rect(30,18,820*(respMcqIdx/RESP_MCQ.length),10,5);
+  s.fill(0,96,100);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(respMcqIdx+1)+' of '+RESP_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=respMcqSel===i,correct=respMcqFeedback!==null&&i===q.c,wrong=respMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[240,255,255]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(respMcqFeedback){
+    s.fill(respMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(respMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(128,222,234);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function respMcqClick(mx,my){
+  if(respMcqDone){if(mx>310&&mx<570&&my>265&&my<309){respMcqIdx=0;respMcqSel=-1;respMcqScore=0;respMcqDone=false;respMcqFeedback=null;}return;}
+  let q=RESP_MCQ[respMcqIdx];
+  if(respMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){respMcqFeedback=null;respMcqSel=-1;respMcqIdx++;if(respMcqIdx>=RESP_MCQ.length)respMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&respMcqFeedback===null){respMcqSel=i;respMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)respMcqScore++;}});
+}
+let isAerobic = true;
+function setMode(a) {
+  isAerobic = a;
+  document.getElementById('b-aero').classList.toggle('on', a);
+  document.getElementById('b-ana').classList.toggle('on', !a);
+  o2Pts=[]; co2Pts=[]; glcPts=[]; atpPts=[]; lacPts=[]; atpCountRef=0;
+}
+
+// Particle arrays
+let o2Pts=[], co2Pts=[], glcPts=[], atpPts=[], lacPts=[];
+let atpCountRef=0;
+
+// Alveolus zone: cx=175, cy=115, alvR=70 (air sac), capR=90 (capillary)
+const AX=175, AY=115, ALV_R=68, CAP_R=90;
+
+// Cell zone
+const CX=240, CY=378, CRX=175, CRY=90;
+// Mitochondria positions (within cell)
+const MITO = [{x:195,y:388,rx:28,ry:17},{x:270,y:358,rx:24,ry:16},{x:248,y:415,rx:22,ry:15}];
+const NUCLEUS = {x:215, y:352, rx:22, ry:18};
+
+new p5(function(sk) {
+  const W = 880, H = 500;
+  let tick = 0;
+  let breath = 0; // breathing phase
+
+  sk.setup = function() {
+    sk.createCanvas(W, H).parent('sketch');
+    sk.textFont('Arial');
+  };
+
+  sk.draw = function() {
+    if(respMcq){ drawRespMCQ(sk); return; }
+    tick += 0.04;
+    breath = sk.sin(tick * 1.2);
+
+    sk.background(248, 252, 248);
+
+    drawAlveolusZone();
+    drawConnector();
+    drawCellZone();
+    manageParticles();
+    drawInfoPanel();
+  };
+
+  // ─── Zone 1: Alveolus Gas Exchange ──────────────────────────
+  function drawAlveolusZone() {
+    // Zone box
+    sk.fill(240, 248, 255, 160); sk.stroke(100,160,220); sk.strokeWeight(1.5);
+    sk.rect(8, 8, 498, 230, 9); sk.noStroke();
+
+    // Zone label
+    sk.fill(10,60,160); sk.textSize(10.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('ZONE 1 — GAS EXCHANGE AT ALVEOLUS', 18, 24); sk.textStyle(sk.NORMAL);
+
+    // Lung outline (simplified, breathing)
+    let bExp = breath * 6;
+    sk.fill(220,235,255,100); sk.stroke(130,160,210); sk.strokeWeight(1.5);
+    sk.ellipse(AX-28-bExp*0.5, AY+10, 80+bExp, 118+bExp*1.2);
+    sk.ellipse(AX+28+bExp*0.5, AY+10, 80+bExp, 118+bExp*1.2);
+    sk.noStroke();
+
+    // Blood capillary ring (red)
+    sk.fill(200,50,50, 80); sk.noStroke();
+    sk.ellipse(AX, AY, (CAP_R+14)*2, (CAP_R+14)*2);
+    sk.fill(230,200,200); // lighter for contrast
+    sk.ellipse(AX, AY, CAP_R*2, CAP_R*2);
+
+    // Alveolus air sac
+    sk.fill(210, 232, 255, 240); sk.stroke(130,170,220); sk.strokeWeight(1.5);
+    sk.ellipse(AX, AY, ALV_R*2, ALV_R*2); sk.noStroke();
+
+    // Draw thin wall indicator
+    sk.stroke(80,120,200,150); sk.strokeWeight(1); sk.setLineDash([4,3]);
+    sk.ellipse(AX, AY, (ALV_R+8)*2, (ALV_R+8)*2);
+    sk.setLineDash([]);
+
+    // Labels
+    sk.fill(30,70,160); sk.textSize(9.5); sk.textAlign(sk.CENTER);
+    sk.text('Air Space', AX, AY-4);
+    sk.text('(Alveolus)', AX, AY+8);
+    sk.text('Thin wall — 1 cell thick', AX, AY+ALV_R+16);
+
+    sk.fill(170,30,30); sk.textSize(9.5); sk.textAlign(sk.CENTER);
+    sk.text('Blood Capillary', AX, AY+CAP_R+18);
+
+    // Diffusion arrows in alveolus zone
+    if (isAerobic) {
+      // O2: outward from alveolus (right side)
+      sk.stroke(30,130,220,200); sk.strokeWeight(1.8); sk.noFill();
+      arrowLine(sk, AX+ALV_R*0.5, AY-22, AX+CAP_R-5, AY-22);
+      sk.fill(30,130,220); sk.textSize(9.5); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+      sk.text('O₂', AX+CAP_R+2, AY-18); sk.textStyle(sk.NORMAL);
+      sk.fill(20,80,170); sk.textSize(8.5); sk.textAlign(sk.LEFT);
+      sk.text('(high→low conc.)', AX+CAP_R+2, AY-8);
+    } else {
+      // No O2 in anaerobic
+      sk.fill(180,40,40); sk.textSize(9.5); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+      sk.text('✗ O₂ not being used', AX+CAP_R+6, AY-14); sk.textStyle(sk.NORMAL);
+    }
+
+    // CO2: inward to alveolus (right side, below)
+    sk.stroke(100,100,100,200); sk.strokeWeight(1.8); sk.noFill();
+    arrowLine(sk, AX+CAP_R-5, AY+22, AX+ALV_R*0.5, AY+22);
+    sk.fill(80,80,80); sk.textSize(9.5); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+    sk.text('CO₂', AX+CAP_R+2, AY+22); sk.textStyle(sk.NORMAL);
+    sk.fill(60,60,60); sk.textSize(8.5); sk.textAlign(sk.LEFT);
+    sk.text('(high→low conc.)', AX+CAP_R+2, AY+32);
+
+    // Key feature list
+    let kx = 345, ky = 40;
+    sk.fill(240,248,255,220); sk.stroke(100,150,210); sk.strokeWeight(1.2);
+    sk.rect(kx, ky, 152, 185, 8); sk.noStroke();
+    sk.fill(10,60,160); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Alveolus Features:', kx+8, ky+16); sk.textStyle(sk.NORMAL);
+    const features = ['• Thin walls (1 cell)', '• Moist surface', '• Large surface area', '• Rich blood supply', '• Good ventilation'];
+    sk.fill(30); sk.textSize(10);
+    features.forEach((f,i) => sk.text(f, kx+8, ky+32+i*28));
+
+    // Draw O2 particles in alveolus
+    for (let p of o2Pts) {
+      if (p.zone !== 'alveolus') continue;
+      sk.fill(40,140,230, p.alpha); sk.noStroke();
+      sk.ellipse(p.x, p.y, 12);
+      sk.fill(255,255,255,p.alpha*0.7); sk.ellipse(p.x-2, p.y-2, 4);
+      sk.fill(40,140,230,p.alpha*0.8); sk.textSize(8); sk.textAlign(sk.CENTER);
+      sk.text('O₂',p.x,p.y+10);
+    }
+    // CO2 in alveolus capillary zone
+    for (let p of co2Pts) {
+      if (p.zone !== 'alveolus') continue;
+      sk.fill(120,120,120,p.alpha); sk.noStroke();
+      sk.ellipse(p.x, p.y, 11);
+      sk.fill(100,100,100,p.alpha*0.8); sk.textSize(8); sk.textAlign(sk.CENTER);
+      sk.text('CO₂',p.x,p.y+10);
+    }
+  }
+
+  // ─── Connector ─────────────────────────────────────────────
+  function drawConnector() {
+    sk.fill(255,255,255,200); sk.stroke(180,200,180); sk.strokeWeight(1);
+    sk.rect(8, 240, 498, 28, 5); sk.noStroke();
+
+    // Two arrows: O2 down (red), CO2 up (blue-gray)
+    if (isAerobic) {
+      sk.fill(30,130,220); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('↓  O₂ transported in blood to body cells', 245, 257);
+    } else {
+      sk.fill(130,130,130); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('↓  Glucose transported in blood to body cells (no O₂ needed)', 245, 257);
+    }
+    sk.textStyle(sk.NORMAL);
+    sk.fill(100,100,100); sk.textSize(10); sk.textAlign(sk.CENTER);
+    sk.text('↑  CO₂ transported back to lungs', 245, 263);
+  }
+
+  // ─── Zone 2: Cellular Respiration ──────────────────────────
+  function drawCellZone() {
+    // Zone box
+    let zCol = isAerobic ? [235,255,238,160] : [255,245,235,160];
+    let zStr = isAerobic ? [80,160,100] : [200,100,40];
+    sk.fill(...zCol); sk.stroke(...zStr); sk.strokeWeight(1.5);
+    sk.rect(8, 270, 498, 224, 9); sk.noStroke();
+
+    // Zone label
+    sk.fill(...(isAerobic ? [0,100,40] : [140,50,0]));
+    sk.textSize(10.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('ZONE 2 — CELLULAR RESPIRATION (in Mitochondria)', 18, 288); sk.textStyle(sk.NORMAL);
+
+    // Cell membrane (large oval)
+    sk.fill(230,255,235,160); sk.stroke(isAerobic?[80,160,100]:[200,120,60]); sk.strokeWeight(2);
+    sk.ellipse(CX, CY, CRX*2, CRY*2); sk.noStroke();
+
+    // Cell label
+    sk.fill(0,100,40,180); sk.textSize(9); sk.textAlign(sk.LEFT);
+    sk.text('Body Cell', CX-CRX+6, CY-CRY+16);
+
+    // Nucleus
+    sk.fill(180,210,200,200); sk.stroke(100,140,120); sk.strokeWeight(1.5);
+    sk.ellipse(NUCLEUS.x, NUCLEUS.y, NUCLEUS.rx*2, NUCLEUS.ry*2);
+    sk.noStroke(); sk.fill(60,100,80,180); sk.textSize(8.5); sk.textAlign(sk.CENTER);
+    sk.text('Nucleus', NUCLEUS.x, NUCLEUS.y+3);
+
+    // Mitochondria
+    for (let m of MITO) drawMitochondrion(m);
+
+    // "Mitochondria — Site of Respiration" label
+    sk.fill(0,80,160); sk.textSize(8.5); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+    sk.text('Mitochondria', CX+60, CY+28); sk.textStyle(sk.NORMAL);
+    sk.text('(site of aerobic respiration)', CX+60, CY+40);
+
+    // Entry arrows
+    // Glucose entering from left
+    sk.stroke(220,120,0); sk.strokeWeight(1.5); sk.noFill();
+    arrowLine(sk, CX-CRX-30, CY+10, CX-CRX+8, CY+10);
+    sk.fill(200,100,0); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.RIGHT);
+    sk.text('Glucose', CX-CRX-33, CY+14); sk.textStyle(sk.NORMAL);
+    sk.fill(160,80,0); sk.textSize(8); sk.textAlign(sk.RIGHT);
+    sk.text('C₆H₁₂O₆', CX-CRX-33, CY+24);
+
+    if (isAerobic) {
+      // O2 entering from top
+      sk.stroke(30,130,220); sk.strokeWeight(1.5); sk.noFill();
+      arrowLine(sk, CX-30, CY-CRY-28, CX-30, CY-CRY+6);
+      sk.fill(20,100,200); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('O₂', CX-30, CY-CRY-32); sk.textStyle(sk.NORMAL);
+
+      // CO2 exiting right
+      sk.stroke(100,100,100); sk.strokeWeight(1.5); sk.noFill();
+      arrowLine(sk, CX+CRX-8, CY-15, CX+CRX+28, CY-15);
+      sk.fill(70,70,70); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text('CO₂', CX+CRX+30, CY-11); sk.textStyle(sk.NORMAL);
+
+      // H2O exiting bottom
+      sk.stroke(30,100,220); sk.strokeWeight(1.5); sk.noFill();
+      arrowLine(sk, CX+40, CY+CRY-6, CX+40, CY+CRY+22);
+      sk.fill(20,80,180); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('H₂O', CX+40, CY+CRY+34); sk.textStyle(sk.NORMAL);
+
+      // ATP indicator
+      drawAtpCounter();
+    } else {
+      // Anaerobic: lactic acid out
+      sk.stroke(220,60,80); sk.strokeWeight(1.5); sk.noFill();
+      arrowLine(sk, CX+CRX-8, CY, CX+CRX+28, CY);
+      sk.fill(180,30,50); sk.textSize(9); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text('Lactic Acid', CX+CRX+30, CY+4);
+      sk.text('C₃H₆O₃', CX+CRX+30, CY+16); sk.textStyle(sk.NORMAL);
+      sk.fill(180,30,50); sk.textSize(8); sk.textAlign(sk.LEFT);
+      sk.text('(muscle fatigue)', CX+CRX+30, CY+27);
+      drawAtpCounterAna();
+    }
+
+    // Draw particle sets
+    for (let p of glcPts) {
+      sk.fill(220,130,20,p.alpha); sk.noStroke(); sk.ellipse(p.x,p.y,11);
+      sk.fill(255,255,255,p.alpha*0.6); sk.ellipse(p.x-2,p.y-2,4);
+    }
+    for (let p of atpPts) {
+      sk.fill(255,200,30,p.alpha); sk.noStroke(); sk.ellipse(p.x,p.y,13);
+      sk.fill(200,150,0,p.alpha*0.9); sk.textSize(7.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('ATP',p.x,p.y+3); sk.textStyle(sk.NORMAL);
+    }
+    for (let p of lacPts) {
+      sk.fill(230,70,100,p.alpha); sk.noStroke(); sk.ellipse(p.x,p.y,11);
+      sk.fill(200,40,70,p.alpha*0.9); sk.textSize(7); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('Lac',p.x,p.y+3); sk.textStyle(sk.NORMAL);
+    }
+    // O2 in cell zone
+    for (let p of o2Pts) {
+      if (p.zone !== 'cell') continue;
+      sk.fill(40,140,230,p.alpha); sk.noStroke(); sk.ellipse(p.x,p.y,10);
+    }
+    // CO2 in cell zone
+    for (let p of co2Pts) {
+      if (p.zone !== 'cell') continue;
+      sk.fill(120,120,120,p.alpha); sk.noStroke(); sk.ellipse(p.x,p.y,10);
+    }
+  }
+
+  function drawMitochondrion(m) {
+    // Outer membrane
+    sk.fill(200, 240, 180, 200); sk.stroke(100,180,80); sk.strokeWeight(1.5);
+    sk.ellipse(m.x, m.y, m.rx*2, m.ry*2);
+    // Inner cristae (folded membrane lines)
+    sk.stroke(80,150,60,150); sk.strokeWeight(1); sk.noFill();
+    for (let i = -1; i <= 1; i++) {
+      sk.beginShape();
+      let startX = m.x - m.rx*0.7;
+      let endX = m.x + m.rx*0.7;
+      sk.vertex(startX, m.y + i*m.ry*0.3);
+      sk.bezierVertex(startX+m.rx*0.4, m.y + i*m.ry*0.3 - 5, m.x+m.rx*0.3, m.y + i*m.ry*0.3 + 5, endX, m.y + i*m.ry*0.3);
+      sk.endShape();
+    }
+    sk.noStroke();
+  }
+
+  function drawAtpCounter() {
+    let cnt = Math.min(atpCountRef, 32);
+    let bx = CX+60, by = CY+48, bw = 148, bh = 52;
+    sk.fill(255,248,220,230); sk.stroke(200,160,0); sk.strokeWeight(1.5);
+    sk.rect(bx,by,bw,bh,7); sk.noStroke();
+    sk.fill(150,100,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('ATP Produced:', bx+8, by+16); sk.textStyle(sk.NORMAL);
+    sk.fill(30); sk.textSize(28); sk.textAlign(sk.CENTER); sk.textStyle(sk.BOLD);
+    sk.text(cnt, bx+bw/2-16, by+44); sk.textStyle(sk.NORMAL);
+    sk.fill(100,100,100); sk.textSize(9); sk.textAlign(sk.LEFT);
+    sk.text('/ 30–32 molecules', bx+bw/2-4, by+44);
+  }
+
+  function drawAtpCounterAna() {
+    let bx = CX+60, by = CY+48, bw = 148, bh = 52;
+    sk.fill(255,235,230,230); sk.stroke(200,80,60); sk.strokeWeight(1.5);
+    sk.rect(bx,by,bw,bh,7); sk.noStroke();
+    sk.fill(150,40,30); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('ATP Produced:', bx+8, by+16); sk.textStyle(sk.NORMAL);
+    sk.fill(30); sk.textSize(28); sk.textAlign(sk.CENTER); sk.textStyle(sk.BOLD);
+    let cnt = Math.min(atpCountRef, 2);
+    sk.text(cnt, bx+bw/2-16, by+44); sk.textStyle(sk.NORMAL);
+    sk.fill(100,100,100); sk.textSize(9); sk.textAlign(sk.LEFT);
+    sk.text('/ 2 molecules only', bx+bw/2-4, by+44);
+  }
+
+  // ─── Particle management ────────────────────────────────────
+  function manageParticles() {
+    let fr = sk.frameCount;
+
+    // Spawn O2 (aerobic only) in alveolus zone
+    if (isAerobic && fr % 22 === 0) {
+      let a = sk.random(sk.TWO_PI);
+      let r = sk.random(ALV_R * 0.1, ALV_R * 0.7);
+      o2Pts.push({ x: AX + sk.cos(a)*r, y: AY + sk.sin(a)*r,
+        vx: sk.cos(a)*1.0, vy: sk.sin(a)*0.9,
+        alpha: 220, zone: 'alveolus', maxR: CAP_R*0.88 });
+    }
+    // Spawn O2 entering cell from top
+    if (isAerobic && fr % 28 === 0) {
+      o2Pts.push({ x: CX - 35 + sk.random(-15,15), y: CY-CRY+12,
+        vx: sk.random(-0.3,0.3), vy: 0.9,
+        alpha: 220, zone: 'cell', target: sk.random(MITO) });
+    }
+
+    // Spawn CO2 in capillary (around alveolus)
+    if (fr % 25 === 0) {
+      let a = sk.random(sk.TWO_PI);
+      let r = CAP_R * 0.82;
+      co2Pts.push({ x: AX + sk.cos(a)*r, y: AY + sk.sin(a)*r,
+        vx: -sk.cos(a)*0.9, vy: -sk.sin(a)*0.8,
+        alpha: 200, zone: 'alveolus', minR: ALV_R*0.5 });
+    }
+    // Spawn CO2 in cell leaving toward right
+    if (fr % 32 === 0) {
+      let m = sk.random(MITO);
+      co2Pts.push({ x: m.x, y: m.y,
+        vx: 1.1, vy: sk.random(-0.3,0.3),
+        alpha: 200, zone: 'cell' });
+    }
+
+    // Spawn glucose entering cell
+    if (fr % 26 === 0) {
+      glcPts.push({ x: CX-CRX+8, y: CY+8+sk.random(-12,12),
+        vx: 0.85, vy: sk.random(-0.2,0.2),
+        alpha: 230, target: MITO[0] });
+    }
+
+    // Update O2
+    o2Pts = o2Pts.filter(p => p.alpha > 10);
+    for (let p of o2Pts) {
+      if (p.zone === 'alveolus') {
+        p.x += p.vx; p.y += p.vy;
+        let d = sk.dist(p.x, p.y, AX, AY);
+        if (d >= p.maxR) { p.vx = 0; p.vy = 0; p.alpha -= 8; }
+      } else { // cell
+        let m = p.target || MITO[0];
+        p.x = sk.lerp(p.x, m.x, 0.025);
+        p.y = sk.lerp(p.y, m.y, 0.025);
+        if (sk.dist(p.x,p.y,m.x,m.y) < 8) {
+          p.alpha -= 12; // consumed at mitochondrion
+          if (p.alpha < 50) {
+            spawnAtp(m);
+          }
+        }
+      }
+    }
+
+    // Update CO2
+    co2Pts = co2Pts.filter(p => p.alpha > 10);
+    for (let p of co2Pts) {
+      if (p.zone === 'alveolus') {
+        p.x += p.vx; p.y += p.vy;
+        let d = sk.dist(p.x, p.y, AX, AY);
+        if (d <= p.minR) { p.vx = 0; p.vy = 0; p.alpha -= 7; }
+      } else { // cell: move rightward
+        p.x += p.vx; p.y += p.vy;
+        if (p.x > CX+CRX+5) p.alpha -= 15;
+      }
+    }
+
+    // Update glucose
+    glcPts = glcPts.filter(p => p.alpha > 10);
+    for (let p of glcPts) {
+      let m = p.target || MITO[0];
+      p.x = sk.lerp(p.x, m.x, 0.03);
+      p.y = sk.lerp(p.y, m.y, 0.03);
+      if (sk.dist(p.x,p.y,m.x,m.y) < 8) {
+        p.alpha -= 10;
+        if (p.alpha < 50) {
+          if (isAerobic) spawnAtp(m);
+          else spawnLactic(m);
+        }
+      }
+    }
+
+    // Update ATP
+    atpPts = atpPts.filter(p => p.alpha > 8);
+    for (let p of atpPts) {
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.alpha -= 0.8;
+    }
+
+    // Update lactic acid
+    lacPts = lacPts.filter(p => p.alpha > 8);
+    for (let p of lacPts) {
+      p.x += p.vx; p.y += p.vy;
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.alpha -= 1.2;
+    }
+  }
+
+  function spawnAtp(m) {
+    if (!isAerobic) return;
+    let a = sk.random(sk.TWO_PI);
+    atpPts.push({ x:m.x, y:m.y, vx:sk.cos(a)*1.2, vy:sk.sin(a)*1.1, alpha:230 });
+    atpCountRef = Math.min(atpCountRef + 1, 32);
+  }
+
+  function spawnLactic(m) {
+    let a = sk.random(sk.TWO_PI);
+    lacPts.push({ x:m.x, y:m.y, vx:sk.cos(a)*0.9, vy:sk.sin(a)*0.8, alpha:220 });
+    atpCountRef = Math.min(atpCountRef + 1, 2);
+  }
+
+  // ─── Info panel ────────────────────────────────────────────
+  function drawInfoPanel() {
+    let px = 515, py = 8, pw = 355, ph = 484;
+    let bCol = isAerobic ? [40,100,50] : [180,60,20];
+
+    // Panel background
+    sk.fill(255,255,255,240); sk.stroke(...bCol); sk.strokeWeight(2.5);
+    sk.rect(px, py, pw, ph, 10); sk.noStroke();
+
+    // Title
+    sk.fill(...bCol); sk.textSize(14); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text(isAerobic ? 'Aerobic Respiration' : 'Anaerobic Respiration', px+14, py+28);
+    sk.textStyle(sk.NORMAL);
+
+    // Mode description
+    sk.fill(60); sk.textSize(10.5); sk.textAlign(sk.LEFT);
+    let modeDesc = isAerobic
+      ? 'Occurs when oxygen is available.\nReleases maximum energy from glucose.'
+      : 'Occurs when oxygen is limited (e.g. sprinting).\nPartial breakdown of glucose — less energy.';
+    modeDesc.split('\n').forEach((l,i) => sk.text(l, px+14, py+46+i*15));
+
+    // Equation box
+    let eq_y = py+88;
+    sk.fill(isAerobic?[240,252,240]:[255,245,235]); sk.stroke(...bCol); sk.strokeWeight(1.5);
+    sk.rect(px+10, eq_y, pw-20, isAerobic?70:55, 8); sk.noStroke();
+    sk.fill(...bCol); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Chemical Equation:', px+18, eq_y+16); sk.textStyle(sk.NORMAL);
+
+    if (isAerobic) {
+      sk.fill(30); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('C₆H₁₂O₆ + 6O₂', px+pw/2, eq_y+34);
+      sk.text('→  6CO₂ + 6H₂O + Energy', px+pw/2, eq_y+52);
+      sk.textStyle(sk.NORMAL);
+      // Word equation below
+      sk.fill(80); sk.textSize(9.5); sk.textAlign(sk.CENTER);
+      sk.text('Glucose + Oxygen → Carbon dioxide + Water + Energy', px+pw/2, eq_y+70);
+    } else {
+      sk.fill(30); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('C₆H₁₂O₆  →  2C₃H₆O₃ + Energy', px+pw/2, eq_y+34);
+      sk.textStyle(sk.NORMAL);
+      sk.fill(80); sk.textSize(9.5); sk.textAlign(sk.CENTER);
+      sk.text('Glucose → Lactic Acid + Energy', px+pw/2, eq_y+52);
+    }
+
+    // Comparison table
+    let ty = isAerobic ? eq_y+82 : eq_y+68;
+    sk.fill(248,252,248,200); sk.stroke(180,210,180); sk.strokeWeight(1);
+    sk.rect(px+10, ty, pw-20, 175, 8); sk.noStroke();
+
+    // Table header
+    sk.fill(50,120,60,220); sk.rect(px+10, ty, pw-20, 22, 8, 8, 0, 0); sk.noStroke();
+    sk.fill(255); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('AEROBIC', px+142, ty+14);
+    sk.text('ANAEROBIC', px+pw-74, ty+14);
+    sk.textStyle(sk.NORMAL);
+
+    const rows = [
+      ['Oxygen needed?', 'Yes', 'No'],
+      ['Products', 'CO₂ + H₂O', 'Lactic Acid'],
+      ['ATP yield', '30–32', '2'],
+      ['Speed', 'Slower', 'Faster (short burst)'],
+      ['Where?', 'Mitochondria', 'Cytoplasm'],
+      ['Duration', 'Long-lasting', 'Very short'],
+    ];
+    sk.textSize(9.5); sk.textAlign(sk.LEFT);
+    rows.forEach((r,i) => {
+      let ry = ty+22+i*25;
+      if (i%2===0) { sk.fill(235,248,238,150); sk.noStroke(); sk.rect(px+10,ry,pw-20,25); }
+      sk.fill(60); sk.textAlign(sk.LEFT); sk.text(r[0], px+18, ry+16);
+      sk.fill(isAerobic ? [0,120,50] : [100,100,100]);
+      sk.textAlign(sk.CENTER); sk.text(r[1], px+142, ry+16);
+      sk.fill(isAerobic ? [100,100,100] : [200,50,30]);
+      sk.text(r[2], px+pw-74, ry+16);
+    });
+
+    // Dividers
+    sk.stroke(200,220,200); sk.strokeWeight(1);
+    sk.line(px+98, ty, px+98, ty+175);
+    sk.line(px+185, ty, px+185, ty+175);
+    sk.noStroke();
+
+    // Fun fact
+    let ffy = ty + 185;
+    sk.fill(255,253,231,220); sk.stroke(255,213,79); sk.strokeWeight(1.5);
+    sk.rect(px+10, ffy, pw-20, 58, 7); sk.noStroke();
+    sk.fill(120,90,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('💡 Did you know?', px+18, ffy+14); sk.textStyle(sk.NORMAL);
+    let factText = isAerobic
+      ? 'The human body makes about 40kg of ATP every day!\nMost of it is recycled — ADP → ATP → ADP in seconds.'
+      : 'Lactic acid build-up causes the "burn" you feel in muscles\nduring intense exercise. Rest lets it break down again.';
+    sk.fill(60); sk.textSize(9.5);
+    factText.split('\n').forEach((l,i) => sk.text(l, px+18, ffy+30+i*15));
+  }
+
+  // ─── Arrow helper ───────────────────────────────────────────
+  function arrowLine(sk, x1, y1, x2, y2) {
+    sk.line(x1, y1, x2, y2);
+    let a = sk.atan2(y2-y1, x2-x1);
+    sk.push();
+    sk.translate(x2, y2);
+    sk.rotate(a);
+    sk.fill(sk.drawingContext.strokeStyle || '#444'); sk.noStroke();
+    sk.triangle(0,0,-10,4,-10,-4);
+    sk.pop();
+  }
+
+  // polyfill for roundRect on older browsers
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r) {
+      this.beginPath();
+      this.moveTo(x+r,y); this.lineTo(x+w-r,y);
+      this.quadraticCurveTo(x+w,y,x+w,y+r); this.lineTo(x+w,y+h-r);
+      this.quadraticCurveTo(x+w,y+h,x+w-r,y+h); this.lineTo(x+r,y+h);
+      this.quadraticCurveTo(x,y+h,x,y+h-r); this.lineTo(x,y+r);
+      this.quadraticCurveTo(x,y,x+r,y); this.closePath();
+    };
+  }
+
+  // p5 extensions
+  sk.setLineDash = function(arr) { sk.drawingContext.setLineDash(arr); };
+  sk.mouseClicked=function(){ if(respMcq){ respMcqClick(sk.mouseX,sk.mouseY); return; } };
+});
+</script>
+</body>
+</html>

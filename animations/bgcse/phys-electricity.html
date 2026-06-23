@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#1a237e;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#9fa8da;color:#1a237e;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #9fa8da}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #1a237e;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#1a237e;transition:all .15s}
+    .btn.on{background:#1a237e;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Electricity &amp; Magnetism</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">🔋 Circuits</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">📐 Ohm's Law</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">⚡ Power & Energy</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">🔄 Electromagnetism</button>
+  <button class="btn" id="b-prac" onclick="setElecPractice(!elecMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Electricity</h2><ul><li><b>Ohm\'s law</b>: V = IR (voltage = current × resistance). Ohm\'s unit: Ω.</li><li><b>Series circuit</b>: Same current throughout; voltages add; total R = R₁+R₂.</li><li><b>Parallel circuit</b>: Same voltage across each branch; currents add; 1/R = 1/R₁+1/R₂.</li><li><b>Power</b>: P = VI = I²R = V²/R. Unit: watt (W).</li><li><b>Energy</b>: E = Pt = VIt. Unit: joule (J) or kWh.</li><li><b>Fuse</b>: Melts when current exceeds rated value, protecting the circuit.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let elecMcq=false;
+const ELEC_MCQ=[
+  {q:'Ohm\'s law states that V = ?',opts:['IR (current × resistance)','I/R','I+R','I²R'],c:0,tip:'V = IR: voltage = current × resistance. Rearranges to I = V/R, R = V/I.'},
+  {q:'In a series circuit, what is the SAME throughout?',opts:['Current','Voltage','Resistance','Power'],c:0,tip:'Series circuit: current is the same at every point. Voltages add up to the supply voltage.'},
+  {q:'In a parallel circuit, what is the SAME across each branch?',opts:['Voltage','Current','Total resistance','Power in each branch'],c:0,tip:'Parallel circuit: voltage is the same across each branch. Currents from each branch add up.'},
+  {q:'Electrical power is calculated by:',opts:['P = VI','P = V/I','P = I/V','P = V+I'],c:0,tip:'P = VI = I²R = V²/R. Power in watts.'},
+  {q:'Two 6 Ω resistors connected in PARALLEL have a total resistance of:',opts:['3 Ω','12 Ω','6 Ω','1 Ω'],c:0,tip:'1/R = 1/6 + 1/6 = 2/6, so R = 3 Ω. Parallel resistance is always less than the smallest individual resistance.'},
+  {q:'What unit is used to measure electrical energy for household billing?',opts:['Kilowatt-hour (kWh)','Joule (J)','Watt (W)','Volt (V)'],c:0,tip:'Household energy is measured in kWh (kilowatt-hours). 1 kWh = 3,600,000 J.'},
+  {q:'A fuse in a circuit protects by:',opts:['Melting when current exceeds a safe value','Increasing voltage','Storing excess charge','Reducing resistance'],c:0,tip:'The thin wire in a fuse melts (blows) when current is too high, breaking the circuit.'}
+];
+let elecMcqIdx=0,elecMcqSel=-1,elecMcqScore=0,elecMcqDone=false,elecMcqFeedback=null;
+function setElecPractice(on){elecMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){elecMcqIdx=0;elecMcqSel=-1;elecMcqScore=0;elecMcqDone=false;elecMcqFeedback=null;}}
+function drawElecMCQ(s){s.background(252,252,240);if(elecMcqDone){s.fill(26,35,126);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+elecMcqScore+'/'+ELEC_MCQ.length,440,215);let msg=elecMcqScore===ELEC_MCQ.length?'Perfect! You know Electricity!':elecMcqScore>=5?'Great job!':'Review Ohm\'s law, circuits & power.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=ELEC_MCQ[elecMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(elecMcqIdx/ELEC_MCQ.length),10,5);s.fill(26,35,126);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(elecMcqIdx+1)+' of '+ELEC_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=elecMcqSel===i,correct=elecMcqFeedback!==null&&i===q.c,wrong=elecMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(elecMcqFeedback){s.fill(elecMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(elecMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function elecMcqClick(mx,my){if(elecMcqDone){if(mx>310&&mx<570&&my>290&&my<334){elecMcqIdx=0;elecMcqSel=-1;elecMcqScore=0;elecMcqDone=false;elecMcqFeedback=null;}return;}if(elecMcqFeedback!==null){elecMcqIdx++;elecMcqSel=-1;elecMcqFeedback=null;if(elecMcqIdx>=ELEC_MCQ.length)elecMcqDone=true;return;}ELEC_MCQ[elecMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){elecMcqSel=i;elecMcqFeedback=i===ELEC_MCQ[elecMcqIdx].c?'correct':'wrong';if(i===ELEC_MCQ[elecMcqIdx].c)elecMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(elecMcq){ drawElecMCQ(sk); return; }tick+=0.025;sk.background(245,245,255);
+    if(tab===0) drawCircuits();
+    else if(tab===1) drawOhm();
+    else if(tab===2) drawPower();
+    else drawEM();
+    drawInfoPanel();
+  };
+
+  function getCircuitPos(t,x,y,w,h){
+    let perim=2*(w+h);let d=t*perim;
+    if(d<w) return {x:x+d,y:y};
+    d-=w;if(d<h) return {x:x+w,y:y+d};
+    d-=h;if(d<w) return {x:x+w-d,y:y+h};
+    d-=w;return {x:x,y:y+h-d};
+  }
+
+  function drawCircuits(){
+    sk.fill(20,30,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Series vs Parallel Circuits',248,22);sk.textStyle(sk.NORMAL);
+    // Series circuit
+    let sx=20,sy=50,sw=200,sh=130;
+    sk.noFill();sk.stroke(20,30,180);sk.strokeWeight(2.5);
+    sk.rect(sx,sy,sw,sh,4);
+    // Battery
+    sk.fill(255,220,60,220);sk.stroke(180,140,0);sk.strokeWeight(1.5);sk.rect(sx+60,sy-8,28,16,3);
+    sk.noStroke();sk.fill(120,80,0);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('9V',sx+74,sy+3);sk.textStyle(sk.NORMAL);
+    // R1 and R2 in series
+    [[sx+sw-12,sy+30],[sx+sw-12,sy+90]].forEach((p,i)=>{
+      sk.fill(255,240,200,200);sk.stroke(180,100,0);sk.strokeWeight(1.5);sk.rect(p[0],p[1],24,28,3);
+      sk.noStroke();sk.fill(100,60,0);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('R'+(i+1),p[0]+12,p[1]+18);sk.textStyle(sk.NORMAL);
+    });
+    // Electrons in series
+    for(let i=0;i<4;i++){
+      let t2=(tick*0.3+i*0.25)%1;
+      let p=getCircuitPos(t2,sx,sy,sw,sh);
+      sk.fill(30,80,200,220);sk.noStroke();sk.ellipse(p.x,p.y,10);
+    }
+    sk.noStroke();sk.fill(20,30,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('SERIES',sx+sw/2,sy+sh+16);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9);
+    sk.text('I same everywhere',sx+sw/2,sy+sh+30);
+    sk.text('V splits: V=V₁+V₂',sx+sw/2,sy+sh+44);
+    sk.text('R total = R₁+R₂',sx+sw/2,sy+sh+58);
+    // Parallel circuit
+    let px=280,py=50,pw=170,ph=130;
+    sk.noFill();sk.stroke(0,140,80);sk.strokeWeight(2.5);sk.rect(px,py,pw,ph,4);
+    // Battery
+    sk.fill(255,220,60,220);sk.stroke(180,140,0);sk.strokeWeight(1.5);sk.rect(px+60,py-8,28,16,3);
+    sk.noStroke();sk.fill(120,80,0);sk.textSize(8);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('9V',px+74,py+3);sk.textStyle(sk.NORMAL);
+    // Parallel branches
+    sk.stroke(0,140,80);sk.strokeWeight(2);
+    sk.line(px+pw,py+30,px+pw,py+ph-30);
+    sk.line(px+pw,py+50,px+pw+30,py+50);sk.line(px+pw,py+90,px+pw+30,py+90);
+    sk.line(px+pw+30,py+30,px+pw+30,py+ph-30);
+    [[px+pw+18,py+38],[px+pw+18,py+78]].forEach((p,i)=>{
+      sk.fill(255,240,200,200);sk.stroke(180,100,0);sk.strokeWeight(1.5);sk.rect(p[0],p[1],22,24,3);
+      sk.noStroke();sk.fill(100,60,0);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('R'+(i+1),p[0]+11,p[1]+16);sk.textStyle(sk.NORMAL);
+    });
+    // Parallel electrons
+    for(let i=0;i<5;i++){
+      let t2=(tick*0.3+i*0.2)%1;
+      let p=getCircuitPos(t2,px,py,pw,ph);
+      sk.fill(30,160,80,220);sk.noStroke();sk.ellipse(p.x,p.y,10);
+    }
+    sk.noStroke();sk.fill(0,140,80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('PARALLEL',px+pw/2,py+ph+16);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9);
+    sk.text('V same across branches',px+pw/2,py+ph+30);
+    sk.text('I splits: I=I₁+I₂',px+pw/2,py+ph+44);
+    sk.text('1/R = 1/R₁+1/R₂',px+pw/2,py+ph+58);
+    // Component symbols
+    let csy=280;
+    sk.fill(245,245,255,220);sk.stroke(30,30,200,80);sk.strokeWeight(1);sk.rect(14,csy,462,220,7);sk.noStroke();
+    sk.fill(20,30,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('CIRCUIT COMPONENTS:',20,csy+14);sk.textStyle(sk.NORMAL);
+    const comps=[['Cell / Battery','Provides EMF (electromotive force). Pushes current.'],['Resistor','Opposes current. Symbol: rectangle or zigzag.'],['Bulb (lamp)','Converts electrical energy to light/heat.'],['Switch','Open = no current. Closed = circuit complete.'],['Ammeter','Measures current (A). Connected in SERIES.'],['Voltmeter','Measures voltage (V). Connected in PARALLEL.'],['Diode','Allows current in ONE direction only.'],['LDR (light dependent)','Resistance decreases in bright light.']];
+    comps.forEach((c,i)=>{
+      sk.fill(20,30,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(c[0]+':',20,csy+30+i*24);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(c[1],150,csy+30+i*24);
+    });
+  }
+
+  function drawOhm(){
+    sk.fill(20,30,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Ohm\'s Law & Resistance',248,22);sk.textStyle(sk.NORMAL);
+    // Formula triangle
+    let tx=160,ty=50;
+    sk.fill(30,60,200,30);sk.stroke(30,60,200);sk.strokeWeight(2);
+    sk.triangle(tx+80,ty,tx+160,ty+100,tx,ty+100);
+    sk.noStroke();sk.fill(30,60,200);sk.textSize(18);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('V',tx+80,ty+70);
+    sk.stroke(30,60,200);sk.strokeWeight(2);sk.line(tx+20,ty+75,tx+140,ty+75);
+    sk.noStroke();sk.fill(30,60,200);sk.text('I',tx+40,ty+96);sk.text('R',tx+120,ty+96);
+    sk.textSize(10);sk.textStyle(sk.NORMAL);
+    sk.text('V=IR   I=V/R   R=V/I',tx+80,ty+114);
+    // VI graph (Ohmic)
+    let gx=20,gy=340,gw=200,gh=180;
+    sk.noFill();sk.stroke(180,180,200);sk.strokeWeight(1);
+    for(let i=0;i<=4;i++)sk.line(gx,gy-i*gh/4,gx+gw,gy-i*gh/4);
+    sk.stroke(30,30,160);sk.strokeWeight(2);sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    sk.stroke(0,160,80,220);sk.strokeWeight(3);sk.line(gx,gy,gx+gw,gy-gh);
+    sk.noStroke();sk.fill(0,140,60);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Ohmic conductor',gx+gw-90,gy-gh+14);sk.textStyle(sk.NORMAL);
+    sk.fill(60);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Current (A) →',gx+gw/2,gy+14);
+    sk.push();sk.translate(gx-14,gy-gh/2);sk.rotate(-sk.PI/2);sk.text('Voltage (V) →',0,0);sk.pop();
+    // Non-ohmic curve
+    sk.noFill();sk.stroke(200,60,30,220);sk.strokeWeight(3);sk.beginShape();
+    for(let i=0;i<=gw;i++){
+      let I=i/gw;let V=I*I;sk.vertex(gx+i,gy-V*gh);
+    }sk.endShape();
+    sk.noStroke();sk.fill(200,40,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Non-ohmic (e.g. bulb)',gx+gw-130,gy-60);sk.textStyle(sk.NORMAL);
+    sk.fill(60);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+    sk.text('Slope = R (gradient)',gx+gw/2,gy+28);
+    // Factors affecting resistance
+    let ry=370;
+    sk.fill(240,240,255,220);sk.stroke(30,30,200,80);sk.strokeWeight(1);sk.rect(250,52,224,300,7);sk.noStroke();
+    sk.fill(20,30,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('FACTORS AFFECTING R:',256,66);sk.textStyle(sk.NORMAL);
+    const factors=[['Length (L)','↑ L → ↑ R (longer path)'],['Cross-section (A)','↑ A → ↓ R (wider = easier)'],['Temperature','↑ T → ↑ R (more vibrations)'],['Material','Depends on resistivity (ρ)'],['Formula','R = ρL/A']];
+    factors.forEach((f,i)=>{
+      sk.fill(20,30,180);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(f[0]+':',256,86+i*24);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(f[1],336,86+i*24);
+    });
+    // Specific resistivities
+    sk.fill(20,30,180);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Resistivities (ρ):',256,206);sk.textStyle(sk.NORMAL);
+    [['Copper','1.7×10⁻⁸ Ω⋅m'],['Aluminium','2.8×10⁻⁸ Ω⋅m'],['Iron','1×10⁻⁷ Ω⋅m'],['Silicon','640 Ω⋅m']].forEach((r,i)=>{
+      sk.fill(30);sk.textSize(9.5);sk.text(r[0]+': '+r[1],256,222+i*18);
+    });
+    // Worked examples
+    let we=370;
+    sk.fill(240,250,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,we,462,132,7);sk.noStroke();
+    sk.fill(0,80,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLES:',20,we+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['V=12V, I=3A → R = 12/3 = 4Ω',
+     'R=10Ω, I=0.5A → V = 10×0.5 = 5V',
+     'Series: R₁=4Ω, R₂=6Ω → R_total = 10Ω',
+     'Parallel: R₁=6Ω, R₂=3Ω → 1/R=1/6+1/3=3/6 → R=2Ω',
+     'Series: I same → V=IR₁ and V=IR₂ (higher R → more V)'].forEach((e,i)=>sk.text(e,20,we+30+i*20));
+  }
+
+  function drawPower(){
+    sk.fill(20,30,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Electrical Power & Energy',248,22);sk.textStyle(sk.NORMAL);
+    // Formulae
+    let fy=40;sk.fill(240,240,255,220);sk.stroke(30,30,200,80);sk.strokeWeight(1);sk.rect(14,fy,462,65,7);sk.noStroke();
+    sk.fill(20,30,180);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('P = IV      P = I²R      P = V²/R      E = Pt = IVt',248,fy+24);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(9.5);sk.text('P=power(W), I=current(A), V=voltage(V), R=resistance(Ω), E=energy(J), t=time(s)',248,fy+46);
+    // Domestic electricity
+    let dy=118;
+    sk.fill(255,245,220,220);sk.stroke(180,100,0,80);sk.strokeWeight(1);sk.rect(14,dy,462,90,7);sk.noStroke();
+    sk.fill(140,70,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('DOMESTIC ELECTRICITY (AC, 230V in Botswana):',20,dy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['AC (alternating current): direction reverses ~50 times/second (50 Hz).',
+     'DC (direct current): flows in one direction only (batteries).',
+     'Mains voltage: 230V in Botswana/southern Africa.',
+    ].forEach((l,i)=>sk.text(l,20,dy+30+i*20));
+    // Safety & fuses
+    let sy=218;
+    sk.fill(255,240,240,220);sk.stroke(200,40,40,80);sk.strokeWeight(1);sk.rect(14,sy,462,90,7);sk.noStroke();
+    sk.fill(180,0,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('SAFETY DEVICES:',20,sy+14);sk.textStyle(sk.NORMAL);
+    [['Fuse','Contains thin wire. Melts if current too high → breaks circuit. Rated in amps.'],
+     ['Circuit breaker','Electromechanical switch. Trips if I too high. Can be reset.'],
+     ['Earth wire','Connects metal case to earth. If fault → current flows to earth, not user.'],
+    ].forEach((r,i)=>{
+      sk.fill(180,0,0);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(r[0]+':',20,sy+32+i*22);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],80,sy+32+i*22);
+    });
+    // Units table
+    let uy=318;
+    sk.fill(245,248,255,220);sk.stroke(30,30,200,80);sk.strokeWeight(1);sk.rect(14,uy,462,80,7);sk.noStroke();
+    sk.fill(20,30,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('UNITS:',20,uy+14);sk.textStyle(sk.NORMAL);
+    [['Energy','kilowatt-hour (kWh) for electricity bills'],['1 kWh','= 1000W × 3600s = 3,600,000 J'],['Cost','Cost = kWh × unit price'],['Calculation','1500W heater × 2h = 3 kWh used']].forEach((r,i)=>{
+      sk.fill(20,30,180);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(r[0]+':',20,uy+30+i*16);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],100,uy+30+i*16);
+    });
+    // Worked examples
+    let we=408;
+    sk.fill(240,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,we,462,96,7);sk.noStroke();
+    sk.fill(0,80,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLES:',20,we+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['P = IV = 3A × 12V = 36W',
+     'Energy in 2min: E = Pt = 36 × 120 = 4320 J',
+     'P = I²R = 2² × 6 = 24W  (2A through 6Ω resistor)',
+     'kWh: 2000W × 3h = 6 kWh'].forEach((e,i)=>sk.text(e,20,we+30+i*18));
+  }
+
+  function drawEM(){
+    sk.fill(20,30,180);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Electromagnetism & Induction',248,22);sk.textStyle(sk.NORMAL);
+    // Electromagnet
+    let cx=130,cy=160,cw=120,ch=80;
+    sk.noFill();sk.stroke(60,60,180);sk.strokeWeight(2.5);
+    // Coil (simplified)
+    for(let i=0;i<8;i++){
+      let x=cx+i*15,col=i%2===0?[60,60,200]:[30,30,140];
+      sk.stroke(col[0],col[1],col[2]);sk.strokeWeight(2);
+      sk.arc(x,cy,22,ch,0,sk.PI,sk.OPEN);sk.arc(x+8,cy,22,ch,sk.PI,sk.TWO_PI,sk.OPEN);
+    }
+    // Iron core
+    sk.fill(140,120,100,200);sk.stroke(80,60,40);sk.strokeWeight(1.5);sk.rect(cx-4,cy-ch/2+10,cw+8,ch-20,3);
+    sk.noStroke();sk.fill(80,60,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Iron core',cx+cw/2,cy+18);sk.textStyle(sk.NORMAL);
+    // Magnetic field lines
+    for(let i=-2;i<=2;i++){
+      let t2=(tick*0.3)%1;
+      let dx=cx+cw+8+t2*80;
+      sk.stroke(200,80,0,180);sk.strokeWeight(1.5);sk.setLineDash([6,4]);
+      sk.line(cx+cw+8,cy+i*14,cx+cw+80,cy+i*14);sk.setLineDash([]);
+      sk.noStroke();sk.fill(200,80,0,200);sk.triangle(dx,cy+i*14-4,dx,cy+i*14+4,dx+8,cy+i*14);
+    }
+    sk.noStroke();sk.fill(200,80,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Magnetic field →',cx+cw+10,cy-50);sk.textStyle(sk.NORMAL);
+    sk.fill(60,60,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('SOLENOID / ELECTROMAGNET',cx,cy-80);sk.textStyle(sk.NORMAL);
+    // Induced EMF section
+    let iy=280;
+    sk.fill(240,248,255,220);sk.stroke(30,60,180,80);sk.strokeWeight(1);sk.rect(14,iy,462,230,7);sk.noStroke();
+    sk.fill(20,40,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ELECTROMAGNETIC INDUCTION (Faraday\'s Law):',20,iy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Moving a magnet in/out of a coil induces an EMF.',
+     'Induced EMF ∝ rate of change of magnetic flux.',
+     'More turns, faster movement, stronger magnet → bigger EMF.',
+     '','LENZ\'S LAW: Induced current opposes the change causing it.'].forEach((l,i)=>sk.text(l,20,iy+30+i*22));
+    // Transformer
+    sk.fill(20,40,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('TRANSFORMER (AC only):',20,iy+140);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Vs/Vp = Ns/Np        Vp × Ip = Vs × Is  (100% efficiency)',20,iy+158);
+    sk.text('Step-up: Ns > Np → higher V. Step-down: Ns < Np → lower V.',20,iy+178);
+    sk.text('National grid: step up to 275kV–400kV for transmission (low I → low power loss).',20,iy+198);
+    sk.text('Homes: stepped down to 230V.',20,iy+216);
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[20,30,180];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Circuit Laws','Ohm\'s Law & Resistance','Power & Energy','Electromagnetism'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Electric Current',b:'Flow of charge (electrons in metals).\nI = Q/t   (Current = charge/time)\nUnit: ampere (A)'},{t:'Potential Difference (Voltage)',b:'Energy transferred per unit charge.\nV = W/Q\nUnit: volt (V) = J/C'},{t:'Kirchhoff\'s Laws',b:'KCL: Sum of currents at a junction = 0.\nKVL: Sum of voltages in a loop = 0.\nConsequences: series and parallel rules.'},{t:'Electromotive Force (EMF)',b:'Energy supplied per unit charge by source.\nDifferent from terminal voltage (due to internal r).\nV_terminal = EMF − Ir'}],
+      [{t:'Ohm\'s Law',b:'V = IR (voltage = current × resistance).\nApplies to ohmic conductors at constant temperature.\nR in ohms (Ω).'},{t:'Ohmic vs Non-Ohmic',b:'Ohmic: R is constant → V-I graph is straight line.\nNon-ohmic: R changes with conditions.\nExamples: bulb (hotter → higher R), diode, thermistor.'},{t:'Thermistor (NTC)',b:'Resistance decreases as temperature increases.\nUsed in thermostats, temperature sensors.\nNTC = negative temperature coefficient.'},{t:'LDR',b:'Light-dependent resistor.\nResistance decreases in bright light.\nUsed in automatic street lights, cameras.'}],
+      [{t:'Electrical Power',b:'P = IV = I²R = V²/R\nUnit: watt (W). 1W = 1 J/s.\nA 60W bulb uses 60J every second.'},{t:'Electrical Energy',b:'E = Pt = IVt\nUnit: joule (J).\nElectricity bills measured in kWh.'},{t:'The 3-Pin Plug (UK/SA)',b:'Live (brown): carries current at high voltage.\nNeutral (blue): return path, near 0V.\nEarth (green/yellow): safety connection.'},{t:'Fuse Selection',b:'Choose fuse slightly above normal operating current.\nE.g. 13A appliance uses P=2600W at 230V → I=11.3A → use 13A fuse.\nFuses protect the appliance and wiring.'}],
+      [{t:'Magnetic Fields',b:'B-field lines show direction of force on N-pole.\nParallel straight lines = uniform field.\nUse right-hand rule for solenoid direction.'},{t:'Motor Effect',b:'Current in a magnetic field experiences a force.\nF = BIL  (force, flux density, current, length).\nFleming\'s left-hand rule: thumb=force, index=B, middle=I.'},{t:'Generator Effect',b:'Moving conductor in B-field → induced EMF.\nFleming\'s right-hand rule for generators.\nBasis of power station generators.'},{t:'AC Generator vs DC Motor',b:'Generator: mechanical → electrical energy.\nMotor: electrical → mechanical energy.\nTransformer: changes AC voltage levels.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(elecMcq){ elecMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

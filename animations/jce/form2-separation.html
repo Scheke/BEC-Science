@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Separation Methods — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#1565c0; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#90caf9; color:#0d47a1; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #bbdefb; }
+    #controls { display:flex; gap:10px; margin-top:14px; }
+    .btn { padding:8px 20px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-tech { border-color:#1565c0; color:#1565c0; background:#fff; }
+    .btn-tech.on { background:#1565c0; color:#fff; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 2 Chemistry</span>
+  <h1>Separation Methods</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <button class="btn btn-tech on"  id="b0" onclick="setTech(0)">⊿ Filtration</button>
+  <button class="btn btn-tech"     id="b1" onclick="setTech(1)">💧 Distillation</button>
+  <button class="btn btn-tech"     id="b2" onclick="setTech(2)">🌈 Chromatography</button>
+  <button class="btn btn-tech"     id="b3" onclick="setTech(3)">💎 Crystallisation</button>
+  <button class="btn btn-tech"     id="b4" onclick="setSepPractice(!sepMcq)" style="border-color:#f9a825;color:#f9a825">🎮 Choose Method</button>
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Separation Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#1976d2;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body><h1>Separation Methods — Study Notes</h1>';
+  TECHS.forEach(t=>html+=`<h2>${t.name}</h2><p>${t.what}</p><ul>${t.steps.map(s=>`<li>${s}</li>`).join('')}</ul><p><strong>Used for:</strong> ${t.uses}</p><p><em>${t.key}</em></p>`);
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let sepMcq=false;
+const SEP_MCQ=[
+  {q:'You want to separate SAND from WATER. Which method do you use?',opts:['Filtration','Distillation','Chromatography','Crystallisation'],c:0,tip:'Filtration separates insoluble solids from liquids using filter paper.'},
+  {q:'To get PURE WATER from SALT WATER, you should use:',opts:['Distillation','Filtration','Crystallisation','Evaporation only'],c:0,tip:'Distillation heats the mixture; the water evaporates and is condensed as pure water.'},
+  {q:'To find out how many dyes are in an ink, use:',opts:['Paper Chromatography','Filtration','Distillation','Crystallisation'],c:0,tip:'Chromatography separates mixtures of soluble substances — different dyes travel different distances.'},
+  {q:'To get pure SALT CRYSTALS from a salt solution, use:',opts:['Crystallisation','Filtration','Chromatography','Distillation'],c:0,tip:'Crystallisation dissolves salt, evaporates some solvent, then cools to let pure crystals form.'},
+  {q:'The Rf value in chromatography is calculated as:',opts:['Distance spot moved ÷ Distance solvent moved','Distance solvent moved ÷ Distance spot moved','Mass of spot ÷ Volume of solvent','Concentration of spot × Distance'],c:0,tip:'Rf = distance travelled by substance ÷ distance travelled by solvent front.'},
+  {q:'Filtration works because:',opts:['Solid particles are too large to pass through the filter paper','The solid dissolves in the filter','The liquid is too dense to flow','Heat is applied to separate the substances'],c:0,tip:'The filter paper has tiny pores that allow liquid (filtrate) to pass but trap solid (residue).'},
+  {q:'Which separation method is used to separate two liquids with DIFFERENT BOILING POINTS?',opts:['Fractional distillation','Filtration','Chromatography','Crystallisation'],c:0,tip:'Fractional distillation (a type of distillation) separates liquids by their different boiling points.'},
+];
+let sepMcqIdx=0,sepMcqSel=-1,sepMcqScore=0,sepMcqDone=false,sepMcqFeedback=null;
+function setSepPractice(on){ sepMcq=on; let b=document.getElementById('b4'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){sepMcqIdx=0;sepMcqSel=-1;sepMcqScore=0;sepMcqDone=false;sepMcqFeedback=null;} }
+function drawSepMCQ(s){
+  s.background(245,248,255);
+  if(sepMcqDone){
+    s.fill(21,101,192);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+sepMcqScore+'/'+SEP_MCQ.length,440,210);
+    s.text(sepMcqScore>=6?'Excellent!':sepMcqScore>=4?'Good work!':'Review the methods!',440,240);
+    s.fill(30,100,200);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=SEP_MCQ[sepMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(30,100,200);s.rect(30,18,820*(sepMcqIdx/SEP_MCQ.length),10,5);
+  s.fill(21,101,192);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(sepMcqIdx+1)+' of '+SEP_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=sepMcqSel===i,correct=sepMcqFeedback!==null&&i===q.c,wrong=sepMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[245,248,255]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(sepMcqFeedback){
+    s.fill(sepMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(sepMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(150,200,255);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function sepMcqClick(mx,my){
+  if(sepMcqDone){if(mx>310&&mx<570&&my>265&&my<309){sepMcqIdx=0;sepMcqSel=-1;sepMcqScore=0;sepMcqDone=false;sepMcqFeedback=null;}return;}
+  let q=SEP_MCQ[sepMcqIdx];
+  if(sepMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){sepMcqFeedback=null;sepMcqSel=-1;sepMcqIdx++;if(sepMcqIdx>=SEP_MCQ.length)sepMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&sepMcqFeedback===null){sepMcqSel=i;sepMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)sepMcqScore++;}});
+}
+let tech = 0;
+function setTech(n) {
+  tech = n;
+  [0,1,2,3].forEach(i => document.getElementById('b'+i).classList.toggle('on', i===n));
+  resetState();
+}
+
+// Shared particle/animation state
+let parts = [];
+let filtLevel = 0;   // filtrate level in beaker (0-100)
+let distVapour = []; // vapour drops in condenser
+let distLevel = 0;   // collected liquid in collector
+let chromT = 0;      // 0→1 chromatography progress
+let crystals = [];
+let crystalProgress = 0;
+let tick = 0;
+
+function resetState() {
+  parts = []; filtLevel = 0; distVapour = []; distLevel = 0;
+  chromT = 0; crystals = []; crystalProgress = 0; tick = 0;
+}
+
+const TECHS = [
+  { name:'Filtration',
+    what:'Separates an insoluble solid from a liquid.',
+    steps:['Pour mixture into funnel', 'Filter paper traps solid particles', 'Liquid (filtrate) drips through', 'Solid (residue) remains on paper'],
+    uses:'Sand + water, chalk + water',
+    key:'Works because solid particles are too large to pass through the filter paper.' },
+  { name:'Distillation',
+    what:'Separates a dissolved solid from a solvent, or two liquids with different boiling points.',
+    steps:['Mixture heated in flask', 'Liquid with lower boiling point evaporates', 'Vapour cools in condenser', 'Pure liquid drips into collection flask'],
+    uses:'Pure water from salt water, ink from water',
+    key:'Works because different substances have different boiling points.' },
+  { name:'Paper Chromatography',
+    what:'Separates mixtures of soluble substances using a moving solvent.',
+    steps:['Place ink spot near bottom of paper', 'Lower paper into solvent', 'Solvent rises up paper (capillary action)', 'Components separate at different heights'],
+    uses:'Dyes in inks, pigments in plant leaves',
+    key:'Rf = distance moved by spot ÷ distance moved by solvent' },
+  { name:'Crystallisation',
+    what:'Obtains a pure solid by dissolving it, then allowing it to recrystallise on cooling.',
+    steps:['Dissolve solid in hot solvent', 'Filter to remove impurities', 'Evaporate some solvent', 'Cool solution — crystals form'],
+    uses:'Salt from sea water, copper sulfate crystals',
+    key:'Works because solubility decreases as temperature falls.' },
+];
+
+new p5(function(sk) {
+  const W = 880, H = 510;
+  let chromAuto = true;
+
+  sk.setup = function() {
+    sk.createCanvas(W, H).parent('sketch');
+    sk.textFont('Arial');
+  };
+
+  sk.draw = function() {
+    if(sepMcq){ drawSepMCQ(sk); return; }
+    tick += 0.04;
+    sk.background(248, 252, 250);
+    switch(tech) {
+      case 0: drawFiltration(); break;
+      case 1: drawDistillation(); break;
+      case 2: drawChromatography(); break;
+      case 3: drawCrystallisation(); break;
+    }
+    drawInfoPanel();
+  };
+
+  // ─── Filtration ────────────────────────────────────────────
+  function drawFiltration() {
+    // Retort stand
+    sk.stroke(130); sk.strokeWeight(5); sk.noFill();
+    sk.line(358, 28, 358, 480); // vertical rod
+    sk.line(290, 242, 358, 242); // arm
+    sk.stroke(100); sk.strokeWeight(8);
+    sk.line(330, 477, 385, 477); // base
+
+    // === FUNNEL ===
+    let fx = 225, ftop = 140, fbot = 275; // funnel dims
+    sk.stroke(130, 170, 210); sk.strokeWeight(2.5);
+    sk.fill(200, 225, 255, 70);
+    // Funnel body
+    sk.beginShape();
+    sk.vertex(fx-98, ftop); sk.vertex(fx+98, ftop);
+    sk.vertex(fx+16, fbot); sk.vertex(fx-16, fbot);
+    sk.endShape(sk.CLOSE);
+    // Funnel top rim
+    sk.fill(200, 225, 255, 50); sk.ellipse(fx, ftop, 196, 22);
+    // Funnel stem
+    sk.fill(200, 225, 255, 80); sk.noStroke(); sk.rect(fx-12, fbot, 24, 45, 3);
+    sk.stroke(130, 170, 210); sk.strokeWeight(2); sk.noFill();
+    sk.rect(fx-12, fbot, 24, 45, 3);
+
+    // Mixture liquid in funnel (amber, fills upper portion)
+    let mixtureY = ftop + 8;
+    let mixtureBot = ftop + 95;
+    sk.noStroke(); sk.fill(210, 148, 50, 160);
+    sk.beginShape();
+    sk.vertex(fx-90, mixtureY);  sk.vertex(fx+90, mixtureY);
+    let bw = sk.map(mixtureBot, ftop, fbot, 196, 32) / 2;
+    sk.vertex(fx+bw, mixtureBot); sk.vertex(fx-bw, mixtureBot);
+    sk.endShape(sk.CLOSE);
+    // Liquid surface ellipse
+    sk.fill(230, 168, 60, 120); sk.ellipse(fx, mixtureY, 180, 14);
+
+    // Filter paper (inside funnel)
+    sk.noStroke(); sk.fill(255, 245, 215, 210);
+    sk.beginShape();
+    sk.vertex(fx-88, ftop+8); sk.vertex(fx+88, ftop+8);
+    sk.vertex(fx+14, fbot-4); sk.vertex(fx-14, fbot-4);
+    sk.endShape(sk.CLOSE);
+    // Filter paper texture (dots)
+    sk.fill(220, 200, 160, 80);
+    for (let i = 0; i < 30; i++) {
+      let py = ftop+14 + (i%6)*18;
+      let pwide = sk.map(py, ftop, fbot, 180, 28) / 2;
+      let px2 = fx + sk.map(i, 0, 4, -pwide*0.7, pwide*0.7);
+      sk.ellipse(px2, py, 4, 4);
+    }
+
+    // Residue particles on filter paper
+    if (sk.frameCount % 8 === 0 && parts.filter(p=>p.type==='residue').length < 25) {
+      parts.push({type:'residue', x:fx+sk.random(-30,30), y:sk.random(ftop+14, mixtureBot-10), alpha:200});
+    }
+    for (let p of parts.filter(pp=>pp.type==='residue')) {
+      sk.fill(130, 75, 30, p.alpha); sk.noStroke(); sk.ellipse(p.x, p.y, 9);
+    }
+
+    // Filtrate dripping through stem
+    if (sk.frameCount % 18 === 0) {
+      parts.push({type:'drop', x:fx, y:fbot+45, vy:2.5, alpha:220});
+    }
+    parts = parts.filter(p => !(p.type==='drop' && p.alpha < 10));
+    for (let p of parts.filter(pp=>pp.type==='drop')) {
+      p.y += p.vy; p.vy += 0.12;
+      if (p.y > 320) { p.alpha -= 20; if (p.alpha > 0 && p.y < 330) filtLevel = Math.min(filtLevel+0.3, 85); }
+      sk.fill(100, 170, 240, p.alpha); sk.noStroke(); sk.ellipse(p.x, p.y, 8, 11);
+    }
+
+    // === BEAKER ===
+    let bkX = 130, bkY = 325, bkW = 190, bkH = 150;
+    sk.stroke(130, 170, 210); sk.strokeWeight(2); sk.fill(200, 225, 255, 40);
+    sk.rect(bkX, bkY, bkW, bkH, 0, 0, 8, 8);
+    sk.fill(200, 225, 255, 60); sk.ellipse(bkX+bkW/2, bkY, bkW, 14);
+    // Filtrate liquid
+    sk.fill(160, 210, 255, 160); sk.noStroke();
+    let flh = filtLevel * 1.35;
+    sk.rect(bkX+2, bkY+bkH-flh, bkW-4, flh, 0, 0, 7, 7);
+    sk.fill(160, 210, 255, 80); sk.ellipse(bkX+bkW/2, bkY+bkH-flh, bkW-4, 10);
+    // Beaker outline over liquid
+    sk.stroke(130, 170, 210); sk.strokeWeight(2); sk.noFill();
+    sk.rect(bkX, bkY, bkW, bkH, 0, 0, 8, 8);
+    // Graduation marks
+    sk.stroke(180, 200, 220); sk.strokeWeight(1);
+    for (let i=1;i<=5;i++) { let my = bkY+bkH-i*26; sk.line(bkX+bkW-14, my, bkX+bkW-2, my); }
+
+    // Labels
+    lbl(sk,'Mixture',         fx-110, ftop+12, 'right', [150,80,0]);
+    lbl(sk,'Filter paper',    fx-110, ftop+55, 'right', [140,110,40]);
+    lbl(sk,'Residue',         fx+115, ftop+55, 'left',  [110,55,20]);
+    lbl(sk,'(insoluble solid)',fx+115, ftop+68,'left',  [130,80,40]);
+    lbl(sk,'Filtrate',        bkX+bkW+10, bkY+75, 'left', [0,80,160]);
+    lbl(sk,'(solution)',      bkX+bkW+10, bkY+88, 'left', [30,100,180]);
+  }
+
+  // ─── Distillation ──────────────────────────────────────────
+  function drawDistillation() {
+    // === Round-bottom flask ===
+    let flX = 135, flY = 330, flR = 90;
+    // Heat source (Bunsen flame)
+    drawFlame(flX, flY+flR+10);
+    // Flask body
+    sk.stroke(130,170,210); sk.strokeWeight(2.5); sk.fill(200,225,255,80);
+    sk.ellipse(flX, flY, flR*2, flR*2);
+    // Liquid in flask
+    sk.noStroke(); sk.fill(180, 230, 200, 170);
+    sk.arc(flX, flY, flR*2-4, flR*2-4, 0.3, sk.PI-0.3);
+    sk.rect(flX-flR+2, flY, flR*2-4, flR*0.8);
+    // Flask neck
+    sk.stroke(130,170,210); sk.strokeWeight(2.5); sk.fill(200,225,255,60);
+    sk.rect(flX-14, flY-flR, 28, 60, 4);
+    // Thermometer
+    sk.stroke(200,60,60); sk.strokeWeight(2); sk.noFill();
+    sk.line(flX+5, flY-flR-20, flX+5, flY-flR+50);
+    sk.fill(200,60,60); sk.ellipse(flX+5, flY-flR+52, 8, 8);
+    sk.fill(30); sk.textSize(9); sk.textAlign(sk.LEFT);
+    sk.text('100°C', flX+12, flY-flR+4);
+
+    // === Condenser (angled tube) ===
+    let csx=flX+14, csy=flY-flR, cex=385, cey=280;
+    sk.stroke(130,170,210); sk.strokeWeight(12); sk.fill(200,225,255,60);
+    sk.line(csx, csy, cex, cey);
+    sk.stroke(100,150,210,100); sk.strokeWeight(7);
+    sk.line(csx, csy, cex, cey);
+    // Water cooling arrows on condenser
+    sk.fill(80, 150, 220, 130); sk.noStroke();
+    let ang = sk.atan2(cey-csy, cex-csx);
+    for (let t=0.2; t<=0.8; t+=0.3) {
+      let cx2 = sk.lerp(csx,cex,t), cy2 = sk.lerp(csy,cey,t);
+      sk.push(); sk.translate(cx2,cy2); sk.rotate(ang + sk.PI/2);
+      sk.text('~', 0, 0); sk.pop();
+    }
+    lbl(sk,'Condenser', (csx+cex)/2-20, (csy+cey)/2-18, 'center', [0,60,140]);
+    lbl(sk,'(cooling water)', (csx+cex)/2-20, (csy+cey)/2-6, 'center', [30,80,160]);
+
+    // === Collection flask ===
+    let cfX = 415, cfY = 360, cfR = 55;
+    sk.stroke(130,170,210); sk.strokeWeight(2); sk.fill(200,225,255,70);
+    sk.ellipse(cfX, cfY, cfR*2, cfR*2);
+    sk.rect(cfX-10, cfY-cfR, 20, 50, 3);
+    sk.fill(200,225,255,40); sk.ellipse(cfX, cfY-cfR, 20, 6);
+    // Collected distillate
+    let col_h = Math.min(distLevel * 0.9, 65);
+    sk.noStroke(); sk.fill(180, 230, 200, 180);
+    sk.arc(cfX, cfY, cfR*2-4, cfR*2-4, 0.4, sk.PI-0.4);
+    if (col_h > 4) {
+      sk.fill(180, 230, 200, 180);
+      sk.rect(cfX-cfR+4, cfY+cfR-col_h-4, cfR*2-8, col_h);
+    }
+    lbl(sk,'Collection flask', cfX, cfY+cfR+20, 'center', [0,100,50]);
+    lbl(sk,'(pure distillate)', cfX, cfY+cfR+33, 'center', [30,120,60]);
+
+    // Vapour particles
+    if (sk.frameCount % 10 === 0) {
+      distVapour.push({ x:flX, y:flY-flR, vx:0.8, vy:-0.5, alpha:200, phase:0 });
+    }
+    distVapour = distVapour.filter(p=>p.alpha>8);
+    for (let p of distVapour) {
+      if (p.phase === 0) { // rising to condenser
+        p.x += 0.8; p.y -= 0.5;
+        if (p.x > cex-20 && p.y < cey+20) p.phase = 1;
+      } else { // dripping into collector
+        p.x += 0.3; p.y += 1.5;
+        if (p.y > cfY-cfR+20) { p.alpha -= 15; if(p.alpha > 100) distLevel = Math.min(distLevel+0.4, 80); }
+      }
+      p.alpha -= 0.5;
+      sk.fill(200, 240, 215, p.alpha); sk.noStroke(); sk.ellipse(p.x, p.y, 7);
+    }
+
+    lbl(sk,'Flask with mixture', flX, flY+flR+38, 'center', [0,80,40]);
+    lbl(sk,'Vapour →', flX+60, flY-flR-15, 'left', [0,60,120]);
+    lbl(sk,'Thermometer', flX+15, flY-flR-25, 'left', [160,0,0]);
+    lbl(sk,'Heat source', flX, flY+flR+50, 'center', [160,80,0]);
+  }
+
+  function drawFlame(x, y) {
+    sk.noStroke();
+    for (let i=0; i<8; i++) {
+      let a = sk.random(sk.TWO_PI), jit = sk.sin(tick*5+i)*4;
+      sk.fill(255, 140+sk.floor(sk.random()*80), 0, 180);
+      sk.ellipse(x+jit, y-i*3-5, 18-i*1.5, 22-i*2);
+    }
+    sk.fill(255, 220, 50, 200); sk.ellipse(x, y-8, 14, 18);
+  }
+
+  // ─── Chromatography ────────────────────────────────────────
+  function drawChromatography() {
+    // Auto advance
+    if (chromT < 1) chromT += 0.0015;
+
+    let bkX=145, bkW=170, bkY=100, bkH=360;
+    let pX=220, pW=22;
+    let solventY = bkY + bkH - 28;
+    let inkY = solventY - 35;  // ink spot start
+    let paperTop = bkY - 60;
+    let travelRange = inkY - paperTop - 10;
+
+    // === Beaker ===
+    sk.stroke(130,170,210); sk.strokeWeight(2.5); sk.fill(200,225,255,40);
+    sk.rect(bkX, bkY, bkW, bkH, 0,0,8,8);
+    sk.fill(200,225,255,50); sk.ellipse(bkX+bkW/2, bkY, bkW, 14);
+
+    // Solvent in beaker
+    sk.noStroke(); sk.fill(190,220,255,160);
+    sk.rect(bkX+2, solventY, bkW-4, bkH-(solventY-bkY), 0,0,7,7);
+    sk.fill(190,220,255,90); sk.ellipse(bkX+bkW/2, solventY, bkW-4, 10);
+
+    // === Paper strip ===
+    sk.fill(255,250,230,240); sk.stroke(200,180,140); sk.strokeWeight(1.5);
+    sk.rect(pX, paperTop, pW, inkY - paperTop + 38);
+
+    // Solvent front line (rises with chromT)
+    let frontY = inkY - chromT * travelRange * 0.95;
+    if (chromT > 0.02) {
+      sk.stroke(100,140,220); sk.strokeWeight(1.5);
+      sk.setLineDash([3,3]); sk.line(pX-8, frontY, pX+pW+8, frontY); sk.setLineDash([]);
+      sk.fill(30,80,200); sk.textSize(8.5); sk.textAlign(sk.LEFT);
+      sk.text('Solvent front', pX+pW+4, frontY+3);
+    }
+
+    // Original ink spot (fades as it separates)
+    let origAlpha = Math.max(0, 200 - chromT * 600);
+    sk.fill(50,30,90,origAlpha); sk.noStroke(); sk.ellipse(pX+pW/2, inkY, pW*0.85, pW);
+
+    // Three component bands (appear and move as solvent rises)
+    const BANDS = [
+      { rf:0.82, col:[30,100,220],   name:'Blue dye'    },
+      { rf:0.50, col:[210,170,0],    name:'Yellow dye'  },
+      { rf:0.23, col:[210,50,50],    name:'Red dye'     },
+    ];
+    for (let b of BANDS) {
+      let bandY = inkY - chromT * travelRange * b.rf;
+      let bandAlpha = sk.constrain((chromT - 0.05) * 400, 0, 200);
+      sk.fill(b.col[0],b.col[1],b.col[2], bandAlpha); sk.noStroke();
+      sk.ellipse(pX+pW/2, bandY, pW*0.85, pW*1.1);
+      if (bandAlpha > 30 && chromT > 0.3) {
+        // Rf line and label
+        sk.stroke(b.col[0],b.col[1],b.col[2],120); sk.strokeWeight(1); sk.setLineDash([2,3]);
+        sk.line(pX-18, bandY, pX-2, bandY);
+        sk.setLineDash([]); sk.noStroke();
+        sk.fill(b.col[0],b.col[1],b.col[2]); sk.textSize(8.5); sk.textAlign(sk.RIGHT);
+        sk.text(b.name + ' Rf='+b.rf.toFixed(2), pX-22, bandY+3);
+      }
+    }
+
+    // Paper clip at top
+    sk.stroke(160); sk.strokeWeight(2.5); sk.noFill();
+    sk.rect(pX-2, paperTop-10, pW+4, 12, 2);
+
+    // Distance indicator lines
+    if (chromT > 0.5) {
+      let midBandY = inkY - chromT * travelRange * 0.50;
+      sk.stroke(100,100,100,150); sk.strokeWeight(1); sk.setLineDash([2,2]);
+      sk.line(pX+pW+2, inkY, pX+pW+2, frontY); sk.setLineDash([]);
+      sk.fill(60); sk.textSize(8.5); sk.textAlign(sk.LEFT);
+      sk.text('Solvent\ndistance', pX+pW+4, (inkY+frontY)/2);
+    }
+
+    lbl(sk,'Pencil baseline', bkX-8, inkY+3, 'right', [80,60,0]);
+    lbl(sk,'Solvent', bkX+bkW/2, solventY+15, 'center', [0,60,160]);
+    lbl(sk,'Paper', pX+pW/2, paperTop-18, 'center', [140,110,50]);
+  }
+
+  // ─── Crystallisation ───────────────────────────────────────
+  function drawCrystallisation() {
+    if (crystalProgress < 1) crystalProgress += 0.003;
+
+    // Evaporating dish (wide shallow)
+    let dX=215, dY=295, dW=220, dH=55;
+    // Stand (tripod legs)
+    sk.stroke(130); sk.strokeWeight(3); sk.noFill();
+    sk.line(dX-80, dY+dH+20, dX-dW/2-10, dY+dH+80);
+    sk.line(dX+80, dY+dH+20, dX+dW/2+10, dY+dH+80);
+    sk.line(dX, dY+dH+18, dX, dY+dH+82);
+    // Ring support
+    sk.stroke(120); sk.strokeWeight(5); sk.noFill();
+    sk.ellipse(dX, dY+dH+22, dW+30, 18);
+    // Flame under dish
+    drawFlame(dX, dY+dH+12);
+
+    // Dish body
+    sk.stroke(130,170,210); sk.strokeWeight(2.5);
+    sk.fill(200,225,255,60);
+    sk.beginShape();
+    sk.vertex(dX-dW/2, dY);
+    sk.vertex(dX+dW/2, dY);
+    sk.vertex(dX+dW/2-20, dY+dH);
+    sk.vertex(dX-dW/2+20, dY+dH);
+    sk.endShape(sk.CLOSE);
+    sk.fill(200,225,255,40); sk.ellipse(dX, dY, dW, 18);
+    sk.fill(200,225,255,40); sk.ellipse(dX, dY+dH, dW-40, 12);
+
+    // Solution in dish (saturated copper sulphate = blue)
+    let solH = Math.max(4, dH - crystalProgress * (dH-14));
+    sk.noStroke(); sk.fill(100, 160, 230, 160);
+    sk.beginShape();
+    let lBot = dY + dH, lTop = lBot - solH;
+    let halfW = dW/2 - sk.map(solH, dH, 0, 0, 15);
+    sk.vertex(dX-halfW, lTop);
+    sk.vertex(dX+halfW, lTop);
+    sk.vertex(dX+halfW-10, lBot);
+    sk.vertex(dX-halfW+10, lBot);
+    sk.endShape(sk.CLOSE);
+    sk.fill(100,160,230,80); sk.ellipse(dX, lTop, halfW*2, 10);
+
+    // Temperature thermometer on right
+    let thX = dX + dW/2 + 28, thY1 = dY-30, thY2 = dY+dH+5;
+    sk.stroke(180,30,30); sk.strokeWeight(2);
+    sk.line(thX, thY1, thX, thY2); sk.fill(180,30,30); sk.ellipse(thX, thY2+4, 10,10);
+    // Temp indicator
+    let temp = sk.round(sk.map(crystalProgress, 0, 1, 95, 20));
+    let mercH = sk.map(temp, 0, 100, 0, thY2-thY1);
+    sk.noStroke(); sk.fill(200,50,50);
+    sk.rect(thX-3, thY2-mercH, 6, mercH);
+    sk.fill(30); sk.textSize(10); sk.textAlign(sk.LEFT); sk.textStyle(sk.BOLD);
+    sk.text(temp+'°C', thX+8, thY2-mercH+4); sk.textStyle(sk.NORMAL);
+
+    // Crystals forming
+    if (crystalProgress > 0.15) {
+      let numCrystals = sk.floor((crystalProgress-0.15) * 55);
+      // Pre-generate crystal positions (seeded)
+      for (let i = 0; i < numCrystals; i++) {
+        let cx = dX - halfW*0.8 + (i * 37.3) % (halfW*1.6);
+        let cy = lBot - 4 - (i * 19.7) % (solH * 0.8 + 2);
+        let cs = 4 + (i % 4) * 2.5;
+        let growFrac = sk.constrain((crystalProgress - 0.15 - i*0.01) * 5, 0, 1);
+        drawCrystal(sk, cx, cy, cs * growFrac);
+      }
+    }
+
+    lbl(sk,'Saturated solution', dX, dY-12, 'center', [0,60,150]);
+    lbl(sk,'Crystals forming', dX, dY+dH+25, 'center', [30,80,160]);
+    lbl(sk,'Evaporating dish', dX, dY-28, 'center', [80,80,80]);
+  }
+
+  function drawCrystal(sk, x, y, s) {
+    sk.fill(120, 180, 240, 200); sk.stroke(60,120,200); sk.strokeWeight(0.5);
+    sk.push(); sk.translate(x,y); sk.rotate(sk.PI/6);
+    sk.beginShape();
+    for (let a=0; a<6; a++) {
+      let ax = sk.cos(a*sk.PI/3)*s, ay = sk.sin(a*sk.PI/3)*s;
+      sk.vertex(ax, ay);
+    }
+    sk.endShape(sk.CLOSE);
+    sk.pop();
+  }
+
+  // ─── Info Panel ────────────────────────────────────────────
+  function drawInfoPanel() {
+    let t = TECHS[tech];
+    let px=502, py=8, pw=368, ph=494;
+
+    sk.fill(255,255,255,235); sk.stroke(60,120,200); sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10); sk.noStroke();
+
+    // Technique name
+    let bgCols = [[30,80,180],[0,100,40],[100,0,140],[20,100,20]];
+    let c = bgCols[tech];
+    sk.fill(c[0],c[1],c[2],220); sk.rect(px+8,py+8,pw-16,36,7); sk.noStroke();
+    sk.fill(255); sk.textSize(15); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text(t.name, px+pw/2, py+31); sk.textStyle(sk.NORMAL);
+
+    // Technique selector dots
+    const cols4 = [[30,80,180],[0,120,60],[140,0,180],[0,120,50]];
+    for (let i=0;i<4;i++) {
+      let ic=cols4[i];
+      sk.fill(ic[0],ic[1],ic[2],i===tech?255:60);
+      sk.ellipse(px+pw/2-30+i*20, py+54, i===tech?13:9);
+    }
+
+    // What it separates
+    let wy = py + 68;
+    sk.fill(235,243,255,200); sk.stroke(100,140,220); sk.strokeWeight(1.2);
+    sk.rect(px+10,wy,pw-20,28,6); sk.noStroke();
+    sk.fill(10,50,160); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('WHAT IT SEPARATES:', px+16, wy+12); sk.textStyle(sk.NORMAL);
+    sk.fill(30); sk.textSize(10.5); sk.text(t.what, px+16, wy+24);
+
+    // Steps
+    let sy = wy + 38;
+    sk.fill(248,252,248,200); sk.stroke(140,200,140); sk.strokeWeight(1.2);
+    sk.rect(px+10,sy,pw-20,t.steps.length*28+16,6); sk.noStroke();
+    sk.fill(0,90,30); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('HOW IT WORKS:', px+16, sy+14); sk.textStyle(sk.NORMAL);
+    t.steps.forEach((step,i) => {
+      sk.fill(0,120,40); sk.textSize(10); sk.textStyle(sk.BOLD);
+      sk.text((i+1)+'.', px+16, sy+30+i*28);
+      sk.textStyle(sk.NORMAL); sk.fill(30);
+      wrapText(sk, step, px+28, sy+30+i*28, pw-42, 28);
+    });
+
+    // Uses
+    let uy = sy + t.steps.length*28 + 24;
+    sk.fill(255,252,230,200); sk.stroke(220,180,0); sk.strokeWeight(1.2);
+    sk.rect(px+10,uy,pw-20,42,6); sk.noStroke();
+    sk.fill(140,100,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('EVERYDAY USES:', px+16, uy+14); sk.textStyle(sk.NORMAL);
+    sk.fill(80,60,0); sk.textSize(10.5); sk.text(t.uses, px+16, uy+30);
+
+    // Key concept
+    let ky = uy + 52;
+    sk.fill(230,245,255,200); sk.stroke(80,160,230); sk.strokeWeight(1.2);
+    sk.rect(px+10,ky,pw-20,ph-(ky-py)-14,6); sk.noStroke();
+    sk.fill(0,60,160); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('💡 KEY IDEA:', px+16, ky+14); sk.textStyle(sk.NORMAL);
+    sk.fill(20,60,140); sk.textSize(10.5);
+    wrapText(sk, t.key, px+16, ky+30, pw-32, 16);
+  }
+
+  function lbl(sk, txt, x, y, align, col) {
+    sk.textSize(9.5); sk.textAlign(align==='right'?sk.RIGHT:align==='left'?sk.LEFT:sk.CENTER);
+    let tw = sk.textWidth(txt);
+    let bx = align==='right'?x-tw-4:align==='center'?x-tw/2-4:x-4;
+    sk.fill(255,255,255,200); sk.noStroke(); sk.rect(bx,y-12,tw+8,14,3);
+    sk.fill(col[0],col[1],col[2]);
+    sk.text(txt,x,y);
+  }
+
+  function wrapText(sk, text, x, y, maxW, lineH) {
+    let words=text.split(' '), line='';
+    sk.textAlign(sk.LEFT);
+    for (let w of words) {
+      let t2=line+w+' ';
+      if (sk.textWidth(t2)>maxW && line) { sk.text(line.trim(),x,y); line=w+' '; y+=lineH; }
+      else line=t2;
+    }
+    if (line.trim()) sk.text(line.trim(),x,y);
+  }
+
+  sk.setLineDash = function(a){ sk.drawingContext.setLineDash(a); };
+  sk.mouseClicked=function(){ if(sepMcq){ sepMcqClick(sk.mouseX,sk.mouseY); return; } };
+});
+</script>
+</body>
+</html>

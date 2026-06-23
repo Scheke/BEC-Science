@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Genetics — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[15,18,28]))}
+
+const STEPS=[
+  {
+    title:'DNA — The Blueprint of Life',
+    body:`<strong>DNA (Deoxyribonucleic Acid)</strong> is found in the nucleus of every cell. It carries the genetic information that determines your characteristics.
+    <br><br>
+    Structure: DNA is a <strong>double helix</strong> — two strands wound around each other, connected by complementary base pairs:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>A — T</satrong> (Adenine bonds with Thymine)</li>
+      <li><strong>G — C</strong> (Guanine bonds with Cytosine)</li>
+    </ul>
+    A <strong>gene</strong> is a section of DNA that codes for a specific protein.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const cols={A:[52,152,219],T:[231,76,60],G:[46,204,113],C:[241,196,15]};
+      const pairs=[['A','T'],['G','C'],['T','A'],['C','G'],['A','T'],['G','C'],['C','G'],['T','A']];
+      const total=pairs.length;
+      pairs.forEach((pair,i)=>{
+        const prog=i/(total-1);
+        const y=H*0.12+prog*H*0.76;
+        const twist=Math.sin(prog*sk.PI*2+t)*W*0.22;
+        const lx=W/2-40-twist,rx=W/2+40+twist;
+        // Backbone
+        if(i<total-1){
+          const np=(i+1)/(total-1);
+          const ny=H*0.12+np*H*0.76;
+          const nt=Math.sin(np*sk.PI*2+t)*W*0.22;
+          sk.stroke(255,255,255,60);sk.strokeWeight(2);sk.noFill();
+          sk.line(lx,y,W/2-40-nt,ny);
+          sk.line(rx,y,W/2+40+nt,ny);
+        }
+        // Base pair
+        sk.stroke(255,255,255,30);sk.strokeWeight(1);
+        sk.line(lx,y,rx,y);
+        // Bases
+        sk.fill(...cols[pair[0]]);sk.noStroke();sk.circle(lx,y,16);
+        sk.fill(...cols[pair[1]]);sk.circle(rx,y,16);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(pair[0],lx,y);sk.text(pair[1],rx,y);
+      });
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('DNA Double Helix',W/2,H*0.95);
+    }
+  },
+  {
+    q:'DNA Double Helix — Labeled Diagram',
+    content:`<h3>DNA Double Helix Structure Diagram</h3><p>Study this diagram carefully. DNA (deoxyribonucleic acid) is a double helix — two strands wound around each other, joined by complementary base pairs. The sequence of bases along the DNA strand is the genetic code that determines which proteins a cell makes, and therefore an organism's characteristics.</p><ul><li><strong>Sugar-phosphate backbone:</strong> the two outer "rails" of the helix, made of alternating deoxyribose sugar and phosphate groups — they provide the structural framework of the molecule</li><li><strong>Complementary base pairs (the "rungs"):</strong> A (adenine) always pairs with T (thymine); G (guanine) always pairs with C (cytosine) — this base-pairing rule is critical for DNA replication and must be memorised</li><li><strong>Hydrogen bonds:</strong> weak bonds between the base pairs hold the two strands together; they are easily broken during DNA replication and transcription</li><li>A gene is a specific sequence of base pairs that codes for one protein</li></ul>`,
+    visual:`<svg viewBox="0 0 420 320" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="320" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">DNA Double Helix — Structure</text>
+  <!-- Left sugar-phosphate backbone -->
+  <path d="M 120 38 Q 90 68 120 98 Q 150 128 120 158 Q 90 188 120 218 Q 150 248 120 278" fill="none" stroke="#c62828" stroke-width="5"/>
+  <!-- Right sugar-phosphate backbone -->
+  <path d="M 300 38 Q 330 68 300 98 Q 270 128 300 158 Q 330 188 300 218 Q 270 248 300 278" fill="none" stroke="#c62828" stroke-width="5"/>
+  <!-- Base pairs (horizontal rungs) -->
+  <!-- A-T pair -->
+  <line x1="125" y1="65" x2="295" y2="65" stroke="#ddd" stroke-width="1.5"/>
+  <rect x="125" y="55" width="36" height="20" rx="4" fill="#1565c0"/>
+  <text x="143" y="69" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">A</text>
+  <rect x="239" y="55" width="36" height="20" rx="4" fill="#e53935"/>
+  <text x="257" y="69" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">T</text>
+  <!-- G-C pair -->
+  <line x1="125" y1="130" x2="295" y2="130" stroke="#ddd" stroke-width="1.5"/>
+  <rect x="125" y="120" width="36" height="20" rx="4" fill="#2e7d32"/>
+  <text x="143" y="134" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">G</text>
+  <rect x="239" y="120" width="36" height="20" rx="4" fill="#f9a825"/>
+  <text x="257" y="134" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">C</text>
+  <!-- T-A pair -->
+  <line x1="125" y1="195" x2="295" y2="195" stroke="#ddd" stroke-width="1.5"/>
+  <rect x="125" y="185" width="36" height="20" rx="4" fill="#e53935"/>
+  <text x="143" y="199" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">T</text>
+  <rect x="239" y="185" width="36" height="20" rx="4" fill="#1565c0"/>
+  <text x="257" y="199" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">A</text>
+  <!-- C-G pair -->
+  <line x1="125" y1="255" x2="295" y2="255" stroke="#ddd" stroke-width="1.5"/>
+  <rect x="125" y="245" width="36" height="20" rx="4" fill="#f9a825"/>
+  <text x="143" y="259" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">C</text>
+  <rect x="239" y="245" width="36" height="20" rx="4" fill="#2e7d32"/>
+  <text x="257" y="259" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">G</text>
+  <!-- Labels -->
+  <text x="22" y="55" text-anchor="start" font-size="9" fill="#c62828" font-weight="bold">Sugar-phosphate</text>
+  <text x="22" y="67" text-anchor="start" font-size="9" fill="#c62828" font-weight="bold">backbone</text>
+  <line x1="82" y1="58" x2="112" y2="58" stroke="#c62828" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="345" y="55" text-anchor="start" font-size="9" fill="#c62828" font-weight="bold">Backbone</text>
+  <line x1="344" y1="53" x2="308" y2="53" stroke="#c62828" stroke-width="1" marker-end="url(#arr)"/>
+  <!-- Base pair label -->
+  <text x="210" y="108" text-anchor="middle" font-size="9" fill="#555">Hydrogen bonds</text>
+  <text x="210" y="120" text-anchor="middle" font-size="9" fill="#555">between bases</text>
+  <!-- Rules -->
+  <rect x="20" y="288" width="380" height="26" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="298" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Complementary base pairing rule:</text>
+  <text x="210" y="310" text-anchor="middle" font-size="10" fill="#333">A bonds with T  ·  G bonds with C  (always!)</text>
+</svg>`
+  },
+
+
+  {
+    q:'DNA Base Pairing — Zoom-in',
+    content:`<h3>Zoom-in on DNA Base Pairing</h3><p>Let’s take a closer look at the specific pairing between the bases. These complementary base pairs connect the two strands of the DNA double helix like rungs on a ladder.</p><ul><li><strong>Hydrogen bonds</strong>: A-T pairs form 2 hydrogen bonds. G-C pairs form 3 hydrogen bonds (making G-C slightly stronger).</li><li><strong>Complementary:</strong> This specific pairing is essential for DNA replication and transcription.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+  </defs>
+  <rect width="420" height="300" fill="#f3e5f5" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#6a1b9a">Hydrogen Bonds: A-T and G-C</text>
+  
+  <!-- A-T Pair -->
+  <rect x="30" y="45" width="170" height="100" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="115" y="65" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">A — T Pair (2 Bonds)</text>
+  <rect x="80" y="80" width="30" height="20" rx="4" fill="#1565c0"/>
+  <text x="95" y="94" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">A</text>
+  <circle cx="135" cy="90" r="3" fill="#c62828"/> <!-- H-Bond -->
+  <circle cx="140" cy="90" r="3" fill="#c62828"/> <!-- H-Bond -->
+  <rect x="155" y="80" width="30" height="20" rx="4" fill="#e53935"/>
+  <text x="170" y="94" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">T</text>
+  <text x="105" y="130" text-anchor="middle" font-size="9" fill="#333">2 Hydrogen bonds</text>
+
+  <!-- G-C Pair -->
+  <rect x="220" y="45" width="170" height="100" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="305" y="65" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">G — C Pair (3 Bonds)</text>
+  <rect x="270" y="80" width="30" height="20" rx="4" fill="#2e7d32"/>
+  <text x="285" y="94" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">G</text>
+  <circle cx="325" cy="85" r="3" fill="#c62828"/> 
+  <circle cx="325" cy="90" r="3" fill="#c62828"/> 
+  <circle cx="325" cy="95" r="3" fill="#c62828"/> 
+  <rect x="345" y="80" width="30" height="20" rx="4" fill="#f9a825"/>
+  <text x="360" y="94" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">C</text>
+  <text x="305" y="130" text-anchor="middle" font-size="9" fill="#333">3 Hydrogen bonds</text>
+  
+  <!-- Summary Rule Box -->
+  <rect x="30" y="165" width="360" height="55" rx="6" fill="#fff" stroke="#6a1b9a" stroke-width="1.5"/>
+  <text x="210" y="185" text-anchor="middle" font-size="10" fill="#6a1b9a" font-weight="bold">Remember the rule:</text>
+  <text x="210" y="200" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">Adenine (A) pairs with Thymine (T) — 2 H-bonds</text>
+  <text x="210" y="215" text-anchor="middle" font-size="12" fill="#333" font-weight="bold">Guanine (G) pairs with Cytosine (C) — 3 H-bonds</text>
+</svg>`
+  },
+
+
+
+  {
+    title:'Chromosomes, Genes & Alleles',
+    body:`<strong>Chromosome:</strong> A long, coiled molecule of DNA found in the nucleus. Humans have 46 chromosomes (23 pairs).
+    <br><br>
+    <strong>Gene:</strong> A section of DNA that codes for one trait (e.g. eye colour, blood type).
+    <br><br>
+    <strong>Allele:</strong> A version of a gene. You inherit one allele from each parent. The two alleles you have make up your <em>genotype</em>.
+    <br><br>
+    <strong>Dominant allele (B)</strong> — expressed even if only one copy is present.<br>
+    <strong>Recessive allele (b)</strong> — only expressed when two copies are present (bb).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.02;
+      // Two chromosomes (homologous pair)
+      [-1,1].forEach(side=>{
+        const cx=W/2+side*W*0.22;
+        const h=H*0.55;
+        // Chromosome shape
+        sk.fill(100,160,255,180);sk.noStroke();
+        sk.rect(cx-10,H*0.2,20,h,10);
+        sk.circle(cx,H*0.2+h*0.2,24);// centromere
+        // Gene bands
+        const bands=['B','b','X','Y'].slice(0,side===1?2:2);
+        const geneCols=side===-1?[[52,152,219],[52,152,219]]:[[155,89,182],[155,89,182]];
+        const geneLabels=side===-1?['B','B']:['B','b'];
+        geneLabels.forEach((g,i)=>{
+          const gy=H*0.3+i*H*0.22;
+          sk.fill(...geneCols[i],200);sk.noStroke();
+          sk.rect(cx-12,gy-7,24,14,4);
+          sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(g,cx,gy);
+        });
+        sk.fill(255,255,255,80);sk.textSize(9);sk.textAlign(sk.CENTER);
+        sk.text(side===-1?'Chromosome 1':'Chromosome 2',cx,H*0.85);
+      });
+      // Result
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(11);sk.textAlign(sk.CENTER);
+      sk.text('Genotype: Bb (Heterozygous)',W/2,H*0.92);
+      sk.fill(200);sk.textSize(10);
+      sk.text('B is DOMINANT → Brown eyes expressed',W/2,H*0.97);
+    }
+  },
+  {
+    title:'Punnett Square — Predicting Inheritance',
+    body:`A <strong>Punnett square</strong> predicts the possible genotypes of offspring when two parents reproduce.
+    <br><br>
+    Example: Both parents are <strong>Bb</strong> (heterozygous, brown eyes):
+    <br><br>
+    Cross: Bb × Bb gives → <strong>BB, Bb, Bb, bb</strong>
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li>75% Brown eyes (BB or Bb)</li>
+      <li>25% Blue eyes (bb) — recessive expressed!</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,15,25]);
+      const W=sk.width,H=sk.height;
+      const cs=Math.min(W,H)*0.22;
+      const ox=(W-cs*2)/2,oy=(H-cs*2)/2;
+      const cells=[['BB','Bb'],['Bb','bb']];
+      const pCol=[[100,180,255],[100,180,255],[100,180,255],[149,165,166]];
+      cells.forEach((row,r)=>row.forEach((g,c)=>{
+        const x=ox+c*cs,y=oy+r*cs;
+        sk.fill(...pCol[r*2+c],120);sk.stroke(255,255,255,40);sk.strokeWeight(1);
+        sk.rect(x,y,cs,cs);
+        sk.fill(255);sk.textSize(cs*0.22);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(g,x+cs/2,y+cs/2);
+      }));
+      // Parent labels
+      sk.fill(255,200,50);sk.noStroke();sk.textSize(14);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('B',ox+cs*0.5,oy-22);sk.text('b',ox+cs*1.5,oy-22);
+      sk.text('B',ox-22,oy+cs*0.5);sk.text('b',ox-22,oy+cs*1.5);
+      sk.fill(255,255,255,80);sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('75% Brown (BB/Bb)   25% Blue (bb)',W/2,oy+cs*2+22);
+    }
+  },
+  {
+    q:'Mendelian Inheritance Flow',
+    content:`<h3>How Traits are Passed — Monohybrid Cross</h3><p>Let's look at how a single gene is passed from parents to offspring. This is a basic monohybrid cross. Understanding this flow helps you master the Punnett square.</p>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arrflow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#555"/></marker>
+  </defs>
+  <rect width="420" height="300" fill="#fff3e0" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#e65100">Monohybrid Cross Flow (Bb × Bb)</text>
+  
+  <!-- Parents -->
+  <rect x="80" y="40" width="100" height="40" rx="20" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="130" y="65" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="bold">Parent 1: Bb</text>
+  <rect x="240" y="40" width="100" height="40" rx="20" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="290" y="65" text-anchor="middle" font-size="12" fill="#1565c0" font-weight="bold">Parent 2: Bb</text>
+  
+  <!-- Gametes (arrows down) -->
+  <line x1="130" y1="80" x2="100" y2="130" stroke="#555" stroke-width="2" marker-end="url(#arrflow)"/>
+  <line x1="130" y1="80" x2="160" y2="130" stroke="#555" stroke-width="2" marker-end="url(#arrflow)"/>
+  <line x1="290" y1="80" x2="260" y2="130" stroke="#555" stroke-width="2" marker-end="url(#arrflow)"/>
+  <line x1="290" y1="80" x2="320" y2="130" stroke="#555" stroke-width="2" marker-end="url(#arrflow)"/>
+  
+  <text x="100" y="120" text-anchor="middle" font-size="12" fill="#e65100" font-weight="bold">B</text>
+  <text x="160" y="120" text-anchor="middle" font-size="12" fill="#e65100" font-weight="bold">b</text>
+  <text x="260" y="120" text-anchor="middle" font-size="12" fill="#e65100" font-weight="bold">B</text>
+  <text x="320" y="120" text-anchor="middle" font-size="12" fill="#e65100" font-weight="bold">b</text>
+
+  <!-- Offspring Box -->
+  <rect x="30" y="150" width="360" height="130" rx="6" fill="#ffccbc" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="170" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">Offspring Genotypes (Fertilisation)</text>
+  
+  <rect x="60" y="180" width="70" height="40" rx="4" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="95" y="205" text-anchor="middle" font-size="14" fill="#1565c0" font-weight="bold">BB</text>
+  <text x="95" y="225" text-anchor="middle" font-size="8" fill="#333">Homo. Dom.</text>
+
+  <rect x="145" y="180" width="70" height="40" rx="4" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="180" y="205" text-anchor="middle" font-size="14" fill="#1565c0" font-weight="bold">Bb</text>
+  <text x="180" y="225" text-anchor="middle" font-size="8" fill="#333">Heterozygous</text>
+
+  <rect x="230" y="180" width="70" height="40" rx="4" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="265" y="205" text-anchor="middle" font-size="14" fill="#1565c0" font-weight="bold">Bb</text>
+  <text x="265" y="225" text-anchor="middle" font-size="8" fill="#333">Heterozygous</text>
+
+  <rect x="315" y="180" width="70" height="40" rx="4" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="1.5"/>
+  <text x="350" y="205" text-anchor="middle" font-size="14" fill="#9e9e9e" font-weight="bold">bb</text>
+  <text x="350" y="225" text-anchor="middle" font-size="8" fill="#333">Homo. Rec.</text>
+
+  <text x="210" y="270" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">Phenotype Ratio: 3 Brown Eyes : 1 Blue Eye</text>
+</svg>`
+  },
+
+  {
+    q:'Punnett Square — Bb × Bb Cross',
+    content:`<h3>Punnett Square: Bb × Bb (Eye Colour) Diagram</h3><p>Study this diagram carefully. A Punnett square is used to predict the possible genotypes of offspring when two parents reproduce. In this example, both parents are heterozygous (Bb) for eye colour — brown is dominant (B) and blue is recessive (b). This cross is one of the most commonly examined in BGCSE Biology.</p><ul><li><strong>Parental gametes:</strong> each parent (Bb) can produce two types of gamete — B or b — which are written along the top and side of the grid</li><li><strong>Four possible offspring genotypes:</strong> BB (homozygous dominant, brown), Bb (heterozygous, brown), Bb (heterozygous, brown), bb (homozygous recessive, blue)</li><li><strong>Phenotypic ratio:</strong> 3 brown : 1 blue (75% brown, 25% blue) — the recessive phenotype only appears in homozygous recessive (bb) offspring</li><li>Key terms to know: <em>genotype</em> (allele combination), <em>phenotype</em> (observable characteristic), <em>dominant</em> (expressed even in one copy), <em>recessive</em> (only expressed when homozygous)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="300" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Punnett Square: Bb × Bb (eye colour)</text>
+  <!-- Parent labels above -->
+  <text x="210" y="42" text-anchor="middle" font-size="11" fill="#555">Father (Bb) gametes →</text>
+  <text x="145" y="62" text-anchor="middle" font-size="16" fill="#c62828" font-weight="bold">B</text>
+  <text x="255" y="62" text-anchor="middle" font-size="16" fill="#c62828" font-weight="bold">b</text>
+  <!-- Mother label left -->
+  <text x="62" y="110" text-anchor="middle" font-size="11" fill="#555" transform="rotate(-90, 62, 110)">Mother (Bb)</text>
+  <text x="80" y="118" text-anchor="middle" font-size="16" fill="#c62828" font-weight="bold">B</text>
+  <text x="80" y="190" text-anchor="middle" font-size="16" fill="#c62828" font-weight="bold">b</text>
+  <!-- Grid -->
+  <rect x="100" y="70" width="110" height="90" fill="#bbdefb" stroke="#c62828" stroke-width="1.5"/>
+  <rect x="210" y="70" width="110" height="90" fill="#bbdefb" stroke="#c62828" stroke-width="1.5"/>
+  <rect x="100" y="160" width="110" height="90" fill="#bbdefb" stroke="#c62828" stroke-width="1.5"/>
+  <rect x="210" y="160" width="110" height="90" fill="#e0e0e0" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Genotypes in cells -->
+  <text x="155" y="105" text-anchor="middle" font-size="20" fill="#1565c0" font-weight="bold">BB</text>
+  <text x="155" y="125" text-anchor="middle" font-size="10" fill="#555">Homozygous dominant</text>
+  <text x="155" y="140" text-anchor="middle" font-size="10" fill="#1565c0">Brown eyes</text>
+  <text x="265" y="105" text-anchor="middle" font-size="20" fill="#1565c0" font-weight="bold">Bb</text>
+  <text x="265" y="125" text-anchor="middle" font-size="10" fill="#555">Heterozygous</text>
+  <text x="265" y="140" text-anchor="middle" font-size="10" fill="#1565c0">Brown eyes</text>
+  <text x="155" y="195" text-anchor="middle" font-size="20" fill="#1565c0" font-weight="bold">Bb</text>
+  <text x="155" y="215" text-anchor="middle" font-size="10" fill="#555">Heterozygous</text>
+  <text x="155" y="230" text-anchor="middle" font-size="10" fill="#1565c0">Brown eyes</text>
+  <text x="265" y="195" text-anchor="middle" font-size="20" fill="#555" font-weight="bold">bb</text>
+  <text x="265" y="215" text-anchor="middle" font-size="10" fill="#555">Homozygous recessive</text>
+  <text x="265" y="230" text-anchor="middle" font-size="10" fill="#555">Blue eyes</text>
+  <!-- Results -->
+  <rect x="20" y="264" width="380" height="28" rx="5" fill="#fff" stroke="#c62828" stroke-width="1.2"/>
+  <text x="210" y="278" text-anchor="middle" font-size="11" fill="#c62828" font-weight="bold">Ratio: 3 Brown (BB + Bb + Bb) : 1 Blue (bb) = 75% : 25%</text>
+  <!-- Key -->
+  <text x="322" y="86" text-anchor="start" font-size="9" fill="#333" font-style="italic">B = Brown (dominant)</text>
+  <text x="322" y="100" text-anchor="start" font-size="9" fill="#333" font-style="italic">b = blue (recessive)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — DNA & Inheritance',
+    body:'Answer these questions on genes, alleles and Punnett squares.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which base pairs with Adenine in DNA?',opts:['Cytosine','Guanine','Thymine','Uracil'],ans:2,exp:'Adenine (A) pairs with Thymine (T), and Guanine (G) pairs with Cytosine (C). Remember: A-T and G-C.'},
+      {q:'An organism with genotype Bb is:',opts:['Homozygous dominant','Homozygous recessive','Heterozygous','A carrier of no traits'],ans:2,exp:'Bb has two different alleles (B and b) — this is heterozygous. The dominant allele B will be expressed in the phenotype.'},
+      {q:'Two parents each with genotype Bb cross. What fraction of offspring will have blue eyes (bb)?',opts:['1/4 (25%)','1/2 (50%)','3/4 (75%)','0%'],ans:0,exp:'Bb × Bb gives BB:Bb:Bb:bb in a 1:2:1 ratio — so 1 in 4 (25%) offspring will be bb (blue eyes).'},
+      {q:'What is a gene?',opts:['The entire chromosome','A section of DNA that codes for a specific protein/trait','The nucleus of a cell','A pair of alleles from two parents'],ans:1,exp:'A gene is a specific section of DNA that contains the instructions (code) for making one protein, determining a particular trait.'},
+    ]}
+  },
+  {
+    title:'Mitosis — Cell Division for Growth',
+    body:`<strong>Mitosis</strong> produces two genetically <em>identical</em> daughter cells from one parent cell.
+    <br><br>Purpose: <strong>G</strong>rowth, <strong>R</strong>epair, <strong>A</strong>sexual reproduction (GRA)
+    <br><br>
+    Key stages: <strong>PMAT</strong>
+    <ol style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Prophase</strong> — chromosomes condense and become visible</li>
+      <li><strong>Metaphase</strong> — chromosomes line up at the cell equator</li>
+      <li><strong>Anaphase</strong> — sister chromatids pulled to opposite poles</li>
+      <li><strong>Telophase</strong> — two nuclei form; cell divides</li>
+    </ol>
+    Result: 2 diploid cells (2n) identical to the parent.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.02;
+      const phase=Math.floor(t*0.5)%4;
+      const names=['Prophase','Metaphase','Anaphase','Telophase'];
+      const colors=[[52,152,219],[155,89,182],[231,76,60],[46,204,113]];
+      sk.fill(...colors[phase]);sk.noStroke();sk.textSize(16);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(names[phase],W/2,28);sk.textStyle(sk.NORMAL);
+      // Cell outline
+      const cx=W/2,cy=H*0.5;
+      sk.noFill();sk.stroke(255,255,255,80);sk.strokeWeight(1.5);
+      sk.ellipse(cx,cy,W*0.65,H*0.72);
+      // Chromosomes depending on phase
+      const chrX=[cx-W*0.1,cx+W*0.1];
+      if(phase===0){// Prophase - condensing
+        sk.fill(255,100,100,200);sk.noStroke();
+        chrX.forEach(x=>{sk.ellipse(x,cy,16,40);sk.ellipse(x+8,cy,14,36);});
+      }else if(phase===1){// Metaphase - lined up
+        chrX.forEach(x=>{sk.fill(255,100,100,200);sk.noStroke();sk.ellipse(x,cy,16,40);sk.ellipse(x+8,cy,14,36);});
+        sk.stroke(255,255,255,40);sk.line(cx,H*0.2,cx,H*0.8);// equator
+      }else if(phase===2){// Anaphase - moving apart
+        const sep=((t*0.5%1)*H*0.2);
+        [[255,100,100],[100,200,255]].forEach((c,i)=>{
+          sk.fill(...c,200);sk.noStroke();
+          sk.ellipse(cx-(i===0?0:0),cy-(i===0?sep:-sep),14,32);
+        });
+      }else{// Telophase - two cells
+        sk.noFill();sk.stroke(255,255,255,80);sk.strokeWeight(1.5);
+        sk.ellipse(cx,cy-H*0.18,W*0.5,H*0.3);
+        sk.ellipse(cx,cy+H*0.18,W*0.5,H*0.3);
+        sk.fill(100,200,255,100);sk.noStroke();
+        sk.ellipse(cx,cy-H*0.18,30,24);sk.ellipse(cx,cy+H*0.18,30,24);
+      }
+    }
+  },
+  {
+    q:'Mitosis Stages — Four Phase Diagram',
+    content:`<h3>Mitosis — PMAT Stages Diagram</h3><p>Study this diagram carefully. Mitosis is cell division that produces two genetically identical daughter cells. It is used for growth, repair, and asexual reproduction. The four stages are remembered by the mnemonic PMAT — Prophase, Metaphase, Anaphase, Telophase. Both daughter cells receive the full diploid (2n) chromosome number.</p><ul><li><strong>Prophase:</strong> chromosomes condense and become visible; the nuclear membrane breaks down; spindle fibres begin to form</li><li><strong>Metaphase:</strong> chromosomes line up along the equator (middle) of the cell, attached to spindle fibres — this is the easiest stage to count chromosomes</li><li><strong>Anaphase:</strong> sister chromatids are pulled apart to opposite poles of the cell by the spindle fibres; the cell elongates</li><li><strong>Telophase:</strong> chromosomes reach the poles, nuclear membranes reform around each set; the cell divides (cytokinesis) to produce two identical diploid (2n) daughter cells</li></ul>`,
+    visual:`<svg viewBox="0 0 420 320" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="320" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Mitosis — PMAT Stages</text>
+  <!-- 4 cell boxes in 2x2 grid -->
+  <!-- PROPHASE top-left -->
+  <rect x="15" y="35" width="185" height="130" rx="6" fill="#e3f2fd" stroke="#c62828" stroke-width="1.5"/>
+  <text x="107" y="53" text-anchor="middle" font-size="11" fill="#1565c0" font-weight="bold">1. PROPHASE</text>
+  <!-- Cell outline -->
+  <ellipse cx="107" cy="110" rx="60" ry="42" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Condensed chromosomes scattered -->
+  <ellipse cx="90" cy="100" rx="8" ry="15" fill="#c62828" stroke="none"/>
+  <ellipse cx="112" cy="95" rx="8" ry="15" fill="#c62828" stroke="none"/>
+  <ellipse cx="100" cy="120" rx="8" ry="15" fill="#c62828" stroke="none"/>
+  <ellipse cx="122" cy="118" rx="8" ry="15" fill="#c62828" stroke="none"/>
+  <text x="107" y="158" text-anchor="middle" font-size="9" fill="#333">Chromosomes condense</text>
+  <text x="107" y="170" text-anchor="middle" font-size="9" fill="#333">and become visible</text>
+  <!-- METAPHASE top-right -->
+  <rect x="220" y="35" width="185" height="130" rx="6" fill="#f3e5f5" stroke="#c62828" stroke-width="1.5"/>
+  <text x="312" y="53" text-anchor="middle" font-size="11" fill="#6a1b9a" font-weight="bold">2. METAPHASE</text>
+  <ellipse cx="312" cy="110" rx="60" ry="42" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Spindle fibres -->
+  <line x1="312" y1="68" x2="312" y2="152" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- Chromosomes at equator -->
+  <ellipse cx="299" cy="110" rx="8" ry="15" fill="#c62828" stroke="none"/>
+  <ellipse cx="315" cy="110" rx="8" ry="15" fill="#7b1fa2" stroke="none"/>
+  <ellipse cx="297" cy="94" rx="7" ry="13" fill="#e53935" stroke="none"/>
+  <ellipse cx="313" cy="94" rx="7" ry="13" fill="#6a1b9a" stroke="none"/>
+  <!-- Equator line label -->
+  <line x1="252" y1="110" x2="370" y2="110" stroke="#aaa" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="312" y="158" text-anchor="middle" font-size="9" fill="#333">Chromosomes line up</text>
+  <text x="312" y="170" text-anchor="middle" font-size="9" fill="#333">at the cell equator</text>
+  <!-- ANAPHASE bottom-left -->
+  <rect x="15" y="180" width="185" height="130" rx="6" fill="#fff8e1" stroke="#c62828" stroke-width="1.5"/>
+  <text x="107" y="198" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">3. ANAPHASE</text>
+  <ellipse cx="107" cy="255" rx="60" ry="42" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <!-- Chromosomes pulling apart -->
+  <ellipse cx="98" cy="238" rx="7" ry="13" fill="#e53935" stroke="none"/>
+  <ellipse cx="112" cy="238" rx="7" ry="13" fill="#7b1fa2" stroke="none"/>
+  <ellipse cx="98" cy="272" rx="7" ry="13" fill="#e53935" stroke="none"/>
+  <ellipse cx="112" cy="272" rx="7" ry="13" fill="#7b1fa2" stroke="none"/>
+  <!-- Spindle arrows pulling -->
+  <line x1="100" y1="228" x2="100" y2="218" stroke="#555" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="100" y1="282" x2="100" y2="292" stroke="#555" stroke-width="1.2" marker-end="url(#arr)"/>
+  <text x="107" y="303" text-anchor="middle" font-size="9" fill="#333">Sister chromatids pulled</text>
+  <text x="107" y="315" text-anchor="middle" font-size="9" fill="#333">to opposite poles</text>
+  <!-- TELOPHASE bottom-right -->
+  <rect x="220" y="180" width="185" height="130" rx="6" fill="#e8f5e9" stroke="#c62828" stroke-width="1.5"/>
+  <text x="312" y="198" text-anchor="middle" font-size="11" fill="#1b5e20" font-weight="bold">4. TELOPHASE</text>
+  <!-- Two new cells -->
+  <ellipse cx="312" cy="228" rx="48" ry="28" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <ellipse cx="312" cy="282" rx="48" ry="28" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <ellipse cx="312" cy="228" rx="14" ry="10" fill="#81c784" stroke="#388e3c" stroke-width="1"/>
+  <ellipse cx="312" cy="282" rx="14" ry="10" fill="#81c784" stroke="#388e3c" stroke-width="1"/>
+  <text x="390" y="224" text-anchor="start" font-size="9" fill="#1b5e20">2n</text>
+  <text x="390" y="278" text-anchor="start" font-size="9" fill="#1b5e20">2n</text>
+  <text x="312" y="303" text-anchor="middle" font-size="9" fill="#333">2 identical daughter</text>
+  <text x="312" y="315" text-anchor="middle" font-size="9" fill="#333">cells formed (2n)</text>
+</svg>`
+  },
+    {
+    q:'Central Dogma — DNA to Protein',
+    content:`<h3>DNA to Protein — The Flow of Genetic Information</h3><p>Genes code for proteins. This is how your DNA controls everything in your body. The process happens in two main steps: Transcription (in the nucleus) and Translation (in the cytoplasm).</p><ul><li><strong>Transcription:</strong> A section of DNA is unzipped, and a complementary mRNA strand is built.</li><li><strong>Translation:</strong> The mRNA moves out of the nucleus to the ribosome. Here, tRNA brings amino acids to build the protein according to the mRNA's "codon" sequence.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs>
+    <marker id="arrprot" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1b5e20"/></marker>
+  </defs>
+  <rect width="420" height="300" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#1b5e20">Central Dogma: DNA → RNA → Protein</text>
+  
+  <!-- Nucleus (Step 1) -->
+  <ellipse cx="100" cy="80" rx="70" ry="50" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="100" y="60" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold">NUCLEUS</text>
+  
+  <path d="M 40 75 Q 70 85 100 75" fill="none" stroke="#4a148c" stroke-width="2"/>
+  <path d="M 40 85 Q 70 95 100 85" fill="none" stroke="#4a148c" stroke-width="2"/>
+  <text x="50" y="95" text-anchor="start" font-size="8" fill="#4a148c">DNA</text>
+  
+  <!-- Transcription Arrow -->
+  <line x1="100" y1="105" x2="100" y2="130" stroke="#1b5e20" stroke-width="2" marker-end="url(#arrprot)"/>
+  <text x="110" y="120" text-anchor="start" font-size="9" fill="#1b5e20" font-weight="bold">Transcription</text>
+  
+  <!-- mRNA leaving nucleus -->
+  <path d="M 100 140 Q 130 180 200 170" fill="none" stroke="#ff8f00" stroke-width="3"/>
+  <text x="140" y="160" text-anchor="middle" font-size="8" fill="#ff8f00">mRNA</text>
+  
+  <!-- Step 2: Ribosome (Translation) -->
+  <ellipse cx="260" cy="170" rx="40" ry="30" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+  <text x="260" y="160" text-anchor="middle" font-size="8" fill="#e65100" font-weight="bold">RIBOSOME</text>
+  <text x="260" y="175" text-anchor="middle" font-size="9" fill="#e65100">Translation</text>
+  
+  <!-- tRNA bringing amino acids -->
+  <path d="M 290 160 L 310 140" stroke="#c62828" stroke-width="2"/>
+  <circle cx="310" cy="135" r="8" fill="#1565c0"/>
+  <text x="310" y="138" text-anchor="middle" font-size="6" fill="#fff">tRNA</text>
+  <text x="315" y="125" text-anchor="start" font-size="8" fill="#c62828">A.A.</text>
+
+  <path d="M 290 175 L 310 195" stroke="#c62828" stroke-width="2"/>
+  <circle cx="310" cy="200" r="8" fill="#1565c0"/>
+  <text x="310" y="203" text-anchor="middle" font-size="6" fill="#fff">tRNA</text>
+  <text x="315" y="215" text-anchor="start" font-size="8" fill="#c62828">A.A.</text>
+
+  <!-- Growing Protein Chain -->
+  <path d="M 295 180 Q 330 195 360 230" fill="none" stroke="#2e7d32" stroke-width="4" stroke-linecap="round"/>
+  <text x="360" y="235" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Protein</text>
+  
+  <!-- Key Box -->
+  <rect x="20" y="255" width="380" height="35" rx="6" fill="#fff" stroke="#1b5e20" stroke-width="1"/>
+  <text x="210" y="278" text-anchor="middle" font-size="9" fill="#1b5e20">DNA's genetic code (genes) determines the proteins made by the cell</text>
+</svg>`
+  },
+  {
+    title:'Meiosis — Forming Sex Cells',
+    body:`<strong>Meiosis</strong> produces four genetically <em>different</em> daughter cells (gametes), each with <em>half</em> the chromosome number.
+    <br><br>
+    Purpose: produces sperm and eggs for sexual reproduction.
+    <br><br>Key differences from mitosis:
+    <table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px">
+      <thead><tr style="background:#e8f5e9"><th style="padding:4px 6px;border:1px solid #ccc"></th><th style="padding:4px 6px;border:1px solid #ccc">Mitosis</th><th style="padding:4px 6px;border:1px solid #ccc">Meiosis</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:4px 6px;border:1px solid #ddd;font-weight:700">Cells produced</td><td style="padding:4px 6px;border:1px solid #ddd">2</td><td style="padding:4px 6px;border:1px solid #ddd">4</td></tr>
+        <tr style="background:#fafafa"><td style="padding:4px 6px;border:1px solid #ddd;font-weight:700">Genetically</td><td style="padding:4px 6px;border:1px solid #ddd">Identical</td><td style="padding:4px 6px;border:1px solid #ddd">Different</td></tr>
+        <tr><td style="padding:4px 6px;border:1px solid #ddd;font-weight:700">Chromosome no.</td><td style="padding:4px 6px;border:1px solid #ddd">2n → 2n</td><td style="padding:4px 6px;border:1px solid #ddd">2n → n</td></tr>
+      </tbody>
+    </table>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.02;
+      // Parent cell
+      sk.fill(100,160,255,80);sk.noStroke();sk.ellipse(W/2,H*0.2,90,60);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Parent (2n)',W/2,H*0.2);
+      // Two intermediate cells
+      [-1,1].forEach(s=>{
+        sk.fill(155,89,182,80);sk.noStroke();sk.ellipse(W/2+s*W*0.22,H*0.5,75,50);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('2n',W/2+s*W*0.22,H*0.5);
+      });
+      // 4 gametes
+      [-3,-1,1,3].forEach((s,i)=>{
+        const c=[[52,152,219],[231,76,60],[46,204,113],[241,196,15]][i];
+        sk.fill(...c,140);sk.noStroke();sk.ellipse(W/2+s*W*0.12,H*0.8,50,36);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('n',W/2+s*W*0.12,H*0.8);
+      });
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('4 haploid gametes (genetically different)',W/2,H*0.92);
+      // Arrows
+      sk.stroke(255,255,255,50);sk.strokeWeight(1.5);
+      sk.line(W/2,H*0.24,W/2-W*0.22,H*0.46);
+      sk.line(W/2,H*0.24,W/2+W*0.22,H*0.46);
+      [-1,1].forEach(s=>{
+        [-3,-1,1,3].slice(s===-1?0:2,s===-1?2:4).forEach(gs=>{
+          sk.line(W/2+s*W*0.22,H*0.54,W/2+gs*W*0.12,H*0.76);
+        });
+      });
+    }
+  },
+  {
+    q:'Meiosis vs Mitosis — Comparison',
+    content:`<h3>Mitosis vs Meiosis Comparison Diagram</h3><p>Study this diagram carefully. Meiosis and mitosis are both forms of cell division but serve completely different purposes. Meiosis is only used to produce sex cells (gametes) in the gonads, and introduces genetic variation — which is essential for evolution and species survival.</p><ul><li><strong>Number of divisions:</strong> mitosis = 1 division → 2 cells; meiosis = 2 divisions → 4 cells</li><li><strong>Chromosome number:</strong> mitosis produces diploid (2n) cells identical to the parent; meiosis produces haploid (n) cells with half the chromosome number — when two gametes fuse at fertilisation, the diploid number is restored</li><li><strong>Genetic variation:</strong> mitosis produces genetically identical cells; meiosis produces genetically different cells due to crossing over and independent assortment of chromosomes — this is the source of variation in sexual reproduction</li><li><strong>Location:</strong> mitosis occurs in all body (somatic) cells; meiosis occurs only in the gonads (testes and ovaries)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="310" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Mitosis vs Meiosis — Key Differences</text>
+  <!-- Table header -->
+  <rect x="15" y="32" width="120" height="32" rx="4" fill="#c62828"/>
+  <text x="75" y="53" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Feature</text>
+  <rect x="140" y="32" width="125" height="32" rx="4" fill="#1565c0"/>
+  <text x="202" y="53" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">MITOSIS</text>
+  <rect x="270" y="32" width="135" height="32" rx="4" fill="#2e7d32"/>
+  <text x="337" y="53" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">MEIOSIS</text>
+  <!-- Row 1: Purpose -->
+  <rect x="15" y="64" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="86" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Purpose</text>
+  <rect x="140" y="64" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="82" text-anchor="middle" font-size="9" fill="#333">Growth, repair,</text>
+  <text x="202" y="95" text-anchor="middle" font-size="9" fill="#333">asexual reproduction</text>
+  <rect x="270" y="64" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="82" text-anchor="middle" font-size="9" fill="#333">Sexual reproduction</text>
+  <text x="337" y="95" text-anchor="middle" font-size="9" fill="#333">(gametes)</text>
+  <!-- Row 2: Location -->
+  <rect x="15" y="100" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="122" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Location</text>
+  <rect x="140" y="100" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="118" text-anchor="middle" font-size="9" fill="#333">Body (somatic)</text>
+  <text x="202" y="131" text-anchor="middle" font-size="9" fill="#333">cells everywhere</text>
+  <rect x="270" y="100" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="118" text-anchor="middle" font-size="9" fill="#333">Gonads (testes</text>
+  <text x="337" y="131" text-anchor="middle" font-size="9" fill="#333">and ovaries) only</text>
+  <!-- Row 3: Divisions -->
+  <rect x="15" y="136" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="158" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Divisions</text>
+  <rect x="140" y="136" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="160" text-anchor="middle" font-size="9" fill="#333">1 division</text>
+  <rect x="270" y="136" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="160" text-anchor="middle" font-size="9" fill="#333">2 divisions</text>
+  <!-- Row 4: Cells produced -->
+  <rect x="15" y="172" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="186" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Daughter</text>
+  <text x="75" y="200" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">cells</text>
+  <rect x="140" y="172" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="196" text-anchor="middle" font-size="9" fill="#333">2 cells</text>
+  <rect x="270" y="172" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="196" text-anchor="middle" font-size="9" fill="#333">4 cells</text>
+  <!-- Row 5: Chromosome number -->
+  <rect x="15" y="208" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="222" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Chromosome</text>
+  <text x="75" y="236" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">number</text>
+  <rect x="140" y="208" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="232" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">2n → 2n (diploid)</text>
+  <rect x="270" y="208" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="232" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">2n → n (haploid)</text>
+  <!-- Row 6: Genetic variation -->
+  <rect x="15" y="244" width="120" height="36" rx="0" fill="#ffcdd2" stroke="#c62828" stroke-width="0.8"/>
+  <text x="75" y="258" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">Genetic</text>
+  <text x="75" y="272" text-anchor="middle" font-size="10" fill="#333" font-weight="bold">variation</text>
+  <rect x="140" y="244" width="125" height="36" fill="#e3f2fd" stroke="#c62828" stroke-width="0.8"/>
+  <text x="202" y="268" text-anchor="middle" font-size="10" fill="#e53935" font-weight="bold">IDENTICAL</text>
+  <rect x="270" y="244" width="135" height="36" fill="#e8f5e9" stroke="#c62828" stroke-width="0.8"/>
+  <text x="337" y="268" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">DIFFERENT</text>
+  <!-- Bottom note -->
+  <text x="210" y="298" text-anchor="middle" font-size="9" fill="#555" font-style="italic">Meiosis creates genetic variation — vital for evolution</text>
+</svg>`
+  },
+  {
+    q:'Codominance and Incomplete Dominance',
+    content:`<h3>Codominance vs Incomplete Dominance Diagram</h3><p>Study this diagram carefully. Not all inheritance follows simple dominant/recessive patterns. Codominance and incomplete dominance are two important exceptions that you need to distinguish clearly for BGCSE. Both involve heterozygous organisms that express something different from either pure parent.</p><ul><li><strong>Codominance:</strong> both alleles are equally expressed simultaneously — neither is dominant over the other. Example: ABO blood group AB (genotype I<sup>A</sup>I<sup>B</sup>) has BOTH A antigens and B antigens on red blood cells; the two phenotypes are expressed side by side, not blended</li><li><strong>Incomplete dominance:</strong> neither allele is fully dominant — instead a blend or intermediate phenotype appears. Example: red (RR) × white (rr) flowers produce pink (Rr) offspring, a new phenotype not seen in either parent</li><li><strong>Key distinction:</strong> codominance = both phenotypes visible together; incomplete dominance = a new blended phenotype appears</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="300" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Codominance vs Incomplete Dominance</text>
+  <!-- Dividing line -->
+  <line x1="210" y1="32" x2="210" y2="285" stroke="#c62828" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <!-- Codominance header -->
+  <text x="105" y="42" text-anchor="middle" font-size="11" fill="#c62828" font-weight="bold">CODOMINANCE</text>
+  <!-- Example: Blood type AB -->
+  <text x="105" y="58" text-anchor="middle" font-size="9" fill="#555">Example: ABO Blood Type</text>
+  <!-- Parent A -->
+  <circle cx="65" cy="90" r="22" fill="#e53935"/>
+  <text x="65" y="86" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">I^A</text>
+  <text x="65" y="100" text-anchor="middle" font-size="8" fill="#ffcdd2">Blood A</text>
+  <!-- Parent B -->
+  <circle cx="148" cy="90" r="22" fill="#1565c0"/>
+  <text x="148" y="86" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">I^B</text>
+  <text x="148" y="100" text-anchor="middle" font-size="8" fill="#bbdefb">Blood B</text>
+  <!-- Cross symbol -->
+  <text x="106" y="94" text-anchor="middle" font-size="16" fill="#c62828">×</text>
+  <!-- Offspring AB -->
+  <line x1="106" y1="114" x2="106" y2="140" stroke="#c62828" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Half-red, half-blue circle -->
+  <path d="M 106 162 a 28 28 0 0 1 0 -56 Z" fill="#e53935"/>
+  <path d="M 106 106 a 28 28 0 0 1 0 56 Z" fill="#1565c0"/>
+  <circle cx="106" cy="134" r="28" fill="none" stroke="#c62828" stroke-width="1.5"/>
+  <text x="106" y="130" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">I^A I^B</text>
+  <text x="106" y="143" text-anchor="middle" font-size="8" fill="#fff">Blood AB</text>
+  <rect x="30" y="175" width="153" height="42" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="106" y="191" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">BOTH alleles expressed</text>
+  <text x="106" y="204" text-anchor="middle" font-size="9" fill="#333">Neither is dominant.</text>
+  <text x="106" y="217" text-anchor="middle" font-size="9" fill="#333">Both phenotypes show.</text>
+  <!-- Incomplete dominance header -->
+  <text x="315" y="42" text-anchor="middle" font-size="11" fill="#c62828" font-weight="bold">INCOMPLETE DOMINANCE</text>
+  <text x="315" y="58" text-anchor="middle" font-size="9" fill="#555">Example: Flower colour</text>
+  <!-- Parent Red -->
+  <circle cx="275" cy="90" r="22" fill="#e53935"/>
+  <text x="275" y="86" text-anchor="middle" font-size="11" fill="#fff" font-weight="bold">R</text>
+  <text x="275" y="100" text-anchor="middle" font-size="8" fill="#ffcdd2">Red</text>
+  <!-- Parent White -->
+  <circle cx="358" cy="90" r="22" fill="#fff" stroke="#c62828" stroke-width="1.5"/>
+  <text x="358" y="86" text-anchor="middle" font-size="11" fill="#c62828" font-weight="bold">r</text>
+  <text x="358" y="100" text-anchor="middle" font-size="8" fill="#555">White</text>
+  <text x="315" y="94" text-anchor="middle" font-size="16" fill="#c62828">×</text>
+  <!-- Arrow down -->
+  <line x1="315" y1="114" x2="315" y2="140" stroke="#c62828" stroke-width="1.5" marker-end="url(#arr)"/>
+  <!-- Pink offspring -->
+  <circle cx="315" cy="162" r="28" fill="#f06292" stroke="#c62828" stroke-width="1.5"/>
+  <text x="315" y="158" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold">Rr</text>
+  <text x="315" y="171" text-anchor="middle" font-size="8" fill="#fff">Pink!</text>
+  <rect x="238" y="175" width="155" height="42" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="315" y="191" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">BLENDED phenotype</text>
+  <text x="315" y="204" text-anchor="middle" font-size="9" fill="#333">Neither fully dominant.</text>
+  <text x="315" y="217" text-anchor="middle" font-size="9" fill="#333">Intermediate appears.</text>
+  <!-- Bottom comparison -->
+  <rect x="15" y="230" width="390" height="60" rx="5" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="247" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">Key Difference:</text>
+  <text x="210" y="262" text-anchor="middle" font-size="9" fill="#333">Codominance: BOTH alleles expressed separately (e.g. AB blood has BOTH A and B antigens)</text>
+  <text x="210" y="277" text-anchor="middle" font-size="9" fill="#333">Incomplete dominance: a BLEND appears (e.g. red × white = pink — new phenotype)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Mitosis, Meiosis & Genetics',
+    body:'Apply what you know about cell division and inheritance.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Mitosis produces cells that are:',opts:['4 haploid (n) cells','2 diploid (2n) cells identical to the parent','4 diploid cells different from the parent','2 haploid cells'],ans:1,exp:'Mitosis produces TWO diploid cells (2n) that are genetically IDENTICAL to the parent cell. It is used for growth and repair.'},
+      {q:'Meiosis is used to produce:',opts:['Skin cells','Liver cells','Gametes (sperm and eggs)','Blood cells only'],ans:2,exp:'Meiosis produces sex cells (gametes) — sperm in males, eggs in females. They have half the normal chromosome number (haploid, n).'},
+      {q:'A gene can exist in different forms called:',opts:['Chromosomes','Nucleotides','Alleles','Ribosomes'],ans:2,exp:'Different versions of a gene are called alleles. For example, the eye colour gene has a brown allele (B) and a blue allele (b).'},
+      {q:'Which of these is an example of meiosis being important?',opts:['A cut healing on your hand','A zygote growing into an embryo','A sperm cell fertilising an egg cell','Red blood cells being replaced'],ans:2,exp:'Meiosis produces the gametes (sperm and egg). When they fuse during fertilisation, the resulting zygote has the correct diploid (2n) number.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#1565c0',dark:'#0d47a1',light:'#e3f2fd',
+  title:'Genetics & Inheritance — DNA, Alleles, Mitosis & Meiosis',
+});
+</script></body></html>

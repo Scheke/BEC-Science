@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Digestion — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[18,12,12]))}
+
+const STEPS=[
+  {
+    title:'Why Do We Need to Digest Food?',
+    body:`Food molecules like starch, proteins and fats are <strong>too large</strong> to pass through the gut wall into the bloodstream.
+    <br><br>
+    <strong>Digestion</strong> is the process of breaking large, insoluble food molecules into small, soluble ones that can be absorbed.
+    <br><br>
+    Two types:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Mechanical (physical) digestion</strong> — chewing (teeth), churning (stomach). Breaks food into smaller pieces (increases surface area for enzymes).</li>
+      <li><strong>Chemical digestion</strong> — enzymes break molecular bonds, turning large molecules into smaller ones.</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Large molecule breaking down
+      const n=8;
+      for(let i=0;i<n;i++){
+        const ang=(i/n)*sk.TWO_PI;
+        const r=50+10*Math.sin(t*0.8);
+        const cx=W*0.28+Math.cos(ang)*r,cy=H*0.48+Math.sin(ang)*r;
+        sk.fill(231,76,60,180);sk.noStroke();sk.circle(cx,cy,20);
+        sk.stroke(231,76,60,80);sk.strokeWeight(1.5);
+        sk.line(W*0.28,H*0.48,cx,cy);
+      }
+      sk.fill(231,76,60,200);sk.noStroke();sk.circle(W*0.28,H*0.48,28);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Large\nmolecule',W*0.28,H*0.48);
+      // Arrow
+      sk.stroke(255,255,255,100);sk.strokeWeight(2);
+      sk.line(W*0.42,H*0.48,W*0.54,H*0.48);
+      sk.fill(255,255,255,100);sk.noStroke();
+      sk.triangle(W*0.54,H*0.45,W*0.54,H*0.51,W*0.58,H*0.48);
+      sk.fill(255,220,50);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Enzymes +',W*0.5,H*0.36);
+      sk.text('Digestion',W*0.5,H*0.42);
+      // Small molecules
+      const smalls=[[0.64,0.36],[0.72,0.48],[0.66,0.58],[0.78,0.4],[0.76,0.56],[0.82,0.5]];
+      smalls.forEach((s,i)=>{
+        const pulse=1+Math.sin(t*1.5+i*0.8)*0.1;
+        sk.fill(46,204,113,200);sk.noStroke();sk.circle(s[0]*W,s[1]*H,14*pulse);
+      });
+      sk.fill(46,204,113);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('Small soluble\nmolecules',W*0.76,H*0.72);
+      // Can be absorbed
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('→ absorbed into blood!',W*0.76,H*0.82);
+    }
+  },
+  {
+    title:'The Digestive System — Organs',
+    body:`Food travels through the <strong>alimentary canal</strong> (gut):
+    <ol style="margin:6px 0 0 18px;line-height:2.1">
+      <li><strong>Mouth</strong> — teeth chew; saliva (amylase) starts starch digestion</li>
+      <li><strong>Oesophagus</strong> — muscular tube; peristalsis moves food down</li>
+      <li><strong>Stomach</strong> — churns food; pepsin digests proteins; HCl (acid) kills bacteria</li>
+      <li><strong>Small intestine</strong> — main site of digestion AND absorption; bile + intestinal enzymes</li>
+      <li><strong>Large intestine</strong> — absorbs water; faeces formed</li>
+      <li><strong>Rectum/Anus</strong> — faeces stored and expelled</li>
+    </ol>
+    Accessory organs: <strong>liver</strong> (produces bile), <strong>pancreas</strong> (produces enzymes + NaHCO₃)`,
+    draw:(sk)=>{
+      bg(sk,[14,10,14]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Simplified gut diagram
+      const parts=[
+        {n:'Mouth',c:[255,220,100],x:0.5,y:0.1,r:22},
+        {n:'Oesophagus',c:[200,150,150],x:0.5,y:0.24,r:14,isLine:true},
+        {n:'Stomach',c:[231,76,60],x:0.5,y:0.38,r:28},
+        {n:'Small\nIntestine',c:[241,196,15],x:0.5,y:0.56,r:22},
+        {n:'Large\nIntestine',c:[155,89,182],x:0.5,y:0.73,r:20},
+        {n:'Rectum',c:[100,100,200],x:0.5,y:0.86,r:14},
+      ];
+      // Animated food bolus
+      const gutY=[H*0.1,H*0.24,H*0.38,H*0.56,H*0.73,H*0.86];
+      const bolusProg=(t*0.04)%1;
+      const totalLen=gutY[gutY.length-1]-gutY[0];
+      const bolusY=gutY[0]+bolusProg*totalLen;
+      // Draw organs
+      parts.forEach((p,i)=>{
+        const cx=p.x*W,cy=p.y*H,pulse=1+Math.sin(t*1.2+i)*0.06;
+        if(p.isLine){
+          sk.stroke(...p.c,160);sk.strokeWeight(8);sk.line(cx,cy-16,cx,cy+16);
+        } else {
+          sk.fill(...p.c,40);sk.noStroke();sk.circle(cx,cy,p.r*2.4*pulse);
+          sk.fill(...p.c,180);sk.noStroke();sk.circle(cx,cy,p.r*2*pulse);
+        }
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.LEFT,sk.CENTER);
+        sk.text(p.n,cx+p.r+12,cy);
+      });
+      // Bolus
+      sk.fill(255,220,100,200);sk.noStroke();sk.circle(W*0.5,bolusY,10);
+      // Liver
+      sk.fill(180,100,50,180);sk.noStroke();sk.ellipse(W*0.25,H*0.38,44,28);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Liver',W*0.25,H*0.38);
+      // Pancreas
+      sk.fill(200,150,100,140);sk.noStroke();sk.ellipse(W*0.75,H*0.44,50,20);
+      sk.fill(255);sk.textSize(7.5);sk.text('Pancreas',W*0.75,H*0.44);
+    }
+  },
+  {
+    title:'Digestive Enzymes',
+    body:`Enzymes are biological catalysts that speed up digestion. Each enzyme works on a specific substrate:
+    <table style="width:100%;border-collapse:collapse;font-size:.77rem;margin-top:8px">
+      <thead><tr style="background:#880e4f;color:#fff"><th style="padding:5px 8px;border:1px solid #333">Enzyme</th><th style="padding:5px 8px;border:1px solid #333">Source</th><th style="padding:5px 8px;border:1px solid #333">Substrate</th><th style="padding:5px 8px;border:1px solid #333">Product</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Amylase</td><td style="padding:4px 8px;border:1px solid #ddd">Saliva, pancreas</td><td style="padding:4px 8px;border:1px solid #ddd">Starch</td><td style="padding:4px 8px;border:1px solid #ddd">Maltose</td></tr>
+        <tr style="background:#1a0a0a"><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Protease</td><td style="padding:4px 8px;border:1px solid #ddd">Stomach, pancreas</td><td style="padding:4px 8px;border:1px solid #ddd">Protein</td><td style="padding:4px 8px;border:1px solid #ddd">Amino acids</td></tr>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Lipase</td><td style="padding:4px 8px;border:1px solid #ddd">Pancreas, small intestine</td><td style="padding:4px 8px;border:1px solid #ddd">Lipids (fats)</td><td style="padding:4px 8px;border:1px solid #ddd">Fatty acids + glycerol</td></tr>
+        <tr style="background:#1a0a0a"><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">Maltase</td><td style="padding:4px 8px;border:1px solid #ddd">Small intestine</td><td style="padding:4px 8px;border:1px solid #ddd">Maltose</td><td style="padding:4px 8px;border:1px solid #ddd">Glucose</td></tr>
+      </tbody>
+    </table>
+    <br><strong>Pepsin</strong> works best in acid (pH 2, stomach). Most enzymes work best at neutral/slightly alkaline pH. Bile (from liver) EMULSIFIES fats — breaks fat globules into droplets to increase surface area for lipase.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const enzymes=[
+        {n:'Amylase',sub:'Starch',prod:'Maltose',c:[52,152,219],x:0.2,y:0.45},
+        {n:'Protease',sub:'Protein',prod:'Amino acids',c:[231,76,60],x:0.5,y:0.3},
+        {n:'Lipase',sub:'Lipids',prod:'Fatty acids\n+ glycerol',c:[241,196,15],x:0.8,y:0.45},
+        {n:'Maltase',sub:'Maltose',prod:'Glucose',c:[46,204,113],x:0.5,y:0.72},
+      ];
+      enzymes.forEach((e,i)=>{
+        const cx=e.x*W,cy=e.y*H,pulse=1+Math.sin(t*1.3+i*0.9)*0.07;
+        // Substrate
+        sk.fill(...e.c,50);sk.noStroke();sk.circle(cx-32,cy,30*pulse);
+        sk.fill(...e.c,160);sk.circle(cx-32,cy,22*pulse);
+        sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(e.sub,cx-32,cy);
+        // Enzyme
+        sk.fill(255,255,255,60);sk.noStroke();sk.rect(cx-10,cy-14,44,28,8);
+        sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(e.n,cx+12,cy);
+        // Arrow
+        sk.stroke(255,255,255,80);sk.strokeWeight(1.5);sk.line(cx+32,cy,cx+50,cy);
+        // Product
+        sk.fill(...e.c,180);sk.noStroke();sk.circle(cx+58,cy,20*pulse);
+        sk.fill(255);sk.textSize(7);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(e.prod,cx+58,cy);
+      });
+    }
+  },
+  {
+    q:'Digestive System — Labeled Diagram',
+    content:`<h3>Digestive System — Labeled Diagram</h3><p>The human digestive system is a long tube from mouth to anus where food is broken down and absorbed. Accessory organs such as the liver and pancreas produce secretions that aid digestion.</p><ul><li>Food travels: mouth → oesophagus → stomach → small intestine → large intestine → rectum → anus</li><li>The liver produces bile (stored in the gall bladder) which emulsifies fats for easier enzyme action</li><li>The pancreas secretes amylase, protease, and lipase into the small intestine</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="310" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">The Human Digestive System</text>
+  <!-- Mouth -->
+  <ellipse cx="210" cy="40" rx="28" ry="16" fill="#ffe082" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="44" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Mouth</text>
+  <!-- Oesophagus -->
+  <rect x="202" y="56" width="16" height="36" fill="#ffcc80" stroke="#2e7d32" stroke-width="1.5" rx="4"/>
+  <!-- Stomach -->
+  <ellipse cx="210" cy="114" rx="36" ry="28" fill="#ef9a9a" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="118" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">Stomach</text>
+  <!-- Small intestine (coiled) -->
+  <path d="M210,142 Q240,158 210,175 Q180,192 210,208 Q240,224 210,240" fill="none" stroke="#ffb74d" stroke-width="14" stroke-linecap="round"/>
+  <text x="268" y="200" text-anchor="start" font-size="9" fill="#e65100">Small</text>
+  <text x="268" y="212" text-anchor="start" font-size="9" fill="#e65100">intestine</text>
+  <!-- Large intestine -->
+  <path d="M210,240 Q175,252 160,230 Q145,200 155,170 Q165,140 185,142" fill="none" stroke="#ce93d8" stroke-width="12" stroke-linecap="round"/>
+  <text x="90" y="195" text-anchor="middle" font-size="9" fill="#7b1fa2">Large</text>
+  <text x="90" y="207" text-anchor="middle" font-size="9" fill="#7b1fa2">intestine</text>
+  <!-- Rectum -->
+  <rect x="200" y="248" width="18" height="30" fill="#b39ddb" stroke="#2e7d32" stroke-width="1.5" rx="4"/>
+  <!-- Anus -->
+  <ellipse cx="209" cy="284" rx="10" ry="6" fill="#9575cd" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Liver (accessory) -->
+  <ellipse cx="115" cy="110" rx="30" ry="18" fill="#a1887f" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="115" y="114" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff">Liver</text>
+  <!-- Pancreas -->
+  <ellipse cx="300" cy="128" rx="32" ry="12" fill="#ffab91" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="300" y="132" text-anchor="middle" font-size="9" font-weight="bold" fill="#333">Pancreas</text>
+  <!-- Labels with arrows -->
+  <line x1="240" y1="40" x2="280" y2="40" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="282" y="44" font-size="9" fill="#333">Teeth chew; amylase</text>
+  <line x1="210" y1="56" x2="340" y2="62" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="270" y="66" font-size="9" fill="#333">Oesophagus</text>
+  <text x="270" y="76" font-size="9" fill="#555">(peristalsis)</text>
+  <line x1="246" y1="103" x2="282" y2="90" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="284" y="94" font-size="9" fill="#333">Acid + pepsin</text>
+  <!-- Flow arrow -->
+  <line x1="210" y1="290" x2="210" y2="305" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="210" y="308" text-anchor="middle" font-size="9" fill="#333">Anus</text>
+  <!-- Note bottom -->
+  <rect x="10" y="292" width="155" height="16" fill="#c8e6c9" rx="3"/>
+  <text x="87" y="304" text-anchor="middle" font-size="9" fill="#2e7d32">Food travels top → bottom</text>
+</svg>`
+  },
+  {
+    q:'Enzymes and Substrates Table',
+    content:`<h3>Enzymes and Substrates Table</h3><p>Digestive enzymes are biological catalysts that break large food molecules into smaller, soluble molecules that can be absorbed. Each enzyme acts on a specific substrate (the lock-and-key model).</p><ul><li>Amylase breaks starch into maltose — produced by salivary glands and the pancreas</li><li>Protease breaks proteins into amino acids — active in the stomach (pepsin) and small intestine</li><li>Lipase breaks fats (lipids) into fatty acids and glycerol — bile from the liver helps by emulsifying fat first</li></ul>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="240" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Digestive Enzymes — Summary Table</text>
+  <!-- Header -->
+  <rect x="10" y="26" width="400" height="26" fill="#2e7d32" rx="3"/>
+  <text x="65" y="43" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Enzyme</text>
+  <text x="145" y="43" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Source</text>
+  <text x="235" y="43" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Substrate</text>
+  <text x="330" y="43" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Product</text>
+  <!-- Row 1 -->
+  <rect x="10" y="52" width="400" height="28" fill="#c8e6c9" rx="2"/>
+  <text x="65" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Amylase</text>
+  <text x="145" y="66" text-anchor="middle" font-size="9" fill="#333">Saliva glands</text>
+  <text x="145" y="77" text-anchor="middle" font-size="9" fill="#333">&amp; pancreas</text>
+  <text x="235" y="69" text-anchor="middle" font-size="10" fill="#333">Starch</text>
+  <text x="330" y="69" text-anchor="middle" font-size="10" fill="#333">Maltose</text>
+  <!-- Row 2 -->
+  <rect x="10" y="80" width="400" height="28" fill="#fff" rx="2"/>
+  <text x="65" y="97" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Protease</text>
+  <text x="145" y="94" text-anchor="middle" font-size="9" fill="#333">Stomach</text>
+  <text x="145" y="105" text-anchor="middle" font-size="9" fill="#333">&amp; pancreas</text>
+  <text x="235" y="97" text-anchor="middle" font-size="10" fill="#333">Proteins</text>
+  <text x="330" y="97" text-anchor="middle" font-size="10" fill="#333">Amino acids</text>
+  <!-- Row 3 -->
+  <rect x="10" y="108" width="400" height="28" fill="#c8e6c9" rx="2"/>
+  <text x="65" y="125" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Lipase</text>
+  <text x="145" y="122" text-anchor="middle" font-size="9" fill="#333">Pancreas &amp;</text>
+  <text x="145" y="133" text-anchor="middle" font-size="9" fill="#333">small intestine</text>
+  <text x="235" y="125" text-anchor="middle" font-size="10" fill="#333">Lipids (fats)</text>
+  <text x="330" y="125" text-anchor="middle" font-size="10" fill="#333">Fatty acids + glycerol</text>
+  <!-- Row 4 -->
+  <rect x="10" y="136" width="400" height="28" fill="#fff" rx="2"/>
+  <text x="65" y="153" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Maltase</text>
+  <text x="145" y="153" text-anchor="middle" font-size="9" fill="#333">Small intestine</text>
+  <text x="235" y="153" text-anchor="middle" font-size="10" fill="#333">Maltose</text>
+  <text x="330" y="153" text-anchor="middle" font-size="10" fill="#333">Glucose</text>
+  <!-- Border lines -->
+  <rect x="10" y="52" width="400" height="112" fill="none" stroke="#2e7d32" stroke-width="1.5" rx="2"/>
+  <line x1="107" y1="26" x2="107" y2="164" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="187" y1="26" x2="187" y2="164" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="277" y1="26" x2="277" y2="164" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="10" y1="80" x2="410" y2="80" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="10" y1="108" x2="410" y2="108" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="10" y1="136" x2="410" y2="136" stroke="#2e7d32" stroke-width="1"/>
+  <!-- Bile note -->
+  <rect x="10" y="170" width="400" height="62" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5" rx="5"/>
+  <text x="210" y="185" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">Bile (from Liver) — NOT an enzyme!</text>
+  <text x="210" y="200" text-anchor="middle" font-size="10" fill="#333">Bile EMULSIFIES fats: breaks large fat droplets into tiny droplets</text>
+  <text x="210" y="214" text-anchor="middle" font-size="10" fill="#333">→ increases surface area for lipase to work more efficiently</text>
+  <text x="210" y="228" text-anchor="middle" font-size="10" fill="#555">Stored in gall bladder; released into small intestine</text>
+</svg>`
+  },
+  {
+    q:'Villus Structure — Labeled Diagram',
+    content:`<h3>Villus Structure — Labeled Diagram</h3><p>Villi are tiny finger-like projections lining the small intestine. They dramatically increase the surface area for absorption of digested food molecules into the bloodstream.</p><ul><li>Each villus contains a blood capillary network that absorbs glucose and amino acids, carrying them to the liver via the hepatic portal vein</li><li>Each villus also contains a lacteal (lymph vessel) that absorbs fatty acids and glycerol reassembled into fats</li><li>Microvilli on the epithelial surface further increase the surface area — the small intestine is highly specialised for maximum absorption</li></ul>`,
+    visual:`<svg viewBox="0 0 420 280" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="280" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Structure of a Villus (Small Intestine)</text>
+  <!-- Gut wall band -->
+  <rect x="10" y="26" width="400" height="30" fill="#ef9a9a" stroke="#2e7d32" stroke-width="1.5" rx="3"/>
+  <text x="210" y="45" text-anchor="middle" font-size="10" fill="#333">Gut wall (inner lining of small intestine)</text>
+  <!-- Three villi -->
+  <!-- Villus 1 (left) -->
+  <rect x="60" y="56" width="50" height="120" fill="#f8bbd0" stroke="#c62828" stroke-width="2" rx="22" ry="22"/>
+  <!-- Villus 2 (center, main labeled one) -->
+  <rect x="160" y="56" width="60" height="130" fill="#f48fb1" stroke="#c62828" stroke-width="2" rx="24" ry="24"/>
+  <!-- Villus 3 (right) -->
+  <rect x="280" y="56" width="50" height="115" fill="#f8bbd0" stroke="#c62828" stroke-width="2" rx="22" ry="22"/>
+  <!-- Blood capillary (red vertical line in center villus) -->
+  <line x1="190" y1="70" x2="190" y2="185" stroke="#e53935" stroke-width="3"/>
+  <!-- Lacteal (blue dashed in center) -->
+  <line x1="200" y1="70" x2="200" y2="185" stroke="#1565c0" stroke-width="2" stroke-dasharray="4,3"/>
+  <!-- Microvilli (tips of center villus) -->
+  <line x1="165" y1="56" x2="165" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="172" y1="56" x2="172" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="179" y1="56" x2="179" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="186" y1="56" x2="186" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="193" y1="56" x2="193" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="200" y1="56" x2="200" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="207" y1="56" x2="207" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <line x1="214" y1="56" x2="214" y2="44" stroke="#880e4f" stroke-width="1.5"/>
+  <!-- Labels -->
+  <line x1="190" y1="120" x2="80" y2="120" stroke="#e53935" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="78" y="116" text-anchor="end" font-size="9" fill="#e53935">Blood</text>
+  <text x="78" y="127" text-anchor="end" font-size="9" fill="#e53935">capillary</text>
+  <line x1="200" y1="140" x2="340" y2="135" stroke="#1565c0" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="342" y="132" font-size="9" fill="#1565c0">Lacteal</text>
+  <text x="342" y="143" font-size="9" fill="#1565c0">(lymph vessel)</text>
+  <line x1="186" y1="50" x2="120" y2="28" stroke="#880e4f" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="118" y="25" text-anchor="end" font-size="9" fill="#880e4f">Microvilli</text>
+  <line x1="220" y1="125" x2="360" y2="90" stroke="#2e7d32" stroke-width="1" marker-end="url(#arr)"/>
+  <text x="362" y="87" font-size="9" fill="#333">Thin epithelial</text>
+  <text x="362" y="98" font-size="9" fill="#333">cell wall</text>
+  <!-- What is absorbed note -->
+  <rect x="10" y="200" width="200" height="70" fill="#fff" stroke="#e53935" stroke-width="1.5" rx="5"/>
+  <text x="110" y="215" text-anchor="middle" font-size="10" font-weight="bold" fill="#e53935">Into blood capillary:</text>
+  <text x="110" y="229" text-anchor="middle" font-size="10" fill="#333">• Glucose (from starch)</text>
+  <text x="110" y="243" text-anchor="middle" font-size="10" fill="#333">• Amino acids (from protein)</text>
+  <text x="110" y="257" text-anchor="middle" font-size="10" fill="#333">• Water, vitamins, minerals</text>
+  <text x="110" y="268" text-anchor="middle" font-size="9" fill="#555">→ to liver via hepatic portal vein</text>
+  <rect x="220" y="200" width="190" height="70" fill="#fff" stroke="#1565c0" stroke-width="1.5" rx="5"/>
+  <text x="315" y="215" text-anchor="middle" font-size="10" font-weight="bold" fill="#1565c0">Into lacteal:</text>
+  <text x="315" y="229" text-anchor="middle" font-size="10" fill="#333">• Fatty acids</text>
+  <text x="315" y="243" text-anchor="middle" font-size="10" fill="#333">• Glycerol</text>
+  <text x="315" y="257" text-anchor="middle" font-size="10" fill="#555">(reassembled as fat)</text>
+  <text x="315" y="268" text-anchor="middle" font-size="9" fill="#555">→ enter lymph system</text>
+</svg>`
+  },
+  {
+    q:'Chemical vs Mechanical Digestion',
+    content:`<h3>Chemical vs Mechanical Digestion</h3><p>Digestion involves two types of processes working together. Mechanical digestion physically breaks food into smaller pieces, while chemical digestion uses enzymes to break molecular bonds and change food into different molecules.</p><ul><li>Mechanical digestion: teeth chewing, tongue mixing, and stomach churning — increases surface area for enzymes but does NOT change the type of molecule</li><li>Chemical digestion: enzymes (amylase, protease, lipase) break large insoluble molecules into small soluble ones that can pass through the gut wall</li><li>Both types work together — mechanical digestion makes chemical digestion more efficient by exposing more surface area</li></ul>`,
+    visual:`<svg viewBox="0 0 420 245" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="245" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Chemical vs Mechanical Digestion</text>
+  <!-- Left panel: Mechanical -->
+  <rect x="10" y="28" width="195" height="205" fill="#fff9c4" stroke="#f9a825" stroke-width="2" rx="6"/>
+  <rect x="10" y="28" width="195" height="28" fill="#f9a825" rx="6"/>
+  <text x="107" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">MECHANICAL Digestion</text>
+  <text x="107" y="72" text-anchor="middle" font-size="10" fill="#333">Breaks food into</text>
+  <text x="107" y="85" text-anchor="middle" font-size="10" fill="#333">SMALLER PIECES</text>
+  <text x="107" y="100" text-anchor="middle" font-size="10" fill="#555">(no chemical change)</text>
+  <!-- Teeth icon -->
+  <rect x="65" y="110" width="22" height="28" fill="#fff" stroke="#f9a825" stroke-width="2" rx="3"/>
+  <rect x="90" y="110" width="22" height="28" fill="#fff" stroke="#f9a825" stroke-width="2" rx="3"/>
+  <rect x="115" y="110" width="22" height="28" fill="#fff" stroke="#f9a825" stroke-width="2" rx="3"/>
+  <text x="107" y="152" text-anchor="middle" font-size="10" fill="#333">• Teeth chewing</text>
+  <text x="107" y="166" text-anchor="middle" font-size="10" fill="#333">• Stomach churning</text>
+  <text x="107" y="180" text-anchor="middle" font-size="10" fill="#555">↑ surface area</text>
+  <text x="107" y="194" text-anchor="middle" font-size="10" fill="#555">for enzymes to act</text>
+  <text x="107" y="218" text-anchor="middle" font-size="9" fill="#e65100">Molecules unchanged!</text>
+  <!-- Right panel: Chemical -->
+  <rect x="215" y="28" width="195" height="205" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <rect x="215" y="28" width="195" height="28" fill="#2e7d32" rx="6"/>
+  <text x="312" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">CHEMICAL Digestion</text>
+  <text x="312" y="72" text-anchor="middle" font-size="10" fill="#333">Enzymes break</text>
+  <text x="312" y="85" text-anchor="middle" font-size="10" fill="#333">MOLECULAR BONDS</text>
+  <text x="312" y="100" text-anchor="middle" font-size="10" fill="#555">(molecules change type)</text>
+  <!-- Arrow showing molecule breaking -->
+  <circle cx="265" cy="133" r="18" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <text x="265" y="137" text-anchor="middle" font-size="9" fill="#333">Starch</text>
+  <line x1="285" y1="133" x2="310" y2="133" stroke="#2e7d32" stroke-width="2"/>
+  <text x="297" y="128" text-anchor="middle" font-size="8" fill="#2e7d32">enzyme</text>
+  <circle cx="323" cy="125" r="10" fill="#81c784" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="323" y="128" text-anchor="middle" font-size="7" fill="#333">G</text>
+  <circle cx="337" cy="133" r="10" fill="#81c784" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="337" y="136" text-anchor="middle" font-size="7" fill="#333">G</text>
+  <circle cx="351" cy="125" r="10" fill="#81c784" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="351" y="128" text-anchor="middle" font-size="7" fill="#333">G</text>
+  <text x="312" y="155" text-anchor="middle" font-size="10" fill="#333">• Amylase → sugars</text>
+  <text x="312" y="169" text-anchor="middle" font-size="10" fill="#333">• Protease → amino acids</text>
+  <text x="312" y="183" text-anchor="middle" font-size="10" fill="#333">• Lipase → fatty acids</text>
+  <text x="312" y="197" text-anchor="middle" font-size="10" fill="#555">Small molecules formed</text>
+  <text x="312" y="218" text-anchor="middle" font-size="9" fill="#2e7d32">Molecules CAN be absorbed!</text>
+</svg>`
+  },
+  {
+    q:'Nutrient Absorption Summary',
+    content:`<h3>Nutrient Absorption Summary</h3><p>After chemical digestion, the resulting small molecules are absorbed into the body through the walls of the small intestine. Different nutrients follow different routes into the blood or lymph system.</p><ul><li>Glucose and amino acids are absorbed into blood capillaries in the villi and travel to the liver via the hepatic portal vein</li><li>Fatty acids and glycerol are absorbed into lacteals (lymph vessels) and enter the bloodstream via the lymph system</li><li>Water, vitamins, and mineral salts are absorbed mainly in the small intestine; the large intestine reabsorbs remaining water</li></ul>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="240" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Nutrient Digestion → Absorption Summary</text>
+  <!-- Headers -->
+  <rect x="10" y="26" width="400" height="24" fill="#2e7d32" rx="3"/>
+  <text x="80" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Food Type</text>
+  <text x="180" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Broken Down To</text>
+  <text x="285" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Where Absorbed</text>
+  <text x="375" y="42" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Into</text>
+  <!-- Row 1: Carbohydrates -->
+  <rect x="10" y="50" width="400" height="36" fill="#fff9c4" rx="2"/>
+  <text x="80" y="64" text-anchor="middle" font-size="11" font-weight="bold" fill="#e65100">Carbohydrates</text>
+  <text x="80" y="78" text-anchor="middle" font-size="9" fill="#555">(starch, sugars)</text>
+  <text x="180" y="72" text-anchor="middle" font-size="11" fill="#333">Glucose</text>
+  <text x="285" y="72" text-anchor="middle" font-size="10" fill="#333">Small intestine</text>
+  <text x="375" y="72" text-anchor="middle" font-size="10" fill="#e53935">Blood capillary</text>
+  <!-- Row 2: Proteins -->
+  <rect x="10" y="86" width="400" height="36" fill="#e8f5e9" rx="2"/>
+  <text x="80" y="100" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Proteins</text>
+  <text x="80" y="114" text-anchor="middle" font-size="9" fill="#555">(meat, eggs)</text>
+  <text x="180" y="107" text-anchor="middle" font-size="10" fill="#333">Amino acids</text>
+  <text x="285" y="107" text-anchor="middle" font-size="10" fill="#333">Small intestine</text>
+  <text x="375" y="107" text-anchor="middle" font-size="10" fill="#e53935">Blood capillary</text>
+  <!-- Row 3: Fats -->
+  <rect x="10" y="122" width="400" height="36" fill="#e3f2fd" rx="2"/>
+  <text x="80" y="136" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">Fats (Lipids)</text>
+  <text x="80" y="150" text-anchor="middle" font-size="9" fill="#555">(oils, butter)</text>
+  <text x="180" y="143" text-anchor="middle" font-size="10" fill="#333">Fatty acids + glycerol</text>
+  <text x="285" y="143" text-anchor="middle" font-size="10" fill="#333">Small intestine</text>
+  <text x="375" y="143" text-anchor="middle" font-size="10" fill="#1565c0">Lacteal (lymph)</text>
+  <!-- Row 4: Water -->
+  <rect x="10" y="158" width="400" height="36" fill="#fff9c4" rx="2"/>
+  <text x="80" y="172" text-anchor="middle" font-size="11" font-weight="bold" fill="#00695c">Water</text>
+  <text x="80" y="186" text-anchor="middle" font-size="9" fill="#555">(all food)</text>
+  <text x="180" y="179" text-anchor="middle" font-size="10" fill="#333">Water (unchanged)</text>
+  <text x="285" y="179" text-anchor="middle" font-size="10" fill="#333">Large intestine</text>
+  <text x="375" y="179" text-anchor="middle" font-size="10" fill="#e53935">Blood capillary</text>
+  <!-- Dividers -->
+  <rect x="10" y="50" width="400" height="144" fill="none" stroke="#2e7d32" stroke-width="1.5" rx="2"/>
+  <line x1="135" y1="26" x2="135" y2="194" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="233" y1="26" x2="233" y2="194" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="330" y1="26" x2="330" y2="194" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="10" y1="86" x2="410" y2="86" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="10" y1="122" x2="410" y2="122" stroke="#2e7d32" stroke-width="0.8"/>
+  <line x1="10" y1="158" x2="410" y2="158" stroke="#2e7d32" stroke-width="0.8"/>
+  <!-- Key fact -->
+  <rect x="10" y="200" width="400" height="32" fill="#2e7d32" rx="5"/>
+  <text x="210" y="214" text-anchor="middle" font-size="10" fill="#fff">Key: Villi (finger-like folds) MASSIVELY increase surface area in small intestine</text>
+  <text x="210" y="228" text-anchor="middle" font-size="10" fill="#c8e6c9">for efficient absorption of ALL nutrients</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Digestion & Enzymes',
+    body:'Test your knowledge of digestive organs and enzymes.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which enzyme digests starch?',opts:['Lipase','Protease','Amylase','Maltase'],ans:2,exp:'AMYLASE digests starch (a polysaccharide) into maltose (a disaccharide). Amylase is produced in the salivary glands (mouth) and the pancreas. Starch → Maltose (then maltase converts maltose → glucose).'},
+      {q:'What is the role of bile in digestion?',opts:['It digests proteins chemically','It emulsifies fats to increase surface area for lipase','It kills bacteria in the stomach','It absorbs water in the large intestine'],ans:1,exp:'BILE (produced by the liver, stored in the gallbladder) EMULSIFIES fats — it breaks large fat globules into tiny droplets, greatly increasing surface area for lipase to work more efficiently. Bile does NOT contain enzymes.'},
+      {q:'Where does most ABSORPTION of digested food occur?',opts:['Stomach','Large intestine','Mouth','Small intestine'],ans:3,exp:'The SMALL INTESTINE is the main site of both DIGESTION and ABSORPTION. Its inner wall is lined with villi (and microvilli) which massively increase surface area for absorbing glucose, amino acids, fatty acids, and glycerol.'},
+      {q:'What are the end products of protein digestion?',opts:['Glucose','Fatty acids and glycerol','Amino acids','Maltose'],ans:2,exp:'PROTEIN is digested by PROTEASE (and pepsin in stomach) into AMINO ACIDS. These are then absorbed into the blood and used to build new proteins in the body.'},
+    ]}
+  },
+  {
+    title:'Absorption in the Small Intestine',
+    body:`The small intestine is specially adapted for absorption:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Villi</strong> — finger-like projections that increase surface area</li>
+      <li><strong>Microvilli</strong> — tiny folds on each villus cell (brush border)</li>
+      <li><strong>Rich blood supply</strong> — capillaries in each villus maintain a steep concentration gradient</li>
+      <li><strong>Lacteal</strong> — lymph vessel in each villus for fat absorption (fatty acids + glycerol → re-formed into fats → enter lymph)</li>
+      <li><strong>Thin walls</strong> — short diffusion distance</li>
+    </ul>
+    Glucose and amino acids → absorbed into <strong>blood capillaries</strong> → carried to liver via hepatic portal vein.`,
+    draw:(sk)=>{
+      bg(sk,[10,14,10]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Gut wall
+      sk.fill(180,100,100,80);sk.noStroke();sk.rect(W*0.05,H*0.1,W*0.9,H*0.15,4);
+      // Villi
+      for(let i=0;i<8;i++){
+        const cx=W*0.1+i*(W*0.8/8)+W*0.05;
+        const pulse=1+Math.sin(t*1.2+i*0.5)*0.04;
+        // Villus shape
+        sk.fill(230,150,150,200);sk.noStroke();
+        sk.rect(cx-12,H*0.25,24,H*0.35*pulse,12,12,0,0);
+        // Capillary
+        sk.stroke(231,76,60,200);sk.strokeWeight(2);sk.noFill();
+        sk.line(cx,H*0.3,cx,H*0.55);
+        // Lacteal
+        sk.stroke(100,180,255,180);sk.strokeWeight(1.5);
+        sk.line(cx-6,H*0.32,cx-6,H*0.54);
+        // Glucose particles moving in
+        const py=H*0.7+Math.sin(t*2+i)*20;
+        const px=cx+Math.cos(t*1.5+i)*28;
+        sk.fill(255,220,50,200);sk.noStroke();sk.circle(px,py,8);
+        sk.stroke(255,220,50,80);sk.strokeWeight(1);
+        sk.line(px,py,cx,H*0.59);
+      }
+      // Labels
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.LEFT);
+      sk.text('← Villi (projections)',W*0.62,H*0.34);
+      sk.fill(231,76,60);sk.text('Blood capillary',W*0.62,H*0.44);
+      sk.fill(100,180,255);sk.text('Lacteal (fat)',W*0.62,H*0.52);
+      sk.fill(255,220,50);sk.text('Glucose/amino acids',W*0.06,H*0.84);
+    }
+  },
+  {
+    title:'🎮 Final — Absorption & the Whole System',
+    body:'Final challenge on absorption, villi, and the complete digestion picture.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What structural feature of the small intestine gives it a large surface area for absorption?',opts:['Thick muscular walls','Acid secretions','Villi and microvilli','Bile ducts'],ans:2,exp:'VILLI (finger-like projections) and MICROVILLI (tiny folds on each villus cell) massively increase the surface area of the small intestine — making absorption of glucose, amino acids, and fats much more efficient.'},
+      {q:'How are fatty acids and glycerol absorbed differently from glucose and amino acids?',opts:['They enter blood capillaries directly','They enter lymph vessels (lacteals) in villi','They are absorbed in the stomach','They pass through the large intestine wall'],ans:1,exp:'After fat digestion, fatty acids and glycerol are re-assembled into fat molecules (triglycerides) and enter LACTEALS (lymph vessels) in the villi, not blood capillaries. They eventually enter the blood via the lymph system.'},
+      {q:'Which organ produces bile?',opts:['Pancreas','Stomach','Small intestine','Liver'],ans:3,exp:'BILE is produced by the LIVER and stored in the GALLBLADDER before being released into the small intestine. The pancreas produces digestive enzymes and sodium hydrogen carbonate (NaHCO₃) to neutralise stomach acid.'},
+      {q:'Peristalsis is...',opts:['The chemical breakdown of food by enzymes','Wave-like muscle contractions that move food through the gut','The absorption of water in the large intestine','The secretion of digestive juices'],ans:1,exp:'PERISTALSIS is the wave-like contractions of circular and longitudinal muscles in the gut wall. It pushes the food bolus (or chyme) along the alimentary canal from the oesophagus to the rectum.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#880e4f',dark:'#560027',light:'#fce4ec',
+  title:'Digestion — Organs, Enzymes & Absorption',
+});
+</script></body></html>

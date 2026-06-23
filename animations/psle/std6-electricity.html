@@ -1,0 +1,618 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electricity &amp; Magnetism — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header{width:100%;background:#0d47a1;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#90caf9;color:#0d47a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #bbdefb}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #0d47a1;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#0d47a1;transition:all .15s;font-family:inherit}
+    .btn:hover,.btn.on{background:#0d47a1;color:#fff}
+    .btn.practice{border-color:#e65100;color:#e65100}
+    .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar">
+  <span class="logo">BEC Animations</span>
+  <a href="../../index.html#primary/Standard%206">&#8592; All Topics</a>
+  
+</div>
+<div class="topic-header">
+  <span class="label">PSLE &middot; Standard 6 Science</span>
+  <h1>Electricity &amp; Magnetism</h1>
+</div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on"  id="btn0" onclick="setTab(0)">Circuits</button>
+  <button class="btn"     id="btn1" onclick="setTab(1)">Current &amp; Voltage</button>
+  <button class="btn"     id="btn2" onclick="setTab(2)">Series vs Parallel</button>
+  <button class="btn"     id="btn3" onclick="setTab(3)">Conductors &amp; Insulators</button>
+  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Circuit Builder</button>
+</div>
+
+<script>
+let tab = 0;
+function setTab(n){
+  tab = n;
+  for(let i=0;i<5;i++){
+    let b = document.getElementById('btn'+i);
+    b.classList.toggle('on', i===n);
+  }
+  if(n===4) resetGame();
+}
+
+// ── Info panel data ──────────────────────────────────────
+const allBoxes = [
+  [ // Tab 0: Circuits
+    {t:'What is an Electric Circuit?', b:['A closed loop that allows electric current to flow','Current needs a complete path from + to − of the battery','An open circuit (broken path) stops current flow']},
+    {t:'Circuit Components', b:['Battery/Cell — provides electrical energy (EMF)','Wire — carries current; low resistance conductor','Bulb/Lamp — converts electrical energy to light','Switch — opens or closes the circuit (controls flow)']},
+    {t:'Circuit Symbols', b:['Battery: long & short parallel lines (+ is longer)','Wire: straight line connecting components','Bulb: circle with cross inside (⊕)','Switch open: gap in wire; switch closed: line connects']},
+    {t:'Standard 6 Key Point', b:['A bulb only lights when the circuit is COMPLETE','Switch CLOSED → current flows → bulb ON','Switch OPEN → no current → bulb OFF']},
+  ],
+  [ // Tab 1: Current & Voltage
+    {t:'Electric Current', b:['Current = flow of electrons through a conductor','Unit: Ampere (A), measured with an ammeter','Higher current → brighter bulb / more heat produced']},
+    {t:'Voltage (Potential Difference)', b:['Voltage = the "push" that drives current around the circuit','Unit: Volt (V), measured with a voltmeter','More cells in series = higher voltage = more current']},
+    {t:'Resistance', b:['Resistance opposes current flow','Unit: Ohm (Ω)','Long thin wires have MORE resistance than short thick wires','Ohm\'s Law (BGCSE): V = I × R']},
+    {t:'Simple Rule', b:['More batteries → more voltage → more current → brighter bulb','Longer wire → more resistance → less current → dimmer bulb']},
+  ],
+  [ // Tab 2: Series vs Parallel
+    {t:'Series Circuit', b:['Components connected end-to-end in one loop','Same current flows through ALL components','If one bulb breaks, ALL bulbs go out','Voltage shared equally between bulbs']},
+    {t:'Parallel Circuit', b:['Components connected across the same two points','Each branch has INDEPENDENT current flow','If one bulb breaks, OTHERS stay lit','Each bulb gets the FULL battery voltage']},
+    {t:'Comparing the Two', b:['Series: simple but one break = all off (old Christmas lights)','Parallel: reliable — used in home wiring','Series: adding more bulbs makes each DIMMER','Parallel: each bulb stays equally bright']},
+    {t:'Household Wiring', b:['All appliances in your home are wired in PARALLEL','Each device can be switched on/off independently','Each device receives the same mains voltage (220 V in Botswana)']},
+  ],
+  [ // Tab 3: Conductors & Insulators
+    {t:'Electrical Conductors', b:['Allow electrons to flow freely through them','All metals are conductors (copper, iron, aluminium, gold)','Carbon (graphite) is a non-metal conductor','Used for wires, circuit connections, switch contacts']},
+    {t:'Electrical Insulators', b:['Do NOT allow electron flow','Rubber, plastic, glass, wood, dry air','Wire coatings are plastic to protect you from the current','Oven gloves = thermal insulator; rubber gloves = electrical insulator']},
+    {t:'Magnetic Materials', b:['Only IRON, NICKEL, COBALT are strongly magnetic','Steel (iron alloy) is magnetic — used in permanent magnets','Copper, aluminium, brass are NOT magnetic','Test: hold a magnet near the object — attraction = magnetic']},
+    {t:'Non-Magnetic Metals', b:['Aluminium — used in drink cans, aircraft bodies','Copper — used in electrical wires (conductor but not magnetic)','Gold, silver — non-magnetic, used in jewellery and electronics']},
+  ],
+];
+
+function printNotes(){
+  const tabs=['Circuits','Current & Voltage','Series vs Parallel','Conductors & Insulators'];
+  let h=`<html><head><title>Electricity & Magnetism Notes</title><style>
+    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
+    h1{font-size:1.3rem;border-bottom:3px solid #0d47a1;padding-bottom:8px;color:#0d47a1}
+    h2{font-size:1rem;color:#1565c0;margin:22px 0 6px;border-left:4px solid #1565c0;padding-left:8px}
+    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
+    ul{margin:0 0 8px 18px}li{line-height:1.7}
+    @media print{body{margin:15px}}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style></head><body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 6 Science — Electricity &amp; Magnetism</h1>`;
+  allBoxes.forEach((boxes,i)=>{
+    h+=`<h2>${tabs[i]}</h2>`;
+    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
+  });
+  h+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+
+// ── GAME STATE ───────────────────────────────────────────
+const SLOT_R = 34;
+const PART_R = 28;
+let slots, parts, activeDrag, circuitOn, glowT, gameMsg, resetBtn;
+
+function resetGame(){
+  slots = [
+    {x:245, y:148, accepts:'battery', filled:null},
+    {x:388, y:268, accepts:'bulb',    filled:null},
+    {x:245, y:388, accepts:'switch',  filled:null},
+  ];
+  parts = [
+    {id:'battery', label:'Battery', x:90,  y:455, sx:90,  sy:455, slot:-1, col:[255,193,7]},
+    {id:'bulb',    label:'Bulb',    x:245, y:455, sx:245, sy:455, slot:-1, col:[255,235,59]},
+    {id:'switch',  label:'Switch',  x:400, y:455, sx:400, sy:455, slot:-1, col:[76,175,80], closed:false},
+  ];
+  activeDrag  = null;
+  circuitOn   = false;
+  glowT       = 0;
+  gameMsg     = '';
+}
+resetGame();
+
+function checkCircuit(){
+  let allPlaced = parts.every(p => p.slot >= 0);
+  let sw = parts.find(p=>p.id==='switch');
+  circuitOn = allPlaced && sw.closed;
+  if(!allPlaced) gameMsg = 'Drag each component to its matching slot.';
+  else if(!sw.closed) gameMsg = 'Circuit incomplete — click the switch to CLOSE it!';
+  else gameMsg = 'Circuit complete! Current flows — bulb glows!';
+}
+
+new p5(sk=>{
+  const W=880, H=510;
+  let tick=0;
+
+  sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
+
+  sk.draw=()=>{
+    tick++;
+    sk.background(248,252,255);
+    if(tab<4){ drawAnim(); drawInfoPanel(); }
+    else { drawGame(); }
+  };
+
+  // ── Info panel helper ────────────────────────────────
+  function drawInfoPanel(){
+    const PX=498, PW=370, PAD=14;
+    sk.fill(255); sk.noStroke();
+    sk.rect(PX,0,PW,H);
+    sk.fill(13,71,161,18); sk.rect(PX,0,PW,H);
+    let boxes = allBoxes[tab];
+    let y=16;
+    boxes.forEach(box=>{
+      let lines=box.b;
+      let bh=16+lines.length*14+8;
+      sk.fill(13,71,161); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
+      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(box.t, PX+PAD+8, y+13);
+      sk.textStyle(sk.NORMAL); sk.textSize(11);
+      lines.forEach((l,i)=>{ sk.text(l, PX+PAD+10, y+24+i*14); });
+      y+=bh+8;
+    });
+  }
+
+  // ── Tab animation area ───────────────────────────────
+  function drawAnim(){
+    if(tab===0) drawCircuitDiagram();
+    else if(tab===1) drawCurrentFlow();
+    else if(tab===2) drawSeriesParallel();
+    else if(tab===3) drawConductors();
+  }
+
+  function drawCircuitDiagram(){
+    const cx=248, cy=255;
+    sk.fill(240,248,255); sk.stroke(13,71,161); sk.strokeWeight(1);
+    sk.rect(30,30,460,450,10);
+    sk.noStroke(); sk.fill(13,71,161); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Circuit Components', cx, 55);
+
+    // Battery
+    drawComponent(cx,100,'battery',false,sk);
+    sk.textSize(10); sk.fill(50); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+    sk.text('Battery (cell): provides EMF, drives current', cx-80, 145);
+
+    // Bulb
+    drawComponent(cx,190,'bulb',false,sk);
+    sk.text('Bulb: converts electrical energy → light + heat', cx-80, 235);
+
+    // Switch open
+    drawComponent(cx,280,'switch',false,sk);
+    sk.text('Switch OPEN: circuit broken, no current', cx-80, 325);
+
+    // Switch closed
+    drawComponent(cx,360,'switch',true,sk);
+    sk.text('Switch CLOSED: circuit complete, current flows', cx-80, 405);
+  }
+
+  function drawCurrentFlow(){
+    // Animated circuit with flowing electrons
+    const bx=80, by=100, bw=340, bh=280;
+    // Draw rectangular circuit
+    sk.stroke(13,71,161); sk.strokeWeight(3); sk.noFill();
+    sk.rect(bx, by, bw, bh, 4);
+    // Battery on left
+    sk.noStroke(); sk.fill(255,193,7);
+    sk.rect(bx-2, by+bh/2-20, 4, 40);
+    sk.fill(255); sk.text('', 0,0);
+    // Label
+    sk.fill(80); sk.textSize(11); sk.textAlign(sk.CENTER); sk.textStyle(sk.NORMAL);
+    sk.text('Battery', bx-18, by+bh/2+4);
+    // Bulb on right
+    sk.stroke(255,193,7); sk.strokeWeight(2); sk.noFill();
+    sk.ellipse(bx+bw, by+bh/2, 30, 30);
+    sk.line(bx+bw-8, by+bh/2-8, bx+bw+8, by+bh/2+8);
+    sk.line(bx+bw+8, by+bh/2-8, bx+bw-8, by+bh/2+8);
+
+    // Flowing electrons (arrows around circuit)
+    let numE = 8;
+    for(let i=0;i<numE;i++){
+      let t = ((tick*0.4+i/numE)%1);
+      let pos = getCircuitPos(t, bx, by, bw, bh);
+      sk.fill(33,150,243); sk.noStroke();
+      sk.ellipse(pos.x, pos.y, 10, 10);
+      sk.fill(255); sk.textSize(8); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('e⁻', pos.x, pos.y);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+    sk.fill(40); sk.textSize(11); sk.noStroke();
+    sk.text('Electrons flow from − to + terminal (conventional\ncurrent flows from + to −)', bx, by+bh+28);
+    sk.text('Ammeters measure current in Amperes (A)', bx, by+bh+52);
+    sk.text('Voltmeters measure voltage in Volts (V)', bx, by+bh+68);
+  }
+
+  function drawSeriesParallel(){
+    // Series left side
+    let sx=50, sy=80, sw=190, sh=180;
+    sk.stroke(13,71,161); sk.strokeWeight(2.5); sk.noFill();
+    sk.rect(sx,sy,sw,sh,4);
+    // Two bulbs in series along top wire
+    sk.noStroke(); sk.stroke(255,193,7); sk.strokeWeight(2); sk.noFill();
+    sk.ellipse(sx+sw*0.35, sy, 24,24);
+    sk.ellipse(sx+sw*0.65, sy, 24,24);
+    sk.noStroke(); sk.fill(13,71,161); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('SERIES',sx+sw/2, sy+sh+18);
+    sk.textStyle(sk.NORMAL); sk.textSize(10); sk.fill(60);
+    sk.text('One loop — same current', sx+sw/2, sy+sh+32);
+    sk.text('One broken = all OFF', sx+sw/2, sy+sh+46);
+
+    // Parallel right side
+    let px=260, py=80, pw=190, ph=180;
+    sk.stroke(13,71,161); sk.strokeWeight(2.5); sk.noFill();
+    sk.rect(px,py,pw,ph,4);
+    // Two branches vertically
+    sk.stroke(13,71,161); sk.strokeWeight(2);
+    sk.line(px+pw*0.4, py, px+pw*0.4, py+ph);
+    sk.line(px+pw*0.6, py, px+pw*0.6, py+ph);
+    // Bulbs on branches
+    sk.stroke(255,193,7); sk.strokeWeight(2); sk.noFill();
+    sk.ellipse(px+pw*0.4, py+ph/2, 24,24);
+    sk.ellipse(px+pw*0.6, py+ph/2, 24,24);
+    sk.noStroke(); sk.fill(13,71,161); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('PARALLEL', px+pw/2, py+ph+18);
+    sk.textStyle(sk.NORMAL); sk.textSize(10); sk.fill(60);
+    sk.text('Multiple loops — separate branches', px+pw/2, py+ph+32);
+    sk.text('One broken = others stay ON', px+pw/2, py+ph+46);
+
+    // Comparison table
+    let ty=300;
+    sk.fill(230,240,255); sk.noStroke(); sk.rect(30,ty,440,160,6);
+    sk.fill(13,71,161); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Series vs Parallel Summary', 250, ty+18);
+    let rows=[['Feature','Series','Parallel'],['Current','Same in all','Different per branch'],
+              ['Voltage','Shared','Equal (full voltage)'],['One fails','All off','Others stay on'],
+              ['Used in','Old fairy lights','Home wiring, cars']];
+    sk.textSize(10); sk.textStyle(sk.NORMAL);
+    rows.forEach((r,ri)=>{
+      if(ri===0){sk.fill(13,71,161); sk.textStyle(sk.BOLD);}
+      else{sk.fill(ri%2===0?240:255); sk.noStroke(); sk.rect(32,ty+25+ri*24,436,23); sk.fill(30); sk.textStyle(sk.NORMAL);}
+      r.forEach((c,ci)=>sk.text(c, 32+ci*148+74, ty+40+ri*24));
+    });
+  }
+
+  function drawConductors(){
+    // Grid of materials
+    let items=[
+      {n:'Copper wire', c:true,  m:false, col:[255,160,0]},
+      {n:'Iron nail',   c:true,  m:true,  col:[150,150,150]},
+      {n:'Rubber band', c:false, m:false, col:[60,130,60]},
+      {n:'Aluminium',   c:true,  m:false, col:[200,200,200]},
+      {n:'Plastic ruler',c:false,m:false, col:[30,100,200]},
+      {n:'Steel screw', c:true,  m:true,  col:[140,140,140]},
+      {n:'Glass',       c:false, m:false, col:[100,200,230]},
+      {n:'Graphite',    c:true,  m:false, col:[80,80,80]},
+    ];
+    sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT); sk.fill(20);
+    sk.text('Material', 55, 55);
+    sk.fill(0,120,0); sk.text('Conductor?', 185, 55);
+    sk.fill(180,0,180); sk.text('Magnetic?', 310, 55);
+    sk.stroke(200); sk.strokeWeight(1); sk.line(30,62,460,62);
+
+    items.forEach((it,i)=>{
+      let y=75+i*48;
+      sk.fill(it.col[0],it.col[1],it.col[2],40); sk.noStroke();
+      sk.rect(32,y-14,440,40,6);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.NORMAL); sk.textAlign(sk.LEFT);
+      sk.text(it.n, 50, y+8);
+      sk.textSize(16); sk.textAlign(sk.CENTER);
+      sk.fill(it.c ? [0,140,0] : [200,30,30]);
+      sk.text(it.c ? '✓' : '✗', 240, y+8);
+      sk.fill(it.m ? [130,0,200] : [200,30,30]);
+      sk.text(it.m ? '✓' : '✗', 360, y+8);
+    });
+  }
+
+  function getCircuitPos(t,bx,by,bw,bh){
+    let perim = 2*(bw+bh);
+    let d = t*perim;
+    if(d < bw) return {x:bx+d, y:by};
+    d -= bw;
+    if(d < bh) return {x:bx+bw, y:by+d};
+    d -= bh;
+    if(d < bw) return {x:bx+bw-d, y:by+bh};
+    d -= bw;
+    return {x:bx, y:by+bh-d};
+  }
+
+  // ── GAME (Tab 4) ─────────────────────────────────────
+  function drawGame(){
+    // Background
+    sk.fill(240,248,255); sk.noStroke(); sk.rect(0,0,W,H);
+    sk.fill(13,71,161); sk.textSize(13); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Circuit Builder — drag each component to its matching slot, then CLOSE the switch', W/2, 26);
+
+    drawCircuitBoard();
+    drawPalette();
+    drawGameMsg();
+    if(circuitOn) glowT = (glowT+0.08)%sk.TWO_PI;
+  }
+
+  function drawCircuitBoard(){
+    // Circuit rectangle
+    let cx=100, cy=130, cw=290, ch=270;
+    // Glow effect when on
+    if(circuitOn){
+      for(let r=18;r>0;r-=3){
+        sk.fill(255,235,59, 18+r*3); sk.noStroke();
+        sk.rect(cx-r,cy-r,cw+r*2,ch+r*2,8+r);
+      }
+    }
+    // Wires
+    sk.stroke(circuitOn ? [255,193,7] : [13,71,161]);
+    sk.strokeWeight(circuitOn ? 4 : 3); sk.noFill();
+
+    let s0=slots[0], s1=slots[1], s2=slots[2];
+
+    // Top wire: cx → s0.x-SLOT_R, then gap for slot 0, then s0.x+SLOT_R → cx+cw
+    sk.line(cx, cy, s0.x-SLOT_R, cy);
+    sk.line(s0.x+SLOT_R, cy, cx+cw, cy);
+    // Right wire: cx+cw,cy → cx+cw,s1.y-SLOT_R, gap, s1.y+SLOT_R → cx+cw,cy+ch
+    sk.line(cx+cw, cy, cx+cw, s1.y-SLOT_R);
+    sk.line(cx+cw, s1.y+SLOT_R, cx+cw, cy+ch);
+    // Bottom wire: cx+cw,cy+ch → s2.x+SLOT_R, gap, s2.x-SLOT_R → cx,cy+ch
+    sk.line(cx+cw, cy+ch, s2.x+SLOT_R, cy+ch);
+    sk.line(s2.x-SLOT_R, cy+ch, cx, cy+ch);
+    // Left wire: full (no slot)
+    sk.line(cx, cy+ch, cx, cy);
+
+    // Draw current direction arrows when on
+    if(circuitOn){
+      drawArrow(sk, cx+cw/2, cy, 1, 0, [255,193,7]);
+      drawArrow(sk, cx+cw, cy+ch/2, 0, 1, [255,193,7]);
+      drawArrow(sk, cx+cw/2, cy+ch, -1, 0, [255,193,7]);
+      drawArrow(sk, cx, cy+ch/2, 0, -1, [255,193,7]);
+    }
+
+    // Draw slot placeholders or filled components
+    slots.forEach((sl,i)=>{
+      if(sl.filled===null){
+        // Empty slot — dashed circle
+        sk.stroke(150); sk.strokeWeight(1.5);
+        sk.drawingContext.setLineDash([4,4]);
+        sk.noFill(); sk.ellipse(sl.x, sl.y, SLOT_R*2, SLOT_R*2);
+        sk.drawingContext.setLineDash([]);
+        sk.fill(150); sk.noStroke(); sk.textSize(18); sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(sl.accepts==='battery'?'⚡':sl.accepts==='bulb'?'💡':'🔘', sl.x, sl.y);
+        sk.textStyle(sk.NORMAL); sk.textSize(9); sk.fill(120);
+        sk.textAlign(sk.CENTER,sk.BASELINE);
+        sk.text('Drop '+sl.accepts+' here', sl.x, sl.y+SLOT_R+12);
+      }
+    });
+
+    // Draw placed components
+    parts.forEach(p=>{
+      if(p.slot>=0 && p.id!==activeDrag?.id){
+        let sl=slots[p.slot];
+        drawComponent(sl.x, sl.y, p.id, p.closed||false, sk, circuitOn);
+      }
+    });
+
+    // Draw dragged component on top
+    if(activeDrag){
+      drawComponent(activeDrag.x, activeDrag.y, activeDrag.id, activeDrag.closed||false, sk, false);
+    }
+  }
+
+  function drawPalette(){
+    sk.fill(220,235,255); sk.noStroke(); sk.rect(30,420,450,72,8);
+    sk.fill(13,71,161); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('COMPONENT PALETTE — drag to the circuit', 255, 435);
+
+    parts.forEach(p=>{
+      if(p.slot<0 && p.id!==activeDrag?.id){
+        drawComponent(p.sx, p.sy, p.id, p.closed||false, sk, false);
+      }
+    });
+  }
+
+  function drawComponent(x, y, id, closed, sk, glowing){
+    sk.noStroke();
+    if(id==='battery'){
+      sk.fill(255,193,7); sk.ellipse(x,y,PART_R*2,PART_R*2);
+      sk.fill(30); sk.textSize(18); sk.textAlign(sk.CENTER,sk.CENTER); sk.text('⚡',x,y);
+      sk.fill(30); sk.textSize(9); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.BASELINE);
+      sk.text('Battery', x, y+PART_R+12);
+    } else if(id==='bulb'){
+      if(glowing){
+        for(let r=22;r>8;r-=4){sk.fill(255,235,59,40+r*3); sk.ellipse(x,y,r*2,r*2);}
+        sk.fill(255,240,0);
+      } else {
+        sk.fill(240,220,100);
+      }
+      sk.ellipse(x,y,PART_R*2,PART_R*2);
+      sk.stroke(glowing?[255,200,0]:[100,80,0]); sk.strokeWeight(2);
+      sk.line(x-8,y-8,x+8,y+8); sk.line(x+8,y-8,x-8,y+8); sk.noStroke();
+      sk.fill(30); sk.textSize(9); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.BASELINE);
+      sk.text('Bulb', x, y+PART_R+12);
+    } else if(id==='switch'){
+      sk.fill(closed?[76,175,80]:[244,67,54]); sk.ellipse(x,y,PART_R*2,PART_R*2);
+      sk.fill(255); sk.textSize(14); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text(closed?'●—●':'● ●',x,y);
+      sk.fill(30); sk.textSize(9); sk.textStyle(sk.NORMAL); sk.textAlign(sk.CENTER,sk.BASELINE);
+      sk.text(closed?'Switch (closed)':'Switch (open)', x, y+PART_R+12);
+    }
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+  }
+
+  function drawArrow(sk,x,y,dx,dy,col){
+    sk.stroke(col[0],col[1],col[2]); sk.strokeWeight(2);
+    let len=10;
+    sk.line(x-dx*len,y-dy*len,x+dx*len,y+dy*len);
+    sk.fill(col[0],col[1],col[2]); sk.noStroke();
+    sk.push(); sk.translate(x+dx*len,y+dy*len); sk.rotate(sk.atan2(dy,dx));
+    sk.triangle(0,0,-8,-5,-8,5); sk.pop();
+  }
+
+  function drawGameMsg(){
+    if(!gameMsg) return;
+    let col = circuitOn ? [27,94,32] : (gameMsg.includes('CLOSE')?[183,28,28]:[13,71,161]);
+    sk.fill(col[0],col[1],col[2],220); sk.noStroke();
+    sk.rect(30,382,460,30,6);
+    sk.fill(255); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+    sk.text(gameMsg, 260, 397);
+    sk.textAlign(sk.LEFT,sk.BASELINE);
+
+    if(circuitOn){
+      // Reset button hint
+      sk.fill(220,235,255); sk.noStroke(); sk.rect(390,10,80,28,6);
+      sk.fill(13,71,161); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('↺ Reset', 430, 24);
+      sk.textAlign(sk.LEFT,sk.BASELINE);
+    }
+  }
+
+  // ── Mouse events ─────────────────────────────────────
+  sk.mousePressed=()=>{
+    if(tab!==4) return;
+    let mx=sk.mouseX, my=sk.mouseY;
+
+    // Check reset button
+    if(mx>390&&mx<470&&my>10&&my<38){ resetGame(); return; }
+
+    // Toggle switch if it's placed in a slot and clicked
+    let sw=parts.find(p=>p.id==='switch');
+    if(sw&&sw.slot>=0){
+      let sl=slots[sw.slot];
+      if(sk.dist(mx,my,sl.x,sl.y)<SLOT_R){ sw.closed=!sw.closed; checkCircuit(); return; }
+    }
+
+    // Start drag from palette
+    for(let p of parts){
+      if(p.slot>=0) continue; // in slot — drag from slot instead
+      if(sk.dist(mx,my,p.sx,p.sy)<PART_R+4){
+        activeDrag=p; p.x=p.sx; p.y=p.sy;
+        p.ox=p.sx-mx; p.oy=p.sy-my; return;
+      }
+    }
+    // Start drag from a slot
+    for(let p of parts){
+      if(p.slot<0) continue;
+      let sl=slots[p.slot];
+      if(sk.dist(mx,my,sl.x,sl.y)<SLOT_R){
+        activeDrag=p;
+        sl.filled=null; p.slot=-1;
+        p.ox=sl.x-mx; p.oy=sl.y-my;
+        p.x=sl.x; p.y=sl.y;
+        checkCircuit(); return;
+      }
+    }
+  };
+
+  sk.mouseDragged=()=>{
+    if(tab!==4||!activeDrag) return;
+    activeDrag.x=sk.mouseX+activeDrag.ox;
+    activeDrag.y=sk.mouseY+activeDrag.oy;
+  };
+
+  sk.mouseReleased=()=>{
+    if(tab!==4||!activeDrag) return;
+    let placed=false;
+    for(let i=0;i<slots.length;i++){
+      let sl=slots[i];
+      if(sl.filled===null && sl.accepts===activeDrag.id && sk.dist(activeDrag.x,activeDrag.y,sl.x,sl.y)<SLOT_R+16){
+        activeDrag.x=sl.x; activeDrag.y=sl.y;
+        activeDrag.slot=i; sl.filled=activeDrag.id;
+        placed=true; break;
+      }
+    }
+    if(!placed){
+      activeDrag.x=activeDrag.sx; activeDrag.y=activeDrag.sy;
+      activeDrag.slot=-1;
+    }
+    activeDrag=null;
+    checkCircuit();
+  };
+
+});
+</script>
+</body>
+</html>
+
+
+
+

@@ -1,0 +1,806 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>States of Matter — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+
+/* ══════════════════════════════════════
+   STEPS 0–4  ANIMATIONS
+══════════════════════════════════════ */
+
+{title:'The Three States of Matter',
+content:`<h2>Solid, Liquid, and Gas</h2>
+<p>All matter is made of tiny <strong>particles</strong>. The way these particles are arranged and move determines the <strong>state of matter</strong>.</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#006064;color:#fff;padding:6px">State</th><th style="background:#006064;color:#fff;padding:6px">Arrangement</th><th style="background:#006064;color:#fff;padding:6px">Movement</th><th style="background:#006064;color:#fff;padding:6px">Shape</th></tr>
+<tr style="background:#e0f7fa"><td style="padding:6px"><strong>Solid</strong></td><td style="padding:6px">Regular, close</td><td style="padding:6px">Vibrate only</td><td style="padding:6px">Fixed</td></tr>
+<tr><td style="padding:6px"><strong>Liquid</strong></td><td style="padding:6px">Irregular, close</td><td style="padding:6px">Slide around</td><td style="padding:6px">Takes container shape</td></tr>
+<tr style="background:#e0f7fa"><td style="padding:6px"><strong>Gas</strong></td><td style="padding:6px">Random, far apart</td><td style="padding:6px">Move fast, all directions</td><td style="padding:6px">Fills container</td></tr>
+</table>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const states=[{n:'SOLID',x:70},{n:'LIQUID',x:210},{n:'GAS',x:350}];
+  const particles={solid:[],liquid:[],gas:[]};
+  for(let i=0;i<9;i++){particles.solid.push({x:50+i%3*14,y:110+Math.floor(i/3)*14,vx:0,vy:0});}
+  for(let i=0;i<9;i++){particles.liquid.push({x:185+Math.random()*50,y:105+Math.random()*50,vx:(Math.random()-0.5)*1.2,vy:(Math.random()-0.5)*1.2});}
+  for(let i=0;i<9;i++){particles.gas.push({x:320+Math.random()*60,y:90+Math.random()*70,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3});}
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    states.forEach((s)=>{p.fill('#00838f');p.noStroke();p.rect(s.x-45,80,90,100,8);p.fill('#333');p.textSize(12);p.text(s.n,s.x,240);});
+    particles.solid.forEach(pt=>{pt.x+=0.4*p.sin(t*0.2+pt.y);p.fill('#1565c0');p.noStroke();p.ellipse(pt.x,pt.y,10,10);});
+    particles.liquid.forEach(pt=>{pt.x+=pt.vx;pt.y+=pt.vy;if(pt.x<170||pt.x>240)pt.vx*=-1;if(pt.y<90||pt.y>160)pt.vy*=-1;p.fill('#1e88e5');p.noStroke();p.ellipse(pt.x,pt.y,10,10);});
+    particles.gas.forEach(pt=>{pt.x+=pt.vx;pt.y+=pt.vy;if(pt.x<310||pt.x>390)pt.vx*=-1;if(pt.y<85||pt.y>175)pt.vy*=-1;p.fill('#e53935');p.noStroke();p.ellipse(pt.x,pt.y,10,10);});
+    t++;
+  };
+}},
+
+{title:'Changes of State',
+content:`<h2>Heating and Cooling Change States</h2>
+<p>Matter changes state when it gains or loses <strong>heat energy</strong>:</p>
+<p>🔥 <strong>Heating (gaining energy):</strong></p>
+<ul><li>Solid → Liquid = <strong>Melting</strong></li><li>Liquid → Gas = <strong>Evaporation / Boiling</strong></li><li>Solid → Gas directly = <strong>Sublimation</strong></li></ul>
+<p>❄️ <strong>Cooling (losing energy):</strong></p>
+<ul><li>Gas → Liquid = <strong>Condensation</strong></li><li>Liquid → Solid = <strong>Freezing / Solidification</strong></li></ul>
+<p>Water melts at <strong>0°C</strong> and boils at <strong>100°C</strong>.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,290);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const cx=210;
+    const nodes=[{n:'SOLID ❄️',x:cx,y:240,c:'#1565c0'},{n:'LIQUID 💧',x:cx,y:145,c:'#1e88e5'},{n:'GAS 💨',x:cx,y:50,c:'#e53935'}];
+    const arrows=[{from:0,to:1,lx:cx-70,ly:192,label:'Melting'},{from:1,to:2,lx:cx-70,ly:97,label:'Evaporation'},{from:1,to:0,lx:cx+70,ly:192,label:'Freezing'},{from:2,to:1,lx:cx+70,ly:97,label:'Condensation'}];
+    const active=Math.floor(t/70)%4;
+    arrows.forEach((ar,i)=>{
+      const fn=nodes[ar.from],tn=nodes[ar.to];
+      p.stroke(i===active?'#f4511e':'#bbb');p.strokeWeight(i===active?3:1.5);
+      const dx=i<2?-40:40;
+      p.line(fn.x+dx,fn.y,tn.x+dx,tn.y);
+      p.noStroke();p.fill(i===active?'#f4511e':'#888');p.textSize(i===active?12:10);p.text(ar.label,ar.lx,ar.ly);
+    });
+    nodes.forEach(nd=>{p.fill(nd.c);p.noStroke();p.ellipse(nd.x,nd.y,90,46);p.fill(255);p.textSize(12);p.text(nd.n,nd.x,nd.y);});
+    t++;
+  };
+}},
+
+{title:'Evaporation vs Boiling',
+content:`<h2>Two Ways Liquid Becomes Gas</h2>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#006064;color:#fff;padding:6px"></th><th style="background:#006064;color:#fff;padding:6px">Evaporation</th><th style="background:#006064;color:#fff;padding:6px">Boiling</th></tr>
+<tr style="background:#e0f7fa"><td style="padding:6px"><strong>Where?</strong></td><td style="padding:6px">Surface only</td><td style="padding:6px">Throughout liquid</td></tr>
+<tr><td style="padding:6px"><strong>Temperature?</strong></td><td style="padding:6px">Any temperature</td><td style="padding:6px">Only at boiling point</td></tr>
+<tr style="background:#e0f7fa"><td style="padding:6px"><strong>Speed?</strong></td><td style="padding:6px">Slow</td><td style="padding:6px">Fast</td></tr>
+<tr><td style="padding:6px"><strong>Bubbles?</strong></td><td style="padding:6px">No</td><td style="padding:6px">Yes</td></tr>
+</table>
+<p>Evaporation COOLS a surface — sweating cools you because the fastest particles escape, taking heat energy away from your skin!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const evapPts=Array.from({length:8},()=>({x:80+Math.random()*80,y:140+Math.random()*60,vy:0}));
+  const boilPts=Array.from({length:8},()=>({x:260+Math.random()*80,y:140+Math.random()*60,vy:-(1+Math.random()),size:Math.random()*10+6}));
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    p.fill('#b3e5fc');p.stroke('#006064');p.strokeWeight(2);p.rect(60,140,120,80,0,0,8,8);
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Evaporation',120,240);
+    evapPts.forEach((pt,i)=>{if(t%80===i*10)pt.vy=-1.5-Math.random();if(pt.vy<0){pt.y+=pt.vy;if(pt.y<40){pt.y=140+Math.random()*60;pt.vy=0;}}p.fill(pt.vy<0?'#e53935':'#1e88e5');p.noStroke();p.ellipse(pt.x,pt.y,10,10);});
+    p.fill('#ffecb3');p.stroke('#f57f17');p.strokeWeight(2);p.rect(240,140,120,80,0,0,8,8);
+    p.noStroke();p.fill('#333');p.textSize(11);p.text('Boiling (100°C)',300,240);
+    boilPts.forEach(pt=>{pt.y+=pt.vy;if(pt.y<60){pt.y=140+Math.random()*60;}p.fill('#e65100');p.noStroke();p.ellipse(pt.x,pt.y,pt.size,pt.size);});
+    t++;
+  };
+}},
+
+{title:'Condensation',
+content:`<h2>Gas Becomes Liquid</h2>
+<p><strong>Condensation</strong> is when a gas (water vapour) loses energy and turns into a liquid. You see it every day!</p>
+<ul><li>💧 Water droplets on a cold glass</li><li>🌫️ Dew on grass in the morning</li><li>🪟 Foggy windows on a cold day</li><li>☁️ Cloud formation</li></ul>
+<p>It happens because water vapour in warm air hits a <strong>cold surface</strong>, LOSES energy, and becomes liquid.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const drops=[];let t=0;
+  p.draw=()=>{
+    p.background(245);
+    p.fill('#b3e5fc');p.stroke('#1e88e5');p.strokeWeight(2);p.rect(150,60,120,180,8);
+    p.fill('#e3f2fd');p.noStroke();p.rect(155,65,50,170,6);
+    p.fill('#555');p.textSize(11);p.text('Cold glass',210,260);
+    for(let i=0;i<3;i++){const vx=20+i*160,vy=40+p.sin(t*0.05+i)*20;p.fill('#f4511e');p.noStroke();p.ellipse(vx,vy,14,14);const targetX=150+(i%2)*80,targetY=80+i*40;if(t%100==i*30){drops.push({x:targetX,y:targetY,r:4,dy:0.5});}}
+    drops.forEach(d=>{d.y+=d.dy;d.r=Math.min(d.r+0.02,8);p.fill('#1e88e5');p.noStroke();p.ellipse(d.x,d.y,d.r*2,d.r*2);});
+    if(drops.length>18) drops.splice(0,3);
+    p.fill('#333');p.noStroke();p.textSize(11);p.text('Water vapour condenses on cold surface',210,25);
+    t++;
+  };
+}},
+
+{title:'Particle Energy and Temperature',
+content:`<h2>Temperature = Average Particle Energy</h2>
+<p>Temperature measures the <strong>average kinetic energy</strong> of particles.</p>
+<ul><li>❄️ <strong>Cold</strong> = slow particles = low energy</li><li>🔥 <strong>Hot</strong> = fast particles = high energy</li></ul>
+<p>This explains why: hot water cooks food faster · gases expand when heated · sugar dissolves faster in hot water</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const coldPts=Array.from({length:9},()=>({x:60+Math.random()*80,y:90+Math.random()*80,vx:(Math.random()-0.5)*0.6,vy:(Math.random()-0.5)*0.6}));
+  const hotPts=Array.from({length:9},()=>({x:280+Math.random()*80,y:90+Math.random()*80,vx:(Math.random()-0.5)*3.5,vy:(Math.random()-0.5)*3.5}));
+  p.draw=()=>{
+    p.background(245);
+    p.fill('#e3f2fd');p.stroke('#1565c0');p.strokeWeight(2);p.rect(40,70,120,120,8);
+    p.fill('#fff3e0');p.stroke('#e65100');p.rect(260,70,120,120,8);
+    p.noStroke();p.fill('#1565c0');p.textSize(13);p.text('Cold ❄️',100,58);
+    p.fill('#e65100');p.text('Hot 🔥',320,58);
+    coldPts.forEach(pt=>{pt.x+=pt.vx;pt.y+=pt.vy;if(pt.x<44||pt.x>156)pt.vx*=-1;if(pt.y<74||pt.y>186)pt.vy*=-1;p.fill('#42a5f5');p.noStroke();p.ellipse(pt.x,pt.y,12,12);});
+    hotPts.forEach(pt=>{pt.x+=pt.vx;pt.y+=pt.vy;if(pt.x<264||pt.x>376)pt.vx*=-1;if(pt.y<74||pt.y>186)pt.vy*=-1;p.fill('#ef5350');p.noStroke();p.ellipse(pt.x,pt.y,12,12);});
+    p.fill('#333');p.textSize(11);p.text('Slow particles',100,220);p.text('Fast particles',320,220);
+  };
+}},
+
+/* ══════════════════════════════════════
+   STEPS 5–16  LABELED SVG DIAGRAMS
+══════════════════════════════════════ */
+
+{title:'Inside a Solid — Particle Structure',
+content:`<h3>Why Solids Have a Fixed Shape</h3>
+<p>Solid particles are held in a <strong>regular lattice</strong> (grid) by strong forces. Each particle can only <strong>vibrate on the spot</strong> — it cannot move away from its position. That is why a solid keeps its shape.</p>
+<ul>
+<li>🔵 Particles are <strong>touching</strong> — almost no gaps</li>
+<li>📐 Arranged in <strong>neat rows and columns</strong></li>
+<li>💪 <strong>Strong forces</strong> lock every particle in place</li>
+<li>📦 Result: fixed shape, fixed volume, very high density</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Container box -->
+  <rect x="15" y="20" width="190" height="175" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="110" y="13" text-anchor="middle" font-size="12" font-weight="bold" fill="#1565c0">SOLID PARTICLE ARRANGEMENT</text>
+  <!-- 6 cols x 5 rows of tightly packed particles (r=10, gap=4, spacing=24) -->
+  <circle cx="42" cy="47" r="10" fill="#1565c0"/><circle cx="66" cy="47" r="10" fill="#1565c0"/><circle cx="90" cy="47" r="10" fill="#1565c0"/><circle cx="114" cy="47" r="10" fill="#1565c0"/><circle cx="138" cy="47" r="10" fill="#1565c0"/><circle cx="162" cy="47" r="10" fill="#1565c0"/>
+  <circle cx="42" cy="71" r="10" fill="#1565c0"/><circle cx="66" cy="71" r="10" fill="#1565c0"/><circle cx="90" cy="71" r="10" fill="#1565c0"/><circle cx="114" cy="71" r="10" fill="#1565c0"/><circle cx="138" cy="71" r="10" fill="#1565c0"/><circle cx="162" cy="71" r="10" fill="#1565c0"/>
+  <circle cx="42" cy="95" r="10" fill="#1565c0"/><circle cx="66" cy="95" r="10" fill="#1565c0"/><circle cx="90" cy="95" r="10" fill="#1565c0"/><circle cx="114" cy="95" r="10" fill="#1565c0"/><circle cx="138" cy="95" r="10" fill="#1565c0"/><circle cx="162" cy="95" r="10" fill="#1565c0"/>
+  <circle cx="42" cy="119" r="10" fill="#1565c0"/><circle cx="66" cy="119" r="10" fill="#1565c0"/><circle cx="90" cy="119" r="10" fill="#1565c0"/><circle cx="114" cy="119" r="10" fill="#1565c0"/><circle cx="138" cy="119" r="10" fill="#1565c0"/><circle cx="162" cy="119" r="10" fill="#1565c0"/>
+  <circle cx="42" cy="143" r="10" fill="#1565c0"/><circle cx="66" cy="143" r="10" fill="#1565c0"/><circle cx="90" cy="143" r="10" fill="#1565c0"/><circle cx="114" cy="143" r="10" fill="#1565c0"/><circle cx="138" cy="143" r="10" fill="#1565c0"/><circle cx="162" cy="143" r="10" fill="#1565c0"/>
+  <circle cx="42" cy="167" r="10" fill="#1565c0"/><circle cx="66" cy="167" r="10" fill="#1565c0"/><circle cx="90" cy="167" r="10" fill="#1565c0"/><circle cx="114" cy="167" r="10" fill="#1565c0"/><circle cx="138" cy="167" r="10" fill="#1565c0"/><circle cx="162" cy="167" r="10" fill="#1565c0"/>
+  <!-- Vibration indicator: small cross-arrows on one particle -->
+  <line x1="66" y1="58" x2="66" y2="64" stroke="#f44336" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="66" y1="84" x2="66" y2="78" stroke="#f44336" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="53" y1="71" x2="59" y2="71" stroke="#f44336" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="79" y1="71" x2="73" y2="71" stroke="#f44336" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="66" y="54" text-anchor="middle" font-size="8" fill="#f44336">vibrates</text>
+  <!-- Labels right side -->
+  <line x1="210" y1="47" x2="222" y2="47" stroke="#555" stroke-width="1"/>
+  <text x="226" y="51" font-size="11" fill="#333">Regular grid (lattice)</text>
+  <line x1="210" y1="71" x2="222" y2="71" stroke="#555" stroke-width="1"/>
+  <text x="226" y="75" font-size="11" fill="#333">Particles almost touching</text>
+  <line x1="210" y1="95" x2="222" y2="95" stroke="#555" stroke-width="1"/>
+  <text x="226" y="99" font-size="11" fill="#333">Only vibrate — never escape</text>
+  <line x1="210" y1="119" x2="222" y2="119" stroke="#555" stroke-width="1"/>
+  <text x="226" y="123" font-size="11" fill="#333">Strong forces hold position</text>
+  <line x1="210" y1="143" x2="222" y2="143" stroke="#555" stroke-width="1"/>
+  <text x="226" y="147" font-size="11" fill="#333">Fixed shape &amp; volume</text>
+  <line x1="210" y1="167" x2="222" y2="167" stroke="#555" stroke-width="1"/>
+  <text x="226" y="171" font-size="11" fill="#333">Cannot flow or be compressed</text>
+  <!-- Bottom bar -->
+  <rect x="15" y="203" width="395" height="30" rx="6" fill="#1565c0" fill-opacity=".12" stroke="#1565c0" stroke-width="1"/>
+  <text x="213" y="222" text-anchor="middle" font-size="10" fill="#1565c0" font-weight="bold">Fixed shape · Fixed volume · Cannot flow · Very high density · Incompressible</text>
+</svg>`},
+
+{title:'Inside a Liquid — Particle Structure',
+content:`<h3>Why Liquids Can Flow</h3>
+<p>Liquid particles are <strong>close together</strong> but arranged <strong>irregularly</strong>. The forces between them are weaker than in a solid, so particles can <strong>slide past each other</strong>. That is why liquids flow.</p>
+<ul>
+<li>💧 Particles are <strong>close together</strong> but NOT in neat rows</li>
+<li>🔄 Particles <strong>slide past each other</strong> freely</li>
+<li>🫙 Takes the <strong>shape of its container</strong></li>
+<li>📏 Volume stays fixed — you cannot compress a liquid</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect x="15" y="20" width="190" height="175" rx="8" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+  <text x="110" y="13" text-anchor="middle" font-size="12" font-weight="bold" fill="#0288d1">LIQUID PARTICLE ARRANGEMENT</text>
+  <!-- Irregular cluster of 22 circles — close but NOT in a grid (r=10) -->
+  <circle cx="45" cy="48" r="10" fill="#0288d1"/>
+  <circle cx="72" cy="42" r="10" fill="#0288d1"/>
+  <circle cx="97" cy="50" r="10" fill="#0288d1"/>
+  <circle cx="123" cy="43" r="10" fill="#0288d1"/>
+  <circle cx="149" cy="51" r="10" fill="#0288d1"/>
+  <circle cx="174" cy="44" r="10" fill="#0288d1"/>
+  <circle cx="38" cy="73" r="10" fill="#0288d1"/>
+  <circle cx="65" cy="68" r="10" fill="#0288d1"/>
+  <circle cx="91" cy="76" r="10" fill="#0288d1"/>
+  <circle cx="117" cy="70" r="10" fill="#0288d1"/>
+  <circle cx="143" cy="78" r="10" fill="#0288d1"/>
+  <circle cx="169" cy="69" r="10" fill="#0288d1"/>
+  <circle cx="50" cy="100" r="10" fill="#0288d1"/>
+  <circle cx="76" cy="95" r="10" fill="#0288d1"/>
+  <circle cx="103" cy="103" r="10" fill="#0288d1"/>
+  <circle cx="129" cy="96" r="10" fill="#0288d1"/>
+  <circle cx="155" cy="104" r="10" fill="#0288d1"/>
+  <circle cx="43" cy="126" r="10" fill="#0288d1"/>
+  <circle cx="70" cy="121" r="10" fill="#0288d1"/>
+  <circle cx="96" cy="130" r="10" fill="#0288d1"/>
+  <circle cx="122" cy="123" r="10" fill="#0288d1"/>
+  <circle cx="148" cy="131" r="10" fill="#0288d1"/>
+  <circle cx="55" cy="152" r="10" fill="#0288d1"/>
+  <circle cx="81" cy="148" r="10" fill="#0288d1"/>
+  <circle cx="108" cy="155" r="10" fill="#0288d1"/>
+  <circle cx="134" cy="149" r="10" fill="#0288d1"/>
+  <circle cx="163" cy="156" r="10" fill="#0288d1"/>
+  <!-- Sliding motion arrow on a particle -->
+  <path d="M60,68 Q80,58 100,68" fill="none" stroke="#f44336" stroke-width="2" stroke-linecap="round"/>
+  <polygon points="104,65 104,73 98,69" fill="#f44336"/>
+  <text x="80" y="54" text-anchor="middle" font-size="8" fill="#f44336">slides past</text>
+  <!-- Labels right side -->
+  <line x1="210" y1="48" x2="222" y2="48" stroke="#555" stroke-width="1"/>
+  <text x="226" y="52" font-size="11" fill="#333">Irregular (random) arrangement</text>
+  <line x1="210" y1="73" x2="222" y2="73" stroke="#555" stroke-width="1"/>
+  <text x="226" y="77" font-size="11" fill="#333">Close together — small gaps</text>
+  <line x1="210" y1="100" x2="222" y2="100" stroke="#555" stroke-width="1"/>
+  <text x="226" y="104" font-size="11" fill="#333">Slide past each other</text>
+  <line x1="210" y1="126" x2="222" y2="126" stroke="#555" stroke-width="1"/>
+  <text x="226" y="130" font-size="11" fill="#333">Weaker forces than solid</text>
+  <line x1="210" y1="152" x2="222" y2="152" stroke="#555" stroke-width="1"/>
+  <text x="226" y="156" font-size="11" fill="#333">Takes container shape</text>
+  <!-- Bottom bar -->
+  <rect x="15" y="203" width="395" height="30" rx="6" fill="#0288d1" fill-opacity=".12" stroke="#0288d1" stroke-width="1"/>
+  <text x="213" y="222" text-anchor="middle" font-size="10" fill="#0288d1" font-weight="bold">No fixed shape · Fixed volume · Can flow · High density · Cannot be compressed</text>
+</svg>`},
+
+{title:'Inside a Gas — Particle Structure',
+content:`<h3>Why Gases Fill Their Container</h3>
+<p>In a gas, particles are <strong>very far apart</strong> and move <strong>very fast in all directions</strong>. There are almost no forces between them, so particles are completely free to spread out and fill any container.</p>
+<ul>
+<li>🔴 Particles are <strong>far apart</strong> — huge gaps between them</li>
+<li>💨 Move very <strong>fast in random directions</strong></li>
+<li>📦 <strong>Fill any container</strong> completely</li>
+<li>🗜️ Can be <strong>compressed</strong> (squeezed) — gaps get smaller</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect x="15" y="20" width="190" height="175" rx="8" fill="#fff8e1" stroke="#e53935" stroke-width="2"/>
+  <text x="110" y="13" text-anchor="middle" font-size="12" font-weight="bold" fill="#e53935">GAS PARTICLE ARRANGEMENT</text>
+  <!-- 8 widely spaced gas particles with motion arrows -->
+  <!-- Particle 1 -->
+  <line x1="45" y1="55" x2="62" y2="48" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="38" cy="58" r="10" fill="#e53935"/>
+  <!-- Particle 2 -->
+  <line x1="115" y1="48" x2="130" y2="38" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="107" cy="52" r="10" fill="#e53935"/>
+  <!-- Particle 3 -->
+  <line x1="172" y1="62" x2="185" y2="55" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="166" cy="67" r="10" fill="#e53935"/>
+  <!-- Particle 4 -->
+  <line x1="58" y1="102" x2="44" y2="93" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="65" cy="107" r="10" fill="#e53935"/>
+  <!-- Particle 5 -->
+  <line x1="140" y1="108" x2="152" y2="100" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="133" cy="113" r="10" fill="#e53935"/>
+  <!-- Particle 6 -->
+  <line x1="40" y1="148" x2="30" y2="158" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="46" cy="143" r="10" fill="#e53935"/>
+  <!-- Particle 7 -->
+  <line x1="100" y1="158" x2="112" y2="165" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="94" cy="153" r="10" fill="#e53935"/>
+  <!-- Particle 8 -->
+  <line x1="165" y1="155" x2="178" y2="148" stroke="#e53935" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="160" cy="160" r="10" fill="#e53935"/>
+  <!-- Gap annotation: double-headed arrow between particles 1 and 4 -->
+  <line x1="38" y1="70" x2="38" y2="95" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="20" y="85" font-size="9" fill="#888" text-anchor="middle">huge</text>
+  <text x="20" y="95" font-size="9" fill="#888" text-anchor="middle">gap</text>
+  <!-- Labels right -->
+  <line x1="210" y1="55" x2="222" y2="55" stroke="#555" stroke-width="1"/>
+  <text x="226" y="59" font-size="11" fill="#333">Particles far apart</text>
+  <line x1="210" y1="80" x2="222" y2="80" stroke="#555" stroke-width="1"/>
+  <text x="226" y="84" font-size="11" fill="#333">Move fast — all directions</text>
+  <line x1="210" y1="107" x2="222" y2="107" stroke="#555" stroke-width="1"/>
+  <text x="226" y="111" font-size="11" fill="#333">Almost no forces between</text>
+  <line x1="210" y1="135" x2="222" y2="135" stroke="#555" stroke-width="1"/>
+  <text x="226" y="139" font-size="11" fill="#333">Fill entire container</text>
+  <line x1="210" y1="162" x2="222" y2="162" stroke="#555" stroke-width="1"/>
+  <text x="226" y="166" font-size="11" fill="#333">Can be compressed (squeezed)</text>
+  <!-- Bottom bar -->
+  <rect x="15" y="203" width="395" height="30" rx="6" fill="#e53935" fill-opacity=".1" stroke="#e53935" stroke-width="1"/>
+  <text x="213" y="222" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">No fixed shape · No fixed volume · Fills container · Very low density · Compressible</text>
+</svg>`},
+
+{title:'Three States — Side-by-Side Comparison',
+content:`<h3>Comparing All Three States</h3>
+<p>Now that you know each state in detail, compare them all at once. Notice how the <strong>particle spacing and arrangement</strong> explains every physical property.</p>
+<ul>
+<li>🌡️ Adding heat increases particle energy → causes state changes</li>
+<li>🔗 Solid has strongest forces · Gas has almost none</li>
+<li>⚖️ Density order: Solid &gt; Liquid &gt; Gas (usually)</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Three containers -->
+  <!-- SOLID box -->
+  <rect x="10" y="30" width="115" height="130" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="68" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#1565c0">SOLID</text>
+  <!-- Solid grid 4x4 r=8 spacing=22 -->
+  <circle cx="30" cy="50" r="8" fill="#1565c0"/><circle cx="52" cy="50" r="8" fill="#1565c0"/><circle cx="74" cy="50" r="8" fill="#1565c0"/><circle cx="96" cy="50" r="8" fill="#1565c0"/><circle cx="118" cy="50" r="8" fill="#1565c0"/>
+  <circle cx="30" cy="72" r="8" fill="#1565c0"/><circle cx="52" cy="72" r="8" fill="#1565c0"/><circle cx="74" cy="72" r="8" fill="#1565c0"/><circle cx="96" cy="72" r="8" fill="#1565c0"/><circle cx="118" cy="72" r="8" fill="#1565c0"/>
+  <circle cx="30" cy="94" r="8" fill="#1565c0"/><circle cx="52" cy="94" r="8" fill="#1565c0"/><circle cx="74" cy="94" r="8" fill="#1565c0"/><circle cx="96" cy="94" r="8" fill="#1565c0"/><circle cx="118" cy="94" r="8" fill="#1565c0"/>
+  <circle cx="30" cy="116" r="8" fill="#1565c0"/><circle cx="52" cy="116" r="8" fill="#1565c0"/><circle cx="74" cy="116" r="8" fill="#1565c0"/><circle cx="96" cy="116" r="8" fill="#1565c0"/><circle cx="118" cy="116" r="8" fill="#1565c0"/>
+  <circle cx="30" cy="138" r="8" fill="#1565c0"/><circle cx="52" cy="138" r="8" fill="#1565c0"/><circle cx="74" cy="138" r="8" fill="#1565c0"/><circle cx="96" cy="138" r="8" fill="#1565c0"/><circle cx="118" cy="138" r="8" fill="#1565c0"/>
+  <!-- LIQUID box -->
+  <rect x="152" y="30" width="115" height="130" rx="8" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+  <text x="210" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#0288d1">LIQUID</text>
+  <!-- Irregular liquid particles -->
+  <circle cx="170" cy="52" r="8" fill="#0288d1"/><circle cx="193" cy="47" r="8" fill="#0288d1"/><circle cx="216" cy="54" r="8" fill="#0288d1"/><circle cx="239" cy="49" r="8" fill="#0288d1"/><circle cx="258" cy="56" r="8" fill="#0288d1"/>
+  <circle cx="163" cy="76" r="8" fill="#0288d1"/><circle cx="186" cy="71" r="8" fill="#0288d1"/><circle cx="209" cy="78" r="8" fill="#0288d1"/><circle cx="232" cy="73" r="8" fill="#0288d1"/><circle cx="254" cy="80" r="8" fill="#0288d1"/>
+  <circle cx="172" cy="100" r="8" fill="#0288d1"/><circle cx="195" cy="96" r="8" fill="#0288d1"/><circle cx="218" cy="103" r="8" fill="#0288d1"/><circle cx="241" cy="98" r="8" fill="#0288d1"/>
+  <circle cx="165" cy="124" r="8" fill="#0288d1"/><circle cx="189" cy="120" r="8" fill="#0288d1"/><circle cx="213" cy="127" r="8" fill="#0288d1"/><circle cx="237" cy="122" r="8" fill="#0288d1"/><circle cx="257" cy="128" r="8" fill="#0288d1"/>
+  <!-- GAS box -->
+  <rect x="294" y="30" width="115" height="130" rx="8" fill="#fff8e1" stroke="#e53935" stroke-width="2"/>
+  <text x="352" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#e53935">GAS</text>
+  <!-- Sparse gas particles -->
+  <circle cx="318" cy="55" r="8" fill="#e53935"/><circle cx="370" cy="48" r="8" fill="#e53935"/>
+  <circle cx="310" cy="95" r="8" fill="#e53935"/><circle cx="356" cy="88" r="8" fill="#e53935"/>
+  <circle cx="395" cy="110" r="8" fill="#e53935"/>
+  <circle cx="322" cy="140" r="8" fill="#e53935"/><circle cx="383" cy="150" r="8" fill="#e53935"/>
+  <!-- Heat arrow at bottom -->
+  <defs><marker id="ha" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="#f44336"/></marker></defs>
+  <line x1="50" y1="180" x2="370" y2="180" stroke="#f44336" stroke-width="2.5" marker-end="url(#ha)"/>
+  <text x="210" y="196" text-anchor="middle" font-size="11" fill="#f44336">Adding heat energy →</text>
+  <!-- Property labels below each box -->
+  <text x="68" y="212" text-anchor="middle" font-size="10" fill="#1565c0">Fixed shape &amp; volume</text>
+  <text x="210" y="212" text-anchor="middle" font-size="10" fill="#0288d1">Fixed volume, no fixed shape</text>
+  <text x="352" y="212" text-anchor="middle" font-size="10" fill="#e53935">No fixed shape or volume</text>
+  <text x="68" y="228" text-anchor="middle" font-size="10" fill="#1565c0">Cannot flow</text>
+  <text x="210" y="228" text-anchor="middle" font-size="10" fill="#0288d1">Can flow</text>
+  <text x="352" y="228" text-anchor="middle" font-size="10" fill="#e53935">Fills container</text>
+</svg>`},
+
+{title:'All Six Changes of State',
+content:`<h3>Six Named Processes</h3>
+<p>Every change between the three states has a specific name. You must know all six for your exam!</p>
+<table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:.9rem">
+<tr style="background:#006064;color:#fff"><th style="padding:5px">Process</th><th style="padding:5px">From</th><th style="padding:5px">To</th><th style="padding:5px">Heat</th></tr>
+<tr style="background:#e0f7fa"><td style="padding:5px"><strong>Melting</strong></td><td style="padding:5px">Solid</td><td style="padding:5px">Liquid</td><td style="padding:5px">🔥 Absorbed</td></tr>
+<tr><td style="padding:5px"><strong>Freezing</strong></td><td style="padding:5px">Liquid</td><td style="padding:5px">Solid</td><td style="padding:5px">❄️ Released</td></tr>
+<tr style="background:#e0f7fa"><td style="padding:5px"><strong>Evaporation / Boiling</strong></td><td style="padding:5px">Liquid</td><td style="padding:5px">Gas</td><td style="padding:5px">🔥 Absorbed</td></tr>
+<tr><td style="padding:5px"><strong>Condensation</strong></td><td style="padding:5px">Gas</td><td style="padding:5px">Liquid</td><td style="padding:5px">❄️ Released</td></tr>
+<tr style="background:#e0f7fa"><td style="padding:5px"><strong>Sublimation</strong></td><td style="padding:5px">Solid</td><td style="padding:5px">Gas</td><td style="padding:5px">🔥 Absorbed</td></tr>
+<tr><td style="padding:5px"><strong>Deposition</strong></td><td style="padding:5px">Gas</td><td style="padding:5px">Solid</td><td style="padding:5px">❄️ Released</td></tr>
+</table>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="ra" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f44336"/></marker>
+    <marker id="ba" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1565c0"/></marker>
+  </defs>
+  <!-- Three state ellipses -->
+  <ellipse cx="210" cy="50" rx="58" ry="30" fill="#1565c0"/>
+  <text x="210" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">SOLID</text>
+  <ellipse cx="80" cy="185" rx="58" ry="30" fill="#0288d1"/>
+  <text x="80" y="190" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">LIQUID</text>
+  <ellipse cx="340" cy="185" rx="58" ry="30" fill="#e53935"/>
+  <text x="340" y="190" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">GAS</text>
+  <!-- Arrow: Solid → Liquid (MELTING) left side going down -->
+  <line x1="168" y1="72" x2="120" y2="160" stroke="#f44336" stroke-width="2" marker-end="url(#ra)"/>
+  <text x="120" y="108" text-anchor="end" font-size="10" fill="#f44336">Melting 🔥</text>
+  <!-- Arrow: Liquid → Solid (FREEZING) right side going up -->
+  <line x1="128" y1="158" x2="175" y2="74" stroke="#1565c0" stroke-width="2" marker-end="url(#ba)"/>
+  <text x="140" y="128" text-anchor="start" font-size="10" fill="#1565c0">Freezing ❄️</text>
+  <!-- Arrow: Liquid → Gas (EVAPORATION) bottom going right -->
+  <line x1="138" y1="185" x2="282" y2="185" stroke="#f44336" stroke-width="2" marker-end="url(#ra)"/>
+  <text x="210" y="200" text-anchor="middle" font-size="10" fill="#f44336">Evaporation/Boiling 🔥</text>
+  <!-- Arrow: Gas → Liquid (CONDENSATION) bottom going left -->
+  <line x1="282" y1="175" x2="138" y2="175" stroke="#1565c0" stroke-width="2" marker-end="url(#ba)"/>
+  <text x="210" y="170" text-anchor="middle" font-size="10" fill="#1565c0">Condensation ❄️</text>
+  <!-- Arrow: Solid → Gas (SUBLIMATION) right side going down -->
+  <line x1="262" y1="68" x2="300" y2="158" stroke="#f44336" stroke-width="2" marker-end="url(#ra)" stroke-dasharray="6,3"/>
+  <text x="300" y="108" text-anchor="start" font-size="10" fill="#f44336">Sublimation 🔥</text>
+  <!-- Arrow: Gas → Solid (DEPOSITION) left side going up -->
+  <line x1="292" y1="156" x2="256" y2="72" stroke="#1565c0" stroke-width="2" marker-end="url(#ba)" stroke-dasharray="6,3"/>
+  <text x="254" y="120" text-anchor="end" font-size="10" fill="#1565c0">Deposition ❄️</text>
+  <!-- Legend -->
+  <line x1="20" y1="18" x2="40" y2="18" stroke="#f44336" stroke-width="2"/>
+  <text x="44" y="22" font-size="10" fill="#f44336">= Absorbs heat (heating up)</text>
+  <line x1="220" y1="18" x2="240" y2="18" stroke="#1565c0" stroke-width="2"/>
+  <text x="244" y="22" font-size="10" fill="#1565c0">= Releases heat (cooling)</text>
+</svg>`},
+
+{title:'The Heating Curve',
+content:`<h3>What Happens as You Heat Water?</h3>
+<p>When you heat ice from −20°C and plot the temperature, you get a special graph called the <strong>heating curve</strong>. The <strong>flat sections</strong> are the most important — they show where heat energy is used to <em>break the forces</em> between particles instead of raising temperature.</p>
+<ul>
+<li>📈 <strong>Sloped sections</strong>: temperature rises — particles gain energy</li>
+<li>➡️ <strong>Flat sections</strong>: temperature STAYS SAME while state changes</li>
+<li>🧊 Flat at <strong>0°C</strong> = melting (ice → water)</li>
+<li>💧 Flat at <strong>100°C</strong> = boiling (water → steam)</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background regions -->
+  <rect x="58" y="20" width="60" height="175" fill="#e3f2fd" fill-opacity=".5"/>
+  <rect x="118" y="20" width="50" height="175" fill="#b3e5fc" fill-opacity=".6"/>
+  <rect x="168" y="20" width="105" height="175" fill="#e1f5fe" fill-opacity=".5"/>
+  <rect x="273" y="20" width="55" height="175" fill="#fff9c4" fill-opacity=".7"/>
+  <rect x="328" y="20" width="72" height="175" fill="#fff3e0" fill-opacity=".6"/>
+  <!-- Axes -->
+  <line x1="58" y1="195" x2="405" y2="195" stroke="#333" stroke-width="1.5"/>
+  <line x1="58" y1="20" x2="58" y2="195" stroke="#333" stroke-width="1.5"/>
+  <!-- Y-axis labels (temperature) -->
+  <text x="54" y="199" text-anchor="end" font-size="9" fill="#555">−20°C</text>
+  <text x="54" y="174" text-anchor="end" font-size="9" fill="#555">0°C</text>
+  <text x="54" y="62" text-anchor="end" font-size="9" fill="#555">100°C</text>
+  <text x="54" y="36" text-anchor="end" font-size="9" fill="#555">120°C</text>
+  <!-- Horizontal guide lines -->
+  <line x1="58" y1="172" x2="405" y2="172" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="58" y1="60" x2="405" y2="60" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- The heating curve path: M start, slope to 0°C, flat 0°C, slope to 100°C, flat 100°C, slope -->
+  <polyline points="58,197 118,172 168,172 273,60 328,60 400,36" fill="none" stroke="#d32f2f" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Dots at key points -->
+  <circle cx="118" cy="172" r="4" fill="#d32f2f"/>
+  <circle cx="168" cy="172" r="4" fill="#d32f2f"/>
+  <circle cx="273" cy="60" r="4" fill="#d32f2f"/>
+  <circle cx="328" cy="60" r="4" fill="#d32f2f"/>
+  <!-- Region labels -->
+  <text x="88" y="140" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold">Solid</text>
+  <text x="88" y="151" text-anchor="middle" font-size="9" fill="#1565c0">heating</text>
+  <text x="143" y="158" text-anchor="middle" font-size="9" fill="#006064" font-weight="bold">MELTING</text>
+  <text x="143" y="168" text-anchor="middle" font-size="8" fill="#006064">0°C</text>
+  <text x="220" y="130" text-anchor="middle" font-size="9" fill="#0288d1" font-weight="bold">Liquid</text>
+  <text x="220" y="141" text-anchor="middle" font-size="9" fill="#0288d1">heating</text>
+  <text x="300" y="48" text-anchor="middle" font-size="9" fill="#e65100" font-weight="bold">BOILING</text>
+  <text x="300" y="58" text-anchor="middle" font-size="8" fill="#e65100">100°C</text>
+  <text x="364" y="45" text-anchor="middle" font-size="9" fill="#e53935" font-weight="bold">Gas</text>
+  <text x="364" y="56" text-anchor="middle" font-size="9" fill="#e53935">heating</text>
+  <!-- Axis labels -->
+  <text x="230" y="215" text-anchor="middle" font-size="10" fill="#555">Heat energy added →</text>
+  <text x="15" y="112" text-anchor="middle" font-size="10" fill="#555" transform="rotate(-90,15,112)">Temperature (°C)</text>
+  <!-- Key note -->
+  <rect x="58" y="220" width="350" height="16" rx="4" fill="#fff9c4"/>
+  <text x="233" y="231" text-anchor="middle" font-size="9" fill="#555">Flat sections: heat energy breaks forces — temperature does NOT rise</text>
+</svg>`},
+
+{title:'Thermal Expansion — Why Bridges Have Gaps',
+content:`<h3>Solids Expand When Heated</h3>
+<p>When a solid is heated, its particles vibrate <strong>more vigorously</strong>. They push each other apart slightly — the solid gets <strong>bigger</strong>. This is called <strong>thermal expansion</strong>.</p>
+<ul>
+<li>🌉 Bridges have <strong>expansion gaps</strong> — room for the metal to expand in summer</li>
+<li>🚂 Railway tracks have gaps for the same reason</li>
+<li>🥫 Metal lids on jars loosen when run under hot water — the lid expands!</li>
+<li>🌡️ Liquids in thermometers expand when hot, rising up the tube</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- COLD side label -->
+  <text x="105" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#1565c0">COLD ❄️</text>
+  <rect x="20" y="25" width="170" height="135" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <!-- Cold: 5x4 grid, r=10, spacing=28 — tightly packed -->
+  <circle cx="48" cy="52" r="10" fill="#1565c0"/><circle cx="76" cy="52" r="10" fill="#1565c0"/><circle cx="104" cy="52" r="10" fill="#1565c0"/><circle cx="132" cy="52" r="10" fill="#1565c0"/><circle cx="160" cy="52" r="10" fill="#1565c0"/>
+  <circle cx="48" cy="80" r="10" fill="#1565c0"/><circle cx="76" cy="80" r="10" fill="#1565c0"/><circle cx="104" cy="80" r="10" fill="#1565c0"/><circle cx="132" cy="80" r="10" fill="#1565c0"/><circle cx="160" cy="80" r="10" fill="#1565c0"/>
+  <circle cx="48" cy="108" r="10" fill="#1565c0"/><circle cx="76" cy="108" r="10" fill="#1565c0"/><circle cx="104" cy="108" r="10" fill="#1565c0"/><circle cx="132" cy="108" r="10" fill="#1565c0"/><circle cx="160" cy="108" r="10" fill="#1565c0"/>
+  <circle cx="48" cy="136" r="10" fill="#1565c0"/><circle cx="76" cy="136" r="10" fill="#1565c0"/><circle cx="104" cy="136" r="10" fill="#1565c0"/><circle cx="132" cy="136" r="10" fill="#1565c0"/><circle cx="160" cy="136" r="10" fill="#1565c0"/>
+  <text x="105" y="173" text-anchor="middle" font-size="10" fill="#555">Gap between particles: small</text>
+  <!-- HOT side label -->
+  <text x="315" y="18" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">HOT 🔥</text>
+  <rect x="230" y="25" width="178" height="135" rx="8" fill="#fff3e0" stroke="#c62828" stroke-width="2"/>
+  <!-- Hot: same number of particles but LARGER spacing = solid expanded -->
+  <circle cx="260" cy="50" r="10" fill="#ef5350"/><circle cx="292" cy="50" r="10" fill="#ef5350"/><circle cx="324" cy="50" r="10" fill="#ef5350"/><circle cx="356" cy="50" r="10" fill="#ef5350"/><circle cx="388" cy="50" r="10" fill="#ef5350"/>
+  <circle cx="260" cy="83" r="10" fill="#ef5350"/><circle cx="292" cy="83" r="10" fill="#ef5350"/><circle cx="324" cy="83" r="10" fill="#ef5350"/><circle cx="356" cy="83" r="10" fill="#ef5350"/><circle cx="388" cy="83" r="10" fill="#ef5350"/>
+  <circle cx="260" cy="116" r="10" fill="#ef5350"/><circle cx="292" cy="116" r="10" fill="#ef5350"/><circle cx="324" cy="116" r="10" fill="#ef5350"/><circle cx="356" cy="116" r="10" fill="#ef5350"/><circle cx="388" cy="116" r="10" fill="#ef5350"/>
+  <circle cx="260" cy="149" r="10" fill="#ef5350"/><circle cx="292" cy="149" r="10" fill="#ef5350"/><circle cx="324" cy="149" r="10" fill="#ef5350"/><circle cx="356" cy="149" r="10" fill="#ef5350"/><circle cx="388" cy="149" r="10" fill="#ef5350"/>
+  <text x="319" y="173" text-anchor="middle" font-size="10" fill="#555">Gap between particles: bigger</text>
+  <!-- Arrow between the two diagrams -->
+  <defs><marker id="ta" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#f44336"/></marker></defs>
+  <line x1="196" y1="92" x2="224" y2="92" stroke="#f44336" stroke-width="2" marker-end="url(#ta)"/>
+  <text x="210" y="86" text-anchor="middle" font-size="9" fill="#f44336">heat</text>
+  <!-- Brace showing expansion -->
+  <line x1="230" y1="190" x2="408" y2="190" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="230" y1="186" x2="230" y2="194" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="408" y1="186" x2="408" y2="194" stroke="#c62828" stroke-width="1.5"/>
+  <line x1="20" y1="200" x2="190" y2="200" stroke="#1565c0" stroke-width="1.5"/>
+  <line x1="20" y1="196" x2="20" y2="204" stroke="#1565c0" stroke-width="1.5"/>
+  <line x1="190" y1="196" x2="190" y2="204" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="105" y="215" text-anchor="middle" font-size="10" fill="#1565c0">170 units</text>
+  <text x="319" y="205" text-anchor="middle" font-size="10" fill="#c62828">178 units (expanded!)</text>
+</svg>`},
+
+{title:'Diffusion — Particles Spread Out',
+content:`<h3>Diffusion: Particles Mix on Their Own</h3>
+<p><strong>Diffusion</strong> is the movement of particles from an area of <strong>high concentration</strong> to an area of <strong>low concentration</strong>. It happens because particles are always moving randomly.</p>
+<ul>
+<li>🌸 You can smell perfume across a room — gas molecules diffuse through air</li>
+<li>🍵 Food colouring spreads through water — liquid diffusion (slower)</li>
+<li>⚡ Diffusion is <strong>faster in gases</strong> than liquids (particles move faster)</li>
+<li>🌡️ Diffusion is <strong>faster at higher temperatures</strong> (more energy)</li>
+<li>🔬 <strong>Smaller particles</strong> diffuse faster than larger ones</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Three frames showing diffusion over time -->
+  <!-- Frame labels -->
+  <text x="70" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">START</text>
+  <text x="210" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">SPREADING</text>
+  <text x="350" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">FULLY MIXED</text>
+  <!-- Frame 1: gas in left half only -->
+  <rect x="15" y="20" width="110" height="120" rx="6" fill="#fafafa" stroke="#999" stroke-width="1.5"/>
+  <line x1="70" y1="20" x2="70" y2="140" stroke="#555" stroke-width="2" stroke-dasharray="4,2"/>
+  <!-- Gas particles (red) on left -->
+  <circle cx="32" cy="42" r="7" fill="#e53935"/><circle cx="55" cy="35" r="7" fill="#e53935"/>
+  <circle cx="28" cy="68" r="7" fill="#e53935"/><circle cx="50" cy="60" r="7" fill="#e53935"/>
+  <circle cx="38" cy="92" r="7" fill="#e53935"/><circle cx="60" cy="85" r="7" fill="#e53935"/>
+  <circle cx="30" cy="118" r="7" fill="#e53935"/><circle cx="55" cy="110" r="7" fill="#e53935"/>
+  <!-- Air particles (gray) on right side of frame 1 -->
+  <circle cx="85" cy="40" r="7" fill="#bbb"/><circle cx="108" cy="50" r="7" fill="#bbb"/>
+  <circle cx="80" cy="78" r="7" fill="#bbb"/><circle cx="105" cy="90" r="7" fill="#bbb"/>
+  <circle cx="88" cy="115" r="7" fill="#bbb"/><circle cx="112" cy="108" r="7" fill="#bbb"/>
+  <text x="46" y="152" text-anchor="middle" font-size="9" fill="#e53935">Gas</text>
+  <text x="93" y="152" text-anchor="middle" font-size="9" fill="#888">Air</text>
+  <!-- Arrow 1→2 -->
+  <defs><marker id="da" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#555"/></marker></defs>
+  <line x1="132" y1="80" x2="148" y2="80" stroke="#555" stroke-width="1.5" marker-end="url(#da)"/>
+  <text x="140" y="73" text-anchor="middle" font-size="8" fill="#555">time</text>
+  <!-- Frame 2: partially mixed -->
+  <rect x="155" y="20" width="110" height="120" rx="6" fill="#fafafa" stroke="#999" stroke-width="1.5"/>
+  <!-- Mixing particles -->
+  <circle cx="168" cy="38" r="7" fill="#e53935"/><circle cx="190" cy="30" r="7" fill="#e53935"/>
+  <circle cx="208" cy="42" r="7" fill="#e53935"/><circle cx="230" cy="35" r="7" fill="#e53935"/>
+  <circle cx="162" cy="68" r="7" fill="#e53935"/><circle cx="185" cy="62" r="7" fill="#bbb"/>
+  <circle cx="210" cy="70" r="7" fill="#bbb"/><circle cx="235" cy="62" r="7" fill="#e53935"/>
+  <circle cx="170" cy="96" r="7" fill="#bbb"/><circle cx="195" cy="90" r="7" fill="#e53935"/>
+  <circle cx="218" cy="98" r="7" fill="#bbb"/><circle cx="242" cy="90" r="7" fill="#bbb"/>
+  <circle cx="165" cy="122" r="7" fill="#bbb"/><circle cx="192" cy="118" r="7" fill="#e53935"/>
+  <circle cx="220" cy="124" r="7" fill="#bbb"/><circle cx="245" cy="116" r="7" fill="#e53935"/>
+  <!-- Arrow 2→3 -->
+  <line x1="272" y1="80" x2="288" y2="80" stroke="#555" stroke-width="1.5" marker-end="url(#da)"/>
+  <text x="280" y="73" text-anchor="middle" font-size="8" fill="#555">time</text>
+  <!-- Frame 3: fully mixed -->
+  <rect x="295" y="20" width="110" height="120" rx="6" fill="#fafafa" stroke="#999" stroke-width="1.5"/>
+  <!-- Evenly distributed particles -->
+  <circle cx="310" cy="38" r="7" fill="#e53935"/><circle cx="333" cy="32" r="7" fill="#bbb"/>
+  <circle cx="358" cy="40" r="7" fill="#e53935"/><circle cx="385" cy="33" r="7" fill="#bbb"/>
+  <circle cx="305" cy="66" r="7" fill="#bbb"/><circle cx="330" cy="62" r="7" fill="#e53935"/>
+  <circle cx="357" cy="68" r="7" fill="#bbb"/><circle cx="393" cy="60" r="7" fill="#e53935"/>
+  <circle cx="312" cy="95" r="7" fill="#e53935"/><circle cx="338" cy="90" r="7" fill="#bbb"/>
+  <circle cx="365" cy="97" r="7" fill="#e53935"/><circle cx="390" cy="90" r="7" fill="#bbb"/>
+  <circle cx="308" cy="122" r="7" fill="#bbb"/><circle cx="335" cy="118" r="7" fill="#e53935"/>
+  <circle cx="360" cy="124" r="7" fill="#bbb"/><circle cx="390" cy="118" r="7" fill="#e53935"/>
+  <!-- Bottom labels -->
+  <text x="210" y="170" text-anchor="middle" font-size="11" fill="#555">Diffusion happens because particles are always moving randomly</text>
+  <text x="210" y="186" text-anchor="middle" font-size="10" fill="#e53935">High concentration → Low concentration  (net movement)</text>
+  <!-- Concentration gradient arrow -->
+  <defs><marker id="cg" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#e53935"/></marker></defs>
+  <line x1="50" y1="205" x2="370" y2="205" stroke="#e53935" stroke-width="1.5" marker-end="url(#cg)" stroke-dasharray="5,3"/>
+  <text x="50" y="220" font-size="9" fill="#e53935">High</text>
+  <text x="340" y="220" font-size="9" fill="#e53935">Low</text>
+  <text x="210" y="220" text-anchor="middle" font-size="9" fill="#888">concentration gradient</text>
+</svg>`},
+
+{title:'Density — Why Ice Floats on Water',
+content:`<h3>Density and the Particle Model</h3>
+<p><strong>Density</strong> = mass per unit volume. The more particles packed into the same space, the denser the material.</p>
+<ul>
+<li>⬛ <strong>Solids</strong> are usually the most dense — most particles in the same volume</li>
+<li>💧 <strong>Liquids</strong> are slightly less dense — small gaps between particles</li>
+<li>💨 <strong>Gases</strong> are very low density — particles far apart</li>
+<li>❄️ Special case: <strong>Ice is LESS dense than liquid water</strong> — that is why ice floats! Water expands when it freezes, forming a hexagonal lattice with bigger gaps.</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- Three same-size containers showing different packing = different density -->
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Same Volume — Different Density</text>
+  <!-- Box 1: Solid (most particles) -->
+  <rect x="15" y="25" width="115" height="145" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="73" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">SOLID</text>
+  <!-- 25 particles packed in -->
+  <circle cx="35" cy="45" r="9" fill="#1565c0"/><circle cx="55" cy="45" r="9" fill="#1565c0"/><circle cx="75" cy="45" r="9" fill="#1565c0"/><circle cx="95" cy="45" r="9" fill="#1565c0"/><circle cx="115" cy="45" r="9" fill="#1565c0"/>
+  <circle cx="35" cy="65" r="9" fill="#1565c0"/><circle cx="55" cy="65" r="9" fill="#1565c0"/><circle cx="75" cy="65" r="9" fill="#1565c0"/><circle cx="95" cy="65" r="9" fill="#1565c0"/><circle cx="115" cy="65" r="9" fill="#1565c0"/>
+  <circle cx="35" cy="85" r="9" fill="#1565c0"/><circle cx="55" cy="85" r="9" fill="#1565c0"/><circle cx="75" cy="85" r="9" fill="#1565c0"/><circle cx="95" cy="85" r="9" fill="#1565c0"/><circle cx="115" cy="85" r="9" fill="#1565c0"/>
+  <circle cx="35" cy="105" r="9" fill="#1565c0"/><circle cx="55" cy="105" r="9" fill="#1565c0"/><circle cx="75" cy="105" r="9" fill="#1565c0"/><circle cx="95" cy="105" r="9" fill="#1565c0"/><circle cx="115" cy="105" r="9" fill="#1565c0"/>
+  <circle cx="35" cy="125" r="9" fill="#1565c0"/><circle cx="55" cy="125" r="9" fill="#1565c0"/><circle cx="75" cy="125" r="9" fill="#1565c0"/><circle cx="95" cy="125" r="9" fill="#1565c0"/><circle cx="115" cy="125" r="9" fill="#1565c0"/>
+  <circle cx="35" cy="155" r="9" fill="#1565c0"/><circle cx="55" cy="155" r="9" fill="#1565c0"/><circle cx="75" cy="155" r="9" fill="#1565c0"/><circle cx="95" cy="155" r="9" fill="#1565c0"/><circle cx="115" cy="155" r="9" fill="#1565c0"/>
+  <text x="73" y="201" text-anchor="middle" font-size="10" fill="#1565c0">High density</text>
+  <!-- Box 2: Liquid (slightly fewer, gaps) -->
+  <rect x="152" y="25" width="115" height="145" rx="6" fill="#e1f5fe" stroke="#0288d1" stroke-width="2"/>
+  <text x="210" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#0288d1">LIQUID</text>
+  <!-- 20 particles irregularly placed with small gaps -->
+  <circle cx="170" cy="48" r="9" fill="#0288d1"/><circle cx="193" cy="42" r="9" fill="#0288d1"/><circle cx="218" cy="50" r="9" fill="#0288d1"/><circle cx="243" cy="44" r="9" fill="#0288d1"/>
+  <circle cx="162" cy="74" r="9" fill="#0288d1"/><circle cx="187" cy="70" r="9" fill="#0288d1"/><circle cx="211" cy="78" r="9" fill="#0288d1"/><circle cx="238" cy="72" r="9" fill="#0288d1"/>
+  <circle cx="170" cy="101" r="9" fill="#0288d1"/><circle cx="196" cy="96" r="9" fill="#0288d1"/><circle cx="222" cy="104" r="9" fill="#0288d1"/><circle cx="246" cy="98" r="9" fill="#0288d1"/>
+  <circle cx="163" cy="128" r="9" fill="#0288d1"/><circle cx="190" cy="123" r="9" fill="#0288d1"/><circle cx="216" cy="131" r="9" fill="#0288d1"/><circle cx="242" cy="125" r="9" fill="#0288d1"/>
+  <circle cx="172" cy="155" r="9" fill="#0288d1"/><circle cx="198" cy="150" r="9" fill="#0288d1"/><circle cx="225" cy="157" r="9" fill="#0288d1"/><circle cx="250" cy="151" r="9" fill="#0288d1"/>
+  <text x="210" y="201" text-anchor="middle" font-size="10" fill="#0288d1">Medium density</text>
+  <!-- Box 3: Gas (very few particles) -->
+  <rect x="290" y="25" width="115" height="145" rx="6" fill="#fff8e1" stroke="#e53935" stroke-width="2"/>
+  <text x="348" y="186" text-anchor="middle" font-size="11" font-weight="bold" fill="#e53935">GAS</text>
+  <!-- Only 5 particles -->
+  <circle cx="315" cy="55" r="9" fill="#e53935"/>
+  <circle cx="380" cy="48" r="9" fill="#e53935"/>
+  <circle cx="308" cy="110" r="9" fill="#e53935"/>
+  <circle cx="360" cy="100" r="9" fill="#e53935"/>
+  <circle cx="340" cy="155" r="9" fill="#e53935"/>
+  <text x="348" y="201" text-anchor="middle" font-size="10" fill="#e53935">Very low density</text>
+  <!-- Density comparison bar at bottom -->
+  <rect x="15" y="213" width="390" height="22" rx="4" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <rect x="15" y="213" width="260" height="22" rx="4" fill="#1565c0" fill-opacity=".15"/>
+  <rect x="15" y="213" width="130" height="22" rx="4" fill="#e53935" fill-opacity=".1"/>
+  <text x="210" y="228" text-anchor="middle" font-size="10" fill="#333">Density:   Solid  &gt;  Liquid  &gt;&gt;  Gas   (usually)</text>
+</svg>`},
+
+{title:'The Water Cycle',
+content:`<h3>Applying Changes of State to Nature</h3>
+<p>The <strong>water cycle</strong> shows all the changes of state happening in nature, driven by energy from the Sun.</p>
+<ul>
+<li>☀️ Sun heats ocean → <strong>evaporation</strong> (liquid → gas)</li>
+<li>☁️ Water vapour rises, cools → <strong>condensation</strong> (gas → liquid) → clouds</li>
+<li>🌧️ Droplets too heavy → <strong>precipitation</strong> (rain or snow)</li>
+<li>❄️ At high altitude (cold) → <strong>freezing/sublimation</strong> → snow and ice</li>
+<li>🔄 Water runs back to ocean — the cycle repeats</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="wa" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1565c0"/></marker>
+    <marker id="ra" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#0288d1"/></marker>
+  </defs>
+  <!-- Sun -->
+  <circle cx="380" cy="32" r="22" fill="#ffd600"/>
+  <text x="380" y="37" text-anchor="middle" font-size="11">☀️</text>
+  <!-- Ground/ocean -->
+  <path d="M0,200 Q105,185 210,200 Q315,215 420,200 L420,240 L0,240 Z" fill="#1565c0" fill-opacity=".25"/>
+  <text x="210" y="225" text-anchor="middle" font-size="11" fill="#0288d1" font-weight="bold">Ocean / Lake</text>
+  <!-- Cloud -->
+  <ellipse cx="100" cy="55" rx="30" ry="16" fill="#b0bec5"/>
+  <ellipse cx="125" cy="48" rx="28" ry="18" fill="#cfd8dc"/>
+  <ellipse cx="150" cy="55" rx="26" ry="15" fill="#b0bec5"/>
+  <ellipse cx="125" cy="62" rx="36" ry="12" fill="#eceff1"/>
+  <text x="125" y="32" text-anchor="middle" font-size="10" fill="#546e7a" font-weight="bold">Cloud</text>
+  <text x="125" y="22" text-anchor="middle" font-size="9" fill="#546e7a">(condensation)</text>
+  <!-- Mountain/land right -->
+  <polygon points="300,200 360,110 420,200" fill="#8d6e63"/>
+  <polygon points="345,140 360,110 375,140" fill="#fff"/>
+  <text x="360" y="105" text-anchor="middle" font-size="9" fill="#555">snow</text>
+  <!-- Evaporation arrows: ocean → cloud -->
+  <path d="M160,192 Q130,140 130,80" fill="none" stroke="#f44336" stroke-width="1.8" stroke-dasharray="6,3" marker-end="url(#wa)"/>
+  <text x="105" y="140" text-anchor="middle" font-size="10" fill="#f44336">Evaporation</text>
+  <!-- Precipitation arrows: cloud → ground -->
+  <line x1="108" y1="74" x2="95" y2="155" stroke="#0288d1" stroke-width="1.5" marker-end="url(#ra)"/>
+  <line x1="120" y1="76" x2="112" y2="165" stroke="#0288d1" stroke-width="1.5" marker-end="url(#ra)"/>
+  <line x1="134" y1="74" x2="130" y2="160" stroke="#0288d1" stroke-width="1.5" marker-end="url(#ra)"/>
+  <text x="60" y="125" text-anchor="middle" font-size="10" fill="#0288d1">Rain</text>
+  <text x="60" y="137" text-anchor="middle" font-size="9" fill="#0288d1">(precipitation)</text>
+  <!-- River runoff arrow: mountain → ocean -->
+  <path d="M305,195 Q250,195 215,198" fill="none" stroke="#1565c0" stroke-width="2" marker-end="url(#wa)"/>
+  <text x="265" y="188" text-anchor="middle" font-size="9" fill="#1565c0">Runoff / River</text>
+  <!-- Wind arrow: cloud movement -->
+  <path d="M158,52 Q200,40 230,48" fill="none" stroke="#90a4ae" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#wa)"/>
+  <text x="200" y="38" text-anchor="middle" font-size="9" fill="#90a4ae">wind carries vapour</text>
+  <!-- Sun arrow to ocean -->
+  <line x1="368" y1="52" x2="290" y2="185" stroke="#ffd600" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="340" y="130" text-anchor="middle" font-size="9" fill="#f9a825">heat energy</text>
+</svg>`},
+
+{title:'Pressure in Gases',
+content:`<h3>What Causes Gas Pressure?</h3>
+<p>Gas pressure is caused by <strong>particles colliding with the walls</strong> of their container. Every collision exerts a tiny force on the wall — millions of collisions per second create noticeable pressure.</p>
+<ul>
+<li>🎈 Blow more air into a balloon → more particles → more collisions → higher pressure → balloon expands</li>
+<li>🌡️ Heat a sealed container → particles move faster → harder collisions → higher pressure (danger!)</li>
+<li>📦 Compress a gas → smaller volume → particles hit walls more often → higher pressure</li>
+</ul>
+<p><strong>Pressure Law:</strong> at fixed volume, doubling temperature (in Kelvin) doubles pressure.</p>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="pa" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0, 7 3, 0 6" fill="#e53935"/></marker>
+  </defs>
+  <!-- Container (sealed box) -->
+  <rect x="80" y="30" width="260" height="170" rx="10" fill="#fff8e1" stroke="#e53935" stroke-width="3"/>
+  <text x="210" y="22" text-anchor="middle" font-size="12" font-weight="bold" fill="#e53935">Sealed Gas Container</text>
+  <!-- Gas particles with velocity arrows bouncing -->
+  <!-- Particle near top wall hitting it -->
+  <circle cx="150" cy="55" r="9" fill="#e53935"/>
+  <line x1="150" y1="44" x2="150" y2="33" stroke="#e53935" stroke-width="1.5" marker-end="url(#pa)"/>
+  <!-- Particle near right wall -->
+  <circle cx="318" cy="110" r="9" fill="#e53935"/>
+  <line x1="329" y1="110" x2="338" y2="110" stroke="#e53935" stroke-width="1.5" marker-end="url(#pa)"/>
+  <!-- Particle near bottom wall -->
+  <circle cx="230" cy="183" r="9" fill="#e53935"/>
+  <line x1="230" y1="194" x2="230" y2="200" stroke="#e53935" stroke-width="1.5" marker-end="url(#pa)"/>
+  <!-- Particle near left wall -->
+  <circle cx="102" cy="150" r="9" fill="#e53935"/>
+  <line x1="91" y1="150" x2="82" y2="150" stroke="#e53935" stroke-width="1.5" marker-end="url(#pa)"/>
+  <!-- Moving particles in middle -->
+  <circle cx="180" cy="120" r="9" fill="#ef9a9a"/>
+  <line x1="188" y1="113" x2="198" y2="103" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="260" cy="80" r="9" fill="#ef9a9a"/>
+  <line x1="252" y1="88" x2="242" y2="98" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="140" cy="160" r="9" fill="#ef9a9a"/>
+  <line x1="148" y1="153" x2="160" y2="143" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <circle cx="290" cy="155" r="9" fill="#ef9a9a"/>
+  <line x1="282" y1="148" x2="272" y2="138" stroke="#ef9a9a" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <!-- Force indicators on walls -->
+  <text x="150" y="28" text-anchor="middle" font-size="9" fill="#e53935">collision!</text>
+  <text x="355" y="114" font-size="9" fill="#e53935">collision!</text>
+  <text x="230" y="218" text-anchor="middle" font-size="9" fill="#e53935">collision!</text>
+  <text x="60" y="154" text-anchor="end" font-size="9" fill="#e53935">collision!</text>
+  <!-- Explanation box -->
+  <rect x="80" y="220" width="260" height="16" rx="4" fill="#ffcdd2"/>
+  <text x="210" y="231" text-anchor="middle" font-size="10" fill="#c62828">Pressure = force of particle collisions on container walls</text>
+</svg>`},
+
+{title:'Dissolving — The Particle Model',
+content:`<h3>How Does Salt Dissolve in Water?</h3>
+<p>When a solid dissolves in a liquid, its particles are pulled apart by the liquid particles and spread through the liquid — forming a <strong>solution</strong>. No new substance is made; the particles are just separated and mixed.</p>
+<ul>
+<li>🧂 Salt (NaCl) breaks into Na⁺ and Cl⁻ ions pulled away by water molecules</li>
+<li>🌡️ <strong>Hot water</strong> dissolves more solid faster — particles have more energy to break the crystal apart</li>
+<li>🥄 <strong>Stirring</strong> speeds up dissolving — brings fresh water into contact with the solid</li>
+<li>🔬 The dissolved particles are too small to be seen — the solution looks clear</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="dis" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0, 7 3, 0 6" fill="#666"/></marker>
+  </defs>
+  <!-- BEFORE: solid crystal + water -->
+  <text x="105" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">BEFORE</text>
+  <rect x="20" y="20" width="170" height="150" rx="8" fill="#e1f5fe" stroke="#0288d1" stroke-width="1.5"/>
+  <!-- Water molecules (blue circles) -->
+  <circle cx="50" cy="40" r="7" fill="#90caf9"/><circle cx="75" cy="35" r="7" fill="#90caf9"/>
+  <circle cx="100" cy="42" r="7" fill="#90caf9"/><circle cx="130" cy="37" r="7" fill="#90caf9"/>
+  <circle cx="155" cy="43" r="7" fill="#90caf9"/><circle cx="172" cy="35" r="7" fill="#90caf9"/>
+  <circle cx="35" cy="60" r="7" fill="#90caf9"/><circle cx="62" cy="67" r="7" fill="#90caf9"/>
+  <circle cx="90" cy="62" r="7" fill="#90caf9"/><circle cx="150" cy="60" r="7" fill="#90caf9"/>
+  <circle cx="178" cy="65" r="7" fill="#90caf9"/>
+  <!-- Salt crystal (regular grid of pink/yellow) in water -->
+  <rect x="100" y="85" width="60" height="60" rx="4" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="130" y="107" text-anchor="middle" font-size="9" fill="#e65100" font-weight="bold">SALT</text>
+  <text x="130" y="120" text-anchor="middle" font-size="9" fill="#e65100">CRYSTAL</text>
+  <text x="130" y="133" text-anchor="middle" font-size="8" fill="#888">(solid)</text>
+  <circle cx="35" cy="100" r="7" fill="#90caf9"/><circle cx="62" cy="108" r="7" fill="#90caf9"/>
+  <circle cx="178" cy="98" r="7" fill="#90caf9"/><circle cx="165" cy="115" r="7" fill="#90caf9"/>
+  <circle cx="40" cy="140" r="7" fill="#90caf9"/><circle cx="68" cy="135" r="7" fill="#90caf9"/>
+  <circle cx="160" cy="145" r="7" fill="#90caf9"/><circle cx="180" cy="138" r="7" fill="#90caf9"/>
+  <!-- Legend -->
+  <circle cx="28" cy="175" r="7" fill="#90caf9"/><text x="40" y="179" font-size="9" fill="#333">Water molecule</text>
+  <rect x="90" y="170" width="12" height="12" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/><text x="107" y="180" font-size="9" fill="#333">Salt particle</text>
+  <!-- Arrow -->
+  <line x1="196" y1="95" x2="222" y2="95" stroke="#333" stroke-width="2" marker-end="url(#dis)"/>
+  <text x="209" y="88" text-anchor="middle" font-size="9" fill="#333">dissolves</text>
+  <!-- AFTER: fully dissolved -->
+  <text x="315" y="14" text-anchor="middle" font-size="11" font-weight="bold" fill="#333">AFTER (Solution)</text>
+  <rect x="230" y="20" width="170" height="150" rx="8" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+  <!-- Mixed particles: water + salt ions scattered evenly -->
+  <circle cx="248" cy="38" r="7" fill="#90caf9"/><circle cx="275" cy="33" r="7" fill="#ffe082"/>
+  <circle cx="305" cy="42" r="7" fill="#90caf9"/><circle cx="335" cy="37" r="7" fill="#ffe082"/>
+  <circle cx="360" cy="44" r="7" fill="#90caf9"/><circle cx="390" cy="36" r="7" fill="#ffe082"/>
+  <circle cx="240" cy="65" r="7" fill="#ffe082"/><circle cx="268" cy="60" r="7" fill="#90caf9"/>
+  <circle cx="295" cy="68" r="7" fill="#ffe082"/><circle cx="322" cy="63" r="7" fill="#90caf9"/>
+  <circle cx="350" cy="70" r="7" fill="#ffe082"/><circle cx="380" cy="62" r="7" fill="#90caf9"/>
+  <circle cx="248" cy="95" r="7" fill="#90caf9"/><circle cx="275" cy="90" r="7" fill="#ffe082"/>
+  <circle cx="305" cy="98" r="7" fill="#90caf9"/><circle cx="335" cy="92" r="7" fill="#ffe082"/>
+  <circle cx="360" cy="100" r="7" fill="#90caf9"/><circle cx="388" cy="93" r="7" fill="#ffe082"/>
+  <circle cx="240" cy="125" r="7" fill="#ffe082"/><circle cx="268" cy="120" r="7" fill="#90caf9"/>
+  <circle cx="295" cy="128" r="7" fill="#ffe082"/><circle cx="322" cy="122" r="7" fill="#90caf9"/>
+  <circle cx="350" cy="130" r="7" fill="#ffe082"/><circle cx="380" cy="123" r="7" fill="#90caf9"/>
+  <circle cx="248" cy="155" r="7" fill="#90caf9"/><circle cx="275" cy="150" r="7" fill="#ffe082"/>
+  <circle cx="305" cy="158" r="7" fill="#90caf9"/><circle cx="335" cy="152" r="7" fill="#ffe082"/>
+  <circle cx="360" cy="160" r="7" fill="#90caf9"/><circle cx="388" cy="153" r="7" fill="#ffe082"/>
+  <!-- Legend after -->
+  <circle cx="238" cy="175" r="7" fill="#90caf9"/><text x="250" y="179" font-size="9" fill="#333">Water</text>
+  <circle cx="295" cy="175" r="7" fill="#ffe082"/><text x="307" y="179" font-size="9" fill="#333">Dissolved salt</text>
+  <text x="315" y="196" text-anchor="middle" font-size="9" fill="#555">Evenly spread — solution is</text>
+  <text x="315" y="208" text-anchor="middle" font-size="9" fill="#555">clear (particles too small to see)</text>
+</svg>`},
+
+/* ══════════════════════════════════════
+   STEPS 17–19  MCQ PRACTICE
+══════════════════════════════════════ */
+
+{title:'Mini-Quiz: Particles and Changes',
+mcq:[
+  {q:'When a liquid cools and becomes a solid, the process is called:',opts:['Melting','Condensation','Evaporation','Freezing'],ans:3,exp:'FREEZING is when a liquid LOSES heat energy and becomes a solid. Particles slow down and form a regular, fixed arrangement. Water freezes at 0°C.'},
+  {q:'In which state of matter do particles have the MOST energy?',opts:['Solid','Liquid','Gas','All the same'],ans:2,exp:'Gas particles move very fast in all directions — they have the most energy. In solids, particles only vibrate and have the least energy.'},
+  {q:'Which process is shown by dry ice disappearing straight into gas without melting?',opts:['Evaporation','Condensation','Sublimation','Diffusion'],ans:2,exp:'SUBLIMATION is when a solid changes directly into a gas without passing through the liquid state. Dry ice (solid CO₂) sublimes at −78°C at normal pressure.'},
+]},
+
+{title:'Mini-Quiz: Evaporation and Condensation',
+mcq:[
+  {q:'Why does sweating cool your body?',opts:['Sweat weighs you down','Sweat evaporates and takes heat energy away from your skin','Sweat is cold','Sweat blocks the sun'],ans:1,exp:'When sweat EVAPORATES, the fastest particles escape and take heat energy with them from your skin. This lowers the temperature — called evaporative cooling.'},
+  {q:'Condensation on a cold glass occurs because:',opts:['Water leaks through the glass','Water vapour in air cools and becomes liquid on the cold surface','The glass melts','Ice forms inside and leaks'],ans:1,exp:'CONDENSATION: warm moist air meets a cold surface. Water vapour loses energy, slows down, and becomes liquid water on the glass surface (gas → liquid).'},
+  {q:'What is happening on the FLAT section of a heating curve at 100°C?',opts:['Temperature is rising','The thermometer is broken','Heat energy is breaking forces between liquid particles, not raising temperature','Water is cooling down'],ans:2,exp:'The flat section at 100°C shows boiling. ALL the heat energy goes into breaking forces between particles (changing state) rather than raising temperature, so the thermometer stays at 100°C until all liquid becomes gas.'},
+]},
+
+{title:'Exam-Style Questions',
+mcq:[
+  {q:'A gas is heated in a sealed container. What happens to the pressure?',opts:['Decreases','Stays the same','Increases','The gas disappears'],ans:2,exp:'Heating a gas increases the kinetic energy of the particles. They move faster and collide with the container walls more frequently and with greater force — PRESSURE INCREASES.'},
+  {q:'Why does a solid have a fixed shape but a liquid does not?',opts:['A solid has more mass','In a solid, particles are held in fixed positions by strong forces; in a liquid, particles can slide past each other','A liquid is heavier','Solids are larger than liquids'],ans:1,exp:'The STRONG FORCES in a solid lock each particle in a fixed position so the solid keeps its shape. In a liquid, forces are weaker and particles can slide past each other, so the liquid takes the shape of its container.'},
+  {q:'Diffusion occurs faster when temperature is increased. Why?',opts:['Particles get bigger','Particles have more energy and move faster, spreading more quickly','The container gets bigger','Temperature has no effect on diffusion'],ans:1,exp:'At higher temperatures, particles have MORE KINETIC ENERGY and therefore move FASTER. This means they spread from high to low concentration more quickly — diffusion rate increases with temperature.'},
+  {q:'Iodine crystal placed under a bell jar slowly fills the jar with purple vapour. Which process is this?',opts:['Evaporation','Condensation','Diffusion','Sublimation'],ans:3,exp:'Iodine SUBLIMATES (solid → gas directly). The iodine gas then DIFFUSES throughout the bell jar because gas particles spread from high concentration (near the iodine) to lower concentration (throughout the jar). Two processes: sublimation + diffusion.'},
+]},
+
+];
+new StudyEngine(STEPS,{color:'#006064',dark:'#00363a',light:'#e0f7fa',title:'States of Matter'});
+</script></body></html>

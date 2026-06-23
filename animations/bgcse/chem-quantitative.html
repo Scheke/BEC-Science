@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantitative Chemistry — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#006064;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#80deea;color:#006064;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #80deea}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 20px;border:2.5px solid #006064;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#006064;transition:all .15s}
+    .btn.on{background:#006064;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Quantitative Chemistry</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">⚖️ Mole Concept</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🧪 Stoichiometry</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">📈 % Yield & Purity</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">💧 Concentrations</button>
+  <button class="btn" id="b-prac" onclick="setQuantPractice(!quantMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Quantitative Chemistry</h2><ul><li><b>Mole</b>: Amount of substance. 1 mole = 6.02×10²³ particles (Avogadro\'s number).</li><li><b>Molar mass</b>: Mass of 1 mole in g/mol (equals relative formula mass).</li><li><b>Moles = mass ÷ molar mass</b>. Rearranges to: mass = moles × Mr.</li><li><b>Stoichiometry</b>: Mole ratios from balanced equations. E.g. N₂+3H₂→2NH₃: 1 mol N₂ gives 2 mol NH₃.</li><li><b>% yield</b> = (actual yield ÷ theoretical yield) × 100.</li><li><b>Concentration</b> = moles ÷ volume (in dm³). Unit: mol/dm³.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let quantMcq=false;
+const QUANT_MCQ=[
+  {q:'One mole of a substance contains how many particles?',opts:['6.02 × 10²³','6.02 × 10²⁶','1 × 10²³','3.01 × 10²³'],c:0,tip:'Avogadro\'s number = 6.02 × 10²³ particles per mole.'},
+  {q:'What is the molar mass of H₂O? (H=1, O=16)',opts:['18 g/mol','16 g/mol','20 g/mol','10 g/mol'],c:0,tip:'H₂O: (2×1) + 16 = 18 g/mol.'},
+  {q:'Moles = mass ÷ ?',opts:['Molar mass (Mr)','Volume','Concentration','Density'],c:0,tip:'n = m/Mr is the fundamental moles equation.'},
+  {q:'In N₂ + 3H₂ → 2NH₃, the mole ratio of N₂ to NH₃ is:',opts:['1:2','2:1','1:3','3:1'],c:0,tip:'1 mole of N₂ produces 2 moles of NH₃ from the balanced equation.'},
+  {q:'% yield is calculated as:',opts:['(actual ÷ theoretical) × 100','(theoretical ÷ actual) × 100','actual × moles × 100','mass ÷ moles × 100'],c:0,tip:'% yield = actual yield / theoretical yield × 100.'},
+  {q:'Concentration (mol/dm³) = moles ÷ ?',opts:['Volume in dm³','Mass in grams','Molar mass','Temperature'],c:0,tip:'c = n/V where V is volume in dm³.'},
+  {q:'The limiting reagent in a reaction is:',opts:['The reactant that is fully consumed first','The reactant present in excess','The product formed','The catalyst used'],c:0,tip:'The limiting reagent runs out first and determines the maximum yield.'}
+];
+let quantMcqIdx=0,quantMcqSel=-1,quantMcqScore=0,quantMcqDone=false,quantMcqFeedback=null;
+function setQuantPractice(on){quantMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){quantMcqIdx=0;quantMcqSel=-1;quantMcqScore=0;quantMcqDone=false;quantMcqFeedback=null;}}
+function drawQuantMCQ(s){s.background(252,252,240);if(quantMcqDone){s.fill(0,96,100);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+quantMcqScore+'/'+QUANT_MCQ.length,440,215);let msg=quantMcqScore===QUANT_MCQ.length?'Perfect! You know Quantitative Chemistry!':quantMcqScore>=5?'Great job!':'Review moles, stoichiometry & yield.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=QUANT_MCQ[quantMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(quantMcqIdx/QUANT_MCQ.length),10,5);s.fill(0,96,100);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(quantMcqIdx+1)+' of '+QUANT_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=quantMcqSel===i,correct=quantMcqFeedback!==null&&i===q.c,wrong=quantMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(quantMcqFeedback){s.fill(quantMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(quantMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function quantMcqClick(mx,my){if(quantMcqDone){if(mx>310&&mx<570&&my>290&&my<334){quantMcqIdx=0;quantMcqSel=-1;quantMcqScore=0;quantMcqDone=false;quantMcqFeedback=null;}return;}if(quantMcqFeedback!==null){quantMcqIdx++;quantMcqSel=-1;quantMcqFeedback=null;if(quantMcqIdx>=QUANT_MCQ.length)quantMcqDone=true;return;}QUANT_MCQ[quantMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){quantMcqSel=i;quantMcqFeedback=i===QUANT_MCQ[quantMcqIdx].c?'correct':'wrong';if(i===QUANT_MCQ[quantMcqIdx].c)quantMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(quantMcq){ drawQuantMCQ(sk); return; }tick+=0.02;sk.background(245,255,255);
+    if(tab===0) drawMole();
+    else if(tab===1) drawStoich();
+    else if(tab===2) drawYield();
+    else drawConc();
+    drawInfoPanel();};
+
+  function drawMole(){
+    sk.fill(0,80,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('The MOLE — SI unit for amount of substance',248,22);sk.textStyle(sk.NORMAL);
+    // Big mole number
+    sk.fill(0,80,100,200);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('1 mole = 6.022 × 10²³ particles (Avogadro\'s number)',248,48);sk.textStyle(sk.NORMAL);
+    // Triangle formula
+    let tx=160,ty=100;
+    sk.fill(0,100,120,30);sk.stroke(0,100,120);sk.strokeWeight(2);
+    sk.triangle(tx,ty,tx+160,ty,tx+80,ty+100);
+    sk.noStroke();sk.fill(0,80,100);sk.textSize(16);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('n',tx+80,ty+75);
+    sk.stroke(0,100,120);sk.strokeWeight(2);sk.line(tx+20,ty+50,tx+140,ty+50);
+    sk.noStroke();sk.fill(0,80,100);
+    sk.text('m',tx+40,ty+46);sk.text('Mr',tx+120,ty+46);
+    sk.textSize(9.5);sk.textStyle(sk.NORMAL);
+    sk.text('n = moles',tx+80,ty+114);sk.text('m = mass (g)',tx+80,ty+128);sk.text('Mr = molar mass (g/mol)',tx+80,ty+142);
+    // Formulas
+    let fy=165;
+    sk.fill(240,255,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,fy,462,65,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('n = m / Mr          m = n × Mr          Mr = m / n',248,fy+20);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);
+    sk.text('Units: moles (mol), mass (g), molar mass (g mol⁻¹)',248,fy+40);
+    sk.text('Also: n = V/24 (for gases at RTP, 24 dm³/mol)',248,fy+56);
+    // Worked examples
+    let wy=242;
+    sk.fill(220,250,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,wy,462,250,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLES:',20,wy+14);sk.textStyle(sk.NORMAL);
+    const examples=[
+      ['Ex 1: How many moles in 40g of NaOH?','Mr(NaOH) = 23+16+1 = 40 g/mol','n = m/Mr = 40/40 = 1 mol'],
+      ['Ex 2: Mass of 0.5 mol of H₂SO₄ (Mr=98)?','m = n × Mr = 0.5 × 98 = 49 g',''],
+      ['Ex 3: Moles of 3 g of C (Ar=12)?','n = m/Mr = 3/12 = 0.25 mol',''],
+      ['Ex 4: Vol of 0.2 mol CO₂ at RTP?','V = n × 24 = 0.2 × 24 = 4.8 dm³',''],
+    ];
+    let ey=wy+30;
+    examples.forEach(ex=>{
+      sk.fill(0,80,100);sk.textStyle(sk.BOLD);sk.textSize(10);sk.text(ex[0],20,ey);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10);sk.text(ex[1],20,ey+16);
+      if(ex[2]) sk.text(ex[2],20,ey+32);
+      ey+=ex[2]?56:40;
+    });
+  }
+
+  function drawStoich(){
+    sk.fill(0,80,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Stoichiometry — using balanced equations for calculations',248,22);sk.textStyle(sk.NORMAL);
+    // Balanced equation
+    sk.fill(255,240,200,220);sk.stroke(180,120,0);sk.strokeWeight(2);sk.rect(14,36,462,36,7);sk.noStroke();
+    sk.fill(120,70,0);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('2H₂  +  O₂  →  2H₂O',248,60);sk.textStyle(sk.NORMAL);
+    // Mole ratios
+    sk.fill(0,80,100);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Mole ratio:  2 : 1 : 2',248,90);sk.textStyle(sk.NORMAL);
+    // Molecule visual
+    let vx=60,vy=120;
+    const reacts=[{mol:'H₂',n:2,col:[30,80,200]},{mol:'O₂',n:1,col:[200,60,30]}];
+    const prods=[{mol:'H₂O',n:2,col:[0,120,180]}];
+    let xi=vx;
+    reacts.forEach(r=>{
+      for(let i=0;i<r.n;i++){
+        sk.fill(r.col[0],r.col[1],r.col[2],50);sk.stroke(r.col[0],r.col[1],r.col[2]);sk.strokeWeight(2);
+        sk.ellipse(xi+20,vy+20,40,40);sk.noStroke();sk.fill(r.col[0],r.col[1],r.col[2]);
+        sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text(r.mol,xi+20,vy+24);sk.textStyle(sk.NORMAL);xi+=50;
+      }xi+=14;
+    });
+    sk.fill(30);sk.textSize(18);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('→',xi+10,vy+26);sk.textStyle(sk.NORMAL);xi+=34;
+    prods.forEach(r=>{
+      for(let i=0;i<r.n;i++){
+        sk.fill(r.col[0],r.col[1],r.col[2],50);sk.stroke(r.col[0],r.col[1],r.col[2]);sk.strokeWeight(2);
+        sk.ellipse(xi+20,vy+20,40,40);sk.noStroke();sk.fill(r.col[0],r.col[1],r.col[2]);
+        sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text(r.mol,xi+20,vy+24);sk.textStyle(sk.NORMAL);xi+=50;
+      }
+    });
+    // Step-by-step method
+    let sy=180;
+    sk.fill(240,255,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,sy,462,175,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('METHOD — Stoichiometric calculations:',20,sy+14);sk.textStyle(sk.NORMAL);
+    const steps=[
+      '1. Write the BALANCED equation',
+      '2. Write the MOLE RATIO from coefficients',
+      '3. Calculate MOLES of given substance: n = m/Mr',
+      '4. Use ratio to find MOLES of required substance',
+      '5. Convert moles back to MASS: m = n × Mr',
+    ];
+    steps.forEach((s,i)=>{sk.fill(30);sk.textSize(10);sk.text(s,20,sy+30+i*28);});
+    // Example calculation
+    let ex=sy+175;
+    sk.fill(220,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,ex,462,155,7);sk.noStroke();
+    sk.fill(0,100,60);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EXAMPLE: 4g of H₂ reacts with excess O₂. Mass of H₂O produced?',20,ex+14);sk.textStyle(sk.NORMAL);
+    ['Equation: 2H₂  +  O₂  →  2H₂O',
+     'Mole ratio: 2H₂ : 2H₂O = 1:1',
+     'n(H₂) = 4 / 2 = 2 mol',
+     'n(H₂O) = 2 mol (1:1 ratio)',
+     'Mr(H₂O) = 2+16 = 18 g/mol',
+     'm(H₂O) = 2 × 18 = 36 g'].forEach((l,i)=>{
+      sk.fill(30);sk.textSize(10);sk.text(l,20,ex+30+i*20);
+    });
+  }
+
+  function drawYield(){
+    sk.fill(0,80,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Percentage Yield & Percentage Purity',248,22);sk.textStyle(sk.NORMAL);
+    // Yield formula triangle
+    let ty=44;
+    sk.fill(240,255,250,220);sk.stroke(0,120,80,80);sk.strokeWeight(1);sk.rect(14,ty,462,80,7);sk.noStroke();
+    sk.fill(0,100,60);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('% Yield = (actual yield / theoretical yield) × 100',248,ty+30);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);
+    sk.text('Actual yield = mass actually obtained in lab',248,ty+50);
+    sk.text('Theoretical yield = calculated from stoichiometry (maximum possible)',248,ty+66);
+    // Why less than 100%?
+    let wy=136;
+    sk.fill(255,245,220,220);sk.stroke(180,100,0,80);sk.strokeWeight(1);sk.rect(14,wy,462,70,7);sk.noStroke();
+    sk.fill(140,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Why is % yield usually less than 100%?',20,wy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['• Reaction may not go to completion (reversible)','• Side reactions form unwanted products','• Product lost during filtration, transferring, heating','• Impure reactants'].forEach((r,i)=>sk.text(r,20,wy+30+i*14));
+    // Visual bar
+    let bx=60,by=220,bw=360,bh=46;
+    sk.fill(30,160,30,200);sk.noStroke();sk.rect(bx,by,bw*0.72,bh,4);
+    sk.fill(200,50,50,200);sk.rect(bx+bw*0.72,by,bw*0.28,bh,4);
+    sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Actual yield (72%)',bx+bw*0.36,by+bh/2+4);sk.text('Lost (28%)',bx+bw*0.86,by+bh/2+4);sk.textStyle(sk.NORMAL);
+    sk.fill(0,100,60);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('% Yield = 72%',248,by+bh+20);sk.textStyle(sk.NORMAL);
+    // Purity
+    let py=302;
+    sk.fill(240,240,255,220);sk.stroke(60,0,160,80);sk.strokeWeight(1);sk.rect(14,py,462,80,7);sk.noStroke();
+    sk.fill(60,0,140);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('% Purity = (mass of pure substance / total mass of sample) × 100',248,py+26);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);
+    sk.text('Example: 25g sample contains 22g pure product',248,py+46);
+    sk.text('% Purity = (22/25) × 100 = 88%',248,py+62);
+    // Worked yield example
+    let ey=396;
+    sk.fill(220,255,255,220);sk.stroke(0,120,120,80);sk.strokeWeight(1);sk.rect(14,ey,462,106,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WORKED EXAMPLE (Yield):',20,ey+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);
+    ['Reaction: CaCO₃ → CaO + CO₂',
+     'Theoretical: 10g CaCO₃ → 5.6g CaO (calculated from stoich.)',
+     'Actual: 4.5g CaO obtained in lab',
+     '% Yield = (4.5 / 5.6) × 100 = 80.4%'].forEach((l,i)=>sk.text(l,20,ey+30+i*18));
+  }
+
+  function drawConc(){
+    sk.fill(0,80,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Concentration, Molarity & Titration',248,22);sk.textStyle(sk.NORMAL);
+    // Concentration formula
+    let fy=40;
+    sk.fill(240,255,255,220);sk.stroke(0,100,120,80);sk.strokeWeight(1);sk.rect(14,fy,462,72,7);sk.noStroke();
+    sk.fill(0,80,100);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('c = n / V',248,fy+22);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('c = concentration (mol/dm³ or mol/L)',248,fy+40);
+    sk.text('n = moles (mol)   V = volume (dm³)',248,fy+56);
+    // Beaker diagram showing concentration
+    let bx=60,by=128;
+    [[30,100,180,20],[30,100,180,8]].forEach(([r,g,b,n],i)=>{
+      let bkx=bx+i*130,bky=by;
+      sk.fill(220,240,255,180);sk.stroke(30,80,180);sk.strokeWeight(2);
+      sk.rect(bkx,bky+20,80,80,3);sk.line(bkx-4,bky+20,bkx,bky+20);sk.line(bkx+80,bky+20,bkx+84,bky+20);
+      for(let j=0;j<n;j++){
+        let dx=bkx+8+Math.random()*64,dy=bky+28+Math.random()*64;
+        sk.fill(r,g,b,200);sk.noStroke();sk.ellipse(dx,dy,10);
+      }
+      sk.fill(30,80,180);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(i===0?'High conc.\n2 mol/dm³':'Low conc.\n0.5 mol/dm³',bkx+40,bky+116);sk.textStyle(sk.NORMAL);
+    });
+    // Animation: particles moving
+    let cx=250+Math.sin(tick)*20,cy=180+Math.cos(tick*0.7)*15;
+    sk.fill(30,100,180,200);sk.noStroke();sk.ellipse(cx,cy,12);
+    // Titration
+    let ry=282;
+    sk.fill(245,240,255,220);sk.stroke(80,0,160,80);sk.strokeWeight(1);sk.rect(14,ry,462,210,7);sk.noStroke();
+    sk.fill(80,0,160);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('TITRATION — finding unknown concentration:',20,ry+14);sk.textStyle(sk.NORMAL);
+    // Burette diagram
+    let bux=360,buy=ry+20;
+    sk.fill(200,240,255,200);sk.stroke(0,80,200);sk.strokeWeight(2);
+    sk.rect(bux,buy,20,120,2);
+    let liquidH=120*(1-((tick*0.01)%1));
+    sk.fill(180,100,200,180);sk.noStroke();sk.rect(bux+1,buy+1,18,liquidH);
+    sk.stroke(0,80,200);sk.strokeWeight(2);sk.line(bux+10,buy+120,bux+10,buy+138);
+    sk.fill(100,0,180,160);sk.noStroke();sk.ellipse(bux+10,buy+60,60,60);
+    sk.fill(30,80,200);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Burette\n(known conc.)',bux+10,buy+148);sk.textStyle(sk.NORMAL);
+    // Conical flask
+    sk.fill(200,255,200,180);sk.stroke(0,140,60);sk.strokeWeight(2);
+    sk.beginShape();sk.vertex(bux-30,buy+168);sk.vertex(bux+50,buy+168);sk.vertex(bux+66,buy+216);sk.vertex(bux-46,buy+216);sk.endShape(sk.CLOSE);
+    // Steps
+    const steps=[
+      '1. Pipette known volume of acid/base into conical flask',
+      '2. Add indicator (e.g. phenolphthalein: pink in base → colourless in acid)',
+      '3. Run solution from burette into flask, swirling',
+      '4. Stop at END POINT — when indicator permanently changes colour',
+      '5. Record volume used (titre)',
+      '6. Use n = c × V to calculate concentration of unknown',
+      '7. Repeat until concordant results (within 0.10 cm³)',
+    ];
+    steps.forEach((s,i)=>{sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.text(s,20,ry+32+i*26);});
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[0,90,110];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Mole Concept','Stoichiometry','% Yield & Purity','Concentration & Titration'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'What is a Mole?',b:'Amount of substance containing 6.022×10²³ particles.\nEach element has a molar mass = Ar in grams.\nE.g. 1 mol of C = 12g; 1 mol of O₂ = 32g.'},{t:'Molar Mass (Mr)',b:'Sum of relative atomic masses of all atoms.\nMr(H₂O) = 2×1 + 16 = 18 g/mol.\nMr(CaCO₃) = 40 + 12 + 48 = 100 g/mol.'},{t:'Gas Volume at RTP',b:'At room temperature and pressure (25°C, 1 atm):\n1 mole of ANY gas = 24 dm³ = 24,000 cm³.\nn = V(dm³) / 24'},{t:'Number of Particles',b:'N = n × Nₐ (Avogadro\'s number).\nNₐ = 6.022 × 10²³ mol⁻¹.\n2 mol of H₂O contains 2 × 6.022×10²³ molecules.'}],
+      [{t:'Stoichiometry',b:'Using coefficients in balanced equations.\nCoefficients = mole ratios of substances.\nMust use BALANCED equation.'},{t:'Limiting Reactant',b:'The reactant that runs out first.\nDetermines maximum amount of product.\nExcess reactant: some left over at end.'},{t:'Empirical Formula',b:'Simplest whole-number ratio of atoms.\nCalculated from % composition by mass.\nExample: 40%C, 6.7%H, 53.3%O → CH₂O.'},{t:'Molecular Formula',b:'Actual number of atoms in one molecule.\nMolecular formula = empirical × n.\nE.g. CH₂O (empirical) → C₆H₁₂O₆ (glucose).'}],
+      [{t:'Theoretical Yield',b:'Maximum mass that COULD be produced.\nCalculated from balanced equation + stoichiometry.\nAssumes 100% reaction efficiency.'},{t:'Actual Yield',b:'Mass actually obtained in the experiment.\nAlways ≤ theoretical yield.\nAffected by reaction conditions and losses.'},{t:'Atom Economy',b:'% of atom mass in DESIRED product.\nAtom economy = Mr(desired) / Mr(all products) × 100.\nHigh atom economy = greener chemistry.'},{t:'Limiting Reagent Calc',b:'Find moles of each reactant.\nDivide by stoichiometric coefficient.\nSmaller result = limiting reagent.\nUse limiting reagent moles for product calc.'}],
+      [{t:'Molarity (c)',b:'c = n / V    (mol dm⁻³ or mol/L)\nConversion: 1 dm³ = 1000 cm³ = 1 L\n1 cm³ = 0.001 dm³'},{t:'Dilution',b:'n stays constant when diluting.\nc₁V₁ = c₂V₂ (before and after dilution).\nExample: dilute 100cm³ of 2M to 0.5M?'},{t:'Titration Calculations',b:'n(acid) = c(acid) × V(acid)\nn(base) = c(base) × V(base)\nUse mole ratio from equation to find unknowns.'},{t:'Indicators',b:'Litmus: red in acid, blue in base.\nPhenolphthalein: colourless in acid, pink in base.\nMethyl orange: red in acid, yellow in base.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(quantMcq){ quantMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

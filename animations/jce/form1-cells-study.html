@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Cells — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,18,15]))}
+
+const STEPS=[
+  {
+    title:'What is a Cell?',
+    body:`The <strong>cell</strong> is the basic unit of all living organisms. Every living thing is made of cells.
+    <br><br>
+    <strong>Cell theory:</strong>
+    <ol style="margin:8px 0 0 18px;line-height:2.2">
+      <li>All living things are made of cells</li>
+      <li>The cell is the basic unit of life</li>
+      <li>All cells come from pre-existing cells</li>
+    </ol>
+    Cells carry out all life processes: nutrition, respiration, excretion, growth, reproduction, movement, and sensitivity.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Simple cell with pulsing
+      const pulse=1+Math.sin(t)*0.04;
+      sk.fill(100,200,100,80);sk.noStroke();sk.ellipse(W/2,H/2,W*0.65*pulse,H*0.62*pulse);
+      sk.stroke(46,204,113,180);sk.strokeWeight(2);sk.noFill();
+      sk.ellipse(W/2,H/2,W*0.65*pulse,H*0.62*pulse);
+      // Nucleus
+      sk.fill(52,152,219,160);sk.noStroke();sk.ellipse(W/2,H/2,90,68);
+      sk.stroke(52,152,219,120);sk.strokeWeight(1.5);sk.noFill();sk.ellipse(W/2,H/2,90,68);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Nucleus',W/2,H/2);
+      // Life processes around
+      const procs=['Nutrition','Respiration','Growth','Reproduction','Excretion','Movement'];
+      procs.forEach((p,i)=>{
+        const ang=(i/procs.length)*sk.TWO_PI+t*0.1;
+        const rx=W/2+Math.cos(ang)*W*0.4,ry=H/2+Math.sin(ang)*H*0.38;
+        sk.fill(255,220,50,180);sk.noStroke();sk.ellipse(rx,ry,72,28);
+        sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(p,rx,ry);
+      });
+    }
+  },
+  {
+    title:'Animal vs Plant Cells',
+    body:`Both animal and plant cells have:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Cell membrane</strong> — controls what enters/exits</li>
+      <li><strong>Nucleus</strong> — controls cell activities, contains DNA</li>
+      <li><strong>Cytoplasm</strong> — jelly-like fluid where reactions occur</li>
+      <li><strong>Mitochondria</strong> — site of aerobic respiration (ATP)</li>
+      <li><strong>Ribosomes</strong> — protein synthesis</li>
+    </ul>
+    Plant cells ALSO have:
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li><strong>Cell wall</strong> — rigid, made of cellulose</li>
+      <li><strong>Chloroplasts</strong> — photosynthesis (green colour)</li>
+      <li><strong>Large vacuole</strong> — stores cell sap</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,15,12]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Animal cell (left)
+      sk.fill(255,200,150,80);sk.noStroke();sk.ellipse(W*0.27,H*0.5,W*0.38,H*0.58);
+      sk.stroke(255,150,100,150);sk.strokeWeight(1.5);sk.noFill();sk.ellipse(W*0.27,H*0.5,W*0.38,H*0.58);
+      sk.fill(52,152,219,140);sk.noStroke();sk.ellipse(W*0.27,H*0.5,60,44);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('Nucleus',W*0.27,H*0.5);
+      sk.fill(255,200,150);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('ANIMAL CELL',W*0.27,H*0.1);
+      // Plant cell (right)
+      sk.stroke(46,204,113,180);sk.strokeWeight(2.5);sk.noFill();
+      sk.rect(W*0.56,H*0.18,W*0.36,H*0.64,4);
+      sk.fill(100,200,100,70);sk.noStroke();sk.rect(W*0.56,H*0.18,W*0.36,H*0.64,4);
+      // Chloroplasts
+      for(let i=0;i<4;i++){
+        const cx=W*0.62+i%2*(W*0.14),cy=H*0.32+Math.floor(i/2)*H*0.18;
+        sk.fill(0,180,50,200);sk.noStroke();sk.ellipse(cx,cy,28,16);
+        sk.fill(255);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Cl',cx,cy);
+      }
+      // Vacuole
+      sk.fill(100,200,250,80);sk.noStroke();sk.ellipse(W*0.74,H*0.65,50,38);
+      sk.fill(255);sk.textSize(7);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Vacuole',W*0.74,H*0.65);
+      // Nucleus
+      sk.fill(52,152,219,140);sk.noStroke();sk.ellipse(W*0.7,H*0.4,44,34);
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Nucleus',W*0.7,H*0.4);
+      sk.fill(46,204,113);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('PLANT CELL',W*0.74,H*0.1);
+    }
+  },
+  {
+    title:'Cell Organelles & Their Functions',
+    body:`Key organelles and what they do:
+    <table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px">
+      <thead><tr style="background:#e8f5e9"><th style="padding:5px 8px;text-align:left;border:1px solid #ccc">Organelle</th><th style="padding:5px 8px;border:1px solid #ccc">Function</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Cell membrane</td><td style="padding:5px 8px;border:1px solid #ddd">Selectively permeable barrier</td></tr>
+        <tr style="background:#fafafa"><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Nucleus</td><td style="padding:5px 8px;border:1px solid #ddd">Contains DNA; controls cell</td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Mitochondria</td><td style="padding:5px 8px;border:1px solid #ddd">Aerobic respiration; ATP production</td></tr>
+        <tr style="background:#fafafa"><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Ribosomes</td><td style="padding:5px 8px;border:1px solid #ddd">Protein synthesis</td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Chloroplasts</td><td style="padding:5px 8px;border:1px solid #ddd">Photosynthesis (plants only)</td></tr>
+        <tr style="background:#fafafa"><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Cell wall</td><td style="padding:5px 8px;border:1px solid #ddd">Structural support (plants only)</td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd;font-weight:700">Vacuole</td><td style="padding:5px 8px;border:1px solid #ddd">Stores cell sap (large in plants)</td></tr>
+      </tbody>
+    </table>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const parts=[
+        {n:'Mitochondria',c:[255,165,50],x:0.3,y:0.38,w:50,h:24},
+        {n:'Ribosome',c:[200,100,200],x:0.65,y:0.3,w:12,h:12},
+        {n:'Chloroplast',c:[0,180,50],x:0.22,y:0.62,w:46,h:22},
+        {n:'Vacuole',c:[100,200,240],x:0.7,y:0.65,w:56,h:42},
+      ];
+      // Cell outline
+      sk.fill(100,200,100,40);sk.noStroke();sk.ellipse(W/2,H/2,W*0.8,H*0.82);
+      sk.stroke(46,204,113,120);sk.strokeWeight(2);sk.noFill();sk.ellipse(W/2,H/2,W*0.8,H*0.82);
+      // Nucleus
+      sk.fill(52,152,219,140);sk.noStroke();sk.ellipse(W/2,H*0.44,80,60);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('Nucleus',W/2,H*0.44);
+      parts.forEach((p,i)=>{
+        const pulse=1+Math.sin(t*1.5+i)*0.06;
+        sk.fill(...p.c,180);sk.noStroke();sk.ellipse(p.x*W,p.y*H,p.w*pulse,p.h*pulse);
+        sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.CENTER,sk.CENTER);
+        if(p.n.length>8)sk.textSize(6.5);
+        sk.text(p.n,p.x*W,p.y*H);
+      });
+    }
+  },
+  {
+    title:'Animal Cell vs Plant Cell — Comparison',
+    content:`<h3>Side-by-Side Cell Comparison</h3><p>Animal cells are irregular in shape; plant cells have a fixed rectangular shape with a thick cell wall. Both share core organelles, but plant cells have three extra structures.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <!-- Background -->
+  <rect width="420" height="250" fill="#f1f8f1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">Animal Cell vs Plant Cell</text>
+  <!-- ANIMAL CELL (left) - irregular blob -->
+  <ellipse cx="105" cy="130" rx="72" ry="60" fill="#fff8e1" stroke="#f9a825" stroke-width="2"/>
+  <text x="105" y="58" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">ANIMAL CELL</text>
+  <!-- Nucleus animal -->
+  <ellipse cx="100" cy="122" rx="22" ry="17" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="100" y="126" text-anchor="middle" font-size="7" fill="#1565c0">Nucleus</text>
+  <!-- Mitochondria animal -->
+  <ellipse cx="130" cy="140" rx="13" ry="7" fill="#ffe082" stroke="#f9a825" stroke-width="1"/>
+  <text x="148" y="144" font-size="6" fill="#555">Mitochon.</text>
+  <!-- Vacuole small animal -->
+  <ellipse cx="82" cy="150" rx="8" ry="6" fill="#b3e5fc" stroke="#0288d1" stroke-width="1"/>
+  <!-- Ribosome dots animal -->
+  <circle cx="118" cy="110" r="3" fill="#ce93d8"/>
+  <circle cx="124" cy="118" r="3" fill="#ce93d8"/>
+  <!-- Labels animal -->
+  <line x1="100" y1="62" x2="100" y2="105" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="55" y="65" font-size="7" fill="#333">Cell membrane</text>
+  <line x1="55" y1="66" x2="70" y2="100" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="148" y="116" font-size="7" fill="#333">Ribosomes</text>
+  <text x="148" y="158" font-size="7" fill="#333">Small vacuole</text>
+  <line x1="148" y1="156" x2="92" y2="152" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <!-- Absent labels -->
+  <text x="105" y="198" text-anchor="middle" font-size="7" fill="#c62828">✗ No cell wall</text>
+  <text x="105" y="210" text-anchor="middle" font-size="7" fill="#c62828">✗ No chloroplasts</text>
+  <text x="105" y="222" text-anchor="middle" font-size="7" fill="#c62828">✗ No large vacuole</text>
+  <!-- PLANT CELL (right) - rectangle -->
+  <rect x="248" y="68" width="140" height="130" fill="#e8f5e9" stroke="#2e7d32" stroke-width="3" rx="2"/>
+  <rect x="251" y="71" width="134" height="124" fill="#f9fbe7" stroke="#81c784" stroke-width="1" rx="1"/>
+  <text x="318" y="58" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">PLANT CELL</text>
+  <!-- Nucleus plant -->
+  <ellipse cx="310" cy="118" rx="22" ry="17" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="310" y="122" text-anchor="middle" font-size="7" fill="#1565c0">Nucleus</text>
+  <!-- Chloroplasts -->
+  <ellipse cx="265" cy="100" rx="14" ry="8" fill="#66bb6a" stroke="#2e7d32" stroke-width="1"/>
+  <text x="265" y="103" text-anchor="middle" font-size="6" fill="#fff">Cl</text>
+  <ellipse cx="268" cy="150" rx="14" ry="8" fill="#66bb6a" stroke="#2e7d32" stroke-width="1"/>
+  <text x="268" y="153" text-anchor="middle" font-size="6" fill="#fff">Cl</text>
+  <ellipse cx="355" cy="102" rx="14" ry="8" fill="#66bb6a" stroke="#2e7d32" stroke-width="1"/>
+  <text x="355" y="105" text-anchor="middle" font-size="6" fill="#fff">Cl</text>
+  <!-- Large vacuole -->
+  <ellipse cx="338" cy="160" rx="30" ry="22" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <text x="338" y="164" text-anchor="middle" font-size="6.5" fill="#01579b">Large vacuole</text>
+  <!-- Mitochondria plant -->
+  <ellipse cx="355" cy="135" rx="11" ry="6" fill="#ffe082" stroke="#f9a825" stroke-width="1"/>
+  <!-- Labels plant -->
+  <text x="248" y="60" font-size="7" fill="#333">Cell wall</text>
+  <line x1="260" y1="61" x2="260" y2="68" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="230" y="103" font-size="7" fill="#333">Chloroplasts</text>
+  <line x1="248" y1="101" x2="251" y2="101" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <!-- Present labels -->
+  <text x="318" y="210" text-anchor="middle" font-size="7" fill="#1b5e20">✓ Cell wall (cellulose)</text>
+  <text x="318" y="222" text-anchor="middle" font-size="7" fill="#1b5e20">✓ Chloroplasts</text>
+  <text x="318" y="234" text-anchor="middle" font-size="7" fill="#1b5e20">✓ Large permanent vacuole</text>
+  <!-- Divider -->
+  <line x1="210" y1="40" x2="210" y2="200" stroke="#aaa" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- Key -->
+  <text x="210" y="246" text-anchor="middle" font-size="8" fill="#555">Both have: Nucleus, Cell membrane, Cytoplasm, Mitochondria, Ribosomes</text>
+</svg>`,
+  },
+  {
+    title:'Cell Organelles and Their Functions',
+    content:`<h3>Organelle Grid — Structure and Role</h3><p>Each organelle has a specific job inside the cell. Learn the structure clue that links to the function.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="250" fill="#f1f8f1" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Cell Organelles &amp; Their Functions</text>
+  <!-- 6 organelle boxes: 3 cols x 2 rows -->
+  <!-- Row 1 -->
+  <!-- Nucleus -->
+  <rect x="8" y="24" width="124" height="100" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="6"/>
+  <text x="70" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">Nucleus</text>
+  <ellipse cx="70" cy="70" rx="28" ry="22" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <circle cx="66" cy="68" r="4" fill="#1565c0"/>
+  <circle cx="74" cy="73" r="3" fill="#1565c0"/>
+  <circle cx="70" cy="64" r="2.5" fill="#1565c0"/>
+  <text x="70" y="102" text-anchor="middle" font-size="6.5" fill="#333">Contains DNA; controls</text>
+  <text x="70" y="112" text-anchor="middle" font-size="6.5" fill="#333">all cell activities</text>
+  <!-- Mitochondria -->
+  <rect x="148" y="24" width="124" height="100" fill="#fff8e1" stroke="#f57f17" stroke-width="1.5" rx="6"/>
+  <text x="210" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">Mitochondria</text>
+  <ellipse cx="210" cy="65" rx="30" ry="18" fill="#ffe082" stroke="#f57f17" stroke-width="1.5"/>
+  <path d="M185,65 Q195,55 205,65 Q215,75 225,65 Q235,55 240,65" fill="none" stroke="#f57f17" stroke-width="1.5"/>
+  <text x="210" y="95" text-anchor="middle" font-size="6.5" fill="#333">Aerobic respiration;</text>
+  <text x="210" y="108" text-anchor="middle" font-size="6.5" fill="#333">produces ATP (energy)</text>
+  <!-- Ribosome -->
+  <rect x="288" y="24" width="124" height="100" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5" rx="6"/>
+  <text x="350" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">Ribosome</text>
+  <circle cx="348" cy="64" r="9" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1"/>
+  <circle cx="356" cy="70" r="6" fill="#ba68c8" stroke="#7b1fa2" stroke-width="1"/>
+  <text x="350" y="92" text-anchor="middle" font-size="7.5" fill="#555">(very tiny)</text>
+  <text x="350" y="105" text-anchor="middle" font-size="6.5" fill="#333">Protein synthesis —</text>
+  <text x="350" y="116" text-anchor="middle" font-size="6.5" fill="#333">builds proteins from amino acids</text>
+  <!-- Row 2 -->
+  <!-- Cell membrane -->
+  <rect x="8" y="138" width="124" height="102" fill="#fce4ec" stroke="#c62828" stroke-width="1.5" rx="6"/>
+  <text x="70" y="150" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">Cell Membrane</text>
+  <rect x="22" y="160" width="96" height="40" fill="none" stroke="#e57373" stroke-width="1.5" stroke-dasharray="4,3" rx="20"/>
+  <circle cx="35" cy="175" r="3.5" fill="#ef9a9a"/>
+  <circle cx="48" cy="172" r="3.5" fill="#ef9a9a"/>
+  <circle cx="61" cy="176" r="3.5" fill="#ef9a9a"/>
+  <text x="70" y="214" text-anchor="middle" font-size="6.5" fill="#333">Controls what enters/leaves</text>
+  <text x="70" y="226" text-anchor="middle" font-size="6.5" fill="#333">selectively permeable</text>
+  <!-- Chloroplast -->
+  <rect x="148" y="138" width="124" height="102" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="150" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Chloroplast</text>
+  <ellipse cx="210" cy="178" rx="30" ry="18" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="185" y1="178" x2="235" y2="178" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="190" y1="170" x2="190" y2="186" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="200" y1="167" x2="200" y2="189" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="210" y1="166" x2="210" y2="190" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="220" y1="167" x2="220" y2="189" stroke="#2e7d32" stroke-width="1"/>
+  <text x="210" y="210" text-anchor="middle" font-size="6.5" fill="#333">Photosynthesis — traps</text>
+  <text x="210" y="222" text-anchor="middle" font-size="6.5" fill="#333">light to make glucose (plants only)</text>
+  <!-- Vacuole -->
+  <rect x="288" y="138" width="124" height="102" fill="#e1f5fe" stroke="#0277bd" stroke-width="1.5" rx="6"/>
+  <text x="350" y="150" text-anchor="middle" font-size="9" font-weight="bold" fill="#0277bd">Vacuole</text>
+  <ellipse cx="350" cy="180" rx="36" ry="26" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <text x="350" y="184" text-anchor="middle" font-size="7" fill="#01579b">(large empty space)</text>
+  <text x="350" y="214" text-anchor="middle" font-size="6.5" fill="#333">Stores cell sap; maintains</text>
+  <text x="350" y="226" text-anchor="middle" font-size="6.5" fill="#333">turgidity (plants — large)</text>
+</svg>`,
+  },
+  {
+    title:'Prokaryote vs Eukaryote',
+    content:`<h3>Two Fundamental Cell Types</h3><p>All life is divided into prokaryotes (no membrane-bound nucleus) and eukaryotes (true nucleus with membrane). Bacteria are prokaryotes; plants, animals and fungi are eukaryotes.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <rect width="420" height="250" fill="#f1f8f1" rx="8"/>
+  <text x="210" y="16" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Prokaryote vs Eukaryote</text>
+  <!-- PROKARYOTE (left) -->
+  <text x="105" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">PROKARYOTE</text>
+  <text x="105" y="44" text-anchor="middle" font-size="7.5" fill="#555">e.g. E. coli, Salmonella</text>
+  <!-- Bacterium body -->
+  <ellipse cx="105" cy="110" rx="58" ry="42" fill="#fff3e0" stroke="#e65100" stroke-width="2.5"/>
+  <!-- DNA loop (no membrane) -->
+  <ellipse cx="100" cy="108" rx="18" ry="14" fill="none" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="100" y="112" text-anchor="middle" font-size="6" fill="#1565c0">DNA loop</text>
+  <!-- Flagellum -->
+  <path d="M160,108 Q175,95 180,110 Q185,125 195,115" fill="none" stroke="#e65100" stroke-width="2"/>
+  <text x="195" y="112" font-size="6.5" fill="#555">Flagellum</text>
+  <!-- Ribosomes -->
+  <circle cx="78" cy="100" r="3" fill="#ce93d8"/>
+  <circle cx="85" cy="120" r="3" fill="#ce93d8"/>
+  <circle cx="125" cy="98" r="3" fill="#ce93d8"/>
+  <!-- Cell wall label -->
+  <line x1="105" y1="56" x2="105" y2="68" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="105" y="54" text-anchor="middle" font-size="6.5" fill="#2e7d32">Cell wall</text>
+  <!-- Cytoplasm label -->
+  <text x="120" y="130" font-size="6.5" fill="#555">Cytoplasm</text>
+  <!-- Size indicator -->
+  <text x="105" y="162" text-anchor="middle" font-size="7" fill="#c62828">Very small (~1-10 μm)</text>
+  <!-- Comparison table bottom -->
+  <rect x="6" y="175" width="200" height="68" fill="#fff" stroke="#ccc" stroke-width="1" rx="4"/>
+  <text x="106" y="188" text-anchor="middle" font-size="8" font-weight="bold" fill="#333">Prokaryote</text>
+  <text x="106" y="200" text-anchor="middle" font-size="7" fill="#555">No membrane-bound nucleus</text>
+  <text x="106" y="212" text-anchor="middle" font-size="7" fill="#555">No membrane-bound organelles</text>
+  <text x="106" y="224" text-anchor="middle" font-size="7" fill="#555">Very small (1-10 μm)</text>
+  <text x="106" y="236" text-anchor="middle" font-size="7" fill="#555">e.g. Bacteria</text>
+  <!-- EUKARYOTE (right) -->
+  <text x="315" y="32" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">EUKARYOTE</text>
+  <text x="315" y="44" text-anchor="middle" font-size="7.5" fill="#555">e.g. plants, animals, fungi</text>
+  <!-- Eukaryote body -->
+  <ellipse cx="315" cy="108" rx="78" ry="58" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <!-- True nucleus with membrane -->
+  <ellipse cx="308" cy="100" rx="26" ry="20" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+  <ellipse cx="308" cy="100" rx="26" ry="20" fill="none" stroke="#1565c0" stroke-width="1" stroke-dasharray="2,2"/>
+  <circle cx="305" cy="99" r="5" fill="#1565c0"/>
+  <circle cx="314" cy="104" r="3.5" fill="#1565c0"/>
+  <text x="308" y="95" text-anchor="middle" font-size="5.5" fill="#fff">Nuclear</text>
+  <text x="308" y="103" text-anchor="middle" font-size="5.5" fill="#fff">membrane</text>
+  <!-- Mitochondria -->
+  <ellipse cx="345" cy="118" rx="16" ry="9" fill="#ffe082" stroke="#f57f17" stroke-width="1"/>
+  <text x="362" y="122" font-size="6" fill="#555">Mito.</text>
+  <!-- Chloroplast (plant) -->
+  <ellipse cx="275" cy="128" rx="14" ry="8" fill="#66bb6a" stroke="#2e7d32" stroke-width="1"/>
+  <text x="256" y="147" font-size="6" fill="#555">Chloroplast</text>
+  <!-- Vacuole -->
+  <ellipse cx="338" cy="145" rx="20" ry="14" fill="#b3e5fc" stroke="#0288d1" stroke-width="1"/>
+  <text x="338" y="170" text-anchor="middle" font-size="6" fill="#555">Vacuole</text>
+  <!-- Size label -->
+  <text x="315" y="175" text-anchor="middle" font-size="7" fill="#1b5e20">Larger (~10-100 μm)</text>
+  <!-- Right box -->
+  <rect x="214" y="175" width="200" height="68" fill="#fff" stroke="#ccc" stroke-width="1" rx="4"/>
+  <text x="314" y="188" text-anchor="middle" font-size="8" font-weight="bold" fill="#333">Eukaryote</text>
+  <text x="314" y="200" text-anchor="middle" font-size="7" fill="#555">TRUE membrane-bound nucleus</text>
+  <text x="314" y="212" text-anchor="middle" font-size="7" fill="#555">Membrane-bound organelles</text>
+  <text x="314" y="224" text-anchor="middle" font-size="7" fill="#555">Larger (10-100 μm)</text>
+  <text x="314" y="236" text-anchor="middle" font-size="7" fill="#555">e.g. Plants, animals, fungi</text>
+  <!-- Divider -->
+  <line x1="210" y1="24" x2="210" y2="170" stroke="#aaa" stroke-width="1" stroke-dasharray="4,3"/>
+</svg>`,
+  },
+  {
+    title:'Cell Specialisation — Adapted for Their Job',
+    content:`<h3>Specialised Cells</h3><p>Cells become specialised through differentiation — their structure is adapted to perform a specific function efficiently.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <rect width="420" height="250" fill="#f1f8f1" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Specialised Cells — Adapted Structures</text>
+  <!-- RED BLOOD CELL (top left) -->
+  <rect x="6" y="22" width="198" height="108" fill="#ffebee" stroke="#c62828" stroke-width="1.5" rx="6"/>
+  <text x="105" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">Red Blood Cell</text>
+  <!-- Biconcave disc -->
+  <ellipse cx="68" cy="78" rx="35" ry="26" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5"/>
+  <ellipse cx="68" cy="78" rx="14" ry="8" fill="#e57373" stroke="#c62828" stroke-width="1"/>
+  <line x1="108" y1="62" x2="92" y2="70" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="110" y="60" font-size="6.5" fill="#555">Biconcave disc shape</text>
+  <text x="110" y="70" font-size="6.5" fill="#555">(large surface area)</text>
+  <line x1="108" y1="80" x2="92" y2="80" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="110" y="84" font-size="6.5" fill="#555">No nucleus</text>
+  <text x="110" y="93" font-size="6.5" fill="#555">(more room for Hb)</text>
+  <text x="68" y="118" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#c62828">Carries O2 in blood</text>
+  <!-- NERVE CELL (top right) -->
+  <rect x="216" y="22" width="198" height="108" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="315" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Nerve Cell (Neuron)</text>
+  <!-- Cell body -->
+  <circle cx="258" cy="72" r="18" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Dendrites -->
+  <line x1="244" y1="58" x2="234" y2="46" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="252" y1="55" x2="246" y2="42" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="242" y1="66" x2="228" y2="62" stroke="#2e7d32" stroke-width="1.5"/>
+  <!-- Axon (long) -->
+  <line x1="276" y1="72" x2="400" y2="72" stroke="#2e7d32" stroke-width="2.5"/>
+  <!-- Axon terminal -->
+  <circle cx="400" cy="72" r="5" fill="#66bb6a"/>
+  <line x1="392" y1="72" x2="392" y2="84" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="400" y1="77" x2="400" y2="88" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="228" y="46" font-size="6.5" fill="#555">Dendrites</text>
+  <text x="226" y="55" font-size="6.5" fill="#555">(receive signals)</text>
+  <line x1="320" y1="58" x2="310" y2="68" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="322" y="56" font-size="6.5" fill="#555">Long axon</text>
+  <text x="322" y="65" font-size="6.5" fill="#555">(sends signals far)</text>
+  <text x="315" y="118" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#2e7d32">Transmits electrical signals</text>
+  <!-- ROOT HAIR CELL (bottom left) -->
+  <rect x="6" y="138" width="198" height="106" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5" rx="6"/>
+  <text x="105" y="152" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b1fa2">Root Hair Cell</text>
+  <!-- Cell body -->
+  <rect x="30" y="165" width="50" height="38" fill="#ce93d8" stroke="#7b1fa2" stroke-width="1.5" rx="3"/>
+  <!-- Long hair projection -->
+  <rect x="80" y="174" width="64" height="20" fill="#e1bee7" stroke="#7b1fa2" stroke-width="1.5" rx="10"/>
+  <line x1="144" y1="158" x2="126" y2="174" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="146" y="156" font-size="6.5" fill="#555">Long projection</text>
+  <text x="146" y="165" font-size="6.5" fill="#555">(huge surface area</text>
+  <text x="146" y="173" font-size="6.5" fill="#555">for absorbing water)</text>
+  <text x="55" y="222" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#7b1fa2">Absorbs water &amp; minerals</text>
+  <!-- SPERM CELL (bottom right) -->
+  <rect x="216" y="138" width="198" height="106" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5" rx="6"/>
+  <text x="315" y="152" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">Sperm Cell</text>
+  <!-- Head -->
+  <ellipse cx="255" cy="190" rx="20" ry="14" fill="#90caf9" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="255" y="194" text-anchor="middle" font-size="6" fill="#0d47a1">DNA</text>
+  <!-- Midpiece -->
+  <rect x="274" y="185" width="22" height="10" fill="#ffcc02" stroke="#f57f17" stroke-width="1" rx="3"/>
+  <text x="285" y="205" text-anchor="middle" font-size="6" fill="#e65100">Mito.</text>
+  <!-- Tail -->
+  <path d="M296,190 Q320,183 340,195 Q360,207 380,196" fill="none" stroke="#1565c0" stroke-width="2"/>
+  <line x1="255" y1="170" x2="255" y2="176" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="255" y="168" text-anchor="middle" font-size="6.5" fill="#555">Head (DNA)</text>
+  <line x1="355" y1="175" x2="360" y2="188" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="368" y="173" font-size="6.5" fill="#555">Tail</text>
+  <text x="368" y="182" font-size="6.5" fill="#555">(swimming)</text>
+  <text x="315" y="232" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#1565c0">Fertilises egg cell</text>
+</svg>`,
+  },
+  {
+    title:'The Light Microscope — Parts and Function',
+    content:`<h3>Using the Light Microscope</h3><p>The light microscope uses lenses to magnify specimens. Total magnification = eyepiece lens power × objective lens power (e.g. ×10 × ×40 = ×400).</p>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2e7d32"/>
+    </marker>
+  </defs>
+  <rect width="420" height="260" fill="#f1f8f1" rx="8"/>
+  <text x="210" y="15" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">The Light Microscope — Parts &amp; Function</text>
+  <!-- MICROSCOPE drawing (left side) -->
+  <!-- Base -->
+  <rect x="60" y="224" width="90" height="14" fill="#4a4a4a" rx="4"/>
+  <!-- Arm/pillar -->
+  <rect x="98" y="120" width="14" height="110" fill="#666"/>
+  <!-- Body tube -->
+  <rect x="94" y="56" width="22" height="68" fill="#777" rx="3"/>
+  <!-- Eyepiece -->
+  <rect x="98" y="40" width="14" height="20" fill="#999" rx="3"/>
+  <rect x="100" y="35" width="10" height="10" fill="#555" rx="2"/>
+  <!-- Objective lenses (rotating nosepiece) -->
+  <circle cx="105" cy="128" r="12" fill="#888" stroke="#555" stroke-width="1"/>
+  <rect x="100" y="128" width="6" height="28" fill="#666" rx="2"/>
+  <rect x="108" y="130" width="5" height="22" fill="#777" rx="2"/>
+  <rect x="93" y="132" width="5" height="18" fill="#999" rx="2"/>
+  <!-- Stage -->
+  <rect x="60" y="160" width="90" height="10" fill="#888" rx="2"/>
+  <!-- Stage clips -->
+  <rect x="66" y="157" width="8" height="6" fill="#555" rx="1"/>
+  <rect x="136" y="157" width="8" height="6" fill="#555" rx="1"/>
+  <!-- Mirror/light source -->
+  <ellipse cx="105" cy="215" rx="14" ry="9" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <!-- Coarse focus knob -->
+  <ellipse cx="88" cy="135" rx="10" ry="16" fill="#aaa" stroke="#666" stroke-width="1.5"/>
+  <!-- Fine focus knob -->
+  <ellipse cx="122" cy="138" rx="7" ry="12" fill="#bbb" stroke="#777" stroke-width="1.5"/>
+  <!-- LABELS (right side with lines) -->
+  <!-- Eyepiece -->
+  <line x1="110" y1="42" x2="185" y2="42" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="187" y="40" font-size="8" font-weight="bold" fill="#2e7d32">Eyepiece lens (×10)</text>
+  <text x="187" y="50" font-size="7" fill="#555">Magnifies image for your eye</text>
+  <!-- Body tube -->
+  <line x1="116" y1="85" x2="185" y2="78" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="187" y="77" font-size="8" font-weight="bold" fill="#2e7d32">Body tube</text>
+  <text x="187" y="87" font-size="7" fill="#555">Connects eyepiece to objective</text>
+  <!-- Objective -->
+  <line x1="105" y1="155" x2="185" y2="115" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="187" y="113" font-size="8" font-weight="bold" fill="#2e7d32">Objective lenses</text>
+  <text x="187" y="123" font-size="7" fill="#555">Low ×4, Medium ×10, High ×40</text>
+  <!-- Stage -->
+  <line x1="150" y1="164" x2="185" y2="150" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="187" y="149" font-size="8" font-weight="bold" fill="#2e7d32">Stage + stage clips</text>
+  <text x="187" y="159" font-size="7" fill="#555">Holds the glass slide</text>
+  <!-- Coarse focus -->
+  <line x1="78" y1="138" x2="40" y2="158" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="8" y="165" font-size="7.5" font-weight="bold" fill="#2e7d32">Coarse focus</text>
+  <text x="8" y="175" font-size="7" fill="#555">Large adjustments</text>
+  <!-- Fine focus -->
+  <line x1="122" y1="152" x2="60" y2="188" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="8" y="195" font-size="7.5" font-weight="bold" fill="#2e7d32">Fine focus</text>
+  <text x="8" y="205" font-size="7" fill="#555">Sharp/precise focus</text>
+  <!-- Mirror -->
+  <line x1="105" y1="215" x2="185" y2="205" stroke="#2e7d32" stroke-width="1" marker-end="url(#a)"/>
+  <text x="187" y="204" font-size="8" font-weight="bold" fill="#2e7d32">Mirror / Light source</text>
+  <text x="187" y="214" font-size="7" fill="#555">Directs light through specimen</text>
+  <!-- Magnification formula box -->
+  <rect x="185" y="225" width="228" height="28" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5" rx="5"/>
+  <text x="299" y="237" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#1b5e20">Total magnification = Eyepiece × Objective</text>
+  <text x="299" y="249" text-anchor="middle" font-size="8" fill="#333">e.g. ×10 × ×40 = ×400</text>
+</svg>`,
+  },
+  {
+    title:'🎮 Check — Animal vs Plant Cells',
+    body:'Answer these questions about cell structure and organelles.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which organelle controls all cell activities and contains DNA?',opts:['Mitochondria','Cell membrane','Nucleus','Ribosome'],ans:2,exp:'The nucleus contains the cell\'s DNA (genetic information) and controls all activities of the cell, including protein synthesis and cell division.'},
+      {q:'Which of these is found in PLANT cells but NOT in animal cells?',opts:['Nucleus','Mitochondria','Cell wall','Cell membrane'],ans:2,exp:'Plant cells have a CELL WALL (made of cellulose), chloroplasts, and a large vacuole. Animal cells do NOT have cell walls. Both have membranes, mitochondria, and nuclei.'},
+      {q:'Where does aerobic respiration mainly occur in the cell?',opts:['Nucleus','Ribosomes','Cell wall','Mitochondria'],ans:3,exp:'Mitochondria are the "powerhouses" of the cell — aerobic respiration occurs here, releasing energy as ATP.'},
+      {q:'What is the function of ribosomes?',opts:['Photosynthesis','Protein synthesis','Energy production','Cell support'],ans:1,exp:'Ribosomes are tiny organelles where proteins are made (synthesised). They read instructions from mRNA and join amino acids together.'},
+    ]}
+  },
+  {
+    title:'Specialised Cells',
+    body:`Cells become specialised to perform specific functions — this is called <strong>differentiation</strong>.
+    <br><br>
+    Examples:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Red blood cell</strong> — biconcave disc, no nucleus, carries haemoglobin for O₂ transport</li>
+      <li><strong>Root hair cell</strong> — long thin extension, large surface area for absorbing water</li>
+      <li><strong>Ciliated cell</strong> — hair-like cilia sweep mucus up airways</li>
+      <li><strong>Nerve cell (neuron)</strong> — long axon to transmit electrical signals</li>
+      <li><strong>Muscle cell</strong> — contains many mitochondria for energy; can contract</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,14,22]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const cells=[
+        {n:'Red Blood\nCell',c:[231,76,60],x:0.15,y:0.4,shape:'disc'},
+        {n:'Root Hair\nCell',c:[46,204,113],x:0.4,y:0.4,shape:'root'},
+        {n:'Nerve\nCell',c:[52,152,219],x:0.7,y:0.4,shape:'nerve'},
+        {n:'Muscle\nCell',c:[155,89,182],x:0.9,y:0.6,shape:'muscle'},
+      ];
+      // RBC (biconcave disc)
+      sk.fill(231,76,60,200);sk.noStroke();sk.ellipse(W*0.15,H*0.4,44,30);
+      sk.fill(231,76,60,40);sk.ellipse(W*0.15,H*0.4,20,14);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Red Blood\nCell',W*0.15,H*0.6);
+      // Root hair cell
+      sk.fill(46,204,113,180);sk.noStroke();sk.ellipse(W*0.38,H*0.45,32,28);
+      sk.stroke(46,204,113,200);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.38,H*0.45+14,W*0.38-10,H*0.45+55);
+      sk.line(W*0.38,H*0.45+14,W*0.38+8,H*0.45+50);
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Root Hair\nCell',W*0.38,H*0.72);
+      // Nerve cell
+      sk.fill(52,152,219,180);sk.noStroke();sk.circle(W*0.62,H*0.4,28);
+      sk.stroke(52,152,219,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.62,H*0.4,W*0.88,H*0.4);
+      for(let i=0;i<4;i++){
+        sk.line(W*0.62,H*0.4,W*0.62-14+i*7,H*0.4-20);
+      }
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Nerve Cell',W*0.72,H*0.6);
+    }
+  },
+  {
+    title:'From Cells to Organisms',
+    body:`Living things are organised in levels of increasing complexity:
+    <br><br>
+    <strong>Cell → Tissue → Organ → Organ System → Organism</strong>
+    <br><br>
+    <ul style="margin:8px 0 0 18px;line-height:2.2">
+      <li><strong>Cell</strong> — basic unit of life (e.g. muscle cell)</li>
+      <li><strong>Tissue</strong> — group of similar cells (e.g. muscle tissue)</li>
+      <li><strong>Organ</strong> — group of tissues with a specific function (e.g. heart)</li>
+      <li><strong>Organ system</strong> — group of organs working together (e.g. circulatory system)</li>
+      <li><strong>Organism</strong> — complete living thing (e.g. human)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const levels=[
+        {n:'Cell',icon:'⬤',c:[100,200,100],size:24},
+        {n:'Tissue',icon:'▦',c:[52,152,219],size:40},
+        {n:'Organ',icon:'♥',c:[231,76,60],size:52},
+        {n:'System',icon:'🔄',c:[155,89,182],size:60},
+        {n:'Organism',icon:'🧑',c:[241,196,15],size:68},
+      ];
+      levels.forEach((lv,i)=>{
+        const cx=W*(0.1+i*0.19),cy=H*0.5;
+        const pulse=1+Math.sin(t*1.5+i)*0.07;
+        sk.fill(...lv.c,50);sk.noStroke();sk.circle(cx,cy,lv.size*pulse*1.5);
+        sk.fill(...lv.c,180);sk.circle(cx,cy,lv.size*pulse);
+        sk.fill(255);sk.textSize(lv.size*0.4);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(lv.icon,cx,cy);
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text(lv.n,cx,cy+lv.size*0.85);
+        if(i<levels.length-1){
+          sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+          sk.line(cx+lv.size*0.55,cy,cx+W*0.19-levels[i+1].size*0.55,cy);
+          const px=cx+W*0.19*((t*0.3+i*0.25)%1);
+          sk.fill(255,220,50,200);sk.noStroke();sk.circle(px,cy,7);
+        }
+      });
+    }
+  },
+  {
+    title:'🎮 Final — Cells & Organisation',
+    body:'Apply your knowledge of cell structure, specialisation and organisation.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What do plant cells have that animal cells DO NOT?',opts:['Nucleus','Mitochondria','Cell wall and chloroplasts','Ribosomes'],ans:2,exp:'Plant cells have a cell wall (cellulose), chloroplasts (for photosynthesis), and a large permanent vacuole. Animal cells lack all three.'},
+      {q:'Red blood cells have no nucleus. Why is this an advantage?',opts:['They can reproduce faster','They have more space to carry haemoglobin for oxygen transport','They live longer','They can make their own energy'],ans:1,exp:'Without a nucleus, RBCs have MORE space to pack haemoglobin — the protein that carries oxygen. This makes them more efficient at their job.'},
+      {q:'What is the correct order of organisation?',opts:['Organism → Organ → Tissue → Cell','Cell → Tissue → Organ → System → Organism','Tissue → Cell → Organ → Organism','Cell → Organ → Tissue → System'],ans:1,exp:'The hierarchy is: Cell → Tissue (similar cells) → Organ (tissues working together) → System (organs working together) → Organism (whole living thing).'},
+      {q:'Which part of the cell controls what enters and leaves it?',opts:['Cell wall','Nucleus','Cell membrane','Cytoplasm'],ans:2,exp:'The cell membrane is selectively permeable — it controls what enters and exits the cell. The cell wall (plants) provides structural support but is fully permeable.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#2e7d32',dark:'#1b5e20',light:'#e8f5e9',
+  title:'Cells — Structure, Organelles & Organisation',
+});
+</script></body></html>

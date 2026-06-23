@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rates of Reaction — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#bf360c;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#ffab91;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffab91}
+    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
+    .btn{padding:8px 18px;border:2.5px solid #bf360c;border-radius:24px;cursor:pointer;font-size:.85rem;font-weight:700;background:#fff;color:#bf360c;transition:all .15s}
+    .btn.on{background:#bf360c;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Rates of Reaction</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setMode(0)">💥 Collision Theory</button>
+  <button class="btn"    id="b1" onclick="setMode(1)">🌡️ Temperature</button>
+  <button class="btn"    id="b2" onclick="setMode(2)">🧪 Concentration</button>
+  <button class="btn"    id="b3" onclick="setMode(3)">🔬 Surface Area</button>
+  <button class="btn"    id="b4" onclick="setMode(4)">⚗️ Catalysts</button>
+  <button class="btn" id="b-prac" onclick="setRatesPractice(!ratesMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let mode=0;
+function setMode(n){mode=n;[0,1,2,3,4].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Rates of Reaction</h2><ul><li><b>Collision theory</b>: Reactions occur when particles collide with sufficient energy (≥ activation energy) and correct orientation.</li><li><b>Activation energy</b>: Minimum energy needed for a reaction to occur.</li><li><b>Factors</b>: Temperature, concentration, surface area, catalysts all affect rate.</li><li><b>Temperature</b>: Higher temp → more frequent collisions with ≥ activation energy → faster rate.</li><li><b>Catalyst</b>: Provides alternative pathway with lower activation energy — speeds up reaction without being consumed.</li><li><b>Concentration/pressure</b>: More particles per unit volume → more collisions → faster rate.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let ratesMcq=false;
+const RATES_MCQ=[
+  {q:'According to collision theory, a reaction occurs when particles:',opts:['Collide with sufficient energy and correct orientation','Simply touch each other','Are heated to 100°C','Are dissolved in water'],c:0,tip:'Collisions must have energy ≥ activation energy AND the correct orientation.'},
+  {q:'Why does increasing temperature increase the rate of reaction?',opts:['More collisions have energy ≥ activation energy','Particles become smaller','Activation energy decreases','Particles stop moving'],c:0,tip:'Higher temperature gives more particles enough energy to overcome the activation energy barrier.'},
+  {q:'What is activation energy?',opts:['Minimum energy needed to start a reaction','Energy released by a reaction','Total energy of all particles','Energy needed to break products'],c:0,tip:'Activation energy is the energy barrier that reactants must overcome for a reaction to occur.'},
+  {q:'A catalyst increases reaction rate by:',opts:['Lowering the activation energy','Increasing temperature','Increasing the concentration','Adding more reactant'],c:0,tip:'Catalysts provide an alternative reaction pathway with lower activation energy.'},
+  {q:'Increasing surface area of a solid increases rate by:',opts:['Exposing more particles to react','Raising the temperature','Increasing concentration','Adding a catalyst'],c:0,tip:'Smaller pieces have more surface area exposed, allowing more collisions per second.'},
+  {q:'Increasing concentration of a solution increases rate because:',opts:['More particles per unit volume → more collisions','Temperature rises automatically','Activation energy is lowered','Particles gain more energy'],c:0,tip:'Higher concentration means more reactant particles in the same space — more frequent collisions.'},
+  {q:'Which factor does NOT affect the rate of a chemical reaction?',opts:['Colour of the reactants','Temperature','Surface area','Concentration'],c:0,tip:'Colour is a property of the substance but does not affect how fast particles collide.'}
+];
+let ratesMcqIdx=0,ratesMcqSel=-1,ratesMcqScore=0,ratesMcqDone=false,ratesMcqFeedback=null;
+function setRatesPractice(on){ratesMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){ratesMcqIdx=0;ratesMcqSel=-1;ratesMcqScore=0;ratesMcqDone=false;ratesMcqFeedback=null;}}
+function drawRatesMCQ(s){s.background(252,252,240);if(ratesMcqDone){s.fill(191,54,12);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+ratesMcqScore+'/'+RATES_MCQ.length,440,215);let msg=ratesMcqScore===RATES_MCQ.length?'Perfect! You know Rates of Reaction!':ratesMcqScore>=5?'Great job!':'Review collision theory & factors.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=RATES_MCQ[ratesMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(ratesMcqIdx/RATES_MCQ.length),10,5);s.fill(191,54,12);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(ratesMcqIdx+1)+' of '+RATES_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=ratesMcqSel===i,correct=ratesMcqFeedback!==null&&i===q.c,wrong=ratesMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(ratesMcqFeedback){s.fill(ratesMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(ratesMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function ratesMcqClick(mx,my){if(ratesMcqDone){if(mx>310&&mx<570&&my>290&&my<334){ratesMcqIdx=0;ratesMcqSel=-1;ratesMcqScore=0;ratesMcqDone=false;ratesMcqFeedback=null;}return;}if(ratesMcqFeedback!==null){ratesMcqIdx++;ratesMcqSel=-1;ratesMcqFeedback=null;if(ratesMcqIdx>=RATES_MCQ.length)ratesMcqDone=true;return;}RATES_MCQ[ratesMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){ratesMcqSel=i;ratesMcqFeedback=i===RATES_MCQ[ratesMcqIdx].c?'correct':'wrong';if(i===RATES_MCQ[ratesMcqIdx].c)ratesMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  let particles=[];let slowParticles=[];
+
+  function initFast(){
+    particles=[];for(let i=0;i<20;i++) particles.push({x:30+Math.random()*430,y:30+Math.random()*440,vx:(Math.random()-0.5)*4,vy:(Math.random()-0.5)*4,col:i%2===0?[200,60,30]:[30,80,200]});
+  }
+  function initSlow(){
+    slowParticles=[];for(let i=0;i<20;i++) slowParticles.push({x:30+Math.random()*430,y:30+Math.random()*440,vx:(Math.random()-0.5)*1.5,vy:(Math.random()-0.5)*1.5,col:i%2===0?[200,60,30]:[30,80,200]});
+  }
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');initFast();initSlow();};
+  sk.draw=()=>{if(ratesMcq){ drawRatesMCQ(sk); return; }tick+=0.04;sk.background(255,248,245);
+    if(mode===0) drawCollision();
+    else if(mode===1) drawTemp();
+    else if(mode===2) drawConc();
+    else if(mode===3) drawSurface();
+    else drawCatalyst();
+    drawInfoPanel();
+  };
+
+  function moveParticles(parts,box){
+    parts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<box.x||p.x>box.x+box.w) p.vx*=-1;
+      if(p.y<box.y||p.y>box.y+box.h) p.vy*=-1;
+    });
+  }
+  function drawParticles(parts){
+    parts.forEach(p=>{
+      sk.fill(p.col[0],p.col[1],p.col[2],200);sk.noStroke();sk.ellipse(p.x,p.y,14);
+    });
+  }
+
+  function drawCollision(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Collision Theory',248,22);sk.textStyle(sk.NORMAL);
+    // Two particle types colliding
+    // Box
+    let box={x:14,y:40,w:462,h:280};
+    sk.noFill();sk.stroke(180,80,0);sk.strokeWeight(2);sk.rect(box.x,box.y,box.w,box.h,5);
+    moveParticles(particles,box);drawParticles(particles);
+    // Detect effective collisions (close proximity, different types)
+    particles.forEach(p=>{
+      particles.forEach(p2=>{
+        if(p!==p2&&p.col[0]!==p2.col[0]){
+          let d=Math.hypot(p.x-p2.x,p.y-p2.y);
+          if(d<20){
+            sk.fill(255,200,0,200);sk.noStroke();sk.ellipse((p.x+p2.x)/2,(p.y+p2.y)/2,24);
+            sk.fill(180,100,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('💥',((p.x+p2.x)/2),(p.y+p2.y)/2+4);sk.textStyle(sk.NORMAL);
+          }
+        }
+      });
+    });
+    // Key info
+    let ky=334;
+    sk.fill(255,240,230,220);sk.stroke(180,80,0,80);sk.strokeWeight(1);sk.rect(14,ky,462,85,7);sk.noStroke();
+    sk.fill(140,40,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('COLLISION THEORY:',20,ky+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['For a reaction to occur, particles must:','1. COLLIDE with each other','2. Collide with SUFFICIENT ENERGY (≥ activation energy, Ea)','3. Collide with correct ORIENTATION (for some reactions)'].forEach((l,i)=>sk.text(l,20,ky+30+i*14));
+    // Legend
+    sk.fill(200,60,30,200);sk.noStroke();sk.ellipse(248,440,14);
+    sk.fill(30,80,200,200);sk.ellipse(268,440,14);
+    sk.fill(30);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.text('Reactant A',282,444);
+    sk.fill(30);sk.text('Reactant B',320,444);sk.text('(only A+B collisions with enough energy cause reaction)',248,460);
+  }
+
+  function drawTemp(){
+    // Energy distribution curves
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Effect of Temperature on Rate of Reaction',248,22);sk.textStyle(sk.NORMAL);
+    let gx=30,gy=280,gw=420,gh=230;
+    sk.noFill();sk.stroke(180,180,180);sk.strokeWeight(1.5);
+    sk.rect(gx,gy-gh,gw,gh);
+    // Maxwell-Boltzmann curves
+    function drawCurve(Tmult,col,label){
+      sk.noFill();sk.stroke(col[0],col[1],col[2],200);sk.strokeWeight(3);
+      sk.beginShape();
+      for(let i=0;i<gw;i++){
+        let E=i/gw*5;let peak=Tmult;let n=E*(E/(peak*peak))*Math.exp(-E/peak*0.9+0.5)*gh*0.7;
+        sk.vertex(gx+i,gy-n);
+      }sk.endShape();
+      sk.noStroke();sk.fill(col[0],col[1],col[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);
+      sk.textAlign(sk.LEFT);sk.text(label,gx+gw*Tmult/4,gy-gh*0.68*Tmult/0.6);sk.textStyle(sk.NORMAL);
+    }
+    drawCurve(0.5,[30,80,200],'Low T');drawCurve(0.65,[200,100,0],'Medium T');drawCurve(0.78,[200,30,30],'High T');
+    // Activation energy line
+    let eaX=gx+260;
+    sk.stroke(30,130,30,200);sk.strokeWeight(2);sk.setLineDash([5,4]);
+    sk.line(eaX,gy,eaX,gy-gh);sk.setLineDash([]);
+    sk.noStroke();sk.fill(30,130,30);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Ea (activation\nenergy)',eaX+4,gy-gh+24);sk.textStyle(sk.NORMAL);
+    // Shaded area
+    sk.fill(200,30,30,60);sk.noStroke();sk.rect(eaX,gy-gh,gx+gw-eaX,gh);
+    sk.fill(200,30,30);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
+    sk.text('Particles with E ≥ Ea\n(area greater at high T)',eaX+(gx+gw-eaX)/2,gy-40);sk.textStyle(sk.NORMAL);
+    // Axes
+    sk.fill(60);sk.stroke(60);sk.strokeWeight(1.5);
+    sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    sk.noStroke();sk.fill(60);sk.textSize(9.5);sk.textAlign(sk.CENTER);
+    sk.text('Kinetic Energy →',gx+gw/2,gy+18);
+    sk.push();sk.translate(gx-18,gy-gh/2);sk.rotate(-sk.PI/2);sk.textSize(9.5);sk.text('Number of particles →',0,0);sk.pop();
+    // Summary
+    let sy=290;
+    sk.fill(255,240,230,220);sk.stroke(180,80,0,80);sk.strokeWeight(1);sk.rect(460,50,406,220,7);sk.noStroke();
+    sk.fill(140,40,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EFFECT OF TEMPERATURE:',468,64);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['↑ Temperature → ↑ kinetic energy of particles','→ Particles move FASTER','→ MORE frequent collisions','→ MORE particles have energy ≥ Ea','→ ↑ Rate of reaction',
+     '','Rule of thumb: rate ~doubles for every 10°C rise'].forEach((l,i)=>sk.text(l,468,80+i*20));
+  }
+
+  function drawConc(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Effect of Concentration on Rate',248,22);sk.textStyle(sk.NORMAL);
+    // Two boxes: low conc vs high conc
+    let boxes=[{x:14,y:50,w:210,h:200,n:6,title:'Low Concentration'},{x:250,y:50,w:210,h:200,n:18,title:'High Concentration'}];
+    boxes.forEach(box=>{
+      sk.fill(220,240,255,120);sk.stroke(30,80,200);sk.strokeWeight(2);
+      sk.rect(box.x,box.y,box.w,box.h,5);sk.noStroke();
+      sk.fill(30,80,200);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(box.title,box.x+box.w/2,box.y-8);sk.textStyle(sk.NORMAL);
+      // Particles
+      for(let i=0;i<box.n;i++){
+        let px=box.x+14+(tick*0.8+i*30)%box.w*0.85;
+        let py=box.y+14+(i*17+tick*0.5)%box.h*0.85;
+        sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(px,py,13);
+      }
+    });
+    // Rate graph
+    let gx=30,gy=440,gw=420,gh=180;
+    sk.noFill();sk.stroke(180,180,180);sk.strokeWeight(1.5);
+    sk.rect(gx,gy-gh,gw,gh);
+    sk.stroke(30,80,200,220);sk.strokeWeight(3);
+    sk.line(gx,gy-gh+10,gx+gw,gy-10);
+    sk.noStroke();sk.fill(30,80,200);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Rate ↑',gx+gw-30,gy-gh+18);sk.textStyle(sk.NORMAL);
+    // Axes labels
+    sk.fill(60);sk.stroke(60);sk.strokeWeight(1.5);
+    sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    sk.noStroke();sk.fill(60);sk.textSize(9);sk.textAlign(sk.CENTER);
+    sk.text('Concentration →',gx+gw/2,gy+14);
+    sk.push();sk.translate(gx-14,gy-gh/2);sk.rotate(-sk.PI/2);sk.textSize(9);sk.text('Rate →',0,0);sk.pop();
+    sk.fill(30,80,200);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.text('Rate is directly proportional to concentration (for many reactions)',gx,gy+30);sk.textStyle(sk.NORMAL);
+    // Explanation
+    let ey=270;
+    sk.fill(240,248,255,220);sk.stroke(30,80,200,80);sk.strokeWeight(1);sk.rect(14,ey,462,95,7);sk.noStroke();
+    sk.fill(20,60,180);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WHY ↑ concentration → ↑ rate:',20,ey+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['More particles per unit volume.','Particles are closer together → more frequent collisions.','More successful collisions per second.','Rate of reaction increases.'].forEach((l,i)=>sk.text(l,20,ey+30+i*16));
+  }
+
+  function drawSurface(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Effect of Surface Area on Rate',248,22);sk.textStyle(sk.NORMAL);
+    // Large chunk vs powder
+    let lx=60,ly=80,pw=340,ly2=80;
+    // Large chunk
+    sk.fill(180,120,60,200);sk.stroke(120,60,0);sk.strokeWeight(2);
+    sk.rect(lx,ly,100,100,5);
+    sk.noStroke();sk.fill(120,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('1 Large\nChunk',lx+50,ly+60);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(9);sk.text('Low surface area\nFew exposed\nparticles',lx+50,ly+120);
+    // Arrow
+    sk.fill(180,60,0,200);sk.noStroke();sk.triangle(190,ly+50,210,ly+44,210,ly+56);
+    sk.stroke(180,60,0);sk.strokeWeight(2);sk.line(192,ly+50,230,ly+50);
+    sk.noStroke();sk.fill(180,60,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('Crush',210,ly+36);sk.textStyle(sk.NORMAL);
+    // Powder
+    let px2=240,py2=ly;
+    for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+      sk.fill(220,160,80,180);sk.stroke(160,80,0);sk.strokeWeight(1.5);
+      sk.rect(px2+c*34,py2+r*34,28,28,3);
+    }
+    sk.noStroke();sk.fill(120,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Many Small\nPieces (Powder)',px2+51,py2+120);sk.textStyle(sk.NORMAL);
+    sk.fill(80);sk.textSize(9);sk.text('HIGH surface area\nMany exposed\nparticles',px2+51,py2+148);
+    // Rate comparison bar
+    let rx=60,ry=270;
+    sk.fill(200,180,180,200);sk.noStroke();sk.rect(rx,ry,60,40,3);
+    sk.fill(200,60,30,200);sk.rect(rx+120,ry,180,40,3);
+    sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Slow',rx+30,ry+24);sk.text('FAST',rx+210,ry+24);sk.textStyle(sk.NORMAL);
+    sk.fill(60);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.text('Chunk\n(low SA)',rx,ry+58);sk.text('Powder\n(high SA)',rx+120,ry+58);
+    sk.fill(180,40,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Higher surface area → more particles exposed → more collisions → faster reaction',248,ry+90);sk.textStyle(sk.NORMAL);
+    // Examples
+    let exy=380;
+    sk.fill(255,245,220,220);sk.stroke(180,80,0,80);sk.strokeWeight(1);sk.rect(14,exy,462,120,7);sk.noStroke();
+    sk.fill(140,60,0);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EXAMPLES of surface area effect:',20,exy+14);sk.textStyle(sk.NORMAL);
+    const exx=['Calcium carbonate marble chips vs powder — chips react slower with HCl',
+      'Coal dust in mines can EXPLODE — huge SA → very fast reaction',
+      'Powdered catalytic converters — greater SA for catalysis',
+      'Finely cut vegetables cook faster than large chunks',
+      'Bread rises faster when yeast in warm, moist conditions (↑ SA contact)'];
+    exx.forEach((e,i)=>{ sk.fill(30);sk.textSize(9.5);sk.text('• '+e,20,exy+30+i*18);});
+  }
+
+  function drawCatalyst(){
+    sk.fill(180,40,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Effect of Catalysts on Rate',248,22);sk.textStyle(sk.NORMAL);
+    // Energy profile diagram
+    let gx=30,gy=320,gw=420,gh=260;
+    sk.noFill();sk.stroke(200,200,200);sk.strokeWeight(1);sk.rect(gx,gy-gh,gw,gh);
+    // Uncatalysed curve
+    function drawProfile(Ea,col,lbl){
+      sk.noFill();sk.stroke(col[0],col[1],col[2],200);sk.strokeWeight(3);
+      sk.beginShape();
+      for(let i=0;i<=100;i++){
+        let t2=i/100;
+        let y2;
+        if(t2<0.5) y2=gy-40-(Ea-40)*4*t2*t2;
+        else y2=gy-40-(Ea-40)*4*(1-t2)*(1-t2)+30*(t2-0.5)*2;
+        sk.vertex(gx+t2*gw,y2);
+      }sk.endShape();
+      sk.noStroke();sk.fill(col[0],col[1],col[2]);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(lbl,gx+gw/2+8,gy-Ea*0.8);sk.textStyle(sk.NORMAL);
+    }
+    drawProfile(80,[200,60,30],'Without\ncatalyst\n(higher Ea)');
+    drawProfile(45,[0,140,60],'With\ncatalyst\n(lower Ea)');
+    // Labels
+    sk.fill(60);sk.stroke(60);sk.strokeWeight(1.5);
+    sk.line(gx,gy,gx+gw,gy);sk.line(gx,gy,gx,gy-gh);
+    sk.noStroke();sk.fill(60);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Progress of reaction →',gx+gw/2,gy+16);
+    sk.push();sk.translate(gx-14,gy-gh/2);sk.rotate(-sk.PI/2);sk.textSize(9);sk.text('Energy →',0,0);sk.pop();
+    sk.fill(60);sk.textSize(8.5);sk.textAlign(sk.LEFT);
+    sk.text('Reactants',gx+6,gy-50);sk.text('Products',gx+gw-52,gy-28);
+    // What a catalyst does
+    let wy=340;
+    sk.fill(240,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(460,40,406,290,7);sk.noStroke();
+    sk.fill(0,100,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('WHAT DOES A CATALYST DO?',468,56);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Provides an ALTERNATIVE REACTION PATHWAY.','This pathway has LOWER activation energy (Ea).','More particles have enough energy to react.','Rate of reaction INCREASES.','','Catalyst is NOT consumed in the reaction.','Catalyst is NOT changed at end of reaction.',
+     '','TYPES OF CATALYST:','Homogeneous: same state as reactants.','Heterogeneous: different state (e.g. solid\ncatalyst, gaseous reactants).'
+    ].forEach((l,i)=>sk.text(l,468,72+i*20));
+    // Examples
+    let exy=350;
+    sk.fill(245,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,exy,440,150,7);sk.noStroke();
+    sk.fill(0,100,50);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('EXAMPLES OF CATALYSTS:',20,exy+14);sk.textStyle(sk.NORMAL);
+    [['H₂O₂ decomposition','MnO₂ (manganese dioxide)'],['Haber process (N₂+H₂→NH₃)','Iron (Fe)'],['Hydrogenation of oils','Nickel (Ni)'],['Car catalytic converter','Platinum (Pt) + Palladium (Pd)'],['Enzyme-controlled reactions','Biological catalysts (e.g. amylase)']].forEach((r,i)=>{
+      sk.fill(0,100,50);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.text(r[0]+':',20,exy+30+i*24);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],180,exy+30+i*24);
+    });
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;
+    // Only show panel in collision/temperature modes (no space in conc/surface/catalyst)
+    if(mode>=2){return;}
+    let c=[180,40,0];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Collision Theory','Temperature Effect'];
+    sk.text(titles[mode],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'What is Rate of Reaction?',b:'Speed at which reactants turn to products.\nRate = change in amount / time.\nMeasured by volume of gas, colour change, mass loss.'},{t:'Activation Energy (Ea)',b:'Minimum energy needed to start a reaction.\nParticles must reach transition state.\nCatalysts lower Ea → faster reaction.'},{t:'Successful Collision',b:'Must have enough energy (≥ Ea).\nMust have correct orientation.\nOnly a small fraction of collisions are successful.'},{t:'Measuring Reaction Rate',b:'Collect gas produced (e.g. H₂ from Mg+HCl).\nMass loss on balance.\nColour change (colorimetry).\nTime for cross to disappear (precipitation).'}],
+      [{t:'Maxwell-Boltzmann Distribution',b:'Shows distribution of kinetic energies in a gas.\nCurve shows number of particles vs energy.\nArea under curve = total number of particles.'},{t:'Effect on Curve at High T',b:'Peak moves to the RIGHT (higher energy).\nCurve becomes BROADER and lower.\nMore particles exceed Ea → more react.'},{t:'Rule of Thumb',b:'For every 10°C rise in temperature,\nthe rate approximately DOUBLES.\nThis is because significantly more particles≥Ea.'},{t:'Activation Energy',b:'Shown as vertical line on energy curve.\nOnly particles to the RIGHT of Ea react.\nAt higher T, much larger fraction exceeds Ea.'}],
+    ];
+    allBoxes[mode].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(ratesMcq){ ratesMcqClick(sk.mouseX,sk.mouseY); } };
+  sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
+});
+</script>
+</body>
+</html>
+
+
+
+

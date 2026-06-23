@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Photosynthesis — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,18,10]))}
+
+const STEPS=[
+  {
+    title:'What is Photosynthesis?',
+    body:`<strong>Photosynthesis</strong> is the process by which green plants (and some other organisms) use sunlight to convert carbon dioxide and water into glucose and oxygen.
+    <br><br>
+    <strong>Word equation:</strong><br>
+    <div style="background:#1b5e20;border-radius:8px;padding:10px 14px;margin:10px 0;font-family:monospace;font-size:.88rem;color:#a5d6a7">
+      Carbon dioxide + Water → Glucose + Oxygen
+    </div>
+    <strong>Symbol equation:</strong><br>
+    <div style="background:#1b5e20;border-radius:8px;padding:10px 14px;font-family:monospace;font-size:.88rem;color:#a5d6a7">
+      6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂
+    </div>
+    <br>This reaction requires <strong>light energy</strong> and the green pigment <strong>chlorophyll</strong>.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Sun
+      for(let i=0;i<8;i++){
+        const ang=sk.TWO_PI/8*i+t*0.5;
+        sk.stroke(255,220,50,160);sk.strokeWeight(2.5);sk.noFill();
+        sk.line(W*0.5+Math.cos(ang)*38,H*0.15+Math.sin(ang)*38,W*0.5+Math.cos(ang)*52,H*0.15+Math.sin(ang)*52);
+      }
+      sk.fill(255,220,50,240);sk.noStroke();sk.circle(W*0.5,H*0.15,50);
+      // Light rays downward
+      for(let i=0;i<3;i++){
+        const x=W*(0.35+i*0.15);
+        const alpha=180+60*Math.sin(t*1.5+i);
+        sk.stroke(255,220,50,alpha);sk.strokeWeight(1.5);
+        for(let j=0;j<8;j++){
+          sk.line(x,H*0.22+j*8,x,H*0.22+(j+1)*8-2);
+        }
+      }
+      // Leaf
+      sk.fill(34,139,34,200);sk.noStroke();
+      sk.ellipse(W*0.5,H*0.56,W*0.45,H*0.36);
+      sk.stroke(0,100,0,180);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.29,H*0.55,W*0.71,H*0.55);
+      for(let i=1;i<=4;i++){
+        sk.line(W*0.29+i*(W*0.42/5),H*0.55,W*0.29+i*(W*0.42/5)+(i<3?-14:14),H*0.55+20);
+      }
+      // CO2 arrows in
+      sk.fill(100,180,255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('CO₂ + H₂O',W*0.18,H*0.44);
+      sk.stroke(100,180,255,160);sk.strokeWeight(1.5);
+      sk.line(W*0.18,H*0.47,W*0.28,H*0.52);
+      // O2 + glucose arrows out
+      sk.fill(200,255,200);sk.textSize(9);
+      sk.text('O₂ + Glucose',W*0.78,H*0.44);
+      sk.stroke(200,255,200,160);sk.strokeWeight(1.5);
+      sk.line(W*0.72,H*0.52,W*0.78,H*0.47);
+      // Chlorophyll label
+      sk.fill(255,220,50);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('Chlorophyll',W*0.5,H*0.85);
+      sk.text('(captures light)',W*0.5,H*0.91);
+    }
+  },
+  {
+    title:'Conditions Needed for Photosynthesis',
+    body:`For photosynthesis to occur, three things are needed:
+    <br><br>
+    <ol style="margin:6px 0 0 18px;line-height:2.3">
+      <li><strong>Light</strong> — the energy source (usually sunlight). More light = faster rate.</li>
+      <li><strong>Carbon dioxide (CO₂)</strong> — enters through tiny pores called <strong>stomata</strong> on the leaf surface.</li>
+      <li><strong>Water (H₂O)</strong> — absorbed by roots, travels up the xylem to leaves.</li>
+      <li><strong>Chlorophyll</strong> — the green pigment in chloroplasts that absorbs light energy.</li>
+    </ol>
+    <br>Limiting factors that slow photosynthesis: low light intensity, low CO₂ concentration, low temperature (enzymes slow down).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const factors=[
+        {n:'Light',icon:'☀',c:[255,220,50],x:0.5,y:0.2},
+        {n:'CO₂',icon:'💨',c:[100,200,255],x:0.2,y:0.55},
+        {n:'H₂O',icon:'💧',c:[52,152,219],x:0.8,y:0.55},
+        {n:'Chlorophyll',icon:'🌿',c:[46,204,113],x:0.5,y:0.85},
+      ];
+      // Centre leaf
+      sk.fill(34,139,34,80);sk.noStroke();sk.ellipse(W*0.5,H*0.55,90,70);
+      sk.stroke(46,204,113,140);sk.strokeWeight(1.5);sk.noFill();sk.ellipse(W*0.5,H*0.55,90,70);
+      factors.forEach((f,i)=>{
+        const cx=f.x*W,cy=f.y*H,pulse=1+Math.sin(t*1.4+i*0.9)*0.09;
+        sk.fill(...f.c,40);sk.noStroke();sk.circle(cx,cy,52*pulse);
+        sk.fill(...f.c,180);sk.circle(cx,cy,36*pulse);
+        sk.fill(255);sk.textSize(11);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(f.icon,cx,cy);
+        sk.fill(255);sk.textSize(9.5);sk.textAlign(sk.CENTER);sk.text(f.n,cx,cy+26);
+        // Arrow to centre
+        sk.stroke(...f.c,80);sk.strokeWeight(1);sk.noFill();
+        const dx=W*0.5-cx,dy=H*0.55-cy;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist>50){
+          const nx=dx/dist,ny=dy/dist;
+          const progress=(t*0.5+i*0.25)%1;
+          const px=cx+nx*dist*progress,py=cy+ny*dist*progress;
+          sk.fill(...f.c,200);sk.noStroke();sk.circle(px,py,7);
+        }
+      });
+    }
+  },
+  {
+    title:'The Leaf as a Photosynthesis Factory',
+    body:`The <strong>leaf</strong> is specially adapted for photosynthesis:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Large, flat surface</strong> — maximum light absorption</li>
+      <li><strong>Thin</strong> — CO₂ diffuses quickly to all cells</li>
+      <li><strong>Chloroplasts</strong> in palisade mesophyll (upper layer) — most photosynthesis here</li>
+      <li><strong>Stomata</strong> — tiny pores (mainly on underside) for CO₂ in and O₂ out; controlled by guard cells</li>
+      <li><strong>Vascular bundles (veins)</strong> — xylem brings water; phloem carries glucose away</li>
+      <li><strong>Spongy mesophyll</strong> — air spaces for gas diffusion between cells</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[12,20,12]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Cross-section of leaf (simplified)
+      // Cuticle + upper epidermis
+      sk.fill(180,220,140,200);sk.noStroke();sk.rect(W*0.06,H*0.22,W*0.88,16,3,3,0,0);
+      // Palisade cells
+      for(let i=0;i<11;i++){
+        const x=W*0.06+i*(W*0.88/11);
+        const pulse=1+Math.sin(t*1.2+i*0.4)*0.06;
+        sk.fill(0,160,0,180);sk.noStroke();sk.rect(x+2,H*0.22+16,W*0.88/11-4,46);
+        sk.fill(0,200,50,60);sk.circle(x+W*0.88/22,H*0.22+34,10*pulse);
+      }
+      // Spongy mesophyll
+      for(let i=0;i<20;i++){
+        const x=W*0.06+(i%10)*(W*0.88/10)+Math.random()*8,y=H*0.22+70+Math.floor(i/10)*22;
+        sk.fill(100,200,100,140);sk.noStroke();sk.ellipse(x+W*0.088/2,y,20,14);
+      }
+      // Lower epidermis
+      sk.fill(160,200,120,200);sk.noStroke();sk.rect(W*0.06,H*0.22+108,W*0.88,12,0,0,3,3);
+      // Stomata
+      for(let i=0;i<4;i++){
+        const x=W*0.15+i*W*0.2;
+        sk.fill(30,60,30,200);sk.noStroke();sk.ellipse(x,H*0.22+120,18,8);
+        sk.fill(100,160,100,160);sk.ellipse(x-6,H*0.22+120,8,10);
+        sk.ellipse(x+6,H*0.22+120,8,10);
+      }
+      // Labels
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.LEFT);
+      sk.text('Palisade cells (chloroplasts)',W*0.06+W*0.88+6,H*0.22+38);
+      sk.text('Spongy mesophyll (air spaces)',W*0.06+W*0.88+6,H*0.22+82);
+      sk.text('Stomata + guard cells',W*0.06+W*0.88+6,H*0.22+122);
+    }
+  },
+  {
+    title:'Leaf Cross-Section — Where Photosynthesis Happens',
+    content:`<h3>Leaf Cross-Section</h3><p>A cross-section of a leaf shows the layers where photosynthesis occurs. Light enters from the top, CO₂ enters through stomata on the lower surface. The palisade mesophyll contains most chloroplasts.</p>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#555"/></marker></defs>
+  <!-- Light arrows from top -->
+  <line x1="60" y1="5" x2="60" y2="30" stroke="#f9a825" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="100" y1="5" x2="100" y2="30" stroke="#f9a825" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="140" y1="5" x2="140" y2="30" stroke="#f9a825" stroke-width="2" marker-end="url(#a)"/>
+  <text x="100" y="14" font-size="9" fill="#f9a825" text-anchor="middle">Light energy</text>
+  <!-- Upper epidermis -->
+  <rect x="30" y="32" width="260" height="14" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="300" y="43" font-size="9" fill="#1b5e20">Upper epidermis (transparent)</text>
+  <!-- Palisade mesophyll -->
+  <rect x="30" y="46" width="260" height="52" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <!-- Palisade cells -->
+  <rect x="34" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="58" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="82" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="106" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="130" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="154" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="178" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="202" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="226" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <rect x="250" y="48" width="20" height="48" fill="#66bb6a" stroke="#388e3c" stroke-width="0.8" rx="2"/>
+  <!-- Chloroplast dots in palisade -->
+  <circle cx="44" cy="64" r="3" fill="#1b5e20"/><circle cx="44" cy="76" r="3" fill="#1b5e20"/>
+  <circle cx="68" cy="60" r="3" fill="#1b5e20"/><circle cx="68" cy="72" r="3" fill="#1b5e20"/>
+  <circle cx="92" cy="64" r="3" fill="#1b5e20"/><circle cx="92" cy="78" r="3" fill="#1b5e20"/>
+  <text x="300" y="65" font-size="9" fill="#1b5e20">Palisade mesophyll</text>
+  <text x="300" y="77" font-size="9" fill="#1b5e20">(most photosynthesis)</text>
+  <!-- Spongy mesophyll -->
+  <rect x="30" y="98" width="260" height="44" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <ellipse cx="55" cy="112" rx="13" ry="9" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <ellipse cx="90" cy="118" rx="14" ry="8" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <ellipse cx="125" cy="110" rx="12" ry="9" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <ellipse cx="158" cy="117" rx="13" ry="8" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <ellipse cx="195" cy="112" rx="12" ry="9" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <ellipse cx="228" cy="118" rx="13" ry="8" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.8"/>
+  <text x="300" y="116" font-size="9" fill="#1b5e20">Spongy mesophyll</text>
+  <text x="300" y="128" font-size="9" fill="#1b5e20">(air spaces — gas diffusion)</text>
+  <!-- Vascular bundle -->
+  <ellipse cx="160" cy="120" rx="12" ry="8" fill="#1565c0" stroke="#0d47a1" stroke-width="1"/>
+  <text x="160" y="124" font-size="7" fill="white" text-anchor="middle">VB</text>
+  <text x="300" y="140" font-size="9" fill="#1565c0">Vascular bundle (xylem+phloem)</text>
+  <!-- Lower epidermis -->
+  <rect x="30" y="142" width="260" height="13" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="300" y="152" font-size="9" fill="#1b5e20">Lower epidermis</text>
+  <!-- Stomata -->
+  <ellipse cx="80" cy="162" rx="10" ry="5" fill="none" stroke="#2e7d32" stroke-width="1.5"/>
+  <ellipse cx="75" cy="162" rx="5" ry="7" fill="#4caf50"/>
+  <ellipse cx="85" cy="162" rx="5" ry="7" fill="#4caf50"/>
+  <ellipse cx="170" cy="162" rx="10" ry="5" fill="none" stroke="#2e7d32" stroke-width="1.5"/>
+  <ellipse cx="165" cy="162" rx="5" ry="7" fill="#4caf50"/>
+  <ellipse cx="175" cy="162" rx="5" ry="7" fill="#4caf50"/>
+  <text x="300" y="166" font-size="9" fill="#2e7d32">Stomata + guard cells</text>
+  <!-- CO2 arrows entering stomata -->
+  <line x1="80" y1="195" x2="80" y2="172" stroke="#1565c0" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="80" y="208" font-size="8" fill="#1565c0" text-anchor="middle">CO₂ in</text>
+  <line x1="170" y1="195" x2="170" y2="172" stroke="#1565c0" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="170" y="208" font-size="8" fill="#1565c0" text-anchor="middle">CO₂ in</text>
+  <!-- O2 out arrow -->
+  <line x1="230" y1="172" x2="230" y2="195" stroke="#43a047" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="230" y="208" font-size="8" fill="#43a047" text-anchor="middle">O₂ out</text>
+</svg>`
+  },
+  {
+    title:'Photosynthesis — Inputs and Outputs',
+    content:`<h3>Inputs and Outputs of Photosynthesis</h3><p>Photosynthesis takes in three things (inputs) and produces two things (outputs). The chemical equation summarises the whole reaction.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2e7d32"/></marker><marker id="b" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1565c0"/></marker></defs>
+  <!-- Central leaf/chloroplast -->
+  <ellipse cx="210" cy="118" rx="52" ry="38" fill="#66bb6a" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="112" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">Chloroplast</text>
+  <text x="210" y="125" font-size="9" fill="#e8f5e9" text-anchor="middle">+ light energy</text>
+  <!-- INPUTS label -->
+  <text x="70" y="28" font-size="11" fill="#1b5e20" text-anchor="middle" font-weight="bold">INPUTS</text>
+  <!-- CO2 input -->
+  <rect x="10" y="40" width="90" height="32" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="55" y="55" font-size="9" fill="#1b5e20" text-anchor="middle">CO₂ from air</text>
+  <text x="55" y="67" font-size="8" fill="#388e3c" text-anchor="middle">through stomata</text>
+  <line x1="100" y1="56" x2="155" y2="100" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Water input -->
+  <rect x="10" y="100" width="90" height="32" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="55" y="115" font-size="9" fill="#1b5e20" text-anchor="middle">Water (H₂O)</text>
+  <text x="55" y="127" font-size="8" fill="#388e3c" text-anchor="middle">from soil via xylem</text>
+  <line x1="100" y1="116" x2="155" y2="116" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Light input -->
+  <rect x="10" y="160" width="90" height="32" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="55" y="175" font-size="9" fill="#1b5e20" text-anchor="middle">Light energy</text>
+  <text x="55" y="187" font-size="8" fill="#388e3c" text-anchor="middle">from sun</text>
+  <line x1="100" y1="176" x2="155" y2="132" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- OUTPUTS label -->
+  <text x="348" y="28" font-size="11" fill="#1565c0" text-anchor="middle" font-weight="bold">OUTPUTS</text>
+  <!-- Glucose output -->
+  <rect x="320" y="40" width="90" height="32" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="365" y="55" font-size="9" fill="#1565c0" text-anchor="middle">Glucose</text>
+  <text x="365" y="67" font-size="8" fill="#1976d2" text-anchor="middle">stored as starch</text>
+  <line x1="265" y1="100" x2="318" y2="56" stroke="#1565c0" stroke-width="1.5" marker-end="url(#b)"/>
+  <!-- Oxygen output -->
+  <rect x="320" y="100" width="90" height="32" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="365" y="115" font-size="9" fill="#1565c0" text-anchor="middle">Oxygen (O₂)</text>
+  <text x="365" y="127" font-size="8" fill="#1976d2" text-anchor="middle">released via stomata</text>
+  <line x1="265" y1="116" x2="318" y2="116" stroke="#1565c0" stroke-width="1.5" marker-end="url(#b)"/>
+  <!-- Chemical equation -->
+  <rect x="30" y="210" width="360" height="32" rx="6" fill="#1b5e20"/>
+  <text x="210" y="222" font-size="9" fill="#a5d6a7" text-anchor="middle">6CO₂ + 6H₂O + light energy</text>
+  <text x="210" y="236" font-size="9" fill="#a5d6a7" text-anchor="middle">&#8594; C₆H₁₂O₆ + 6O₂</text>
+</svg>`
+  },
+  {
+    title:'Xylem vs Phloem — Transport Tissues',
+    content:`<h3>Xylem and Phloem</h3><p>Plants have two transport tissues. Xylem carries water upward from roots; phloem carries dissolved sugars in both directions. Together they form vascular bundles (leaf veins).</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <!-- XYLEM column (left, blue) -->
+  <rect x="15" y="30" width="180" height="200" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="105" y="50" font-size="12" fill="#1565c0" text-anchor="middle" font-weight="bold">XYLEM</text>
+  <!-- Xylem tubes (hollow, thick walls) -->
+  <rect x="40" y="60" width="28" height="140" rx="3" fill="white" stroke="#1565c0" stroke-width="3"/>
+  <rect x="80" y="60" width="28" height="140" rx="3" fill="white" stroke="#1565c0" stroke-width="3"/>
+  <rect x="120" y="60" width="28" height="140" rx="3" fill="white" stroke="#1565c0" stroke-width="3"/>
+  <rect x="160" y="60" width="28" height="140" rx="3" fill="white" stroke="#1565c0" stroke-width="3"/>
+  <!-- Water flow arrows (up) -->
+  <line x1="54" y1="175" x2="54" y2="75" stroke="#42a5f5" stroke-width="2" marker-end="url(#aw)"/>
+  <line x1="94" y1="175" x2="94" y2="75" stroke="#42a5f5" stroke-width="2" marker-end="url(#aw)"/>
+  <line x1="134" y1="175" x2="134" y2="75" stroke="#42a5f5" stroke-width="2" marker-end="url(#aw)"/>
+  <!-- Labels -->
+  <text x="105" y="215" font-size="8" fill="#1565c0" text-anchor="middle">Water + minerals UP</text>
+  <text x="105" y="226" font-size="8" fill="#1565c0" text-anchor="middle">Dead cells, no cytoplasm</text>
+  <text x="105" y="237" font-size="8" fill="#1565c0" text-anchor="middle">Lignin walls (waterproof)</text>
+  <defs>
+    <marker id="aw" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#42a5f5"/></marker>
+    <marker id="ag" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2e7d32"/></marker>
+    <marker id="agd" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#43a047"/></marker>
+  </defs>
+  <!-- PHLOEM column (right, green) -->
+  <rect x="225" y="30" width="180" height="200" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="315" y="50" font-size="12" fill="#2e7d32" text-anchor="middle" font-weight="bold">PHLOEM</text>
+  <!-- Phloem sieve tubes (living cells with perforated walls) -->
+  <rect x="250" y="60" width="28" height="30" rx="2" fill="#c8e6c9" stroke="#388e3c" stroke-width="1.5"/>
+  <line x1="250" y1="90" x2="278" y2="90" stroke="#388e3c" stroke-width="2" stroke-dasharray="3,2"/>
+  <rect x="250" y="90" width="28" height="30" rx="2" fill="#c8e6c9" stroke="#388e3c" stroke-width="1.5"/>
+  <line x1="250" y1="120" x2="278" y2="120" stroke="#388e3c" stroke-width="2" stroke-dasharray="3,2"/>
+  <rect x="250" y="120" width="28" height="30" rx="2" fill="#c8e6c9" stroke="#388e3c" stroke-width="1.5"/>
+  <line x1="250" y1="150" x2="278" y2="150" stroke="#388e3c" stroke-width="2" stroke-dasharray="3,2"/>
+  <rect x="250" y="150" width="28" height="30" rx="2" fill="#c8e6c9" stroke="#388e3c" stroke-width="1.5"/>
+  <!-- Companion cells -->
+  <rect x="282" y="62" width="14" height="26" rx="2" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <rect x="282" y="92" width="14" height="26" rx="2" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <rect x="282" y="122" width="14" height="26" rx="2" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <rect x="282" y="152" width="14" height="26" rx="2" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <!-- Sugar flow arrows (both ways) -->
+  <line x1="350" y1="75" x2="350" y2="105" stroke="#2e7d32" stroke-width="2" marker-end="url(#ag)"/>
+  <line x1="360" y1="120" x2="360" y2="90" stroke="#43a047" stroke-width="2" marker-end="url(#agd)"/>
+  <line x1="350" y1="125" x2="350" y2="155" stroke="#2e7d32" stroke-width="2" marker-end="url(#ag)"/>
+  <line x1="360" y1="170" x2="360" y2="140" stroke="#43a047" stroke-width="2" marker-end="url(#agd)"/>
+  <!-- Labels -->
+  <text x="315" y="215" font-size="8" fill="#2e7d32" text-anchor="middle">Sugars UP and DOWN</text>
+  <text x="315" y="226" font-size="8" fill="#2e7d32" text-anchor="middle">Living cells, sieve tubes</text>
+  <text x="315" y="237" font-size="8" fill="#2e7d32" text-anchor="middle">+ companion cells</text>
+  <!-- Bottom note -->
+  <text x="210" y="248" font-size="8" fill="#555" text-anchor="middle">Together they form the VASCULAR BUNDLE (veins in leaves)</text>
+</svg>`
+  },
+  {
+    title:'Factors Affecting Rate of Photosynthesis',
+    content:`<h3>Limiting Factors</h3><p>Three environmental factors can limit the rate of photosynthesis. At any moment, the factor in shortest supply is the limiting factor — increasing others will have no effect until the limiting factor is increased.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker></defs>
+  <!-- Title -->
+  <text x="210" y="16" font-size="10" fill="#1b5e20" text-anchor="middle" font-weight="bold">Any one of these 3 can be the LIMITING FACTOR</text>
+  <!-- GRAPH 1: Rate vs Light Intensity -->
+  <rect x="10" y="24" width="124" height="150" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="72" y="38" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Light Intensity</text>
+  <!-- Axes -->
+  <line x1="28" y1="158" x2="125" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="28" y1="158" x2="28" y2="46" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="76" y="170" font-size="7" fill="#555" text-anchor="middle">Light intensity →</text>
+  <text x="10" y="102" font-size="7" fill="#555" text-anchor="middle" transform="rotate(-90,10,102)">Rate →</text>
+  <!-- Curve: rises then plateaus -->
+  <path d="M28,158 Q55,110 80,72 Q100,55 120,52" fill="none" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Plateau note -->
+  <text x="95" y="48" font-size="6" fill="#e65100">CO₂ or temp</text>
+  <text x="95" y="56" font-size="6" fill="#e65100">limited</text>
+  <!-- Label -->
+  <text x="72" y="185" font-size="7" fill="#2e7d32" text-anchor="middle">Rises then plateaus</text>
+  <!-- GRAPH 2: Rate vs CO2 Concentration -->
+  <rect x="148" y="24" width="124" height="150" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="210" y="38" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">CO₂ Concentration</text>
+  <!-- Axes -->
+  <line x1="166" y1="158" x2="263" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="166" y1="158" x2="166" y2="46" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="214" y="170" font-size="7" fill="#555" text-anchor="middle">CO₂ concentration →</text>
+  <!-- Curve -->
+  <path d="M166,158 Q193,110 218,72 Q238,55 258,52" fill="none" stroke="#43a047" stroke-width="2"/>
+  <text x="233" y="48" font-size="6" fill="#e65100">light or temp</text>
+  <text x="233" y="56" font-size="6" fill="#e65100">limited</text>
+  <text x="210" y="185" font-size="7" fill="#2e7d32" text-anchor="middle">Rises then plateaus</text>
+  <!-- GRAPH 3: Rate vs Temperature -->
+  <rect x="286" y="24" width="124" height="150" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="348" y="38" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Temperature</text>
+  <!-- Axes -->
+  <line x1="304" y1="158" x2="401" y2="158" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="304" y1="158" x2="304" y2="46" stroke="#333" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="352" y="170" font-size="7" fill="#555" text-anchor="middle">Temperature →</text>
+  <!-- Curve: rises to optimum then drops sharply -->
+  <path d="M304,155 Q330,100 355,52 Q370,42 385,60 Q393,80 398,140" fill="none" stroke="#e65100" stroke-width="2"/>
+  <text x="360" y="40" font-size="6" fill="#1565c0">~30°C</text>
+  <text x="348" y="185" font-size="7" fill="#e65100" text-anchor="middle">Enzyme denaturation</text>
+  <!-- Optimum marker -->
+  <line x1="356" y1="48" x2="356" y2="158" stroke="#1565c0" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- Summary -->
+  <text x="210" y="210" font-size="9" fill="#1b5e20" text-anchor="middle">Label axes: Rate of Photosynthesis (y) vs Factor (x)</text>
+  <text x="210" y="224" font-size="9" fill="#555" text-anchor="middle">Gradient = rate of increase; plateau = another factor is now limiting</text>
+  <text x="210" y="238" font-size="9" fill="#e65100" text-anchor="middle">Temperature curve drops after optimum — enzymes DENATURE above ~40°C</text>
+</svg>`
+  },
+  {
+    title:'Test for Starch — Iodine Test',
+    content:`<h3>Starch Test (Iodine Test)</h3><p>To test whether a leaf has performed photosynthesis, we test for the presence of starch. A control leaf (kept in the dark) is always tested alongside to confirm the result is due to light.</p>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="a" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#555"/></marker></defs>
+  <!-- Steps across top -->
+  <!-- Step 1 -->
+  <rect x="8" y="10" width="70" height="120" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="43" y="24" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Step 1</text>
+  <ellipse cx="43" cy="60" rx="20" ry="28" fill="#66bb6a" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="43" y="65" font-size="7" fill="#fff" text-anchor="middle">Leaf</text>
+  <text x="43" y="100" font-size="7" fill="#1b5e20" text-anchor="middle">Take leaf</text>
+  <text x="43" y="110" font-size="7" fill="#1b5e20" text-anchor="middle">(light plant)</text>
+  <text x="43" y="120" font-size="7" fill="#555" text-anchor="middle">+ control</text>
+  <line x1="79" y1="70" x2="90" y2="70" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Step 2 -->
+  <rect x="92" y="10" width="70" height="120" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="127" y="24" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Step 2</text>
+  <!-- Beaker with water -->
+  <rect x="108" y="38" width="38" height="50" rx="2" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <line x1="108" y1="38" x2="101" y2="35" stroke="#0288d1" stroke-width="1"/>
+  <line x1="146" y1="38" x2="153" y2="35" stroke="#0288d1" stroke-width="1"/>
+  <ellipse cx="127" cy="60" rx="12" ry="16" fill="#66bb6a" stroke="#2e7d32" stroke-width="1"/>
+  <!-- flame -->
+  <ellipse cx="127" cy="95" rx="8" ry="6" fill="#ff7043"/>
+  <text x="127" y="110" font-size="7" fill="#1b5e20" text-anchor="middle">Boil in water</text>
+  <text x="127" y="120" font-size="7" fill="#555" text-anchor="middle">(soften leaf)</text>
+  <line x1="163" y1="70" x2="174" y2="70" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Step 3 -->
+  <rect x="176" y="10" width="70" height="120" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="211" y="24" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Step 3</text>
+  <rect x="191" y="38" width="38" height="50" rx="2" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <ellipse cx="211" cy="60" rx="12" ry="16" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="1"/>
+  <ellipse cx="211" cy="95" rx="8" ry="6" fill="#ff7043"/>
+  <text x="211" y="110" font-size="7" fill="#1b5e20" text-anchor="middle">Boil in ethanol</text>
+  <text x="211" y="120" font-size="7" fill="#555" text-anchor="middle">(remove chlorophyll)</text>
+  <line x1="247" y1="70" x2="258" y2="70" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Step 4 -->
+  <rect x="260" y="10" width="70" height="120" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="295" y="24" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Step 4</text>
+  <rect x="274" y="38" width="38" height="50" rx="2" fill="#b3e5fc" stroke="#0288d1" stroke-width="1.5"/>
+  <ellipse cx="295" cy="60" rx="12" ry="16" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1"/>
+  <text x="295" y="110" font-size="7" fill="#1b5e20" text-anchor="middle">Rinse in cold</text>
+  <text x="295" y="120" font-size="7" fill="#555" text-anchor="middle">water (soften)</text>
+  <line x1="331" y1="70" x2="342" y2="70" stroke="#555" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- Step 5 -->
+  <rect x="344" y="10" width="70" height="120" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="379" y="24" font-size="8" fill="#1b5e20" text-anchor="middle" font-weight="bold">Step 5</text>
+  <!-- Iodine drops -->
+  <ellipse cx="379" cy="60" rx="12" ry="16" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="1"/>
+  <circle cx="370" cy="42" r="3" fill="#795548"/>
+  <circle cx="379" cy="40" r="3" fill="#795548"/>
+  <circle cx="388" cy="43" r="3" fill="#795548"/>
+  <text x="379" y="110" font-size="7" fill="#1b5e20" text-anchor="middle">Add iodine</text>
+  <text x="379" y="120" font-size="7" fill="#555" text-anchor="middle">solution</text>
+  <!-- RESULTS -->
+  <rect x="8" y="145" width="190" height="95" rx="5" fill="#212121" stroke="#1b5e20" stroke-width="2"/>
+  <text x="103" y="162" font-size="9" fill="#69f0ae" text-anchor="middle" font-weight="bold">LIGHT leaf → STARCH PRESENT</text>
+  <ellipse cx="80" cy="195" rx="22" ry="28" fill="#1a237e" stroke="#311b92" stroke-width="2"/>
+  <text x="80" y="200" font-size="7" fill="#fff" text-anchor="middle">Blue-black</text>
+  <text x="130" y="185" font-size="8" fill="#aaa" text-anchor="start">Iodine turns</text>
+  <text x="130" y="197" font-size="8" fill="#fff" text-anchor="start">BLUE-BLACK</text>
+  <text x="130" y="209" font-size="8" fill="#aaa" text-anchor="start">= starch present</text>
+  <text x="103" y="228" font-size="8" fill="#69f0ae" text-anchor="middle">✓ Photosynthesis occurred</text>
+  <rect x="220" y="145" width="192" height="95" rx="5" fill="#212121" stroke="#b71c1c" stroke-width="2"/>
+  <text x="316" y="162" font-size="9" fill="#ff5252" text-anchor="middle" font-weight="bold">DARK leaf → NO STARCH</text>
+  <ellipse cx="290" cy="195" rx="22" ry="28" fill="#bf360c" stroke="#b71c1c" stroke-width="2"/>
+  <text x="290" y="200" font-size="7" fill="#fff" text-anchor="middle">Orange-brown</text>
+  <text x="340" y="185" font-size="8" fill="#aaa" text-anchor="start">Iodine stays</text>
+  <text x="340" y="197" font-size="8" fill="#ff8f00" text-anchor="start">ORANGE-BROWN</text>
+  <text x="340" y="209" font-size="8" fill="#aaa" text-anchor="start">= no starch</text>
+  <text x="316" y="228" font-size="8" fill="#ff5252" text-anchor="middle">✗ No photosynthesis (control)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Photosynthesis Basics',
+    body:'Test your understanding of the photosynthesis process and conditions.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What are the PRODUCTS of photosynthesis?',opts:['Carbon dioxide and water','Glucose and oxygen','Light and chlorophyll','Glucose and carbon dioxide'],ans:1,exp:'Photosynthesis PRODUCES glucose (food/energy store) and oxygen. It USES CO₂ and water. Remember: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂'},
+      {q:'Where in the leaf does most photosynthesis occur?',opts:['Lower epidermis','Spongy mesophyll','Palisade mesophyll','Guard cells'],ans:2,exp:'The PALISADE MESOPHYLL (upper layer) contains tightly packed cells with many chloroplasts, positioned closest to the light source. This is where most photosynthesis takes place.'},
+      {q:'Through which structures does CO₂ enter a leaf?',opts:['Xylem vessels','Root hair cells','Chloroplasts','Stomata'],ans:3,exp:'CO₂ diffuses into the leaf through STOMATA — tiny pores on the leaf surface (mainly the underside). Guard cells open and close the stomata to control gas exchange and water loss.'},
+      {q:'What is the role of chlorophyll in photosynthesis?',opts:['It produces carbon dioxide','It absorbs light energy','It transports water','It stores glucose'],ans:1,exp:'Chlorophyll is the GREEN PIGMENT in chloroplasts that ABSORBS light energy (mainly red and blue light). This energy is then used to drive the chemical reactions of photosynthesis.'},
+    ]}
+  },
+  {
+    title:'Rate of Photosynthesis',
+    body:`The <strong>rate of photosynthesis</strong> can be increased by increasing:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Light intensity</strong> — more photons to drive the reactions</li>
+      <li><strong>CO₂ concentration</strong> — more raw material available</li>
+      <li><strong>Temperature</strong> — faster enzyme activity (up to ~40°C; above this enzymes denature)</li>
+    </ul>
+    <br>
+    <strong>Limiting factor</strong>: When one factor is in short supply, it limits the rate even if others are plentiful.
+    <br><br>
+    Example: On a bright, warm day the <em>rate may still be slow</em> if CO₂ concentration is too low — CO₂ is then the limiting factor.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Animated graph: rate vs light intensity
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Rate of Photosynthesis vs Light Intensity',W/2,H*0.1);
+      // Axes
+      sk.stroke(255,255,255,140);sk.strokeWeight(1.5);sk.noFill();
+      sk.line(W*0.1,H*0.82,W*0.9,H*0.82); // x
+      sk.line(W*0.1,H*0.82,W*0.1,H*0.18); // y
+      sk.fill(200);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Light Intensity →',W*0.5,H*0.9);
+      sk.push();sk.translate(W*0.06,H*0.5);sk.rotate(-sk.HALF_PI);
+      sk.text('Rate →',0,0);sk.pop();
+      // Three curves (different CO2/temp)
+      const cols=[[46,204,113],[52,152,219],[231,76,60]];
+      const labels=['High CO₂','Medium CO₂','Low CO₂'];
+      const limits=[0.8,0.55,0.35];
+      cols.forEach((c,ci)=>{
+        sk.stroke(...c,200);sk.strokeWeight(2.5);sk.noFill();
+        sk.beginShape();
+        for(let x=0;x<=W*0.8;x+=2){
+          const nx=x/(W*0.8);
+          const rate=limits[ci]*(1-Math.exp(-nx*3));
+          const sx=W*0.1+x,sy=H*0.82-rate*(H*0.6);
+          sk.vertex(sx,sy);
+        }
+        sk.endShape();
+        sk.fill(...c);sk.textSize(8);sk.textAlign(sk.LEFT);
+        sk.text(labels[ci],W*0.86+ci*2,H*0.82-limits[ci]*H*0.6);
+      });
+      // Animated moving point
+      const animX=(t*0.18)%1;
+      const rate=limits[0]*(1-Math.exp(-animX*3));
+      const px=W*0.1+animX*W*0.8,py=H*0.82-rate*H*0.6;
+      sk.fill(255,220,50,220);sk.noStroke();sk.circle(px,py,10);
+    }
+  },
+  {
+    title:'Using Glucose from Photosynthesis',
+    body:`The glucose produced is used for many purposes:
+    <ul style="margin:8px 0 0 18px;line-height:2.3">
+      <li><strong>Respiration</strong> — releases energy for cell processes (C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + energy)</li>
+      <li><strong>Cellulose</strong> — glucose→cellulose for cell walls (strength)</li>
+      <li><strong>Starch</strong> — glucose→starch for storage (in roots, seeds)</li>
+      <li><strong>Sucrose</strong> — glucose converted to sucrose for transport in phloem</li>
+      <li><strong>Amino acids</strong> — glucose + nitrate ions → amino acids → proteins</li>
+      <li><strong>Oils/fats</strong> — stored in seeds</li>
+    </ul>
+    Testing for starch in a leaf: boil leaf → soak in ethanol → wash with water → add <strong>iodine solution</strong> (turns blue-black if starch present).`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Glucose at centre
+      sk.fill(46,204,113,50);sk.noStroke();sk.circle(W*0.5,H*0.5,80);
+      sk.fill(46,204,113,200);sk.circle(W*0.5,H*0.5,56);
+      sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('Glucose\n(C₆H₁₂O₆)',W*0.5,H*0.5);
+      const uses=[
+        {n:'Respiration',c:[231,76,60],x:0.5,y:0.12},
+        {n:'Starch\n(storage)',c:[241,196,15],x:0.85,y:0.3},
+        {n:'Cellulose\n(cell walls)',c:[52,152,219],x:0.85,y:0.68},
+        {n:'Proteins\n(amino acids)',c:[155,89,182],x:0.5,y:0.88},
+        {n:'Oils & Fats\n(seeds)',c:[230,126,34],x:0.15,y:0.68},
+        {n:'Sucrose\n(transport)',c:[26,188,156],x:0.15,y:0.3},
+      ];
+      uses.forEach((u,i)=>{
+        const cx=u.x*W,cy=u.y*H,pulse=1+Math.sin(t*1.3+i*0.9)*0.08;
+        sk.fill(...u.c,40);sk.noStroke();sk.circle(cx,cy,62*pulse);
+        sk.fill(...u.c,180);sk.circle(cx,cy,42*pulse);
+        sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(u.n,cx,cy);
+        // Animated particle from glucose to use
+        const dx=cx-W*0.5,dy=cy-H*0.5;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        const nx=dx/dist,ny=dy/dist;
+        const prog=((t*0.3+i*0.17)%1);
+        const px=W*0.5+nx*28+nx*(dist-56)*prog;
+        const py=H*0.5+ny*28+ny*(dist-56)*prog;
+        sk.fill(...u.c,200);sk.noStroke();sk.circle(px,py,8);
+      });
+    }
+  },
+  {
+    title:'🎮 Final — Rate & Uses of Photosynthesis',
+    body:'Final challenge on limiting factors and how plants use glucose.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'On a sunny, warm day, which factor is MOST likely to limit photosynthesis in a plant growing outdoors?',opts:['Light intensity','Temperature','CO₂ concentration','Chlorophyll amount'],ans:2,exp:'On a sunny warm day, light and temperature are plentiful. The LIMITING FACTOR is most likely CO₂ concentration — CO₂ makes up only ~0.04% of air, so it frequently limits the rate even when other conditions are optimal.'},
+      {q:'What is the test for starch in a leaf, and what colour change indicates a positive result?',opts:['Add lime water — turns milky','Add iodine — turns blue-black','Add Benedict\'s — turns orange','Add biuret — turns purple'],ans:1,exp:'The starch test uses IODINE SOLUTION (iodine/potassium iodide). A positive result (starch present) turns the leaf BLUE-BLACK. The leaf must first be boiled and decolourised in ethanol.'},
+      {q:'Why is photosynthesis important for animals?',opts:['Animals use chlorophyll for energy','Photosynthesis produces oxygen and glucose that animals need','Animals perform photosynthesis at night','It controls animal hormones'],ans:1,exp:'Animals cannot photosynthesise. They depend on PLANTS for OXYGEN (released as a byproduct) and GLUCOSE (eaten directly or through food chains). Without photosynthesis, nearly all life on Earth would end.'},
+      {q:'What happens to the rate of photosynthesis above ~40°C?',opts:['It increases rapidly','It stays constant','It decreases because enzymes denature','It doubles with every degree'],ans:2,exp:'Above ~40°C, the ENZYMES involved in photosynthesis begin to DENATURE (lose their shape permanently). The rate drops sharply. This is why very hot conditions reduce plant growth despite plenty of light.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#2e7d32',dark:'#1b5e20',light:'#e8f5e9',
+  title:'Photosynthesis — Process, Conditions & Rate',
+});
+</script></body></html>

@@ -1,0 +1,591 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Scientific Processes — Study</title></head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+const STEPS=[
+
+/* ══ STEPS 0–4  ANIMATIONS ══ */
+
+{title:'What Is Science?',
+content:`<h2>Science Is About Asking Questions</h2>
+<p>Science is a way of learning about the world by <strong>observing</strong>, <strong>testing</strong>, and <strong>explaining</strong>. Scientists use a special method to investigate their questions.</p>
+<ul>
+<li>🔍 <strong>Observe</strong> — notice something interesting</li>
+<li>❓ <strong>Question</strong> — ask WHY or HOW</li>
+<li>💡 <strong>Hypothesis</strong> — make a testable prediction</li>
+<li>🧪 <strong>Experiment</strong> — test the hypothesis</li>
+<li>📊 <strong>Results</strong> — record what happens</li>
+<li>✅ <strong>Conclusion</strong> — decide if the hypothesis was right</li>
+</ul>
+<p>Watch the animation — it shows the steps of the scientific method as a cycle!</p>`,
+draw(p){
+  const steps=['Observe','Question','Hypothesis','Experiment','Results','Conclusion'];
+  const colors=['#e53935','#8e24aa','#1e88e5','#00897b','#f4511e','#43a047'];
+  p.setup=()=>{p.createCanvas(420,340);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let frame=0;
+  p.draw=()=>{
+    p.background(245);
+    const cx=210,cy=170,r=120;
+    for(let i=0;i<steps.length;i++){
+      const a=p.TWO_PI*(i/6)-p.HALF_PI;
+      const x=cx+r*p.cos(a), y=cy+r*p.sin(a);
+      const active=Math.floor(frame/60)%6===i;
+      p.fill(active?colors[i]:'#ddd');p.noStroke();p.ellipse(x,y,64,44);
+      p.fill(active?255:80);p.textSize(active?11:10);p.text(steps[i],x,y);
+      if(i<5){const a2=p.TWO_PI*((i+1)/6)-p.HALF_PI;const x2=cx+r*p.cos(a2),y2=cy+r*p.sin(a2);const mx=(x+x2)/2+(y2-y)*0.15,my=(y+y2)/2-(x2-x)*0.15;p.stroke('#999');p.strokeWeight(2);p.noFill();p.beginShape();p.vertex(x,y);p.quadraticVertex(mx,my,x2,y2);p.endShape();}
+    }
+    p.noStroke();p.fill('#333');p.textSize(13);p.text('The Scientific Method',cx,cy);
+    frame++;
+  };
+}},
+
+{title:'Making a Hypothesis',
+content:`<h2>A Hypothesis Is a Testable Prediction</h2>
+<p>A <strong>hypothesis</strong> is a suggested answer to your question — but it must be <em>testable</em>. A good hypothesis follows the format:</p>
+<blockquote style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:8px 0;border-radius:4px"><strong>"If … then … because …"</strong></blockquote>
+<p><strong>Example:</strong></p>
+<ul>
+<li><em>Question:</em> Does more sunlight make a plant grow taller?</li>
+<li><em>Hypothesis:</em> "If a plant gets more sunlight, then it will grow taller, because sunlight is needed for photosynthesis."</li>
+</ul>
+<p>A hypothesis is NOT a guess — it must be based on what you already know, and it must be possible to TEST it.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,300);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const parts=[{label:'IF',sub:'You change something',col:'#1565c0'},{label:'THEN',sub:'Something else changes',col:'#2e7d32'},{label:'BECAUSE',sub:'Your reasoning',col:'#e65100'}];
+    parts.forEach((pt,i)=>{
+      const x=70+i*140,y=150;const pulse=1+0.06*p.sin(t*0.05+i*2);
+      p.fill(pt.col);p.noStroke();p.ellipse(x,y,100*pulse,100*pulse);
+      p.fill(255);p.textSize(14);p.text(pt.label,x,y-8);p.textSize(10);p.text(pt.sub,x,y+14);
+      if(i<2){p.fill('#555');p.textSize(20);p.text('→',x+70,y);}
+    });
+    p.fill('#333');p.textSize(12);p.noStroke();p.text('If → Then → Because = A testable hypothesis!',210,260);
+    t++;
+  };
+}},
+
+{title:'Variables in an Experiment',
+content:`<h2>Understanding Variables</h2>
+<p>In any experiment, there are three types of variables:</p>
+<table style="width:100%;border-collapse:collapse;margin:8px 0">
+<tr><th style="background:#1565c0;color:#fff;padding:6px">Type</th><th style="background:#1565c0;color:#fff;padding:6px">What it is</th><th style="background:#1565c0;color:#fff;padding:6px">Example</th></tr>
+<tr style="background:#e3f2fd"><td style="padding:6px"><strong>Independent</strong></td><td style="padding:6px">What YOU change</td><td style="padding:6px">Amount of sunlight</td></tr>
+<tr><td style="padding:6px"><strong>Dependent</strong></td><td style="padding:6px">What you MEASURE</td><td style="padding:6px">Plant height</td></tr>
+<tr style="background:#e3f2fd"><td style="padding:6px"><strong>Controlled</strong></td><td style="padding:6px">Kept the SAME</td><td style="padding:6px">Water, soil, temperature</td></tr>
+</table>
+<p>Changing only ONE variable at a time makes it a <strong>fair test</strong> — then you know the results are caused by the variable you changed!</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,300);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let frame=0;
+  p.draw=()=>{
+    p.background(245);
+    const items=[{x:70,y:120,col:'#e53935',label:'INDEPENDENT',sub:'You change this'},{x:210,y:200,col:'#1e88e5',label:'DEPENDENT',sub:'You measure this'},{x:350,y:120,col:'#43a047',label:'CONTROLLED',sub:'Keep the same'}];
+    p.stroke('#aaa');p.strokeWeight(2);p.line(70,120,210,200);p.line(350,120,210,200);p.line(70,120,350,120);
+    items.forEach((it,i)=>{
+      const pulse=1+0.07*p.sin(frame*0.05+i*2);
+      p.fill(it.col);p.noStroke();p.ellipse(it.x,it.y,90*pulse,70*pulse);
+      p.fill(255);p.textSize(10);p.text(it.label,it.x,it.y-8);p.textSize(9);p.text(it.sub,it.x,it.y+8);
+    });
+    p.noStroke();p.fill('#333');p.textSize(12);p.text('The "triangle" of experimental variables',210,270);
+    frame++;
+  };
+}},
+
+{title:'Recording and Presenting Data',
+content:`<h2>Tables and Graphs</h2>
+<p>After an experiment, you must <strong>record results</strong> neatly. Use a <strong>table</strong> first, then present them in a <strong>graph</strong>.</p>
+<p><strong>Which graph to use?</strong></p>
+<ul>
+<li>📊 <strong>Bar graph</strong> — comparing categories (e.g. types of soil)</li>
+<li>📈 <strong>Line graph</strong> — continuous data over time (e.g. temperature over 5 days)</li>
+<li>🥧 <strong>Pie chart</strong> — proportions (e.g. % of each food type)</li>
+</ul>
+<p>Always label your graph: <em>Title, axes, units</em>. To find the mean: add all values ÷ number of values.</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,300);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  const data=[{label:'Sand',val:4,col:'#f4511e'},{label:'Clay',val:8,col:'#8e24aa'},{label:'Loam',val:14,col:'#43a047'},{label:'Gravel',val:6,col:'#1e88e5'}];
+  let revealed=0,frame=0;
+  p.draw=()=>{
+    p.background(245);
+    if(frame%90===0) revealed=Math.min(revealed+1,data.length);
+    const maxV=15,W=54,bx=40,by=240,bw=340,bh=180;
+    p.stroke('#ccc');p.strokeWeight(1);p.fill('#eee');p.rect(bx,by-bh,bw,bh);
+    p.noStroke();p.fill('#333');p.textSize(11);p.textAlign(p.LEFT);p.text('Plant height (cm)',bx,by-bh-8);
+    p.textAlign(p.CENTER);
+    for(let i=0;i<revealed;i++){
+      const d=data[i];const barH=(d.val/maxV)*bh;const x=bx+20+i*W;
+      p.fill(d.col);p.rect(x,by-barH,W-6,barH);
+      p.fill('#333');p.textSize(11);p.text(d.label,x+W/2-3,by+14);p.text(d.val,x+W/2-3,by-barH-8);
+    }
+    p.stroke('#555');p.strokeWeight(2);p.line(bx,by-bh,bx,by);p.line(bx,by,bx+bw,by);
+    p.noStroke();p.fill('#333');p.textSize(12);p.textAlign(p.CENTER);p.text('Soil Type vs. Plant Growth (Bar Graph)',210,270);
+    frame++;
+  };
+}},
+
+{title:'Drawing Conclusions',
+content:`<h2>What Do the Results Mean?</h2>
+<p>A <strong>conclusion</strong> must refer back to your hypothesis and your data. A good conclusion:</p>
+<ul>
+<li>States whether the hypothesis was <strong>supported or not</strong></li>
+<li>Uses <strong>actual data values</strong> as evidence</li>
+<li>Suggests possible <strong>sources of error</strong></li>
+<li>Suggests how the experiment could be <strong>improved</strong></li>
+</ul>
+<p><strong>Example:</strong><br>"My hypothesis was <em>supported</em>. Plants in full sunlight grew taller (14 cm) than those in low sunlight (6 cm). An error was that pots were different sizes. Improvement: use identical pots next time."</p>`,
+draw(p){
+  p.setup=()=>{p.createCanvas(420,280);p.textAlign(p.CENTER,p.CENTER);p.textFont('Arial')};
+  let t=0;
+  p.draw=()=>{
+    p.background(245);
+    const cx=210,cy=140;
+    const phases=['Hypothesis','Data','Conclusion','Improvement'];
+    const cols=['#1e88e5','#43a047','#e53935','#f4511e'];
+    const active=Math.floor(t/70)%4;
+    phases.forEach((ph,i)=>{
+      const a=p.TWO_PI*(i/4)-p.HALF_PI;
+      const x=cx+110*p.cos(a),y=cy+90*p.sin(a);const isAct=active===i;
+      p.fill(isAct?cols[i]:'#ccc');p.noStroke();p.ellipse(x,y,isAct?90:70,isAct?56:44);
+      p.fill(isAct?255:'#555');p.textSize(isAct?12:10);p.text(ph,x,y);
+      const a2=p.TWO_PI*((i+1)/4)-p.HALF_PI;const x2=cx+110*p.cos(a2),y2=cy+90*p.sin(a2);
+      p.stroke('#bbb');p.strokeWeight(2);p.line(x,y,x2,y2);
+    });
+    p.noStroke();p.fill(cols[active]);p.textSize(12);p.text('Now: '+phases[active],cx,cy);
+    t++;
+  };
+}},
+
+/* ══ STEPS 5–10  SVG DIAGRAMS ══ */
+
+{title:'The Fair Test — Labeled Experiment',
+content:`<h3>Identifying Variables in a Real Experiment</h3>
+<p>The diagram below shows a plant growth experiment testing how sunlight affects height. Study it carefully — every exam experiment can be analysed the same way.</p>
+<ul>
+<li>🔴 <strong>Independent variable</strong> = the one thing you CHANGE between groups</li>
+<li>🔵 <strong>Dependent variable</strong> = what you MEASURE to see if it changed</li>
+<li>🟢 <strong>Controlled variables</strong> = EVERYTHING ELSE kept the same to make it fair</li>
+</ul>
+<p>Tip: if two variables both change, you cannot tell which one caused the result!</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="fa" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#555"/></marker>
+  <marker id="ra" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e53935"/></marker>
+  <marker id="ba" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#1565c0"/></marker></defs>
+  <!-- Title -->
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">How Does Sunlight Affect Plant Growth?</text>
+  <!-- Three plant pots side by side -->
+  <!-- Pot A: Dark (no sunlight) -->
+  <rect x="20" y="155" width="60" height="30" rx="4" fill="#795548"/>
+  <text x="50" y="197" text-anchor="middle" font-size="9" fill="#555">Pot A</text>
+  <!-- Dark shade box over pot A -->
+  <rect x="18" y="60" width="64" height="96" rx="4" fill="#424242" fill-opacity=".85"/>
+  <text x="50" y="90" text-anchor="middle" font-size="9" fill="#fff">DARK</text>
+  <text x="50" y="103" text-anchor="middle" font-size="8" fill="#ccc">no sunlight</text>
+  <!-- Tiny sad plant inside -->
+  <line x1="50" y1="155" x2="50" y2="135" stroke="#388e3c" stroke-width="2"/>
+  <ellipse cx="50" cy="130" rx="5" ry="4" fill="#66bb6a"/>
+  <text x="50" y="215" text-anchor="middle" font-size="9" fill="#e53935" font-weight="bold">4 cm</text>
+  <!-- Pot B: Partial sunlight -->
+  <rect x="180" y="155" width="60" height="30" rx="4" fill="#795548"/>
+  <text x="210" y="197" text-anchor="middle" font-size="9" fill="#555">Pot B</text>
+  <rect x="178" y="80" width="64" height="76" rx="4" fill="#ffd54f" fill-opacity=".25" stroke="#f9a825" stroke-width="1"/>
+  <text x="210" y="103" text-anchor="middle" font-size="9" fill="#e65100">SOME</text>
+  <text x="210" y="115" text-anchor="middle" font-size="8" fill="#e65100">sunlight</text>
+  <!-- Medium plant -->
+  <line x1="210" y1="155" x2="210" y2="115" stroke="#388e3c" stroke-width="2"/>
+  <ellipse cx="210" cy="110" rx="8" ry="6" fill="#66bb6a"/>
+  <ellipse cx="202" cy="118" rx="5" ry="4" fill="#81c784"/>
+  <text x="210" y="215" text-anchor="middle" font-size="9" fill="#e65100" font-weight="bold">9 cm</text>
+  <!-- Pot C: Full sunlight -->
+  <rect x="340" y="155" width="60" height="30" rx="4" fill="#795548"/>
+  <text x="370" y="197" text-anchor="middle" font-size="9" fill="#555">Pot C</text>
+  <!-- Sun icon -->
+  <circle cx="370" cy="50" r="14" fill="#ffd600"/>
+  <line x1="370" y1="32" x2="370" y2="26" stroke="#ffd600" stroke-width="2"/>
+  <line x1="370" y1="68" x2="370" y2="74" stroke="#ffd600" stroke-width="2"/>
+  <line x1="352" y1="50" x2="346" y2="50" stroke="#ffd600" stroke-width="2"/>
+  <line x1="388" y1="50" x2="394" y2="50" stroke="#ffd600" stroke-width="2"/>
+  <!-- Tall plant -->
+  <line x1="370" y1="155" x2="370" y2="80" stroke="#2e7d32" stroke-width="2.5"/>
+  <ellipse cx="370" cy="73" rx="12" ry="9" fill="#43a047"/>
+  <ellipse cx="360" cy="85" rx="8" ry="6" fill="#66bb6a"/>
+  <ellipse cx="381" cy="88" rx="8" ry="5" fill="#66bb6a"/>
+  <text x="370" y="215" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">14 cm</text>
+  <!-- LABELS -->
+  <!-- Independent variable: arrow pointing to sun/shade difference -->
+  <line x1="210" y1="230" x2="290" y2="230" stroke="#e53935" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#ra)"/>
+  <line x1="210" y1="230" x2="130" y2="230" stroke="#e53935" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="210" y="243" text-anchor="middle" font-size="9" fill="#e53935" font-weight="bold">INDEPENDENT variable: Amount of sunlight (what we changed)</text>
+  <!-- Dependent: arrow to heights -->
+  <line x1="95" y1="165" x2="165" y2="165" stroke="#1565c0" stroke-width="1.5" marker-end="url(#ba)"/>
+  <text x="95" y="148" font-size="8" fill="#1565c0" font-weight="bold">DEPENDENT</text>
+  <text x="95" y="159" font-size="8" fill="#1565c0">plant HEIGHT</text>
+  <!-- Controlled variables annotation -->
+  <rect x="100" y="22" width="70" height="28" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="135" y="34" text-anchor="middle" font-size="8" fill="#2e7d32" font-weight="bold">CONTROLLED:</text>
+  <text x="135" y="45" text-anchor="middle" font-size="8" fill="#2e7d32">soil · water · pot</text>
+  <line x1="135" y1="50" x2="135" y2="155" stroke="#2e7d32" stroke-width="1" stroke-dasharray="3,2"/>
+</svg>`},
+
+{title:'Scientific Measurement Tools',
+content:`<h3>Choosing the Right Instrument</h3>
+<p>Scientists always use the <strong>correct tool</strong> for the measurement. Using the wrong tool gives inaccurate data.</p>
+<table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:.88rem">
+<tr style="background:#1565c0;color:#fff"><th style="padding:5px">Instrument</th><th style="padding:5px">Measures</th><th style="padding:5px">Unit</th></tr>
+<tr style="background:#e3f2fd"><td style="padding:5px">Ruler / Tape measure</td><td style="padding:5px">Length, height, width</td><td style="padding:5px">cm, m, mm</td></tr>
+<tr><td style="padding:5px">Measuring cylinder</td><td style="padding:5px">Volume of liquid</td><td style="padding:5px">mL, cm³</td></tr>
+<tr style="background:#e3f2fd"><td style="padding:5px">Thermometer</td><td style="padding:5px">Temperature</td><td style="padding:5px">°C</td></tr>
+<tr><td style="padding:5px">Balance (scale)</td><td style="padding:5px">Mass</td><td style="padding:5px">g, kg</td></tr>
+<tr style="background:#e3f2fd"><td style="padding:5px">Stopwatch</td><td style="padding:5px">Time</td><td style="padding:5px">seconds (s), minutes</td></tr>
+</table>
+<p>Always read a measuring cylinder at <strong>eye level</strong> — read the bottom of the curved meniscus.</p>`,
+visual:`<svg viewBox="0 0 420 235" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Scientific Measurement Instruments</text>
+  <!-- 1. RULER -->
+  <rect x="15" y="35" width="120" height="24" rx="3" fill="#ffe082" stroke="#f9a825" stroke-width="1.5"/>
+  <!-- Ruler markings -->
+  <line x1="25" y1="35" x2="25" y2="45" stroke="#555" stroke-width="1"/>
+  <line x1="37" y1="35" x2="37" y2="42" stroke="#555" stroke-width="1"/>
+  <line x1="49" y1="35" x2="49" y2="45" stroke="#555" stroke-width="1"/>
+  <line x1="61" y1="35" x2="61" y2="42" stroke="#555" stroke-width="1"/>
+  <line x1="73" y1="35" x2="73" y2="45" stroke="#555" stroke-width="1"/>
+  <line x1="85" y1="35" x2="85" y2="42" stroke="#555" stroke-width="1"/>
+  <line x1="97" y1="35" x2="97" y2="45" stroke="#555" stroke-width="1"/>
+  <line x1="109" y1="35" x2="109" y2="42" stroke="#555" stroke-width="1"/>
+  <line x1="121" y1="35" x2="121" y2="45" stroke="#555" stroke-width="1"/>
+  <text x="25" y="54" font-size="8" fill="#555">1</text><text x="49" y="54" font-size="8" fill="#555">3</text>
+  <text x="73" y="54" font-size="8" fill="#555">5</text><text x="97" y="54" font-size="8" fill="#555">7</text>
+  <text x="121" y="54" font-size="8" fill="#555">9</text>
+  <text x="75" y="74" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">RULER</text>
+  <text x="75" y="86" text-anchor="middle" font-size="10" fill="#555">Measures LENGTH</text>
+  <text x="75" y="97" text-anchor="middle" font-size="10" fill="#888">Unit: cm or mm</text>
+  <!-- 2. MEASURING CYLINDER -->
+  <rect x="175" y="30" width="28" height="90" rx="3" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <!-- Water fill inside -->
+  <rect x="176" y="90" width="26" height="29" rx="2" fill="#42a5f5" fill-opacity=".4"/>
+  <!-- Graduation lines -->
+  <line x1="175" y1="45" x2="190" y2="45" stroke="#1565c0" stroke-width="1"/><text x="207" y="48" font-size="8" fill="#555">100</text>
+  <line x1="175" y1="57" x2="190" y2="57" stroke="#1565c0" stroke-width="1"/><text x="207" y="60" font-size="8" fill="#555">80</text>
+  <line x1="175" y1="69" x2="190" y2="69" stroke="#1565c0" stroke-width="1"/><text x="207" y="72" font-size="8" fill="#555">60</text>
+  <line x1="175" y1="81" x2="190" y2="81" stroke="#1565c0" stroke-width="1"/><text x="207" y="84" font-size="8" fill="#555">40</text>
+  <line x1="175" y1="93" x2="190" y2="93" stroke="#1565c0" stroke-width="1.5"/><text x="207" y="96" font-size="8" fill="#1565c0" font-weight="bold">30 mL</text>
+  <line x1="175" y1="105" x2="190" y2="105" stroke="#1565c0" stroke-width="1"/><text x="207" y="108" font-size="8" fill="#555">20</text>
+  <!-- Pouring spout at top -->
+  <path d="M175,30 L170,25 L204,25 L203,30" fill="#b3e5fc" stroke="#1565c0" stroke-width="1"/>
+  <!-- Meniscus line -->
+  <path d="M176,90 Q189,92 203,90" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="189" y="140" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">MEASURING</text>
+  <text x="189" y="152" text-anchor="middle" font-size="11" font-weight="bold" fill="#1565c0">CYLINDER</text>
+  <text x="189" y="164" text-anchor="middle" font-size="10" fill="#555">Measures VOLUME</text>
+  <text x="189" y="175" text-anchor="middle" font-size="10" fill="#888">Unit: mL or cm³</text>
+  <!-- 3. THERMOMETER -->
+  <!-- Bulb -->
+  <circle cx="310" cy="118" r="10" fill="#ef5350"/>
+  <!-- Tube -->
+  <rect x="306" y="30" width="8" height="90" rx="4" fill="#e0e0e0" stroke="#999" stroke-width="1"/>
+  <!-- Mercury column -->
+  <rect x="307.5" y="65" width="5" height="53" rx="2" fill="#ef5350"/>
+  <!-- Scale lines on thermometer -->
+  <line x1="314" y1="40" x2="320" y2="40" stroke="#555" stroke-width="1"/><text x="323" y="43" font-size="8" fill="#555">100°C</text>
+  <line x1="314" y1="55" x2="318" y2="55" stroke="#555" stroke-width="1"/><text x="321" y="58" font-size="8" fill="#888">75°C</text>
+  <line x1="314" y1="70" x2="320" y2="70" stroke="#555" stroke-width="1"/><text x="323" y="73" font-size="8" fill="#1565c0" font-weight="bold">50°C</text>
+  <line x1="314" y1="85" x2="318" y2="85" stroke="#555" stroke-width="1"/><text x="321" y="88" font-size="8" fill="#888">25°C</text>
+  <line x1="314" y1="100" x2="320" y2="100" stroke="#555" stroke-width="1"/><text x="323" y="103" font-size="8" fill="#555">0°C</text>
+  <text x="310" y="148" text-anchor="middle" font-size="11" font-weight="bold" fill="#e53935">THERMOMETER</text>
+  <text x="310" y="160" text-anchor="middle" font-size="10" fill="#555">Measures TEMPERATURE</text>
+  <text x="310" y="171" text-anchor="middle" font-size="10" fill="#888">Unit: °C</text>
+  <!-- Bottom info bar -->
+  <rect x="15" y="188" width="395" height="40" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="213" y="204" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Reading a Measuring Cylinder Correctly</text>
+  <text x="213" y="220" text-anchor="middle" font-size="10" fill="#555">Always read at EYE LEVEL · Read the BOTTOM of the curved meniscus · Record the unit (mL)</text>
+</svg>`},
+
+{title:'Choosing the Right Graph Type',
+content:`<h3>Presenting Your Data Clearly</h3>
+<p>The type of data you collected determines which graph is best. Choosing the wrong graph type is a common exam mistake.</p>
+<ul>
+<li>📊 <strong>Bar chart</strong>: use when the x-axis has <em>categories</em> (discrete groups like soil types, colours, names)</li>
+<li>📈 <strong>Line graph</strong>: use when the x-axis is <em>continuous</em> (numbers like time, temperature, volume)</li>
+<li>🥧 <strong>Pie chart</strong>: use to show <em>proportions</em> (parts of a whole, usually as percentages)</li>
+</ul>
+<p>All graphs must have: a <strong>title</strong>, labeled <strong>axes with units</strong>, and an appropriate <strong>scale starting at 0</strong>.</p>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Three Types of Scientific Graph</text>
+  <!-- BAR CHART (left) -->
+  <rect x="10" y="20" width="125" height="180" rx="6" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="73" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#1565c0">BAR CHART</text>
+  <!-- Axes -->
+  <line x1="28" y1="50" x2="28" y2="155" stroke="#333" stroke-width="1.5"/>
+  <line x1="28" y1="155" x2="120" y2="155" stroke="#333" stroke-width="1.5"/>
+  <!-- Bars -->
+  <rect x="36" y="110" width="16" height="45" fill="#ef5350"/>
+  <rect x="58" y="80" width="16" height="75" fill="#42a5f5"/>
+  <rect x="80" y="95" width="16" height="60" fill="#66bb6a"/>
+  <rect x="102" y="125" width="16" height="30" fill="#ffa726"/>
+  <!-- X labels -->
+  <text x="44" y="167" text-anchor="middle" font-size="7" fill="#555">A</text>
+  <text x="66" y="167" text-anchor="middle" font-size="7" fill="#555">B</text>
+  <text x="88" y="167" text-anchor="middle" font-size="7" fill="#555">C</text>
+  <text x="110" y="167" text-anchor="middle" font-size="7" fill="#555">D</text>
+  <!-- Y label -->
+  <text x="16" y="105" text-anchor="middle" font-size="7" fill="#555" transform="rotate(-90,16,105)">Value</text>
+  <text x="73" y="188" text-anchor="middle" font-size="9" fill="#1565c0">Categories on x-axis</text>
+  <text x="73" y="199" text-anchor="middle" font-size="9" fill="#555">e.g. soil types</text>
+  <!-- LINE GRAPH (middle) -->
+  <rect x="148" y="20" width="125" height="180" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="210" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">LINE GRAPH</text>
+  <!-- Axes -->
+  <line x1="165" y1="50" x2="165" y2="155" stroke="#333" stroke-width="1.5"/>
+  <line x1="165" y1="155" x2="260" y2="155" stroke="#333" stroke-width="1.5"/>
+  <!-- Line data points: upward curve then slight dip -->
+  <polyline points="172,145 186,125 200,105 214,90 228,82 242,78 256,80" fill="none" stroke="#2e7d32" stroke-width="2"/>
+  <circle cx="172" cy="145" r="3" fill="#2e7d32"/>
+  <circle cx="186" cy="125" r="3" fill="#2e7d32"/>
+  <circle cx="200" cy="105" r="3" fill="#2e7d32"/>
+  <circle cx="214" cy="90" r="3" fill="#2e7d32"/>
+  <circle cx="228" cy="82" r="3" fill="#2e7d32"/>
+  <circle cx="242" cy="78" r="3" fill="#2e7d32"/>
+  <circle cx="256" cy="80" r="3" fill="#2e7d32"/>
+  <!-- X/Y labels -->
+  <text x="210" y="167" text-anchor="middle" font-size="7" fill="#555">Time (days)</text>
+  <text x="155" y="105" text-anchor="middle" font-size="7" fill="#555" transform="rotate(-90,155,105)">Height (cm)</text>
+  <text x="210" y="188" text-anchor="middle" font-size="9" fill="#2e7d32">Continuous data on x-axis</text>
+  <text x="210" y="199" text-anchor="middle" font-size="9" fill="#555">e.g. growth over time</text>
+  <!-- PIE CHART (right) -->
+  <rect x="286" y="20" width="125" height="180" rx="6" fill="#fff3e0" stroke="#e65100" stroke-width="1.5"/>
+  <text x="348" y="36" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">PIE CHART</text>
+  <!-- Pie drawn with path arcs (centre 348,105 radius 45) -->
+  <!-- 40% = 144° slice -->
+  <path d="M348,105 L393,105 A45,45 0 0 0 348,60 Z" fill="#ef5350"/>
+  <!-- 25% = 90° slice -->
+  <path d="M348,105 L348,60 A45,45 0 0 0 303,105 Z" fill="#42a5f5"/>
+  <!-- 20% = 72° slice -->
+  <path d="M348,105 L303,105 A45,45 0 0 0 332,144 Z" fill="#66bb6a"/>
+  <!-- 15% = 54° slice -->
+  <path d="M348,105 L332,144 A45,45 0 0 0 393,105 Z" fill="#ffa726"/>
+  <!-- Labels -->
+  <text x="370" y="84" font-size="7" fill="#fff" font-weight="bold">40%</text>
+  <text x="320" y="84" font-size="7" fill="#fff" font-weight="bold">25%</text>
+  <text x="318" y="132" font-size="7" fill="#fff" font-weight="bold">20%</text>
+  <text x="358" y="135" font-size="7" fill="#fff" font-weight="bold">15%</text>
+  <text x="348" y="188" text-anchor="middle" font-size="9" fill="#e65100">Parts of a whole</text>
+  <text x="348" y="199" text-anchor="middle" font-size="9" fill="#555">e.g. diet proportions</text>
+  <!-- Bottom tip -->
+  <rect x="10" y="210" width="400" height="32" rx="6" fill="#fffde7" stroke="#f9a825" stroke-width="1"/>
+  <text x="210" y="222" text-anchor="middle" font-size="9" font-weight="bold" fill="#e65100">Key Rule</text>
+  <text x="210" y="235" text-anchor="middle" font-size="9" fill="#555">Numbers on x-axis → LINE graph  ·  Category names → BAR chart  ·  Percentages → PIE chart</text>
+</svg>`},
+
+{title:'The 6 Scientific Skills',
+content:`<h3>Skills Scientists Use Every Day</h3>
+<p>Science is not only about knowing facts — it is about using <strong>process skills</strong>. These 6 skills are used at every stage of an investigation and are tested in your exam.</p>
+<ul>
+<li>🔍 <strong>Observing</strong> — using your 5 senses to gather information</li>
+<li>📏 <strong>Measuring</strong> — using instruments to get accurate, numerical data</li>
+<li>🗂️ <strong>Classifying</strong> — grouping things by shared features</li>
+<li>💡 <strong>Predicting</strong> — saying what will happen BEFORE the experiment</li>
+<li>🧪 <strong>Experimenting</strong> — planning and carrying out a fair test</li>
+<li>📢 <strong>Communicating</strong> — sharing results using tables, graphs, reports</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="15" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">The 6 Scientific Process Skills</text>
+  <!-- 6 hexagon-like tiles in 2 rows of 3 -->
+  <!-- Row 1 -->
+  <!-- Tile 1: Observing -->
+  <rect x="10" y="25" width="122" height="90" rx="10" fill="#fce4ec" stroke="#e53935" stroke-width="2"/>
+  <text x="71" y="50" text-anchor="middle" font-size="22">🔍</text>
+  <text x="71" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#c62828">OBSERVING</text>
+  <text x="71" y="84" text-anchor="middle" font-size="9" fill="#555">Use 5 senses to</text>
+  <text x="71" y="96" text-anchor="middle" font-size="9" fill="#555">notice details</text>
+  <text x="71" y="110" text-anchor="middle" font-size="9" fill="#e53935">→ sight, touch, smell,</text>
+
+  <!-- Tile 2: Measuring -->
+  <rect x="149" y="25" width="122" height="90" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="210" y="50" text-anchor="middle" font-size="22">📏</text>
+  <text x="210" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#0d47a1">MEASURING</text>
+  <text x="210" y="84" text-anchor="middle" font-size="9" fill="#555">Use instruments for</text>
+  <text x="210" y="96" text-anchor="middle" font-size="9" fill="#555">accurate numbers</text>
+  <text x="210" y="110" text-anchor="middle" font-size="9" fill="#1565c0">→ ruler, balance, °C</text>
+
+  <!-- Tile 3: Classifying -->
+  <rect x="288" y="25" width="122" height="90" rx="10" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="349" y="50" text-anchor="middle" font-size="22">🗂️</text>
+  <text x="349" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#1b5e20">CLASSIFYING</text>
+  <text x="349" y="84" text-anchor="middle" font-size="9" fill="#555">Group by shared</text>
+  <text x="349" y="96" text-anchor="middle" font-size="9" fill="#555">features</text>
+  <text x="349" y="110" text-anchor="middle" font-size="9" fill="#2e7d32">→ vertebrate / plant</text>
+
+  <!-- Row 2 -->
+  <!-- Tile 4: Predicting -->
+  <rect x="10" y="130" width="122" height="90" rx="10" fill="#fff8e1" stroke="#f9a825" stroke-width="2"/>
+  <text x="71" y="155" text-anchor="middle" font-size="22">💡</text>
+  <text x="71" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="#e65100">PREDICTING</text>
+  <text x="71" y="189" text-anchor="middle" font-size="9" fill="#555">Say what will happen</text>
+  <text x="71" y="201" text-anchor="middle" font-size="9" fill="#555">BEFORE the test</text>
+  <text x="71" y="215" text-anchor="middle" font-size="9" fill="#e65100">→ based on evidence</text>
+
+  <!-- Tile 5: Experimenting -->
+  <rect x="149" y="130" width="122" height="90" rx="10" fill="#f3e5f5" stroke="#8e24aa" stroke-width="2"/>
+  <text x="210" y="155" text-anchor="middle" font-size="22">🧪</text>
+  <text x="210" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="#6a1b9a">EXPERIMENTING</text>
+  <text x="210" y="189" text-anchor="middle" font-size="9" fill="#555">Plan and carry out</text>
+  <text x="210" y="201" text-anchor="middle" font-size="9" fill="#555">a fair test</text>
+  <text x="210" y="215" text-anchor="middle" font-size="9" fill="#8e24aa">→ change ONE thing</text>
+
+  <!-- Tile 6: Communicating -->
+  <rect x="288" y="130" width="122" height="90" rx="10" fill="#e0f7fa" stroke="#00838f" stroke-width="2"/>
+  <text x="349" y="155" text-anchor="middle" font-size="22">📢</text>
+  <text x="349" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="#006064">COMMUNICATING</text>
+  <text x="349" y="189" text-anchor="middle" font-size="9" fill="#555">Share results using</text>
+  <text x="349" y="201" text-anchor="middle" font-size="9" fill="#555">tables and graphs</text>
+  <text x="349" y="215" text-anchor="middle" font-size="9" fill="#006064">→ clear and accurate</text>
+</svg>`},
+
+{title:'Scientific Method — Full Flowchart',
+content:`<h3>All Steps in Order</h3>
+<p>Every scientific investigation follows the same logical path. This flowchart is the complete scientific method — memorise the ORDER of steps and what each one involves.</p>
+<ul>
+<li>🔁 If the conclusion does NOT support the hypothesis, you form a <strong>new hypothesis</strong> and repeat</li>
+<li>✏️ If results are unexpected, they are still valuable — they show something new to investigate</li>
+<li>📋 Scientists <strong>repeat experiments</strong> and <strong>share results</strong> so others can check them</li>
+</ul>`,
+visual:`<svg viewBox="0 0 420 250" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="da" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#333"/></marker>
+  <marker id="rda" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#e53935"/></marker></defs>
+  <!-- Title -->
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">The Scientific Method — Step by Step</text>
+  <!-- Boxes (horizontal layout: 3 cols × 2 rows + conclusion) -->
+  <!-- Row 1: Observe | Question | Hypothesis -->
+  <rect x="10" y="25" width="100" height="36" rx="7" fill="#fce4ec" stroke="#e53935" stroke-width="1.5"/>
+  <text x="60" y="39" text-anchor="middle" font-size="10" font-weight="bold" fill="#c62828">① OBSERVE</text>
+  <text x="60" y="52" text-anchor="middle" font-size="8" fill="#555">Use your senses</text>
+
+  <line x1="110" y1="43" x2="130" y2="43" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <rect x="132" y="25" width="100" height="36" rx="7" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="182" y="39" text-anchor="middle" font-size="10" font-weight="bold" fill="#0d47a1">② QUESTION</text>
+  <text x="182" y="52" text-anchor="middle" font-size="8" fill="#555">Ask WHY or HOW</text>
+
+  <line x1="232" y1="43" x2="252" y2="43" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <rect x="254" y="25" width="155" height="36" rx="7" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="332" y="39" text-anchor="middle" font-size="10" font-weight="bold" fill="#1b5e20">③ HYPOTHESIS</text>
+  <text x="332" y="52" text-anchor="middle" font-size="8" fill="#555">"If…then…because…"</text>
+
+  <!-- Arrow down from hypothesis -->
+  <line x1="332" y1="61" x2="332" y2="77" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <!-- Row 2: Plan | Experiment | Results -->
+  <rect x="254" y="78" width="155" height="36" rx="7" fill="#f3e5f5" stroke="#8e24aa" stroke-width="1.5"/>
+  <text x="332" y="92" text-anchor="middle" font-size="10" font-weight="bold" fill="#6a1b9a">④ PLAN &amp; EXPERIMENT</text>
+  <text x="332" y="106" text-anchor="middle" font-size="8" fill="#555">Fair test, change 1 variable</text>
+
+  <line x1="254" y1="96" x2="234" y2="96" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <rect x="132" y="78" width="100" height="36" rx="7" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="182" y="92" text-anchor="middle" font-size="10" font-weight="bold" fill="#e65100">⑤ RESULTS</text>
+  <text x="182" y="106" text-anchor="middle" font-size="8" fill="#555">Record in a table</text>
+
+  <line x1="132" y1="96" x2="112" y2="96" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <rect x="10" y="78" width="100" height="36" rx="7" fill="#e0f7fa" stroke="#00838f" stroke-width="1.5"/>
+  <text x="60" y="92" text-anchor="middle" font-size="10" font-weight="bold" fill="#006064">⑥ ANALYSE</text>
+  <text x="60" y="106" text-anchor="middle" font-size="8" fill="#555">Graph &amp; calculate mean</text>
+
+  <!-- Arrow down from analyse -->
+  <line x1="60" y1="114" x2="60" y2="130" stroke="#333" stroke-width="1.5" marker-end="url(#da)"/>
+
+  <!-- Row 3: Conclusion (centre) -->
+  <rect x="10" y="131" width="240" height="36" rx="7" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+  <text x="130" y="145" text-anchor="middle" font-size="10" font-weight="bold" fill="#bf360c">⑦ CONCLUSION</text>
+  <text x="130" y="158" text-anchor="middle" font-size="8" fill="#555">Was hypothesis supported? Use data as evidence.</text>
+
+  <!-- Decision diamond: Supported? -->
+  <polygon points="295,131 340,149 295,167 250,149" fill="#ffecb3" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="295" y="146" text-anchor="middle" font-size="8" font-weight="bold" fill="#e65100">Supported?</text>
+  <text x="295" y="157" text-anchor="middle" font-size="8" fill="#555">YES / NO</text>
+
+  <!-- YES arrow → Communicate -->
+  <line x1="340" y1="149" x2="380" y2="149" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#da)"/>
+  <rect x="382" y="131" width="30" height="36" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="397" y="148" text-anchor="middle" font-size="7" font-weight="bold" fill="#2e7d32">⑧</text>
+  <text x="397" y="160" text-anchor="middle" font-size="7" fill="#2e7d32">Share</text>
+  <text x="360" y="143" font-size="8" fill="#2e7d32">YES</text>
+
+  <!-- NO arrow → back to Hypothesis -->
+  <line x1="295" y1="167" x2="295" y2="195" stroke="#e53935" stroke-width="1.5"/>
+  <line x1="295" y1="195" x2="332" y2="195" stroke="#e53935" stroke-width="1.5"/>
+  <line x1="332" y1="195" x2="332" y2="61" stroke="#e53935" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#rda)"/>
+  <text x="310" y="210" font-size="8" fill="#e53935">NO → revise</text>
+  <text x="310" y="221" font-size="8" fill="#e53935">hypothesis</text>
+</svg>`},
+
+{title:'Good Data vs Poor Data',
+content:`<h3>Why Data Quality Matters</h3>
+<p>Even a good experiment can give <strong>unreliable results</strong> if the data is not collected carefully. You must know the difference between good and poor experimental practice.</p>
+<table style="width:100%;border-collapse:collapse;margin:6px 0;font-size:.88rem">
+<tr style="background:#1565c0;color:#fff"><th style="padding:5px">Source of Error</th><th style="padding:5px">Problem</th><th style="padding:5px">Improvement</th></tr>
+<tr style="background:#e3f2fd"><td style="padding:5px">Only 1 trial</td><td style="padding:5px">Result may be a fluke</td><td style="padding:5px">Repeat at least 3 times, calculate mean</td></tr>
+<tr><td style="padding:5px">Eye not level when reading cylinder</td><td style="padding:5px">Parallax error — wrong reading</td><td style="padding:5px">Read at eye level (bottom of meniscus)</td></tr>
+<tr style="background:#e3f2fd"><td style="padding:5px">Different sized pots</td><td style="padding:5px">Unfair test — another variable changed</td><td style="padding:5px">Use identical pots for all plants</td></tr>
+<tr><td style="padding:5px">Estimating instead of measuring</td><td style="padding:5px">Inaccurate, not reproducible</td><td style="padding:5px">Always use a measuring instrument</td></tr>
+</table>`,
+visual:`<svg viewBox="0 0 420 225" width="100%" font-family="system-ui,sans-serif" xmlns="http://www.w3.org/2000/svg">
+  <text x="210" y="14" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">Poor Experiment vs Good Experiment</text>
+  <!-- POOR (left) -->
+  <rect x="10" y="22" width="190" height="170" rx="8" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+  <text x="105" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#c62828">✗ POOR EXPERIMENT</text>
+  <!-- Poor elements -->
+  <rect x="20" y="48" width="170" height="24" rx="5" fill="#fff" stroke="#e53935" stroke-width="1"/>
+  <text x="105" y="64" text-anchor="middle" font-size="9" fill="#555">Different pot sizes used</text>
+  <rect x="20" y="80" width="170" height="24" rx="5" fill="#fff" stroke="#e53935" stroke-width="1"/>
+  <text x="105" y="96" text-anchor="middle" font-size="9" fill="#555">Only tested once (1 trial)</text>
+  <rect x="20" y="112" width="170" height="24" rx="5" fill="#fff" stroke="#e53935" stroke-width="1"/>
+  <text x="105" y="128" text-anchor="middle" font-size="9" fill="#555">Estimated measurements</text>
+  <rect x="20" y="144" width="170" height="24" rx="5" fill="#fff" stroke="#e53935" stroke-width="1"/>
+  <text x="105" y="160" text-anchor="middle" font-size="9" fill="#555">Changed 2 variables at once</text>
+  <!-- Result: unreliable -->
+  <text x="105" y="185" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">Result: UNRELIABLE</text>
+  <!-- GOOD (right) -->
+  <rect x="220" y="22" width="190" height="170" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="315" y="40" text-anchor="middle" font-size="11" font-weight="bold" fill="#1b5e20">✓ GOOD EXPERIMENT</text>
+  <!-- Good elements -->
+  <rect x="230" y="48" width="170" height="24" rx="5" fill="#fff" stroke="#2e7d32" stroke-width="1"/>
+  <text x="315" y="64" text-anchor="middle" font-size="9" fill="#555">Identical pots (controlled)</text>
+  <rect x="230" y="80" width="170" height="24" rx="5" fill="#fff" stroke="#2e7d32" stroke-width="1"/>
+  <text x="315" y="96" text-anchor="middle" font-size="9" fill="#555">3 trials → calculate mean</text>
+  <rect x="230" y="112" width="170" height="24" rx="5" fill="#fff" stroke="#2e7d32" stroke-width="1"/>
+  <text x="315" y="128" text-anchor="middle" font-size="9" fill="#555">Used ruler and balance</text>
+  <rect x="230" y="144" width="170" height="24" rx="5" fill="#fff" stroke="#2e7d32" stroke-width="1"/>
+  <text x="315" y="160" text-anchor="middle" font-size="9" fill="#555">Only 1 variable changed</text>
+  <!-- Result: reliable -->
+  <text x="315" y="185" text-anchor="middle" font-size="10" fill="#1b5e20" font-weight="bold">Result: RELIABLE ✓</text>
+  <!-- vs divider -->
+  <text x="210" y="115" text-anchor="middle" font-size="16" font-weight="bold" fill="#888">VS</text>
+</svg>`},
+
+/* ══ MCQ STEPS ══ */
+
+{title:'Mini-Quiz: Steps &amp; Variables',
+mcq:[
+  {q:'What is the FIRST step of the scientific method?',opts:['Write a conclusion','Observe and ask a question','Plan an experiment','Collect data'],ans:1,exp:'The first step is OBSERVATION and asking a QUESTION about what you notice. All scientific investigations start by wondering WHY or HOW something happens.'},
+  {q:'Which variable is the one you MEASURE in an experiment?',opts:['Independent variable','Controlled variable','Dependent variable','Fair test variable'],ans:2,exp:'The DEPENDENT variable is the one you MEASURE. It depends on (is affected by) the independent variable. Example: if you change sunlight (independent), you measure plant height (dependent).'},
+]},
+
+{title:'Mini-Quiz: Data &amp; Conclusions',
+mcq:[
+  {q:'A bar graph is best used for:',opts:['Showing temperature over 10 days','Comparing different categories','Showing proportions of a whole','Plotting two continuous measurements'],ans:1,exp:'A BAR GRAPH compares CATEGORIES (discrete groups). For continuous data over time, use a LINE GRAPH. For proportions, use a PIE CHART.'},
+  {q:'A good conclusion must include:',opts:['Only the graph','Whether the hypothesis was supported AND data values as evidence','A new hypothesis only','Only the sources of error'],ans:1,exp:'A good conclusion states whether the hypothesis was SUPPORTED or REJECTED, and uses ACTUAL DATA VALUES as evidence. It may also mention errors and improvements.'},
+]},
+
+{title:'Exam Practice Questions',
+mcq:[
+  {q:'A student investigating how temperature affects dissolving sugar takes one measurement at each temperature. What is wrong with this method?',opts:['The temperature range is too small','Only one trial was done — results may not be reliable','The student should have used salt instead','Temperature cannot affect dissolving speed'],ans:1,exp:'One trial per temperature is a source of error — the result may be a fluke (anomaly). A reliable experiment repeats at least 3 trials at each temperature and calculates the MEAN result.'},
+  {q:'In an experiment testing how fertiliser amount affects plant growth, the student also waters each plant with different amounts of water. What is wrong?',opts:['The experiment is too short','Two variables changed at once — it is no longer a fair test','The plants need more light','Fertiliser cannot affect plant growth'],ans:1,exp:'This is no longer a FAIR TEST because two variables changed (fertiliser amount AND water amount). If plant heights differ, you cannot tell which variable caused the change. Only ONE variable should change at a time.'},
+  {q:'A student reads a measuring cylinder while looking down from above. What error does this cause?',opts:['The cylinder will break','A parallax error — the reading will be higher than the true volume','The water will evaporate','No error — any angle is fine'],ans:1,exp:'Looking from above causes PARALLAX ERROR — the curved meniscus looks different from different angles, giving a wrong reading. Always read a measuring cylinder at EYE LEVEL, reading the bottom of the meniscus.'},
+]},
+
+];
+new StudyEngine(STEPS,{color:'#1565c0',dark:'#003c8f',light:'#e3f2fd',title:'Scientific Processes'});
+</script></body></html>

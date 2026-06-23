@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Chains & Habitats — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
+    .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topic-header { width:100%; background:#388e3c; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#81c784; color:#1b5e20; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #c8e6c9; }
+    .info-strip { margin-top:14px; background:#e8f5e9; border:1px solid #c8e6c9; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#2e7d32; max-width:880px; width:100%; line-height:1.5; }
+    #cascade-msg { margin-top:10px; min-height:32px; background:#fff3e0; border:1px solid #ffcc80; border-radius:8px; padding:8px 18px; font-size:0.82rem; color:#e65100; max-width:880px; width:100%; display:none; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button class="print-btn" onclick="printNotes()">&#128203; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">PSLE · Standard 5</span>
+  <h1>Food Chains &amp; Energy Flow</h1>
+</div>
+<div id="sketch"></div>
+<div style="display:flex;gap:10px;margin-top:12px;justify-content:center">
+  <button onclick="setMode(0)" id="btnAnim" style="padding:8px 18px;border:2.5px solid #2e7d32;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#2e7d32;color:#fff;font-family:inherit">&#9654; Animation</button>
+  <button onclick="setMode(1)" id="btnGame" style="padding:8px 18px;border:2.5px solid #e65100;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#e65100;font-family:inherit">&#127918; Build a Chain</button>
+</div>
+<div class="info-strip">
+  <strong>10% Rule:</strong> Only about 10% of energy is passed on to the next level — the rest is lost as heat.
+  &nbsp; <strong>Click any organism</strong> to remove it and see the cascade effect. Click again to restore it.
+</div>
+<div id="cascade-msg"></div>
+
+<script>
+let gameMode=0;
+function setMode(m){ gameMode=m; document.getElementById('btnAnim').style.background=m===0?'#2e7d32':'#fff'; document.getElementById('btnAnim').style.color=m===0?'#fff':'#2e7d32'; document.getElementById('btnGame').style.background=m===1?'#e65100':'#fff'; document.getElementById('btnGame').style.color=m===1?'#fff':'#e65100'; if(m===1) resetChainGame(); }
+function printNotes(){
+  let h=`<html><head><title>Food Chains Notes</title><style>body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;font-size:14px}h1{border-bottom:3px solid #2e7d32;color:#2e7d32}h2{color:#388e3c;margin:18px 0 4px}p,li{line-height:1.7}ul{margin:0 0 8px 18px}@media print{body{margin:15px}}</style></head><body>
+  <h1>PSLE Science — Food Chains &amp; Energy Flow</h1>
+  <h2>Food Chain Basics</h2><ul><li>A food chain shows HOW energy flows from one organism to another through feeding</li><li>Always starts with a PRODUCER (green plant) that makes food using sunlight</li><li>Arrows show the direction of energy flow: Grass → Grasshopper → Frog → Eagle</li><li>Producer → Primary consumer → Secondary consumer → Tertiary consumer</li></ul>
+  <h2>The 10% Rule</h2><ul><li>Only about 10% of energy at one level is transferred to the next</li><li>90% is lost as heat, movement, waste (respiration)</li><li>This means energy pyramids narrow sharply at each trophic level</li><li>Example: 1000 J in grass → 100 J in grasshopper → 10 J in frog → 1 J in eagle</li></ul>
+  <h2>Trophic Levels</h2><ul><li>Level 1 — Producers: plants (grasses, trees, algae)</li><li>Level 2 — Primary consumers: herbivores (grasshoppers, zebra, wildebeest)</li><li>Level 3 — Secondary consumers: carnivores/omnivores (frogs, mongooses)</li><li>Level 4 — Tertiary consumers: apex predators (eagles, lions, leopards)</li></ul>
+  <h2>Botswana Food Chain Example</h2><p>Grass → Grasshopper → Frog → Eagle</p>
+  </body></html>`;
+  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+}
+const CHAIN_ORGS=['Grass','Grasshopper','Frog','Eagle'];
+const CHAIN_EMOJI=['🌿','🦗','🐸','🦅'];
+const CHAIN_ROLES=['Producer (makes food from sunlight)','Primary Consumer (herbivore)','Secondary Consumer (carnivore)','Tertiary Consumer (apex predator)'];
+let chainSlots, chainPool, chainDrag, chainScore, chainDone;
+function resetChainGame(){
+  let sh=[0,1,2,3].sort(()=>Math.random()-0.5);
+  chainPool=sh.map((i,j)=>({idx:i,x:100+j*170,y:400,sx:100+j*170,sy:400,slot:-1,ox:0,oy:0}));
+  chainSlots=[0,1,2,3].map(i=>({x:100+i*170,y:200,filled:-1}));
+  chainDrag=null; chainScore=0; chainDone=false;
+}
+const CASCADE = {
+  1: 'Grass removed: Grasshoppers lose their food source — population crashes. Lions and Eagles are also affected!',
+  2: 'Grasshoppers removed: Frogs have nothing to eat — population declines. Grass may overgrow without grazers!',
+  3: 'Frogs removed: Eagles lose a food source. Grasshopper population may explode without predators!',
+  4: 'Eagles removed: Frog population increases unchecked. Grasshoppers may be overhunted!',
+};
+
+new p5(function(p) {
+  const W = 880, H = 490;
+
+  const CHAIN = [
+    { label:'Sun',         sub:'Energy Source',   x:72,  y:205, r:48, col:[253,196,0],   rmv:false, icon:'SUN'  },
+    { label:'Grass',       sub:'Producer',         x:215, y:205, r:40, col:[67,160,71],   rmv:false, icon:'GRS'  },
+    { label:'Grasshopper', sub:'1° Consumer',      x:375, y:205, r:32, col:[139,195,74],  rmv:false, icon:'BUG'  },
+    { label:'Frog',        sub:'2° Consumer',      x:525, y:205, r:26, col:[38,166,154],  rmv:false, icon:'FRG'  },
+    { label:'Eagle',       sub:'3° Consumer',      x:670, y:205, r:21, col:[84,110,122],  rmv:false, icon:'BRD'  },
+    { label:'Decomposers', sub:'Recyclers',        x:810, y:205, r:14, col:[141,110,99],  rmv:false, icon:'DCM'  },
+  ];
+
+  let energyPts = []; // {x,y, link(0-4), spd, a}
+  let heatPts   = []; // {x,y, vy, a}
+  let tick = 0;
+
+  p.setup = function() {
+    p.createCanvas(W, H).parent('sketch');
+    p.textFont('Arial');
+  };
+
+  p.draw = function() {
+    tick += 0.04;
+    if(gameMode===1){ drawChainGame(); return; }
+    p.background(248, 252, 248);
+
+    drawBg();
+    drawConnectors();
+    spawnParticles();
+    moveAndDrawEnergy();
+    moveAndDrawHeat();
+    for (let org of CHAIN) drawOrg(org);
+    drawPyramid();
+    drawTitle();
+  };
+
+  function drawBg() {
+    // Sky
+    let ctx = p.drawingContext;
+    let g = ctx.createLinearGradient(0, 0, 0, 285);
+    g.addColorStop(0, '#87CEEB'); g.addColorStop(1, '#d4edf7');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, 285);
+    // Ground
+    p.noStroke();
+    p.fill(121, 85, 72); p.rect(0, 285, W, H - 285);
+    p.fill(76, 153, 0);  p.rect(0, 283, W, 12);
+    // Grass tufts
+    p.fill(56, 130, 0, 160);
+    for (let gx = 20; gx < W; gx += 28) {
+      p.triangle(gx, 284, gx + 6, 270 + p.sin(tick + gx) * 3, gx + 12, 284);
+    }
+  }
+
+  function drawConnectors() {
+    for (let i = 0; i < CHAIN.length - 1; i++) {
+      let a = CHAIN[i], b = CHAIN[i + 1];
+      let broken = a.rmv || b.rmv;
+      p.strokeWeight(2.5);
+      if (broken) {
+        p.stroke(220, 50, 50, 130);
+        p.drawingContext.setLineDash([5, 6]);
+      } else {
+        p.stroke(120, 160, 120, 200);
+        p.drawingContext.setLineDash([]);
+      }
+      p.line(a.x + a.r, a.y, b.x - b.r, a.y);
+      p.drawingContext.setLineDash([]);
+      if (!broken) {
+        let ax = b.x - b.r, ay = b.y;
+        p.fill(100, 150, 100); p.noStroke();
+        p.triangle(ax, ay, ax - 9, ay - 5, ax - 9, ay + 5);
+      }
+    }
+    p.noStroke();
+  }
+
+  function spawnParticles() {
+    // Sun → Grass: every 5 frames, 3 particles
+    if (p.frameCount % 5 === 0 && !CHAIN[0].rmv && !CHAIN[1].rmv) {
+      for (let k = 0; k < 3; k++)
+        energyPts.push({ x: CHAIN[0].x + CHAIN[0].r + 4, y: CHAIN[0].y + p.random(-10, 10), link: 0, spd: 2.8 + p.random(0.5) });
+    }
+    // Grass → Grasshopper: 1 particle every 18 frames (10% rule)
+    if (p.frameCount % 18 === 0 && !CHAIN[1].rmv && !CHAIN[2].rmv)
+      energyPts.push({ x: CHAIN[1].x + CHAIN[1].r + 4, y: CHAIN[1].y + p.random(-5, 5), link: 1, spd: 2.4 });
+    // Grasshopper → Frog
+    if (p.frameCount % 55 === 0 && !CHAIN[2].rmv && !CHAIN[3].rmv)
+      energyPts.push({ x: CHAIN[2].x + CHAIN[2].r + 4, y: CHAIN[2].y, link: 2, spd: 2.0 });
+    // Frog → Eagle
+    if (p.frameCount % 160 === 0 && !CHAIN[3].rmv && !CHAIN[4].rmv)
+      energyPts.push({ x: CHAIN[3].x + CHAIN[3].r + 4, y: CHAIN[3].y, link: 3, spd: 1.8 });
+    // Eagle → Decomposers
+    if (p.frameCount % 400 === 0 && !CHAIN[4].rmv && !CHAIN[5].rmv)
+      energyPts.push({ x: CHAIN[4].x + CHAIN[4].r + 4, y: CHAIN[4].y, link: 4, spd: 1.5 });
+
+    // Heat particles at each living junction
+    if (p.frameCount % 10 === 0) {
+      for (let i = 1; i < 5; i++) {
+        if (!CHAIN[i].rmv && !CHAIN[i-1].rmv) {
+          for (let k = 0; k < 2; k++)
+            heatPts.push({ x: CHAIN[i].x + p.random(-14, 14), y: CHAIN[i].y - CHAIN[i].r - 4, vy: -p.random(0.9, 1.8), a: 190 });
+        }
+      }
+    }
+  }
+
+  function moveAndDrawEnergy() {
+    let keep = [];
+    p.noStroke();
+    for (let pt of energyPts) {
+      let dest = CHAIN[pt.link + 1];
+      if (pt.x < dest.x - dest.r - 2) {
+        pt.x += pt.spd;
+        let t = pt.link / 4;
+        let r = p.lerp(255, 180, t), g = p.lerp(180, 80, t);
+        p.fill(r, g, 0, 220); p.ellipse(pt.x, pt.y, 8);
+        keep.push(pt);
+      }
+    }
+    energyPts = keep;
+  }
+
+  function moveAndDrawHeat() {
+    let keep = [];
+    p.noStroke();
+    for (let h of heatPts) {
+      h.y += h.vy; h.x += p.random(-0.3, 0.3); h.a -= 3.5;
+      if (h.a > 5) {
+        p.fill(255, 90 + h.a * 0.3, 0, h.a); p.ellipse(h.x, h.y, 6);
+        keep.push(h);
+      }
+    }
+    heatPts = keep;
+  }
+
+  function drawOrg(org) {
+    let i = CHAIN.indexOf(org);
+    if (org.rmv) {
+      // Greyed out with X
+      p.fill(200, 200, 200, 100); p.noStroke(); p.ellipse(org.x, org.y, org.r * 2);
+      p.stroke(200, 50, 50, 180); p.strokeWeight(2.5);
+      let d = org.r * 0.55;
+      p.line(org.x-d, org.y-d, org.x+d, org.y+d);
+      p.line(org.x+d, org.y-d, org.x-d, org.y+d);
+      p.noStroke();
+      p.fill(180, 50, 50); p.textSize(9); p.textAlign(p.CENTER);
+      p.text(org.label, org.x, org.y + org.r + 14);
+      return;
+    }
+
+    // Drop shadow
+    p.fill(0, 0, 0, 22); p.noStroke(); p.ellipse(org.x + 2, org.y + 2, org.r * 2 + 2);
+
+    // Organism circle
+    p.fill(org.col[0], org.col[1], org.col[2]);
+    if (i === 0) {
+      // Sun glow
+      let pulse = p.sin(tick * 1.5) * 4;
+      p.fill(253, 196, 0, 50); p.ellipse(org.x, org.y, org.r * 3 + pulse);
+      p.fill(253, 196, 0, 100); p.ellipse(org.x, org.y, org.r * 2.2 + pulse);
+    }
+    p.fill(org.col[0], org.col[1], org.col[2]); p.ellipse(org.x, org.y, org.r * 2);
+
+    // Highlight
+    p.fill(255, 255, 255, 70); p.ellipse(org.x - org.r * 0.25, org.y - org.r * 0.3, org.r * 0.7);
+
+    // Draw icon inside circle
+    drawIcon(org);
+
+    // Border
+    p.stroke(255, 255, 255, 130); p.strokeWeight(1.5); p.noFill();
+    p.ellipse(org.x, org.y, org.r * 2); p.noStroke();
+
+    // Label below
+    p.fill(30); p.textSize(10); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text(org.label, org.x, org.y + org.r + 14);
+    p.textStyle(p.NORMAL); p.fill(90); p.textSize(9);
+    p.text(org.sub, org.x, org.y + org.r + 26);
+
+    // Energy % label above
+    if (i > 0) {
+      let pcts = ['', '100%', '10%', '1%', '0.1%', '~0%'];
+      p.fill(org.col[0] * 0.7, org.col[1] * 0.7, org.col[2] * 0.7);
+      p.textSize(9); p.textAlign(p.CENTER);
+      p.text(pcts[i] + ' energy', org.x, org.y - org.r - 22);
+    }
+
+    // Heat lost label
+    if (i > 0 && i < 5 && !org.rmv) {
+      p.fill(220, 80, 0, 180); p.textSize(8.5); p.textAlign(p.LEFT);
+      p.text('↑ 90% heat', org.x + org.r + 3, org.y - 12);
+    }
+  }
+
+  function drawIcon(org) {
+    let x = org.x, y = org.y, r = org.r;
+    p.push();
+    p.translate(x, y);
+    p.noStroke();
+    switch (org.icon) {
+      case 'SUN': // sun rays
+        p.fill(255, 240, 100, 220);
+        for (let a = 0; a < 8; a++) {
+          let ang = (a / 8) * p.TWO_PI + tick * 0.3;
+          p.ellipse(p.cos(ang) * r * 0.55, p.sin(ang) * r * 0.55, r * 0.3, r * 0.12);
+        }
+        break;
+      case 'GRS': // grass blades
+        p.fill(200, 255, 160, 200);
+        for (let g = -2; g <= 2; g++) {
+          p.triangle(g*6, r*0.3, g*6-4, -r*0.5+p.sin(tick+g)*3, g*6+4, -r*0.5+p.sin(tick+g)*3);
+        }
+        break;
+      case 'BUG': // grasshopper body
+        p.fill(180, 220, 80, 220);
+        p.ellipse(0, 4, r*0.9, r*0.45);
+        p.ellipse(-r*0.25, -2, r*0.45, r*0.38);
+        // antennae
+        p.stroke(160, 200, 60, 200); p.strokeWeight(1);
+        p.line(-r*0.35, -r*0.2, -r*0.6, -r*0.55);
+        p.line(-r*0.22, -r*0.2, -r*0.1, -r*0.58);
+        p.noStroke();
+        break;
+      case 'FRG': // frog
+        p.fill(100, 200, 130, 220);
+        p.ellipse(0, 4, r*1.1, r*0.7);
+        p.ellipse(-r*0.28, -r*0.28, r*0.42, r*0.42);
+        p.ellipse(r*0.28, -r*0.28, r*0.42, r*0.42);
+        p.fill(255, 255, 255, 180);
+        p.ellipse(-r*0.28, -r*0.3, r*0.22, r*0.22);
+        p.ellipse(r*0.28, -r*0.3, r*0.22, r*0.22);
+        p.fill(0, 0, 0, 180);
+        p.ellipse(-r*0.28, -r*0.3, r*0.1, r*0.1);
+        p.ellipse(r*0.28, -r*0.3, r*0.1, r*0.1);
+        break;
+      case 'BRD': // eagle shape
+        p.fill(160, 120, 60, 220);
+        p.ellipse(0, 2, r*0.9, r*0.6);
+        p.ellipse(0, -r*0.2, r*0.5, r*0.4);
+        // wings
+        p.fill(130, 90, 40, 200);
+        p.triangle(-r*0.2, 0, -r*0.9, -r*0.2, -r*0.7, r*0.3);
+        p.triangle(r*0.2, 0, r*0.9, -r*0.2, r*0.7, r*0.3);
+        break;
+      case 'DCM': // bacteria blobs
+        p.fill(180, 140, 100, 200);
+        for (let d = 0; d < 5; d++) {
+          let a = d / 5 * p.TWO_PI;
+          p.ellipse(p.cos(a)*r*0.4, p.sin(a)*r*0.4, r*0.35, r*0.35);
+        }
+        break;
+    }
+    p.pop();
+    p.noStroke();
+  }
+
+  function drawPyramid() {
+    let cx = W/2, baseY = H - 12;
+    let widths = [360, 140, 54, 20, 8];
+    let cols   = [[253,196,0],[67,160,71],[139,195,74],[38,166,154],[84,110,122]];
+    let barH = 10;
+    p.noStroke();
+    for (let i = 0; i < 5; i++) {
+      let bw = widths[i], by = baseY - (4 - i) * (barH + 2);
+      p.fill(cols[i][0], cols[i][1], cols[i][2], CHAIN[i + 1].rmv ? 60 : 200);
+      p.rect(cx - bw/2, by, bw, barH, 3);
+    }
+    p.fill(60); p.textSize(9.5); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('Energy Pyramid — 10% Rule', cx, baseY - 5 * (barH + 2) - 5);
+    p.textStyle(p.NORMAL);
+  }
+
+  function drawTitle() {
+    p.fill(30, 100, 30); p.textSize(11.5); p.textAlign(p.CENTER); p.textStyle(p.BOLD);
+    p.text('Sun  →  Grass  →  Grasshopper  →  Frog  →  Eagle  →  Decomposers', W/2, 30);
+    p.fill(80); p.textSize(9.5); p.textStyle(p.NORMAL);
+    p.text('(Click any organism to remove it and observe the cascade effect)', W/2, 46);
+  }
+
+  p.mouseClicked = function() {
+    for (let i = 1; i < CHAIN.length; i++) {
+      let org = CHAIN[i];
+      if (p.dist(p.mouseX, p.mouseY, org.x, org.y) <= org.r + 4) {
+        org.rmv = !org.rmv;
+        let msg = document.getElementById('cascade-msg');
+        if (org.rmv) {
+          msg.style.display = 'block';
+          msg.textContent = CASCADE[i] || '';
+        } else {
+          msg.style.display = 'none';
+        }
+        return;
+      }
+    }
+    // Click elsewhere — restore all
+    CHAIN.forEach(o => o.rmv = false);
+    document.getElementById('cascade-msg').style.display = 'none';
+  };
+
+  function drawChainGame(){
+    p.background(235,255,235);
+    p.fill(27,94,32); p.noStroke(); p.textSize(13); p.textStyle(p.BOLD); p.textAlign(p.CENTER);
+    p.text('Build a Food Chain — drag organisms into the correct feeding order', 440,22);
+    // Arrows between slots
+    for(let i=0;i<3;i++){ let sx=100+i*170+70; p.stroke(100,150,100); p.strokeWeight(2.5); p.line(sx,200,sx+100,200); p.fill(100,150,100); p.noStroke(); p.triangle(sx+100,200,sx+88,194,sx+88,206); }
+    // Slots
+    chainSlots.forEach((sl,i)=>{
+      let ok=sl.filled===i;
+      let filled=sl.filled>=0;
+      p.fill(filled?(ok?[200,255,200]:[255,220,220]):[220,245,220]); p.stroke(filled?(ok?[0,150,0]:[200,0,0]):[100,180,100]); p.strokeWeight(2);
+      p.rect(sl.x-50,sl.y-35,130,70,8);
+      p.fill(100); p.noStroke(); p.textSize(9); p.textStyle(p.NORMAL); p.textAlign(p.CENTER,p.CENTER);
+      p.text('Level '+(i+1), sl.x+15, sl.y-22);
+      if(filled){ p.textSize(26); p.text(CHAIN_EMOJI[sl.filled],sl.x+15,sl.y+2); p.textSize(9); p.textStyle(p.BOLD); p.text(CHAIN_ORGS[sl.filled],sl.x+15,sl.y+28); }
+      else { p.textSize(26); p.fill(180); p.text('?',sl.x+15,sl.y+2); }
+    });
+    // Pool
+    p.fill(200,240,200); p.noStroke(); p.rect(40,360,800,110,8);
+    p.fill(30); p.textSize(10); p.textStyle(p.BOLD); p.textAlign(p.LEFT);
+    p.text('Drag to the correct level:', 50,378);
+    chainPool.forEach(d=>{ if(d.slot>=0||d===chainDrag) return; drawOrgCard(d.sx,d.sy,d.idx); });
+    if(chainDrag) drawOrgCard(chainDrag.x,chainDrag.y,chainDrag.idx);
+    // Check all placed correctly
+    let allOk=chainSlots.every((sl,i)=>sl.filled===i);
+    if(allOk&&chainSlots.every(sl=>sl.filled>=0)){
+      p.fill(0,0,0,150); p.noStroke(); p.rect(200,110,480,130,12);
+      p.fill(255,235,59); p.textSize(18); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.CENTER);
+      p.text('Perfect Food Chain!',440,155);
+      p.fill(200,255,220); p.textSize(11); p.textStyle(p.NORMAL);
+      p.text(CHAIN_ORGS[0]+' → '+CHAIN_ORGS[1]+' → '+CHAIN_ORGS[2]+' → '+CHAIN_ORGS[3],440,180);
+      p.text('Each arrow means "is eaten by"',440,200);
+      p.fill(180,240,180); p.rect(355,216,170,34,8); p.fill(30); p.textSize(12); p.textStyle(p.BOLD); p.text('↺ Play Again',440,233);
+    }
+    // Role descriptions below slots
+    chainSlots.forEach((sl,i)=>{
+      if(sl.filled>=0){ p.fill(60); p.noStroke(); p.textSize(8.5); p.textStyle(p.NORMAL); p.textAlign(p.CENTER,p.BASELINE); p.text(CHAIN_ROLES[i],sl.x+15,sl.y+50,140,40); }
+    });
+    p.textAlign(p.LEFT,p.BASELINE);
+  }
+
+  function drawOrgCard(x,y,idx){
+    p.fill(220,255,220); p.stroke(80,150,80); p.strokeWeight(1.5); p.rect(x-45,y-32,100,64,8);
+    p.noStroke(); p.textSize(24); p.textAlign(p.CENTER,p.CENTER); p.text(CHAIN_EMOJI[idx],x+5,y-5);
+    p.fill(30); p.textSize(9); p.textStyle(p.BOLD); p.textAlign(p.CENTER,p.BASELINE); p.text(CHAIN_ORGS[idx],x+5,y+30);
+  }
+
+  p.mousePressed=function(){
+    if(gameMode!==1) return;
+    let mx=p.mouseX,my=p.mouseY;
+    let allOk=chainSlots.every((sl,i)=>sl.filled===i)&&chainSlots.every(sl=>sl.filled>=0);
+    if(allOk&&mx>355&&mx<525&&my>216&&my<250){ resetChainGame(); return; }
+    // Pick from slot
+    for(let d of chainPool){
+      if(d.slot<0) continue;
+      let sl=chainSlots[d.slot];
+      if(p.dist(mx,my,sl.x+15,sl.y)<40){ chainDrag=d; d.ox=sl.x+15-mx; d.oy=sl.y-my; sl.filled=-1; d.slot=-1; return; }
+    }
+    // Pick from pool
+    for(let d of chainPool){
+      if(d.slot>=0) continue;
+      if(p.dist(mx,my,d.sx+5,d.sy)<40){ chainDrag=d; d.ox=d.sx-mx; d.oy=d.sy-my; return; }
+    }
+  };
+  p.mouseDragged=function(){ if(gameMode!==1||!chainDrag) return; chainDrag.x=p.mouseX+chainDrag.ox; chainDrag.y=p.mouseY+chainDrag.oy; };
+  p.mouseReleased=function(){
+    if(gameMode!==1||!chainDrag) return;
+    let placed=false;
+    for(let i=0;i<chainSlots.length;i++){
+      let sl=chainSlots[i];
+      if(sl.filled<0&&p.dist(chainDrag.x,chainDrag.y,sl.x+15,sl.y)<50){ chainDrag.slot=i; sl.filled=chainDrag.idx; placed=true; break; }
+    }
+    if(!placed){ chainDrag.x=chainDrag.sx; chainDrag.y=chainDrag.sy; chainDrag.slot=-1; }
+    chainDrag=null;
+  };
+});
+</script>
+</body>
+</html>

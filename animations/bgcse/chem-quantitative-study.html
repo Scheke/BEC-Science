@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quantitative Chemistry — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,14,22]))}
+
+const STEPS=[
+  {
+    title:'The Mole — Avogadro\'s Number',
+    body:`The <strong>mole</strong> is the chemist's counting unit. One mole = <strong>6.02 × 10²³ particles</strong> (Avogadro's number, Nₐ).
+    <br><br>
+    Just as a "dozen" always means 12, one mole always means 6.02 × 10²³ atoms, molecules, or ions.
+    <br><br>
+    Key formula:
+    <br><br>
+    <strong>n = m / Mᵣ</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>n = moles (mol)</li>
+      <li>m = mass (g)</li>
+      <li>Mᵣ = relative formula mass (g/mol)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Giant number visualization
+      sk.fill(52,152,219,100);sk.noStroke();sk.ellipse(W/2,H*0.38,W*0.8,H*0.55);
+      sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('6.02 × 10²³',W/2,H*0.32);sk.textStyle(sk.NORMAL);
+      sk.fill(255,255,255,180);sk.textSize(11);sk.text('particles in 1 mole',W/2,H*0.44);
+      // Formula triangle
+      const tx=W*0.5,ty=H*0.76;
+      const ts=60;
+      sk.fill(46,204,113,160);sk.noStroke();
+      sk.triangle(tx,ty-ts,tx-ts,ty+ts*0.5,tx+ts,ty+ts*0.5);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('m',tx,ty-ts*0.4);
+      sk.text('n',tx-ts*0.55,ty+ts*0.25);
+      sk.text('Mᵣ',tx+ts*0.55,ty+ts*0.25);
+      sk.stroke(46,204,113);sk.strokeWeight(1.5);sk.line(tx-ts,ty+sk.random(-0.1,0.1),tx+ts,ty);
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('n = m ÷ Mᵣ',W/2,H*0.96);
+    }
+  },
+  {
+    title:'Relative Formula Mass (Mᵣ)',
+    body:`<strong>Relative formula mass (Mᵣ)</strong> is the sum of relative atomic masses (Aᵣ) of all atoms in a formula.
+    <br><br>
+    Common Aᵣ values to know:
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li>H = 1, C = 12, N = 14, O = 16, Na = 23, Cl = 35.5, Ca = 40, Fe = 56</li>
+    </ul>
+    <br>
+    Examples:
+    <ul style="margin:4px 0 0 18px;line-height:2">
+      <li>H₂O: (2×1) + 16 = <strong>18 g/mol</strong></li>
+      <li>NaCl: 23 + 35.5 = <strong>58.5 g/mol</strong></li>
+      <li>CaCO₃: 40 + 12 + (3×16) = <strong>100 g/mol</strong></li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[12,18,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // H2O calculation visual
+      const atoms=[
+        {sym:'H',mass:1,c:[100,180,255],x:0.22},
+        {sym:'H',mass:1,c:[100,180,255],x:0.38},
+        {sym:'O',mass:16,c:[231,76,60],x:0.62},
+      ];
+      atoms.forEach(a=>{
+        sk.fill(...a.c,180);sk.noStroke();sk.circle(a.x*W,H*0.38,46);
+        sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(a.sym,a.x*W,H*0.38-4);sk.textStyle(sk.NORMAL);
+        sk.fill(255,220,50);sk.textSize(11);sk.text(a.mass,a.x*W,H*0.38+12);
+      });
+      // Plus signs
+      sk.fill(255,255,255,120);sk.textSize(18);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('+',W*0.3,H*0.38);sk.text('+',W*0.5,H*0.38);
+      // Equals & result
+      sk.text('=',W*0.76,H*0.38);
+      sk.fill(46,204,113,180);sk.noStroke();sk.circle(W*0.9,H*0.38,52);
+      sk.fill(255);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('18',W*0.9,H*0.38);sk.textStyle(sk.NORMAL);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('H₂O = 18 g/mol',W/2,H*0.6);
+      // Example calculation
+      sk.fill(255,220,50);sk.textSize(10);sk.textAlign(sk.LEFT);
+      sk.text('How many moles in 36g of H₂O?',W*0.08,H*0.72);
+      sk.fill(255,255,255,120);sk.textSize(10);
+      sk.text('n = m ÷ Mᵣ = 36 ÷ 18 = 2 mol',W*0.08,H*0.82);
+    }
+  },
+  {
+    q:'Mole Concept — Avogadro\'s Number Visualised',
+    content:`<h3>The Mole — Avogadro's Number</h3><p>The mole is the chemist's counting unit, just as a "dozen" always means 12. One mole always contains exactly 6.02 × 10²³ particles (Avogadro's number), whether those particles are atoms, molecules, or ions.</p><ul><li>1 mol of atoms: e.g. 12 g of carbon-12 contains 6.02 × 10²³ carbon atoms</li><li>1 mol of molecules: e.g. 18 g of water (H₂O) contains 6.02 × 10²³ water molecules</li><li>Key formula: n = m ÷ Mᵣ (moles = mass in grams ÷ relative formula mass)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="265" fill="#fff8e1" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" fill="#e65100" font-size="14" font-weight="bold">The Mole — Avogadro's Number</text>
+  <!-- Central Avogadro number -->
+  <rect x="80" y="30" width="260" height="48" rx="8" fill="#e65100" opacity="0.85"/>
+  <text x="210" y="50" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">6.02 × 10²³</text>
+  <text x="210" y="70" text-anchor="middle" fill="#fff" font-size="11">particles per mole (Avogadro's number)</text>
+  <!-- Three panels: atoms, molecules, ions -->
+  <rect x="8" y="88" width="125" height="90" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="70" y="103" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1 mol Atoms</text>
+  <circle cx="40" cy="128" r="10" fill="#e65100" opacity="0.7"/><circle cx="62" cy="118" r="10" fill="#e65100" opacity="0.7"/>
+  <circle cx="84" cy="130" r="10" fill="#e65100" opacity="0.7"/><circle cx="55" cy="140" r="10" fill="#e65100" opacity="0.7"/>
+  <circle cx="96" cy="118" r="10" fill="#e65100" opacity="0.7"/>
+  <text x="70" y="167" text-anchor="middle" fill="#333" font-size="9">e.g. 12g of ¹²C</text>
+  <rect x="148" y="88" width="125" height="90" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="103" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1 mol Molecules</text>
+  <circle cx="175" cy="122" r="8" fill="#1565c0" opacity="0.7"/><circle cx="193" cy="122" r="8" fill="#1565c0" opacity="0.7"/>
+  <circle cx="220" cy="130" r="8" fill="#1565c0" opacity="0.7"/><circle cx="236" cy="130" r="8" fill="#1565c0" opacity="0.7"/>
+  <circle cx="180" cy="142" r="8" fill="#1565c0" opacity="0.7"/><circle cx="196" cy="142" r="8" fill="#1565c0" opacity="0.7"/>
+  <text x="210" y="167" text-anchor="middle" fill="#333" font-size="9">e.g. 18g of H₂O</text>
+  <rect x="288" y="88" width="125" height="90" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="350" y="103" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1 mol Ions</text>
+  <circle cx="318" cy="122" r="9" fill="#ffd600" stroke="#e65100" stroke-width="1"/><text x="318" y="126" text-anchor="middle" fill="#333" font-size="8">Na⁺</text>
+  <circle cx="342" cy="118" r="9" fill="#1565c0"/><text x="342" y="122" text-anchor="middle" fill="#fff" font-size="8">Cl⁻</text>
+  <circle cx="330" cy="138" r="9" fill="#ffd600" stroke="#e65100" stroke-width="1"/><text x="330" y="142" text-anchor="middle" fill="#333" font-size="8">Na⁺</text>
+  <circle cx="355" cy="136" r="9" fill="#1565c0"/><text x="355" y="140" text-anchor="middle" fill="#fff" font-size="8">Cl⁻</text>
+  <text x="350" y="167" text-anchor="middle" fill="#333" font-size="9">e.g. 58.5g of NaCl</text>
+  <!-- Formula triangle -->
+  <rect x="8" y="190" width="404" height="68" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="207" text-anchor="middle" fill="#e65100" font-size="12" font-weight="bold">Key Formulae:</text>
+  <text x="80" y="227" text-anchor="middle" fill="#333" font-size="11">n = m / Mᵣ</text>
+  <text x="80" y="242" text-anchor="middle" fill="#333" font-size="10">moles = mass ÷ Mr</text>
+  <line x1="160" y1="210" x2="160" y2="252" stroke="#e65100" stroke-width="1" opacity="0.4"/>
+  <text x="250" y="227" text-anchor="middle" fill="#333" font-size="11">m = n × Mᵣ</text>
+  <text x="250" y="242" text-anchor="middle" fill="#333" font-size="10">mass = moles × Mr</text>
+  <line x1="330" y1="210" x2="330" y2="252" stroke="#e65100" stroke-width="1" opacity="0.4"/>
+  <text x="375" y="227" text-anchor="middle" fill="#333" font-size="11">Mᵣ = m / n</text>
+  <text x="375" y="242" text-anchor="middle" fill="#333" font-size="10">Mr = mass ÷ moles</text>
+</svg>`
+  },
+  {
+    q:'Molar Mass Calculation — Step-by-Step Flowchart',
+    content:`<h3>Calculating Molar Mass — Step-by-Step</h3><p>The relative formula mass (Mᵣ) is found by adding up the relative atomic masses of all atoms in a formula. Once Mᵣ is known it can be used to convert between mass in grams and moles.</p><ul><li>Step 1–2: Write the formula and look up each element's Aᵣ from the data sheet (e.g. Ca=40, C=12, O=16)</li><li>Step 3–4: Multiply each Aᵣ by the number of those atoms in the formula, then add all values — for CaCO₃: 40 + 12 + (3×16) = 100 g/mol</li><li>Common Mᵣ values to memorise: H₂O = 18, NaCl = 58.5, CO₂ = 44, HCl = 36.5, NH₃ = 17</li></ul>`,
+    visual:`<svg viewBox="0 0 420 300" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="300" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Calculating Moles — Flowchart</text>
+  <!-- Step 1 -->
+  <rect x="110" y="25" width="200" height="36" rx="6" fill="#e65100" opacity="0.85"/>
+  <text x="210" y="38" text-anchor="middle" fill="#fff" font-size="11" font-weight="bold">Step 1: Write formula</text>
+  <text x="210" y="53" text-anchor="middle" fill="#fff" font-size="10">e.g. CaCO₃</text>
+  <line x1="210" y1="62" x2="210" y2="80" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 2 -->
+  <rect x="85" y="81" width="250" height="44" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="97" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Step 2: Find Aᵣ of each element</text>
+  <text x="210" y="117" text-anchor="middle" fill="#333" font-size="10">Ca=40, C=12, O=16 (from data sheet)</text>
+  <line x1="210" y1="126" x2="210" y2="144" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 3 -->
+  <rect x="70" y="145" width="280" height="50" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="161" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Step 3: Multiply × number of atoms</text>
+  <text x="210" y="177" text-anchor="middle" fill="#333" font-size="10">Ca: 1×40 = 40 | C: 1×12 = 12 | O: 3×16 = 48</text>
+  <line x1="210" y1="196" x2="210" y2="214" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Step 4 -->
+  <rect x="85" y="215" width="250" height="36" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <text x="210" y="231" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Step 4: Add all values</text>
+  <text x="210" y="244" text-anchor="middle" fill="#333" font-size="10">40 + 12 + 48 = 100 g/mol</text>
+  <line x1="210" y1="252" x2="210" y2="270" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Result -->
+  <rect x="110" y="271" width="200" height="24" rx="6" fill="#e65100"/>
+  <text x="210" y="287" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Mᵣ(CaCO₃) = 100 g/mol</text>
+  <!-- Sidebar examples -->
+  <rect x="340" y="81" width="75" height="214" rx="6" fill="#e65100" opacity="0.1" stroke="#e65100" stroke-width="1"/>
+  <text x="377" y="96" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Other Mᵣ</text>
+  <text x="377" y="112" text-anchor="middle" fill="#333" font-size="9">H₂O</text>
+  <text x="377" y="124" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 18</text>
+  <text x="377" y="142" text-anchor="middle" fill="#333" font-size="9">NaCl</text>
+  <text x="377" y="154" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 58.5</text>
+  <text x="377" y="172" text-anchor="middle" fill="#333" font-size="9">CO₂</text>
+  <text x="377" y="184" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 44</text>
+  <text x="377" y="202" text-anchor="middle" fill="#333" font-size="9">H₂SO₄</text>
+  <text x="377" y="214" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 98</text>
+  <text x="377" y="232" text-anchor="middle" fill="#333" font-size="9">NH₃</text>
+  <text x="377" y="244" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 17</text>
+  <text x="377" y="262" text-anchor="middle" fill="#333" font-size="9">HCl</text>
+  <text x="377" y="274" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">= 36.5</text>
+</svg>`
+  },
+  {
+    q:'Percentage Composition & Empirical vs Molecular Formula',
+    content:`<h3>Percentage Composition and Empirical Formula</h3><p>Percentage composition tells you what fraction by mass each element contributes to a compound. From percentage data, you can work backwards to find the simplest ratio of atoms — the empirical formula.</p><ul><li>% element = (mass of that element in formula ÷ Mᵣ) × 100 — e.g. % Ca in CaCO₃ = (40÷100) × 100 = 40%</li><li>To find empirical formula: divide each element's % by its Aᵣ to get mole ratios, then divide by the smallest ratio to get whole numbers</li><li>Example: 40% C, 6.7% H, 53.3% O gives ratios C:H:O = 1:2:1, so empirical formula is CH₂O</li></ul>`,
+    visual:`<svg viewBox="0 0 420 290" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="290" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">% Composition — Empirical Formula</text>
+  <!-- Percentage composition section -->
+  <rect x="8" y="26" width="404" height="60" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="42" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">% Composition Formula:</text>
+  <text x="210" y="57" text-anchor="middle" fill="#333" font-size="11">% element = (mass of element in formula / Mᵣ) × 100%</text>
+  <text x="210" y="72" text-anchor="middle" fill="#333" font-size="10">Example: % Ca in CaCO₃ = (40 / 100) × 100 = 40%</text>
+  <!-- Steps to empirical formula -->
+  <text x="210" y="100" text-anchor="middle" fill="#e65100" font-size="12" font-weight="bold">Finding Empirical Formula from % Composition</text>
+  <!-- Step boxes horizontal -->
+  <rect x="8" y="108" width="88" height="60" rx="5" fill="#e65100" opacity="0.15" stroke="#e65100" stroke-width="1.5"/>
+  <text x="52" y="124" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Step 1</text>
+  <text x="52" y="138" text-anchor="middle" fill="#333" font-size="9">Write %</text>
+  <text x="52" y="150" text-anchor="middle" fill="#333" font-size="9">as mass</text>
+  <text x="52" y="162" text-anchor="middle" fill="#333" font-size="9">in 100g</text>
+  <line x1="97" y1="138" x2="108" y2="138" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="110" y="108" width="88" height="60" rx="5" fill="#e65100" opacity="0.15" stroke="#e65100" stroke-width="1.5"/>
+  <text x="154" y="124" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Step 2</text>
+  <text x="154" y="138" text-anchor="middle" fill="#333" font-size="9">Divide by</text>
+  <text x="154" y="150" text-anchor="middle" fill="#333" font-size="9">Aᵣ to get</text>
+  <text x="154" y="162" text-anchor="middle" fill="#333" font-size="9">mole ratio</text>
+  <line x1="199" y1="138" x2="210" y2="138" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="212" y="108" width="88" height="60" rx="5" fill="#e65100" opacity="0.15" stroke="#e65100" stroke-width="1.5"/>
+  <text x="256" y="124" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Step 3</text>
+  <text x="256" y="138" text-anchor="middle" fill="#333" font-size="9">Divide by</text>
+  <text x="256" y="150" text-anchor="middle" fill="#333" font-size="9">smallest</text>
+  <text x="256" y="162" text-anchor="middle" fill="#333" font-size="9">value</text>
+  <line x1="301" y1="138" x2="312" y2="138" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="314" y="108" width="98" height="60" rx="5" fill="#e65100" opacity="0.85"/>
+  <text x="363" y="124" text-anchor="middle" fill="#fff" font-size="9" font-weight="bold">Empirical</text>
+  <text x="363" y="138" text-anchor="middle" fill="#fff" font-size="9">Formula</text>
+  <text x="363" y="152" text-anchor="middle" fill="#fff" font-size="9">(simplest</text>
+  <text x="363" y="164" text-anchor="middle" fill="#fff" font-size="9">whole ratio)</text>
+  <!-- Worked example -->
+  <rect x="8" y="178" width="404" height="104" rx="6" fill="#fff" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="194" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Worked Example: 40% C, 6.7% H, 53.3% O</text>
+  <!-- Table -->
+  <text x="50" y="212" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Element</text>
+  <text x="130" y="212" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">%/mass</text>
+  <text x="210" y="212" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">÷ Aᵣ</text>
+  <text x="295" y="212" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">÷ smallest</text>
+  <text x="380" y="212" text-anchor="middle" fill="#333" font-size="10" font-weight="bold">Ratio</text>
+  <line x1="10" y1="215" x2="410" y2="215" stroke="#e65100" stroke-width="0.8"/>
+  <text x="50" y="230" text-anchor="middle" fill="#333" font-size="10">C</text>
+  <text x="130" y="230" text-anchor="middle" fill="#333" font-size="10">40</text>
+  <text x="210" y="230" text-anchor="middle" fill="#333" font-size="10">40÷12 = 3.33</text>
+  <text x="295" y="230" text-anchor="middle" fill="#333" font-size="10">3.33÷3.33 = 1</text>
+  <text x="380" y="230" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1</text>
+  <text x="50" y="246" text-anchor="middle" fill="#333" font-size="10">H</text>
+  <text x="130" y="246" text-anchor="middle" fill="#333" font-size="10">6.7</text>
+  <text x="210" y="246" text-anchor="middle" fill="#333" font-size="10">6.7÷1 = 6.7</text>
+  <text x="295" y="246" text-anchor="middle" fill="#333" font-size="10">6.7÷3.33 = 2</text>
+  <text x="380" y="246" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">2</text>
+  <text x="50" y="262" text-anchor="middle" fill="#333" font-size="10">O</text>
+  <text x="130" y="262" text-anchor="middle" fill="#333" font-size="10">53.3</text>
+  <text x="210" y="262" text-anchor="middle" fill="#333" font-size="10">53.3÷16 = 3.33</text>
+  <text x="295" y="262" text-anchor="middle" fill="#333" font-size="10">3.33÷3.33 = 1</text>
+  <text x="380" y="262" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">1</text>
+  <rect x="118" y="270" width="184" height="20" rx="4" fill="#e65100"/>
+  <text x="210" y="284" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Empirical formula: CH₂O</text>
+</svg>`
+  },
+  {
+    q:'Titration Curve — pH vs Volume of Alkali Added',
+    content:`<h3>Titration Curve — Strong Acid + Strong Base</h3><p>A titration curve plots pH against the volume of alkali added to a fixed volume of acid. The characteristic S-shape shows three regions: slowly rising pH in the acid region, a near-vertical jump at the equivalence point, and a slowly rising pH in the alkali region.</p><ul><li>The steep near-vertical section occurs at the equivalence point where moles of acid exactly equal moles of base — pH = 7 for a strong acid/strong base titration</li><li>Phenolphthalein is the preferred indicator for strong acid/base titrations as its colour change (8.2–10) falls within the steep vertical section</li><li>The volume of alkali at the equivalence point (the titre) is used to calculate the unknown concentration using c = n/V</li></ul>`,
+    visual:`<svg viewBox="0 0 420 285" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="285" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Titration Curve — Strong Acid + Strong Base</text>
+  <!-- Axes -->
+  <line x1="55" y1="240" x2="55" y2="25" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="55" y1="240" x2="390" y2="240" stroke="#333" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Y axis labels -->
+  <text x="48" y="244" text-anchor="end" fill="#333" font-size="10">0</text>
+  <text x="48" y="224" text-anchor="end" fill="#333" font-size="10">2</text>
+  <text x="48" y="188" text-anchor="end" fill="#333" font-size="10">4</text>
+  <text x="48" y="152" text-anchor="end" fill="#333" font-size="10">6</text>
+  <text x="48" y="134" text-anchor="end" fill="#333" font-size="10">7</text>
+  <text x="48" y="116" text-anchor="end" fill="#333" font-size="10">8</text>
+  <text x="48" y="80" text-anchor="end" fill="#333" font-size="10">10</text>
+  <text x="48" y="44" text-anchor="end" fill="#333" font-size="10">12</text>
+  <!-- pH 7 guide line -->
+  <line x1="55" y1="134" x2="390" y2="134" stroke="#333" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+  <text x="38" y="130" text-anchor="middle" fill="#333" font-size="9">pH 7</text>
+  <!-- Titration curve path: sigmoid shape -->
+  <path d="M 60,230 C 80,228 100,224 120,220 C 140,216 155,210 165,200 C 175,190 180,175 183,160 C 186,148 187,140 188,135 C 189,130 190,125 193,115 C 196,102 202,85 215,72 C 228,60 245,50 270,44 C 295,40 320,38 380,36" fill="none" stroke="#e65100" stroke-width="3"/>
+  <!-- Equivalence point -->
+  <circle cx="188" cy="134" r="6" fill="#e65100"/>
+  <line x1="188" y1="134" x2="188" y2="240" stroke="#e65100" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="188" y="253" text-anchor="middle" fill="#e65100" font-size="10" font-weight="bold">Equiv. pt</text>
+  <text x="188" y="263" text-anchor="middle" fill="#e65100" font-size="9">~25 cm³</text>
+  <!-- Labels -->
+  <text x="20" y="140" fill="#333" font-size="11" font-weight="bold" transform="rotate(-90,20,140)">pH</text>
+  <text x="220" y="275" text-anchor="middle" fill="#333" font-size="11">Volume of NaOH added (cm³)</text>
+  <!-- Indicator ranges -->
+  <rect x="300" y="28" width="115" height="100" rx="5" fill="#fff" stroke="#e65100" stroke-width="1"/>
+  <text x="357" y="42" text-anchor="middle" fill="#e65100" font-size="9" font-weight="bold">Indicators</text>
+  <rect x="306" y="48" width="103" height="14" rx="2" fill="#e65100" opacity="0.4"/>
+  <text x="357" y="59" text-anchor="middle" fill="#333" font-size="8">Methyl orange: 3.1–4.4</text>
+  <rect x="306" y="67" width="103" height="14" rx="2" fill="#1565c0" opacity="0.3"/>
+  <text x="357" y="78" text-anchor="middle" fill="#333" font-size="8">Litmus: 5.0–8.0</text>
+  <rect x="306" y="86" width="103" height="14" rx="2" fill="#6a1b9a" opacity="0.3"/>
+  <text x="357" y="97" text-anchor="middle" fill="#333" font-size="8">Phenolphthalein: 8.2–10</text>
+  <text x="357" y="118" text-anchor="middle" fill="#333" font-size="8">Use phenolphthalein</text>
+  <text x="357" y="128" text-anchor="middle" fill="#333" font-size="8">for strong acid/base</text>
+  <!-- Acid/Base region labels -->
+  <text x="100" y="215" text-anchor="middle" fill="#c62828" font-size="10" font-weight="bold">Acidic</text>
+  <text x="290" y="42" text-anchor="middle" fill="#1565c0" font-size="10" font-weight="bold">Basic</text>
+</svg>`
+  },
+  {
+    q:'Empirical vs Molecular Formula — Summary',
+    content:`<h3>Empirical vs Molecular Formula</h3><p>The empirical formula shows the simplest whole-number ratio of atoms in a compound, while the molecular formula shows the actual number of each type of atom in one molecule. The molecular formula is always a whole-number multiple of the empirical formula.</p><ul><li>Empirical formula is found from percentage composition data or from combustion analysis — e.g. CH₂O for glucose</li><li>Molecular formula is found by dividing the actual Mᵣ by the Mᵣ of the empirical formula to get the multiplier n — e.g. glucose: 180 ÷ 30 = 6, so molecular formula = C₆H₁₂O₆</li><li>Ionic compounds are always represented by empirical formulas (e.g. NaCl, MgO) because they do not exist as discrete molecules</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="255" fill="#fff8e1" rx="8"/>
+  <text x="210" y="18" text-anchor="middle" fill="#e65100" font-size="13" font-weight="bold">Empirical vs Molecular Formula</text>
+  <!-- Two columns -->
+  <rect x="8" y="26" width="196" height="160" rx="6" fill="#fff" stroke="#e65100" stroke-width="2"/>
+  <rect x="216" y="26" width="196" height="160" rx="6" fill="#fff" stroke="#1565c0" stroke-width="2"/>
+  <!-- Empirical header -->
+  <rect x="8" y="26" width="196" height="28" rx="6" fill="#e65100"/>
+  <text x="106" y="45" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Empirical Formula</text>
+  <text x="106" y="73" text-anchor="middle" fill="#333" font-size="10">Simplest whole-number ratio</text>
+  <text x="106" y="87" text-anchor="middle" fill="#333" font-size="10">of atoms in a compound</text>
+  <text x="106" y="107" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Examples:</text>
+  <text x="106" y="123" text-anchor="middle" fill="#333" font-size="10">CH₂O (glucose simplified)</text>
+  <text x="106" y="137" text-anchor="middle" fill="#333" font-size="10">CH₂ (alkene simplified)</text>
+  <text x="106" y="151" text-anchor="middle" fill="#333" font-size="10">NaCl (ionic always empirical)</text>
+  <text x="106" y="168" text-anchor="middle" fill="#333" font-size="10">Found from % composition</text>
+  <!-- Molecular header -->
+  <rect x="216" y="26" width="196" height="28" rx="6" fill="#1565c0"/>
+  <text x="314" y="45" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Molecular Formula</text>
+  <text x="314" y="73" text-anchor="middle" fill="#333" font-size="10">Actual number of each atom</text>
+  <text x="314" y="87" text-anchor="middle" fill="#333" font-size="10">in one molecule</text>
+  <text x="314" y="107" text-anchor="middle" fill="#1565c0" font-size="11" font-weight="bold">Examples:</text>
+  <text x="314" y="123" text-anchor="middle" fill="#333" font-size="10">C₆H₁₂O₆ (glucose actual)</text>
+  <text x="314" y="137" text-anchor="middle" fill="#333" font-size="10">C₂H₄ (ethene actual)</text>
+  <text x="314" y="151" text-anchor="middle" fill="#333" font-size="10">Multiple of empirical formula</text>
+  <text x="314" y="168" text-anchor="middle" fill="#333" font-size="10">Found using Mᵣ</text>
+  <!-- Connection arrow -->
+  <line x1="210" y1="106" x2="210" y2="106" stroke="#e65100" stroke-width="0"/>
+  <text x="210" y="115" text-anchor="middle" fill="#e65100" font-size="20" font-weight="bold">⇌</text>
+  <!-- How to get molecular from empirical -->
+  <rect x="8" y="198" width="404" height="50" rx="6" fill="#e65100" opacity="0.12" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="214" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Getting Molecular from Empirical:</text>
+  <text x="210" y="230" text-anchor="middle" fill="#333" font-size="10">n = Mᵣ(molecular) ÷ Mᵣ(empirical)   then   Molecular = Empirical × n</text>
+  <text x="210" y="244" text-anchor="middle" fill="#333" font-size="10">Example: CH₂O has Mᵣ=30; glucose Mᵣ=180;  n=6 → C₆H₁₂O₆</text>
+</svg>`
+  },
+  {
+    title:'Molar Ratios & Stoichiometry',
+    body:`Balanced equations tell us the molar ratios of reactants and products.
+    <br><br>
+    Example: <strong>N₂ + 3H₂ → 2NH₃</strong>
+    <br>
+    1 mol N₂ reacts with 3 mol H₂ to produce 2 mol NH₃
+    <br><br>
+    Steps to solve stoichiometry problems:
+    <ol style="margin:8px 0 0 18px;line-height:2">
+      <li>Write the balanced equation</li>
+      <li>Find moles of the known substance (n = m/Mᵣ)</li>
+      <li>Use the molar ratio to find moles of the unknown</li>
+      <li>Convert back to mass if needed (m = n × Mᵣ)</li>
+    </ol>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // N2 + 3H2 → 2NH3
+      const t2=t%sk.TWO_PI;
+      // Reactants
+      sk.fill(52,152,219,180);sk.noStroke();sk.circle(W*0.15,H*0.4,40);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('N₂',W*0.15,H*0.4);
+      for(let i=0;i<3;i++){
+        sk.fill(100,200,100,180);sk.noStroke();sk.circle(W*0.32+i*26,H*0.4,26);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('H₂',W*0.32+i*26,H*0.4);
+      }
+      // Arrow
+      const prog=(t2/sk.TWO_PI);
+      sk.stroke(255,220,50,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.52,H*0.4,W*0.63,H*0.4);
+      sk.fill(255,220,50,220);sk.noStroke();
+      sk.circle(sk.lerp(W*0.52,W*0.63,prog),H*0.4,8);
+      // Products
+      for(let i=0;i<2;i++){
+        sk.fill(155,89,182,180);sk.noStroke();sk.circle(W*0.78+i*40,H*0.4,36);
+        sk.fill(255);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('NH₃',W*0.78+i*40,H*0.4);
+      }
+      // Equation text
+      sk.textStyle(sk.NORMAL);sk.fill(255,220,50);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('N₂  +  3H₂  →  2NH₃',W/2,H*0.7);sk.textStyle(sk.NORMAL);
+      sk.fill(255,255,255,100);sk.textSize(9);
+      sk.text('1 mol : 3 mol : 2 mol',W/2,H*0.8);
+      sk.fill(46,204,113);sk.textSize(9);
+      sk.text('Molar ratio tells us exactly how much of each reactant is needed',W/2,H*0.9);
+    }
+  },
+  {
+    title:'🎮 Check — Moles & Ratios',
+    body:'Test your knowledge of the mole concept and stoichiometry.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the relative formula mass (Mᵣ) of water (H₂O)?',opts:['10','16','18','20'],ans:2,exp:'H₂O: (2 × H) + O = (2 × 1) + 16 = 18 g/mol. Remember H = 1 and O = 16.'},
+      {q:'How many moles are in 40g of calcium (Aᵣ of Ca = 40)?',opts:['0.5 mol','1 mol','2 mol','40 mol'],ans:1,exp:'n = m ÷ Aᵣ = 40 ÷ 40 = 1 mol.'},
+      {q:'For the reaction N₂ + 3H₂ → 2NH₃, if 2 mol of N₂ react, how many mol of H₂ are needed?',opts:['2 mol','3 mol','6 mol','1 mol'],ans:2,exp:'The ratio is 1 N₂ : 3 H₂. So 2 mol N₂ needs 2 × 3 = 6 mol H₂.'},
+      {q:'1 mole of any substance contains approximately:',opts:['6.02 × 10¹²','6.02 × 10²³','1000 atoms','100 molecules'],ans:1,exp:'Avogadro\'s number (Nₐ) = 6.02 × 10²³ particles per mole. This applies to atoms, molecules, ions — any particle.'},
+    ]}
+  },
+  {
+    title:'Percentage Yield & Purity',
+    body:`In real reactions, you rarely get the <em>theoretical</em> maximum amount of product.
+    <br><br>
+    <strong>% Yield = (actual yield ÷ theoretical yield) × 100%</strong>
+    <br><br>
+    Reasons yield is less than 100%:
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li>Reversible reaction doesn't go to completion</li>
+      <li>Competing side reactions</li>
+      <li>Loss during filtering, evaporation, transfer</li>
+    </ul>
+    <strong>% Purity = (mass of pure substance ÷ total mass of sample) × 100%</strong>`,
+    draw:(sk)=>{
+      bg(sk,[12,18,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Bar chart: theoretical vs actual
+      const theorW=W*0.3,actualW=W*0.3*0.72;
+      const barH=H*0.6,x0=W*0.2,y0=H*0.8;
+      // Theoretical
+      sk.fill(52,152,219,180);sk.noStroke();sk.rect(x0,y0-barH,theorW,barH,4,4,0,0);
+      sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('Theoretical',x0+theorW/2,y0+14);
+      sk.text('100%',x0+theorW/2,y0-barH-8);
+      // Actual
+      sk.fill(46,204,113,180);sk.noStroke();sk.rect(x0+theorW+W*0.08,y0-actualW*(barH/theorW),theorW,actualW*(barH/theorW),4,4,0,0);
+      sk.fill(255);sk.textAlign(sk.CENTER);
+      sk.text('Actual',x0+theorW+W*0.08+theorW/2,y0+14);
+      sk.text('72%',x0+theorW+W*0.08+theorW/2,y0-actualW*(barH/theorW)-8);
+      // Formula
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('% Yield = (Actual ÷ Theoretical) × 100',W/2,H*0.1);
+    }
+  },
+  {
+    title:'Concentration & Titration',
+    body:`<strong>Concentration</strong> measures how much solute is dissolved per dm³ of solution.
+    <br><br>
+    <strong>c = n / V</strong>&emsp;where c = mol/dm³, n = moles, V = volume (dm³)
+    <br><br>
+    <strong>Titration</strong> is used to find the exact concentration of a solution:
+    <ol style="margin:6px 0 0 18px;line-height:2">
+      <li>Fill burette with known solution (standard/titrant)</li>
+      <li>Add known volume of unknown to conical flask</li>
+      <li>Add indicator (e.g. phenolphthalein)</li>
+      <li>Add titrant until indicator changes colour (end point)</li>
+      <li>Record volume used (titre), calculate concentration</li>
+    </ol>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Burette
+      sk.fill(200,230,255,60);sk.noStroke();sk.rect(W*0.44,H*0.05,W*0.12,H*0.55,4);
+      sk.stroke(100,180,255,120);sk.strokeWeight(1.5);sk.noFill();
+      sk.rect(W*0.44,H*0.05,W*0.12,H*0.55,4);
+      // Liquid in burette
+      const fill=H*0.55*0.6;
+      sk.fill(52,152,219,160);sk.noStroke();sk.rect(W*0.44,H*0.05,W*0.12,fill,4);
+      // Drip
+      const dripY=(H*0.6+((t*60)%120));
+      if(dripY<H*0.72){
+        sk.fill(52,152,219,200);sk.noStroke();sk.circle(W*0.5,dripY,8);
+      }
+      // Conical flask
+      sk.fill(46,204,113,80);sk.noStroke();
+      sk.triangle(W*0.36,H*0.88,W*0.64,H*0.88,W*0.5,H*0.65);
+      sk.stroke(46,204,113,150);sk.strokeWeight(1.5);sk.noFill();
+      sk.triangle(W*0.36,H*0.88,W*0.64,H*0.88,W*0.5,H*0.65);
+      // Solution in flask
+      sk.fill(231,76,60,100);sk.noStroke();
+      sk.triangle(W*0.4,H*0.88,W*0.6,H*0.88,W*0.5,H*0.75);
+      // End point flash
+      if(Math.sin(t*2)>0.8){
+        sk.fill(255,220,50,180);
+        sk.triangle(W*0.4,H*0.88,W*0.6,H*0.88,W*0.5,H*0.75);
+        sk.fill(255,220,50);sk.textSize(9);sk.textAlign(sk.CENTER);
+        sk.text('END POINT!',W*0.5,H*0.96);
+      }
+      // Labels
+      sk.fill(100,180,255);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+      sk.text('Burette\n(titrant)',W*0.58,H*0.3);
+      sk.fill(46,204,113);sk.text('Conical flask\n(unknown)',W*0.66,H*0.75);
+    }
+  },
+  {
+    title:'🎮 Final — Quantitative Chemistry',
+    body:'Apply moles, yield, and concentration to solve quantitative problems.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What mass of NaCl (Mᵣ = 58.5) is needed to make 0.5 mol?',opts:['29.25 g','58.5 g','117 g','5.85 g'],ans:0,exp:'m = n × Mᵣ = 0.5 × 58.5 = 29.25 g.'},
+      {q:'If the theoretical yield is 40g and actual yield is 30g, what is the % yield?',opts:['40%','60%','75%','133%'],ans:2,exp:'% Yield = (30 ÷ 40) × 100 = 75%.'},
+      {q:'A solution has 0.2 mol of HCl dissolved in 500 cm³ (0.5 dm³). Its concentration is:',opts:['0.1 mol/dm³','0.4 mol/dm³','1 mol/dm³','2 mol/dm³'],ans:1,exp:'c = n ÷ V = 0.2 ÷ 0.5 = 0.4 mol/dm³.'},
+      {q:'In the equation 2H₂ + O₂ → 2H₂O, how many moles of O₂ are needed for 4 mol of H₂?',opts:['4 mol','1 mol','2 mol','3 mol'],ans:2,exp:'The ratio H₂ : O₂ is 2 : 1. So 4 mol H₂ needs 4 ÷ 2 = 2 mol O₂.'},
+      {q:'During titration, the end point is when:',opts:['The burette is empty','The indicator permanently changes colour','All acid is removed','The flask overflows'],ans:1,exp:'The end point is when the indicator permanently changes colour — showing the exact neutralisation point. One extra drop of titrant causes the permanent colour change.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#006064',dark:'#00363a',light:'#e0f7fa',
+  title:'Quantitative Chemistry — Moles, Yield & Titration',
+});
+</script></body></html>

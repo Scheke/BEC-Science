@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SI Units & Measurement — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,14,22]))}
+
+const STEPS=[
+  {
+    title:'Why SI Units?',
+    body:`Scientists across the world need to communicate measurements clearly. <strong>SI units</strong> (Système International d'Unités) provide a universal standard so that everyone means the same thing.
+    <br><br>
+    Without standard units, confusion arises: "10 units of force" means nothing if different countries define force differently!
+    <br><br>
+    SI units are based on <strong>7 base units</strong> from which all other units are derived. In BGCSE science you mainly use:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li>Length → <strong>metre (m)</strong></li>
+      <li>Mass → <strong>kilogram (kg)</strong></li>
+      <li>Time → <strong>second (s)</strong></li>
+      <li>Temperature → <strong>kelvin (K)</strong> or °C</li>
+      <li>Electric current → <strong>ampere (A)</strong></li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const units=[
+        {n:'metre',sym:'m',q:'Length',c:[231,76,60],x:0.15,y:0.35},
+        {n:'kilogram',sym:'kg',q:'Mass',c:[52,152,219],x:0.4,y:0.35},
+        {n:'second',sym:'s',q:'Time',c:[46,204,113],x:0.65,y:0.35},
+        {n:'kelvin',sym:'K',q:'Temp',c:[241,196,15],x:0.87,y:0.35},
+        {n:'ampere',sym:'A',q:'Current',c:[155,89,182],x:0.27,y:0.72},
+        {n:'mole',sym:'mol',q:'Amount',c:[52,73,94],x:0.52,y:0.72},
+        {n:'candela',sym:'cd',q:'Light',c:[230,126,34],x:0.77,y:0.72},
+      ];
+      units.forEach((u,i)=>{
+        const cx=u.x*W,cy=u.y*H;
+        const pulse=1+Math.sin(t*1.3+i*0.8)*0.08;
+        sk.fill(...u.c,40);sk.noStroke();sk.circle(cx,cy,70*pulse);
+        sk.fill(...u.c,200);sk.circle(cx,cy,44*pulse);
+        sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(u.sym,cx,cy);
+        sk.textSize(8);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);sk.text(u.q,cx,cy+32);
+        sk.textSize(7.5);sk.fill(200,200,200);sk.text(u.n,cx,cy+42);
+      });
+      sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('7 SI Base Units',W/2,H*0.1);
+    }
+  },
+  {
+    title:'SI Prefixes & Unit Conversions',
+    body:`Prefixes multiply the base unit by a power of 10:
+    <table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px">
+      <thead><tr style="background:#0d47a1;color:#fff"><th style="padding:5px 8px;border:1px solid #333">Prefix</th><th style="padding:5px 8px;border:1px solid #333">Symbol</th><th style="padding:5px 8px;border:1px solid #333">Multiplier</th><th style="padding:5px 8px;border:1px solid #333">Example</th></tr></thead>
+      <tbody>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd">kilo</td><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">k</td><td style="padding:4px 8px;border:1px solid #ddd">× 1000 (10³)</td><td style="padding:4px 8px;border:1px solid #ddd">1 km = 1000 m</td></tr>
+        <tr style="background:#fafafa"><td style="padding:4px 8px;border:1px solid #ddd">centi</td><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">c</td><td style="padding:4px 8px;border:1px solid #ddd">× 0.01 (10⁻²)</td><td style="padding:4px 8px;border:1px solid #ddd">1 cm = 0.01 m</td></tr>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd">milli</td><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">m</td><td style="padding:4px 8px;border:1px solid #ddd">× 0.001 (10⁻³)</td><td style="padding:4px 8px;border:1px solid #ddd">1 mm = 0.001 m</td></tr>
+        <tr style="background:#fafafa"><td style="padding:4px 8px;border:1px solid #ddd">micro</td><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">μ</td><td style="padding:4px 8px;border:1px solid #ddd">× 10⁻⁶</td><td style="padding:4px 8px;border:1px solid #ddd">1 μm = 10⁻⁶ m</td></tr>
+        <tr><td style="padding:4px 8px;border:1px solid #ddd">nano</td><td style="padding:4px 8px;border:1px solid #ddd;font-weight:700">n</td><td style="padding:4px 8px;border:1px solid #ddd">× 10⁻⁹</td><td style="padding:4px 8px;border:1px solid #ddd">1 nm = 10⁻⁹ m</td></tr>
+      </tbody>
+    </table>
+    <br><strong>Convert:</strong> 5.6 km → m = 5.6 × 1000 = <strong>5600 m</strong>&nbsp;&nbsp;&nbsp; 230 cm → m = 230 ÷ 100 = <strong>2.3 m</strong>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Number line from nano to kilo
+      sk.stroke(255,255,255,80);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.05,H*0.5,W*0.95,H*0.5);
+      const prefs=[
+        {n:'nano\n(n)',exp:-9,c:[155,89,182]},
+        {n:'micro\n(μ)',exp:-6,c:[52,152,219]},
+        {n:'milli\n(m)',exp:-3,c:[46,204,113]},
+        {n:'BASE\nunit',exp:0,c:[241,196,15]},
+        {n:'kilo\n(k)',exp:3,c:[231,76,60]},
+      ];
+      prefs.forEach((p,i)=>{
+        const cx=W*(0.12+i*0.19),cy=H*0.5;
+        const pulse=1+Math.sin(t*1.2+i*0.7)*0.09;
+        sk.fill(...p.c,180);sk.noStroke();sk.circle(cx,cy,p.exp===0?40*pulse:30*pulse);
+        sk.fill(255);sk.textSize(p.exp===0?10:8.5);sk.textStyle(p.exp===0?sk.BOLD:sk.NORMAL);
+        sk.textAlign(sk.CENTER,sk.CENTER);sk.text(p.n,cx,cy);
+        sk.textSize(8.5);sk.fill(200,200,200);sk.textStyle(sk.NORMAL);
+        sk.textAlign(sk.CENTER);sk.text('10'+(['⁻⁹','⁻⁶','⁻³','⁰','³'][i]),cx,H*0.3);
+        // Arrow between
+        if(i<prefs.length-1){
+          sk.stroke(255,255,255,40);sk.strokeWeight(1);
+          sk.line(cx+16,H*0.5,W*(0.12+(i+1)*0.19)-16,H*0.5);
+          const arrowX=cx+W*0.19*((t*0.25+i*0.2)%1);
+          sk.fill(255,220,50,200);sk.noStroke();sk.circle(arrowX,H*0.5,7);
+        }
+      });
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('SI Prefix Scale',W/2,H*0.12);
+    }
+  },
+  {
+    title:'Measuring Length, Mass & Time',
+    body:`<strong>Length</strong>: Use a ruler or metre rule. Avoid parallax error — read the scale with your eye DIRECTLY in front of the mark.
+    <br><br>
+    <strong>Mass</strong>: Use a balance (electronic or beam balance). Mass is measured in kg. Weight is a force (N) — different from mass!
+    <br><br>
+    <strong>Time</strong>: Use a stopwatch or pendulum clock. Measure several oscillations and divide to reduce error.
+    <br><br>
+    <strong>Volume</strong> (liquid): Use a measuring cylinder. Read from the BOTTOM of the meniscus (curved surface).
+    <br><br>
+    Always record measurements with the correct <strong>significant figures</strong> and include the unit.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ruler
+      sk.fill(220,180,100,200);sk.noStroke();sk.rect(W*0.04,H*0.25,W*0.4,24,3);
+      for(let i=0;i<=10;i++){
+        const x=W*0.04+i*(W*0.04);
+        sk.stroke(0,0,0,180);sk.strokeWeight(1);
+        sk.line(x,H*0.25,x,H*0.25+(i%5===0?18:10));
+        if(i%5===0){sk.fill(0);sk.textSize(7.5);sk.textAlign(sk.CENTER);sk.text(i,x,H*0.25+22);}
+      }
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Ruler (measure length)',W*0.24,H*0.15);
+      // Measuring cylinder
+      sk.stroke(150,220,255,160);sk.strokeWeight(2);sk.noFill();
+      sk.rect(W*0.6,H*0.22,34,H*0.52,3);
+      const waterH=H*0.4;
+      sk.fill(100,180,255,80);sk.noStroke();
+      sk.rect(W*0.6,H*0.22+H*0.52-waterH,34,waterH,0,0,3,3);
+      // Meniscus curve
+      sk.stroke(100,180,255,200);sk.strokeWeight(2);sk.noFill();
+      sk.arc(W*0.617,H*0.22+H*0.52-waterH,34,12,0,sk.PI);
+      // Eye level arrow
+      const eyeY=H*0.22+H*0.52-waterH+6;
+      sk.stroke(255,220,50,200);sk.strokeWeight(1.5);
+      sk.line(W*0.54,eyeY,W*0.6,eyeY);
+      sk.fill(255,220,50,200);sk.noFill();
+      sk.fill(255);sk.textSize(7.5);sk.textAlign(sk.RIGHT);sk.text('Eye level',W*0.54,eyeY+3);
+      // Scale marks
+      for(let i=0;i<5;i++){
+        const y=H*0.22+H*0.52-waterH*0.2*(i+1);
+        sk.stroke(255,255,255,80);sk.strokeWeight(1);
+        sk.line(W*0.6-6,y,W*0.6,y);
+        sk.fill(200);sk.textSize(7);sk.textAlign(sk.RIGHT);sk.text((i+1)*20,W*0.6-8,y+3);
+      }
+      sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('Measuring cylinder',W*0.67,H*0.15);
+      sk.textSize(7.5);sk.fill(255,220,50);sk.text('Read bottom of meniscus',W*0.67,H*0.82);
+    }
+  },
+  {
+    title:'🎮 Check — SI Units & Measurement',
+    body:'Test your knowledge of SI units, prefixes, and measuring techniques.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the SI unit of mass?',opts:['Gram (g)','Newton (N)','Kilogram (kg)','Pound (lb)'],ans:2,exp:'The SI unit of mass is the KILOGRAM (kg). The gram is a smaller unit (1 kg = 1000 g). The newton is a unit of force (weight), not mass.'},
+      {q:'1 kilometre (km) equals how many metres?',opts:['10 m','100 m','1000 m','10 000 m'],ans:2,exp:'The prefix "kilo" means 1000, so 1 kilometre = 1000 metres. Similarly, 1 kilogram = 1000 grams.'},
+      {q:'When reading the volume in a measuring cylinder, you should read from...',opts:['The top of the meniscus','The middle of the meniscus','The bottom of the meniscus','The side of the cylinder'],ans:2,exp:'Always read from the BOTTOM of the meniscus (the curved water surface) when using a measuring cylinder. The meniscus curves downward for water, so the bottom is the correct reading point.'},
+      {q:'Why do scientists use SI units?',opts:['They are easier to spell','They provide a universal standard for communication','They are the oldest units in history','They are only used in physics'],ans:1,exp:'SI units provide a UNIVERSAL STANDARD — scientists worldwide use the same definitions, so measurements can be compared and communicated without confusion across countries and languages.'},
+    ]}
+  },
+  {
+    q:'SI Base Units Table',
+    content:`<h3>SI Base Units Table</h3><p>The International System of Units (SI) defines 7 base units used worldwide by scientists. Every other measurement unit is derived from these 7.</p><ul><li>The metre (m), kilogram (kg), and second (s) are the most commonly used base units in JCE science</li><li>The kelvin (K) measures temperature — 0 K is absolute zero, the coldest possible temperature</li><li>All measurements in science must include a unit; a number alone is meaningless</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="260" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">The 7 SI Base Units</text>
+  <!-- Header row -->
+  <rect x="10" y="30" width="120" height="26" fill="#2e7d32" rx="3"/>
+  <rect x="132" y="30" width="100" height="26" fill="#2e7d32" rx="3"/>
+  <rect x="234" y="30" width="80" height="26" fill="#2e7d32" rx="3"/>
+  <rect x="316" y="30" width="94" height="26" fill="#2e7d32" rx="3"/>
+  <text x="70" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Quantity</text>
+  <text x="182" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Unit Name</text>
+  <text x="274" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Symbol</text>
+  <text x="363" y="47" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff">Common Use</text>
+  <!-- Rows -->
+  <rect x="10" y="58" width="400" height="24" fill="#c8e6c9" rx="2"/>
+  <rect x="10" y="84" width="400" height="24" fill="#fff" rx="2"/>
+  <rect x="10" y="110" width="400" height="24" fill="#c8e6c9" rx="2"/>
+  <rect x="10" y="136" width="400" height="24" fill="#fff" rx="2"/>
+  <rect x="10" y="162" width="400" height="24" fill="#c8e6c9" rx="2"/>
+  <rect x="10" y="188" width="400" height="24" fill="#fff" rx="2"/>
+  <rect x="10" y="214" width="400" height="24" fill="#c8e6c9" rx="2"/>
+  <!-- Row text -->
+  <text x="70" y="74" text-anchor="middle" font-size="11" fill="#333">Length</text><text x="182" y="74" text-anchor="middle" font-size="11" fill="#333">metre</text><text x="274" y="74" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">m</text><text x="363" y="74" text-anchor="middle" font-size="10" fill="#333">rulers, distances</text>
+  <text x="70" y="100" text-anchor="middle" font-size="11" fill="#333">Mass</text><text x="182" y="100" text-anchor="middle" font-size="11" fill="#333">kilogram</text><text x="274" y="100" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">kg</text><text x="363" y="100" text-anchor="middle" font-size="10" fill="#333">balances, weight</text>
+  <text x="70" y="126" text-anchor="middle" font-size="11" fill="#333">Time</text><text x="182" y="126" text-anchor="middle" font-size="11" fill="#333">second</text><text x="274" y="126" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">s</text><text x="363" y="126" text-anchor="middle" font-size="10" fill="#333">stopwatch, clocks</text>
+  <text x="70" y="152" text-anchor="middle" font-size="11" fill="#333">Temperature</text><text x="182" y="152" text-anchor="middle" font-size="11" fill="#333">kelvin</text><text x="274" y="152" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">K</text><text x="363" y="152" text-anchor="middle" font-size="10" fill="#333">thermometers</text>
+  <text x="70" y="178" text-anchor="middle" font-size="11" fill="#333">Elect. current</text><text x="182" y="178" text-anchor="middle" font-size="11" fill="#333">ampere</text><text x="274" y="178" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">A</text><text x="363" y="178" text-anchor="middle" font-size="10" fill="#333">ammeters, circuits</text>
+  <text x="70" y="204" text-anchor="middle" font-size="11" fill="#333">Amount of substance</text><text x="182" y="204" text-anchor="middle" font-size="11" fill="#333">mole</text><text x="274" y="204" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">mol</text><text x="363" y="204" text-anchor="middle" font-size="10" fill="#333">chemistry moles</text>
+  <text x="70" y="230" text-anchor="middle" font-size="11" fill="#333">Luminous intensity</text><text x="182" y="230" text-anchor="middle" font-size="11" fill="#333">candela</text><text x="274" y="230" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">cd</text><text x="363" y="230" text-anchor="middle" font-size="10" fill="#333">light brightness</text>
+  <!-- border lines -->
+  <line x1="130" y1="30" x2="130" y2="238" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="232" y1="30" x2="232" y2="238" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="314" y1="30" x2="314" y2="238" stroke="#2e7d32" stroke-width="1"/>
+  <rect x="10" y="30" width="400" height="208" fill="none" stroke="#2e7d32" stroke-width="2" rx="3"/>
+</svg>`
+  },
+  {
+    q:'Metric Prefixes Chart',
+    content:`<h3>Metric Prefixes Chart</h3><p>Metric prefixes are multipliers added to SI base units to express very large or very small quantities conveniently. They are based on powers of 10, making conversions straightforward.</p><ul><li>kilo (k) = 10³ = 1000 — e.g. 1 km = 1000 m</li><li>centi (c) = 10⁻² = 0.01 — e.g. 1 cm = 0.01 m</li><li>milli (m) = 10⁻³ = 0.001 — e.g. 1 mm = 0.001 m</li></ul>`,
+    visual:`<svg viewBox="0 0 420 240" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="240" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Metric Prefixes — Powers of 10</text>
+  <!-- Number line -->
+  <line x1="30" y1="90" x2="390" y2="90" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Prefix nodes -->
+  <!-- micro -->
+  <circle cx="60" cy="90" r="22" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <text x="60" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">μ</text>
+  <text x="60" y="99" text-anchor="middle" font-size="8" fill="#333">micro</text>
+  <text x="60" y="122" text-anchor="middle" font-size="10" fill="#333">10⁻⁶</text>
+  <text x="60" y="136" text-anchor="middle" font-size="9" fill="#555">0.000 001</text>
+  <!-- milli -->
+  <circle cx="140" cy="90" r="22" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <text x="140" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">m</text>
+  <text x="140" y="99" text-anchor="middle" font-size="8" fill="#333">milli</text>
+  <text x="140" y="122" text-anchor="middle" font-size="10" fill="#333">10⁻³</text>
+  <text x="140" y="136" text-anchor="middle" font-size="9" fill="#555">0.001</text>
+  <!-- centi -->
+  <circle cx="220" cy="90" r="22" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <text x="220" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">c</text>
+  <text x="220" y="99" text-anchor="middle" font-size="8" fill="#333">centi</text>
+  <text x="220" y="122" text-anchor="middle" font-size="10" fill="#333">10⁻²</text>
+  <text x="220" y="136" text-anchor="middle" font-size="9" fill="#555">0.01</text>
+  <!-- BASE -->
+  <circle cx="300" cy="90" r="26" fill="#2e7d32" stroke="#1b5e20" stroke-width="2"/>
+  <text x="300" y="86" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">BASE</text>
+  <text x="300" y="99" text-anchor="middle" font-size="9" fill="#fff">unit</text>
+  <text x="300" y="122" text-anchor="middle" font-size="10" fill="#333">10⁰ = 1</text>
+  <!-- kilo -->
+  <circle cx="378" cy="90" r="22" fill="#1b5e20" stroke="#2e7d32" stroke-width="2"/>
+  <text x="378" y="87" text-anchor="middle" font-size="13" font-weight="bold" fill="#fff">k</text>
+  <text x="378" y="99" text-anchor="middle" font-size="8" fill="#c8e6c9">kilo</text>
+  <text x="378" y="122" text-anchor="middle" font-size="10" fill="#333">10³</text>
+  <text x="378" y="136" text-anchor="middle" font-size="9" fill="#555">1 000</text>
+  <!-- Examples -->
+  <text x="210" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Examples with metre (m):</text>
+  <rect x="20" y="170" width="115" height="34" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="77" y="184" text-anchor="middle" font-size="10" fill="#333">1 μm = 0.000 001 m</text>
+  <text x="77" y="197" text-anchor="middle" font-size="9" fill="#555">(width of bacterium)</text>
+  <rect x="150" y="170" width="115" height="34" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="207" y="184" text-anchor="middle" font-size="10" fill="#333">1 mm = 0.001 m</text>
+  <text x="207" y="197" text-anchor="middle" font-size="9" fill="#555">(ruler markings)</text>
+  <rect x="280" y="170" width="115" height="34" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="337" y="184" text-anchor="middle" font-size="10" fill="#333">1 km = 1000 m</text>
+  <text x="337" y="197" text-anchor="middle" font-size="9" fill="#555">(road distances)</text>
+  <text x="210" y="232" text-anchor="middle" font-size="10" fill="#555">Smaller prefix ← decreasing → Larger prefix</text>
+</svg>`
+  },
+  {
+    q:'Length Measurement Tools',
+    content:`<h3>Length Measurement Tools</h3><p>Different tools are used to measure length, volume, and mass with appropriate precision. Choosing the right tool and reading it correctly reduces measurement error.</p><ul><li>A ruler or metre rule measures length to ±0.5 mm — always place the ruler alongside the object, not on top</li><li>A measuring cylinder measures liquid volume in cm³ — read from the bottom of the meniscus at eye level to avoid parallax error</li><li>A beam balance measures mass in grams — more precise than a spring balance, which measures weight (force)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="270" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Length Measurement Tools</text>
+  <!-- Ruler -->
+  <rect x="20" y="38" width="180" height="34" fill="#f9e4b7" stroke="#2e7d32" stroke-width="2" rx="3"/>
+  <line x1="20" y1="52" x2="200" y2="52" stroke="#2e7d32" stroke-width="1"/>
+  <text x="20" y="47" font-size="8" fill="#333">0</text>
+  <text x="38" y="47" font-size="8" fill="#333">1</text>
+  <text x="56" y="47" font-size="8" fill="#333">2</text>
+  <text x="74" y="47" font-size="8" fill="#333">3</text>
+  <text x="92" y="47" font-size="8" fill="#333">4</text>
+  <text x="110" y="47" font-size="8" fill="#333">5</text>
+  <line x1="20" y1="52" x2="20" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="38" y1="52" x2="38" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="56" y1="52" x2="56" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="74" y1="52" x2="74" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="92" y1="52" x2="92" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <line x1="110" y1="52" x2="110" y2="63" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="110" y="84" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Ruler / Metre Rule</text>
+  <text x="110" y="96" text-anchor="middle" font-size="9" fill="#555">Measures: 1 mm to 100 cm</text>
+  <text x="110" y="108" text-anchor="middle" font-size="9" fill="#555">Avoid parallax error!</text>
+  <!-- Measuring cylinder -->
+  <rect x="230" y="38" width="38" height="90" fill="none" stroke="#2e7d32" stroke-width="2" rx="3"/>
+  <rect x="232" y="80" width="34" height="46" fill="#b3e5fc" opacity="0.7" rx="2"/>
+  <!-- Meniscus curve -->
+  <path d="M232,80 Q249,74 268,80" fill="none" stroke="#0288d1" stroke-width="2"/>
+  <line x1="220" y1="80" x2="232" y2="80" stroke="#e53935" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="218" y="78" text-anchor="end" font-size="9" fill="#e53935">Eye level</text>
+  <line x1="230" y1="95" x2="224" y2="95" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="230" y1="110" x2="224" y2="110" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="230" y1="125" x2="224" y2="125" stroke="#2e7d32" stroke-width="1"/>
+  <text x="222" y="98" text-anchor="end" font-size="8" fill="#333">50</text>
+  <text x="222" y="113" text-anchor="end" font-size="8" fill="#333">30</text>
+  <text x="222" y="128" text-anchor="end" font-size="8" fill="#333">10</text>
+  <text x="249" y="145" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Measuring Cylinder</text>
+  <text x="249" y="157" text-anchor="middle" font-size="9" fill="#555">Measures: liquid volume (cm³)</text>
+  <text x="249" y="169" text-anchor="middle" font-size="9" fill="#555">Read bottom of meniscus</text>
+  <!-- Comparison table -->
+  <rect x="10" y="180" width="400" height="78" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="4"/>
+  <rect x="10" y="180" width="400" height="24" fill="#2e7d32" rx="4"/>
+  <text x="90" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Tool</text>
+  <text x="210" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Quantity Measured</text>
+  <text x="350" y="196" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">Precision</text>
+  <text x="90" y="216" text-anchor="middle" font-size="10" fill="#333">Ruler</text><text x="210" y="216" text-anchor="middle" font-size="10" fill="#333">Length</text><text x="350" y="216" text-anchor="middle" font-size="10" fill="#333">± 0.5 mm</text>
+  <text x="90" y="232" text-anchor="middle" font-size="10" fill="#333">Meas. cylinder</text><text x="210" y="232" text-anchor="middle" font-size="10" fill="#333">Volume (liquid)</text><text x="350" y="232" text-anchor="middle" font-size="10" fill="#333">± 0.5 cm³</text>
+  <text x="90" y="248" text-anchor="middle" font-size="10" fill="#333">Beam balance</text><text x="210" y="248" text-anchor="middle" font-size="10" fill="#333">Mass</text><text x="350" y="248" text-anchor="middle" font-size="10" fill="#333">± 0.01 g</text>
+  <line x1="10" y1="204" x2="410" y2="204" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="160" y1="180" x2="160" y2="258" stroke="#2e7d32" stroke-width="1"/>
+  <line x1="290" y1="180" x2="290" y2="258" stroke="#2e7d32" stroke-width="1"/>
+</svg>`
+  },
+  {
+    q:'Volume of a Cuboid — Labeled Diagram',
+    content:`<h3>Volume of a Cuboid — Labeled Diagram</h3><p>The volume of a cuboid (box shape) is calculated by multiplying its three dimensions together. This is the most common method for finding the volume of a regular solid object in the lab.</p><ul><li>Formula: V = Length × Width × Height (V = L × W × H)</li><li>The SI unit for volume is m³, but cm³ is commonly used in the lab — 1 cm³ equals 1 mL</li><li>For irregular solids, volume is measured by water displacement in a measuring cylinder</li></ul>`,
+    visual:`<svg viewBox="0 0 420 250" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="250" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">Volume of a Cuboid: V = L × W × H</text>
+  <!-- 3D cuboid using parallelogram faces -->
+  <!-- Front face -->
+  <rect x="100" y="80" width="150" height="100" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Top face (parallelogram) -->
+  <polygon points="100,80 150,50 300,50 250,80" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Right face (parallelogram) -->
+  <polygon points="250,80 300,50 300,150 250,180" fill="#81c784" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Length label (bottom) -->
+  <line x1="100" y1="195" x2="250" y2="195" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="250" y1="195" x2="100" y2="195" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="175" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">L = 8 cm</text>
+  <!-- Height label (left) -->
+  <line x1="82" y1="80" x2="82" y2="180" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="82" y1="180" x2="82" y2="80" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="52" y="135" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">H = 5 cm</text>
+  <!-- Width label (top-right diagonal) -->
+  <line x1="252" y1="48" x2="302" y2="48" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="302" y1="48" x2="252" y2="48" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="277" y="40" text-anchor="middle" font-size="12" font-weight="bold" fill="#2e7d32">W = 4 cm</text>
+  <!-- Calculation box -->
+  <rect x="310" y="75" width="100" height="90" fill="#fff" stroke="#2e7d32" stroke-width="2" rx="6"/>
+  <text x="360" y="94" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">Calculate:</text>
+  <text x="360" y="110" text-anchor="middle" font-size="10" fill="#333">V = L × W × H</text>
+  <text x="360" y="126" text-anchor="middle" font-size="10" fill="#333">= 8 × 4 × 5</text>
+  <text x="360" y="142" text-anchor="middle" font-size="11" font-weight="bold" fill="#2e7d32">= 160 cm³</text>
+  <text x="360" y="158" text-anchor="middle" font-size="9" fill="#555">(= 160 mL)</text>
+  <!-- Units note -->
+  <rect x="20" y="220" width="380" height="24" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1" rx="4"/>
+  <text x="210" y="236" text-anchor="middle" font-size="10" fill="#333">Unit of volume: cm³ (= mL) or m³ (SI base unit) &nbsp;|&nbsp; 1 L = 1000 cm³</text>
+</svg>`
+  },
+  {
+    q:'Density Triangle: D = M ÷ V',
+    content:`<h3>Density Triangle: D = M ÷ V</h3><p>The density triangle is a memory aid for rearranging the density formula. Cover the quantity you want to find and the triangle shows the formula to use.</p><ul><li>Density (D) = Mass (M) ÷ Volume (V) — the SI unit is kg/m³, but g/cm³ is common in lab work</li><li>Mass (M) = Density (D) × Volume (V) — use this when you know density and volume</li><li>Volume (V) = Mass (M) ÷ Density (D) — use this when you know density and mass; denser objects sink in less dense liquids</li></ul>`,
+    visual:`<svg viewBox="0 0 420 255" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker></defs>
+  <rect width="420" height="255" fill="#e8f5e9" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#2e7d32">The Density Triangle</text>
+  <!-- Big triangle -->
+  <polygon points="210,35 100,155 320,155" fill="#c8e6c9" stroke="#2e7d32" stroke-width="3"/>
+  <!-- Dividing line -->
+  <line x1="155" y1="95" x2="265" y2="95" stroke="#2e7d32" stroke-width="2"/>
+  <!-- D (top) -->
+  <text x="210" y="88" text-anchor="middle" font-size="22" font-weight="bold" fill="#2e7d32">D</text>
+  <!-- M (bottom-left) -->
+  <text x="143" y="140" text-anchor="middle" font-size="22" font-weight="bold" fill="#2e7d32">M</text>
+  <!-- V (bottom-right) -->
+  <text x="275" y="140" text-anchor="middle" font-size="22" font-weight="bold" fill="#2e7d32">V</text>
+  <!-- Vertical divider -->
+  <line x1="210" y1="95" x2="210" y2="155" stroke="#2e7d32" stroke-width="2"/>
+  <!-- Formulas derived -->
+  <rect x="10" y="168" width="120" height="50" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="70" y="184" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Cover D:</text>
+  <text x="70" y="200" text-anchor="middle" font-size="11" fill="#333">D = M ÷ V</text>
+  <text x="70" y="212" text-anchor="middle" font-size="9" fill="#555">density = mass/vol</text>
+  <rect x="150" y="168" width="120" height="50" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="210" y="184" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Cover M:</text>
+  <text x="210" y="200" text-anchor="middle" font-size="11" fill="#333">M = D × V</text>
+  <text x="210" y="212" text-anchor="middle" font-size="9" fill="#555">mass = density × vol</text>
+  <rect x="290" y="168" width="120" height="50" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="6"/>
+  <text x="350" y="184" text-anchor="middle" font-size="10" font-weight="bold" fill="#2e7d32">Cover V:</text>
+  <text x="350" y="200" text-anchor="middle" font-size="11" fill="#333">V = M ÷ D</text>
+  <text x="350" y="212" text-anchor="middle" font-size="9" fill="#555">volume = mass/density</text>
+  <!-- Example -->
+  <rect x="10" y="224" width="400" height="26" fill="#2e7d32" rx="4"/>
+  <text x="210" y="241" text-anchor="middle" font-size="10" fill="#fff">Example: Mass = 200 g, Volume = 40 cm³ → D = 200 ÷ 40 = 5 g/cm³</text>
+</svg>`
+  },
+  {
+    title:'Accuracy, Precision & Errors',
+    body:`<strong>Accuracy</strong>: How close a measurement is to the TRUE value.
+    <br><br>
+    <strong>Precision</strong>: How close repeated measurements are to EACH OTHER (consistency, not necessarily correct).
+    <br><br>
+    You can be precise but not accurate (consistently wrong)!
+    <br><br>
+    Types of errors:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Systematic error</strong> — always in the same direction (e.g. zero error on a balance). Reduces accuracy.</li>
+      <li><strong>Random error</strong> — varies unpredictably (e.g. reaction time). Reduces precision.</li>
+    </ul>
+    <br>To reduce random error: <strong>repeat measurements</strong> and take the mean.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Two target diagrams
+      const targets=[
+        {n:'Accurate &\nPrecise',cx:W*0.27,dots:[[2,2],[1,-3],[0,1],[-2,2],[1,-1]]},
+        {n:'Precise,\nNot Accurate',cx:W*0.73,dots:[[18,16],[20,18],[17,17],[19,15],[18,16]],off:[18,17]},
+      ];
+      targets.forEach((tg,ti)=>{
+        const cy=H*0.5;
+        // Rings
+        [40,28,16].forEach((r,ri)=>{
+          sk.fill(ri===0?[30,40,30]:ri===1?[40,50,40]:[60,80,60]);
+          sk.stroke(255,255,255,40);sk.strokeWeight(1);
+          sk.circle(tg.cx,cy,r*2);
+        });
+        // Dots
+        tg.dots.forEach((d,i)=>{
+          const dx=(d[0]||0)+(tg.off?0:0),dy=(d[1]||0)+(tg.off?0:0);
+          const pulse=1+Math.sin(t*1.5+ti*2+i)*0.15;
+          sk.fill(231,76,60,220);sk.noStroke();sk.circle(tg.cx+d[0],cy+d[1],8*pulse);
+        });
+        sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text(tg.n,tg.cx,H*0.18);
+      });
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Accuracy vs Precision',W/2,H*0.09);
+    }
+  },
+  {
+    title:'Derived Units & Scientific Notation',
+    body:`<strong>Derived units</strong> are combinations of base SI units:
+    <ul style="margin:6px 0 0 18px;line-height:2.2">
+      <li><strong>Speed</strong> = distance ÷ time → m/s (ms⁻¹)</li>
+      <li><strong>Force</strong> = mass × acceleration → kg·m/s² = <strong>newton (N)</strong></li>
+      <li><strong>Energy</strong> = force × distance → N·m = <strong>joule (J)</strong></li>
+      <li><strong>Pressure</strong> = force ÷ area → N/m² = <strong>pascal (Pa)</strong></li>
+    </ul>
+    <br>
+    <strong>Scientific notation</strong>: Express very large or small numbers using powers of 10.
+    <ul style="margin:4px 0 0 18px;line-height:1.9">
+      <li>Speed of light: 300,000,000 m/s = <strong>3.0 × 10⁸ m/s</strong></li>
+      <li>Size of a cell: 0.000 01 m = <strong>1 × 10⁻⁵ m</strong></li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const derived=[
+        {n:'Speed',form:'m/s',sym:'v',c:[52,152,219],x:0.18,y:0.4},
+        {n:'Force',form:'N',sym:'F',c:[231,76,60],x:0.42,y:0.4},
+        {n:'Energy',form:'J',sym:'E',c:[241,196,15],x:0.66,y:0.4},
+        {n:'Pressure',form:'Pa',sym:'P',c:[46,204,113],x:0.88,y:0.4},
+      ];
+      derived.forEach((d,i)=>{
+        const cx=d.x*W,cy=d.y*H,pulse=1+Math.sin(t*1.2+i*0.8)*0.08;
+        sk.fill(...d.c,40);sk.noStroke();sk.circle(cx,cy,76*pulse);
+        sk.fill(...d.c,180);sk.circle(cx,cy,50*pulse);
+        sk.fill(255);sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(d.form,cx,cy);
+        sk.textSize(8.5);sk.textStyle(sk.NORMAL);sk.textAlign(sk.CENTER);sk.text(d.n,cx,cy+36);
+        sk.textSize(8);sk.fill(200);sk.text('('+d.sym+')',cx,cy+48);
+      });
+      // Scientific notation illustration
+      sk.fill(255,220,50);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Scientific Notation',W/2,H*0.72);
+      const examples=[['3.0 × 10⁸ m/s','Speed of light'],['6.02 × 10²³','Avogadro number'],['1 × 10⁻⁹ m','1 nanometre']];
+      examples.forEach((e,i)=>{
+        sk.fill(255);sk.textSize(9);sk.textStyle(sk.NORMAL);
+        sk.textAlign(sk.CENTER);sk.text(e[0]+' = '+e[1],W/2,H*0.8+i*18);
+      });
+    }
+  },
+  {
+    title:'🎮 Final — Units, Errors & Notation',
+    body:'Final challenge on measurement, errors, and derived units.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'What is the derived SI unit of force?',opts:['Joule (J)','Pascal (Pa)','Newton (N)','Watt (W)'],ans:2,exp:'The Newton (N) is the derived SI unit of force. 1 N = 1 kg·m/s² — it\'s the force needed to accelerate 1 kilogram at 1 m/s².'},
+      {q:'A student measures the same mass 5 times and always gets 9.8g when the real answer is 9.8g. This is...',opts:['Precise but not accurate','Accurate but not precise','Both accurate and precise','Neither accurate nor precise'],ans:2,exp:'The student is BOTH accurate (close to the true value of 9.8g) AND precise (consistent results each time). Both conditions are met.'},
+      {q:'How do you write 0.000 005 m in scientific notation?',opts:['5 × 10³ m','5 × 10⁻⁶ m','5 × 10⁻⁴ m','5 × 10⁶ m'],ans:1,exp:'0.000 005 = 5 × 10⁻⁶. Count the places the decimal point moves to the right to get a number between 1 and 10: 6 places → 10⁻⁶. So 5 × 10⁻⁶ m.'},
+      {q:'Which best describes a SYSTEMATIC error?',opts:['An error that varies randomly each measurement','An error that always makes readings too high or too low by the same amount','An error due to human reaction time','An error that cancels out when you take the mean'],ans:1,exp:'A systematic error consistently shifts all readings in the SAME direction — for example, a balance that always reads 0.2g too high. You can\'t remove it by repeating; you must identify and correct it.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#0d47a1',dark:'#002171',light:'#e3f2fd',
+  title:'SI Units & Measurement — Prefixes, Accuracy & Notation',
+});
+</script></body></html>

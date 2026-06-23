@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BEC Test</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f6f8;min-height:100vh;color:#1a1a1a}
+#app{max-width:680px;margin:0 auto;padding:0 16px 60px}
+
+/* ── Header ── */
+.mq-hdr{
+  background:linear-gradient(120deg,#1b5e20,#2e7d32);
+  color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:10;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);margin:0 -16px 24px;
+}
+.mq-back{
+  background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;
+  padding:6px 12px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:background .15s;
+}
+.mq-back:hover{background:rgba(255,255,255,.28)}
+.mq-hdr-text{flex:1}
+.mq-hdr-title{font-size:1rem;font-weight:800}
+.mq-hdr-sub{font-size:.78rem;color:rgba(255,255,255,.72);margin-top:2px}
+.mq-hdr-badge{
+  background:rgba(255,255,255,.18);border-radius:999px;
+  padding:4px 12px;font-size:.8rem;font-weight:700;white-space:nowrap;
+}
+
+/* ── Progress ── */
+.mq-progress{
+  background:#fff;border-radius:10px;padding:14px 18px;
+  margin-bottom:16px;border:1.5px solid #e8e8e8;
+}
+.mq-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mq-prog-label{font-size:.78rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.mq-prog-frac{font-size:.88rem;font-weight:800;color:#333}
+.mq-bar{height:6px;background:#eee;border-radius:999px;overflow:hidden}
+.mq-bar-fill{height:100%;background:#2e7d32;border-radius:999px;transition:width .35s}
+
+/* ── Topic chip ── */
+.mq-topic{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#e8f5e9;color:#2e7d32;border-radius:999px;
+  font-size:.75rem;font-weight:700;padding:3px 10px;margin-bottom:12px;
+}
+
+/* ── Question card ── */
+.mq-card{
+  background:#fff;border-radius:14px;padding:24px;
+  border:1.5px solid #e8e8e8;margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.mq-q-num{font-size:.72rem;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.mq-q-text{font-size:1.05rem;font-weight:700;line-height:1.5;color:#111;margin-bottom:18px}
+
+/* ── Options ── */
+.mq-options{display:flex;flex-direction:column;gap:8px}
+.mq-opt{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  border:1.5px solid #e0e0e0;border-radius:9px;cursor:pointer;
+  background:#fff;text-align:left;font-family:inherit;font-size:.92rem;
+  transition:border-color .13s,background .13s;width:100%;
+}
+.mq-opt:hover:not(:disabled){border-color:#2e7d32;background:#f1f8e9}
+.mq-opt-letter{
+  width:26px;height:26px;border-radius:50%;background:#f5f5f5;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;font-weight:800;color:#666;flex-shrink:0;
+  transition:background .13s,color .13s;
+}
+.mq-opt.correct{border-color:#2e7d32;background:#e8f5e9}
+.mq-opt.correct .mq-opt-letter{background:#2e7d32;color:#fff}
+.mq-opt.wrong{border-color:#e53935;background:#ffebee}
+.mq-opt.wrong .mq-opt-letter{background:#e53935;color:#fff}
+.mq-opt.neutral-dim{opacity:.5}
+.mq-opt:disabled{cursor:default}
+
+/* ── Explanation ── */
+.mq-exp{
+  margin-top:14px;padding:12px 16px;border-radius:8px;
+  font-size:.86rem;line-height:1.6;display:none;
+}
+.mq-exp.correct{background:#e8f5e9;border-left:3px solid #2e7d32;color:#1b5e20}
+.mq-exp.wrong{background:#ffebee;border-left:3px solid #e53935;color:#b71c1c}
+.mq-exp-hdr{font-weight:800;margin-bottom:4px}
+
+/* ── Next button ── */
+.mq-next{
+  width:100%;padding:12px;background:#2e7d32;color:#fff;border:none;border-radius:9px;
+  font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;
+  transition:opacity .15s;margin-top:4px;display:none;
+}
+.mq-next:hover{opacity:.88}
+
+/* ── Results screen ── */
+.mq-results{display:none}
+.mq-results-card{
+  background:#fff;border-radius:16px;padding:32px 28px;
+  border:1.5px solid #e8e8e8;text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+}
+.mq-score-circle{
+  width:120px;height:120px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 18px;font-weight:800;
+  border:6px solid;
+}
+.mq-score-num{font-size:2.2rem;line-height:1}
+.mq-score-den{font-size:.85rem;color:inherit;opacity:.8}
+.mq-results-title{font-size:1.4rem;font-weight:800;margin-bottom:6px}
+.mq-results-sub{font-size:.9rem;color:#666;margin-bottom:24px}
+.mq-xp-badge{
+  display:inline-block;background:#e8f5e9;color:#2e7d32;
+  border-radius:999px;padding:6px 20px;font-size:.9rem;font-weight:800;margin-bottom:24px;
+}
+.mq-results-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.mq-rbtn{
+  padding:10px 24px;border-radius:9px;font-size:.88rem;font-weight:800;
+  cursor:pointer;font-family:inherit;border:none;transition:all .15s;
+}
+.mq-rbtn-primary{background:#2e7d32;color:#fff}
+.mq-rbtn-primary:hover{opacity:.88}
+.mq-rbtn-sec{background:#f5f5f5;color:#555}
+.mq-rbtn-sec:hover{background:#e8e8e8}
+
+/* Breakdown table */
+.mq-breakdown{
+  margin-top:24px;text-align:left;font-size:.83rem;
+}
+.mq-breakdown-hdr{font-weight:700;color:#999;text-transform:uppercase;font-size:.72rem;letter-spacing:.6px;margin-bottom:8px}
+.mq-brow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0}
+.mq-brow:last-child{border-bottom:none}
+.mq-brow-icon{font-size:1rem;flex-shrink:0}
+.mq-brow-topic{flex:1;font-size:.82rem;color:#333}
+.mq-brow-score{font-weight:700;font-size:.82rem}
+.green{color:#2e7d32}.red{color:#e53935}.orange{color:#e65100}
+</style>
+<script src="game.js"></script>
+</head>
+<body>
+<div id="app">
+  <div class="mq-hdr">
+    <button class="mq-back" onclick="goBack()">← Back</button>
+    <div class="mq-hdr-text">
+      <div class="mq-hdr-title" id="mq-title">Loading…</div>
+      <div class="mq-hdr-sub" id="mq-sub"></div>
+    </div>
+    <div class="mq-hdr-badge" id="mq-badge">0 / 0</div>
+  </div>
+
+  <!-- Quiz area -->
+  <div id="mq-quiz">
+    <div class="mq-progress">
+      <div class="mq-prog-row">
+        <span class="mq-prog-label">Progress</span>
+        <span class="mq-prog-frac" id="mq-frac">1 of 1</span>
+      </div>
+      <div class="mq-bar"><div class="mq-bar-fill" id="mq-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="mq-topic" id="mq-topic-chip"></div>
+
+    <div class="mq-card">
+      <div class="mq-q-num" id="mq-qnum">Question 1</div>
+      <div class="mq-q-text" id="mq-qtext"></div>
+      <div class="mq-options" id="mq-opts"></div>
+      <div class="mq-exp" id="mq-exp"></div>
+    </div>
+    <button class="mq-next" id="mq-next" onclick="nextQ()">Next Question →</button>
+  </div>
+
+  <!-- Results area -->
+  <div class="mq-results" id="mq-results">
+    <div class="mq-results-card">
+      <div class="mq-score-circle" id="mq-circle">
+        <span class="mq-score-num" id="mq-score-num">0</span>
+        <span class="mq-score-den" id="mq-score-den">/ 0</span>
+      </div>
+      <div class="mq-results-title" id="mq-rtitle"></div>
+      <div class="mq-results-sub" id="mq-rsub"></div>
+      <div class="mq-xp-badge" id="mq-xp-badge">+0 XP earned</div>
+      <div class="mq-results-btns">
+        <button class="mq-rbtn mq-rbtn-primary" onclick="retryTest()">🔁 Retry</button>
+        <button class="mq-rbtn mq-rbtn-sec" onclick="goBack()">🏠 Dashboard</button>
+      </div>
+      <div class="mq-breakdown" id="mq-breakdown"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LETTERS = ['A','B','C','D'];
+let data, qs, idx, correct, topicScores, _origQs;
+
+function init() {
+  const raw = localStorage.getItem('bec-pending-test');
+  localStorage.removeItem('bec-pending-test');
+  if (!raw) { location.href = '../index.html'; return; }
+  data = JSON.parse(raw);
+  qs = data.qs;
+  _origQs = data.qs; // keep for retry
+  idx = 0; correct = 0; topicScores = {};
+  document.getElementById('mq-title').textContent = data.title;
+  document.getElementById('mq-sub').textContent = data.examName + ' Preparation';
+  renderQ();
+}
+
+function renderQ() {
+  const q = qs[idx];
+  const total = qs.length;
+  document.getElementById('mq-badge').textContent = (idx + 1) + ' / ' + total;
+  document.getElementById('mq-frac').textContent = (idx + 1) + ' of ' + total;
+  document.getElementById('mq-fill').style.width = (idx / total * 100) + '%';
+  document.getElementById('mq-qnum').textContent = 'Question ' + (idx + 1);
+  document.getElementById('mq-qtext').textContent = q.q;
+  document.getElementById('mq-topic-chip').innerHTML =
+    (q.topicIcon || '') + ' ' + (q.topicTitle || '');
+  const expEl = document.getElementById('mq-exp');
+  expEl.style.display = 'none'; expEl.className = 'mq-exp';
+  document.getElementById('mq-next').style.display = 'none';
+  document.getElementById('mq-opts').innerHTML = q.opts.map((opt, i) => `
+    <button class="mq-opt" onclick="pick(${i})" id="opt-${i}">
+      <span class="mq-opt-letter">${LETTERS[i]}</span>
+      <span>${opt}</span>
+    </button>`).join('');
+}
+
+function pick(chosen) {
+  const q = qs[idx];
+  const isCorrect = chosen === q.ans;
+  if (isCorrect) { correct++; window.BEC?.addXP(10,'Test answer'); window.BEC?.recordCorrect?.(); }
+  else { window.BEC?.loseHeart?.(); }
+
+  // Style all options
+  q.opts.forEach((_, i) => {
+    const btn = document.getElementById('opt-' + i);
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+    else btn.classList.add('neutral-dim');
+  });
+
+  // Show explanation
+  const expEl = document.getElementById('mq-exp');
+  expEl.style.display = 'block';
+  expEl.className = 'mq-exp ' + (isCorrect ? 'correct' : 'wrong');
+  expEl.innerHTML = `<div class="mq-exp-hdr">${isCorrect ? '✅ Correct!' : '❌ Incorrect'}</div>${q.exp || ''}`;
+
+  // Track per-topic
+  const key = q.topicTitle || 'Unknown';
+  if (!topicScores[key]) topicScores[key] = {icon: q.topicIcon||'📚', c:0, t:0};
+  topicScores[key].t++;
+  if (isCorrect) topicScores[key].c++;
+
+  // Show next button
+  const nextBtn = document.getElementById('mq-next');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = idx + 1 < qs.length ? 'Next Question →' : 'See Results →';
+}
+
+function nextQ() {
+  idx++;
+  if (idx < qs.length) { renderQ(); window.scrollTo(0, 0); }
+  else { showResults(); }
+}
+
+function showResults() {
+  document.getElementById('mq-fill').style.width = '100%';
+  document.getElementById('mq-quiz').style.display = 'none';
+  document.getElementById('mq-results').style.display = 'block';
+  window.scrollTo(0,0);
+
+  const total = qs.length;
+  const pct = Math.round(correct / total * 100);
+  const xpEarned = Math.round(correct * 10 + (pct >= 80 ? 30 : pct >= 60 ? 15 : 0));
+  window.BEC?.addXP(xpEarned >= 10 ? xpEarned - correct * 10 : 0, 'Test bonus');
+  if (pct >= 80 && window.BEC?.confetti) BEC.confetti();
+
+  // Score circle colour
+  const circle = document.getElementById('mq-circle');
+  const col = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
+  circle.style.borderColor = col; circle.style.color = col;
+  document.getElementById('mq-score-num').textContent = correct;
+  document.getElementById('mq-score-den').textContent = '/ ' + total;
+
+  // Title / message
+  const msgs = pct >= 90 ? ['Outstanding!','You got ' + pct + '% — excellent exam preparation!']
+    : pct >= 80 ? ['Well Done!','You scored ' + pct + '% — solid understanding.']
+    : pct >= 60 ? ['Good Effort','You scored ' + pct + '% — review the topics you missed.']
+    : ['Keep Practising','You scored ' + pct + '% — revisit the study pages and try again!'];
+  document.getElementById('mq-rtitle').textContent = msgs[0];
+  document.getElementById('mq-rsub').textContent = msgs[1];
+  document.getElementById('mq-xp-badge').textContent = '+' + correct * 10 + ' XP earned';
+  document.getElementById('mq-badge').textContent = correct + ' / ' + total;
+
+  // Breakdown
+  const rows = Object.entries(topicScores).map(([title, s]) => {
+    const p = Math.round(s.c / s.t * 100);
+    const cls = p >= 80 ? 'green' : p >= 60 ? 'orange' : 'red';
+    return `<div class="mq-brow">
+      <span class="mq-brow-icon">${s.icon}</span>
+      <span class="mq-brow-topic">${title}</span>
+      <span class="mq-brow-score ${cls}">${s.c}/${s.t} (${p}%)</span>
+    </div>`;
+  }).join('');
+  document.getElementById('mq-breakdown').innerHTML = rows ?
+    `<div class="mq-breakdown-hdr">Topic Breakdown</div>${rows}` : '';
+}
+
+function retryTest() {
+  // Re-shuffle and restart
+  const shuffled = [..._origQs];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  qs = shuffled;
+  idx = 0; correct = 0; topicScores = {};
+  document.getElementById('mq-quiz').style.display = 'block';
+  document.getElementById('mq-results').style.display = 'none';
+  renderQ(); window.scrollTo(0,0);
+}
+
+function goBack() {
+  history.length > 1 ? history.back() : (location.href = '../index.html');
+}
+
+init();
+</script>
+</body>
+</html>

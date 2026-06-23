@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ecosystems — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[10,18,12]))}
+
+const STEPS=[
+  {
+    title:'Ecosystem Terms',
+    body:`An <strong>ecosystem</strong> is all the living organisms in an area plus their non-living environment.
+    <br><br>
+    Key vocabulary:
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Producer</strong> — makes food by photosynthesis (plants, algae)</li>
+      <li><strong>Consumer</strong> — eats other organisms (animals)</li>
+      <li><strong>Primary consumer</strong> — eats producers (herbivore)</li>
+      <li><strong>Secondary consumer</strong> — eats primary consumers</li>
+      <li><strong>Decomposer</strong> — breaks down dead material (fungi, bacteria)</li>
+      <li><strong>Food chain</strong> — shows feeding relationships (energy flow)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const chain=[
+        {icon:'🌿',label:'Grass\n(Producer)',c:[46,204,113]},
+        {icon:'🦗',label:'Grasshopper\n(Primary)',c:[241,196,15]},
+        {icon:'🐸',label:'Frog\n(Secondary)',c:[52,152,219]},
+        {icon:'🦅',label:'Eagle\n(Tertiary)',c:[231,76,60]},
+      ];
+      chain.forEach((n,i)=>{
+        const x=W*0.12+i*(W*0.76/3),y=H/2;
+        const pulse=1+Math.sin(t+i*1.2)*0.05;
+        sk.fill(...n.c,50);sk.noStroke();sk.ellipse(x,y,80*pulse,60*pulse);
+        sk.fill(...n.c);sk.ellipse(x,y,64,48);
+        sk.fill(255);sk.textSize(18);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(n.icon,x,y-4);
+        sk.fill(255);sk.textSize(8.5);sk.textAlign(sk.CENTER,sk.TOP);sk.text(n.label,x,y+28);
+        if(i<chain.length-1){
+          const nx=W*0.12+(i+1)*(W*0.76/3);
+          const prog=((t*0.3+i*0.25)%1);
+          const px=sk.lerp(x+34,nx-34,prog),py=y;
+          sk.stroke(255,255,255,60);sk.strokeWeight(1.5);sk.noFill();
+          sk.line(x+34,y,nx-34,y);
+          sk.fill(255,200,50,200);sk.noStroke();sk.circle(px,py,7);
+        }
+      });
+      sk.fill(255,200,50);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('→  Energy flows along a food chain',W/2,H*0.88);
+    }
+  },
+  {
+    q:'Ecosystem Components — Biotic and Abiotic',
+    content:`<h3>Ecosystem Components Diagram</h3><p>Study this diagram carefully. An ecosystem consists of all living organisms in an area together with the non-living environment. The living (biotic) and non-living (abiotic) components constantly interact, and a change in one always affects the other. Understanding these terms and their hierarchy is the foundation of ecology at BGCSE.</p><ul><li><strong>Biotic factors (living):</strong> producers (plants and algae that make food by photosynthesis), consumers (animals that eat other organisms), and decomposers (bacteria and fungi that break down dead organic matter, recycling nutrients)</li><li><strong>Abiotic factors (non-living):</strong> temperature, rainfall, light intensity, soil mineral content, water availability, pH, and salinity — these determine which organisms can survive in a habitat</li><li><strong>Key ecological terms:</strong> population = all individuals of one species in one area; community = all populations in one area; habitat = where an organism lives; niche = the role an organism plays in its ecosystem (what it eats, what eats it, how it affects the environment)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 290" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="290" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Ecosystem Components</text>
+  <!-- Central ECOSYSTEM box -->
+  <rect x="145" y="40" width="130" height="40" rx="8" fill="#c62828"/>
+  <text x="210" y="58" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">ECOSYSTEM</text>
+  <text x="210" y="73" text-anchor="middle" font-size="9" fill="#ffcdd2">All organisms + environment</text>
+  <!-- Branch lines -->
+  <line x1="145" y1="60" x2="95" y2="100" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="275" y1="60" x2="325" y2="100" stroke="#c62828" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- Biotic factors box -->
+  <rect x="20" y="100" width="155" height="40" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="97" y="116" text-anchor="middle" font-size="12" fill="#1b5e20" font-weight="bold">BIOTIC Factors</text>
+  <text x="97" y="132" text-anchor="middle" font-size="9" fill="#1b5e20">(Living components)</text>
+  <!-- Abiotic factors box -->
+  <rect x="245" y="100" width="155" height="40" rx="6" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="322" y="116" text-anchor="middle" font-size="12" fill="#0d47a1" font-weight="bold">ABIOTIC Factors</text>
+  <text x="322" y="132" text-anchor="middle" font-size="9" fill="#0d47a1">(Non-living components)</text>
+  <!-- Biotic examples -->
+  <line x1="55" y1="140" x2="45" y2="162" stroke="#2e7d32" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="97" y1="140" x2="97" y2="162" stroke="#2e7d32" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="140" y1="140" x2="150" y2="162" stroke="#2e7d32" stroke-width="1.2" marker-end="url(#arr)"/>
+  <rect x="15" y="162" width="65" height="50" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="47" y="180" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">Producers</text>
+  <text x="47" y="193" text-anchor="middle" font-size="8" fill="#333">Plants, algae</text>
+  <text x="47" y="205" text-anchor="middle" font-size="8" fill="#333">photosynthesis</text>
+  <rect x="67" y="162" width="65" height="50" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="99" y="180" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">Consumers</text>
+  <text x="99" y="193" text-anchor="middle" font-size="8" fill="#333">Animals that</text>
+  <text x="99" y="205" text-anchor="middle" font-size="8" fill="#333">eat others</text>
+  <rect x="118" y="162" width="65" height="50" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+  <text x="150" y="180" text-anchor="middle" font-size="9" fill="#1b5e20" font-weight="bold">Decomposers</text>
+  <text x="150" y="193" text-anchor="middle" font-size="8" fill="#333">Bacteria,</text>
+  <text x="150" y="205" text-anchor="middle" font-size="8" fill="#333">fungi</text>
+  <!-- Abiotic examples -->
+  <line x1="285" y1="140" x2="270" y2="162" stroke="#1565c0" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="322" y1="140" x2="322" y2="162" stroke="#1565c0" stroke-width="1.2" marker-end="url(#arr)"/>
+  <line x1="360" y1="140" x2="375" y2="162" stroke="#1565c0" stroke-width="1.2" marker-end="url(#arr)"/>
+  <rect x="240" y="162" width="65" height="50" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <text x="272" y="180" text-anchor="middle" font-size="9" fill="#0d47a1" font-weight="bold">Climate</text>
+  <text x="272" y="193" text-anchor="middle" font-size="8" fill="#333">Temperature,</text>
+  <text x="272" y="205" text-anchor="middle" font-size="8" fill="#333">rainfall</text>
+  <rect x="290" y="162" width="65" height="50" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <text x="322" y="180" text-anchor="middle" font-size="9" fill="#0d47a1" font-weight="bold">Light &amp; soil</text>
+  <text x="322" y="193" text-anchor="middle" font-size="8" fill="#333">Mineral</text>
+  <text x="322" y="205" text-anchor="middle" font-size="8" fill="#333">content</text>
+  <rect x="340" y="162" width="65" height="50" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="1"/>
+  <text x="372" y="180" text-anchor="middle" font-size="9" fill="#0d47a1" font-weight="bold">Water &amp; O₂</text>
+  <text x="372" y="193" text-anchor="middle" font-size="8" fill="#333">pH,</text>
+  <text x="372" y="205" text-anchor="middle" font-size="8" fill="#333">salinity</text>
+  <!-- Bottom note -->
+  <text x="210" y="240" text-anchor="middle" font-size="9" fill="#333">Biotic and abiotic factors interact — changes in one affect the other.</text>
+  <rect x="20" y="250" width="380" height="32" rx="4" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="263" text-anchor="middle" font-size="9" fill="#333"><tspan font-weight="bold">Population</tspan> = one species in one area  ·  <tspan font-weight="bold">Community</tspan> = all populations in one area</text>
+  <text x="210" y="278" text-anchor="middle" font-size="9" fill="#333"><tspan font-weight="bold">Habitat</tspan> = where an organism lives  ·  <tspan font-weight="bold">Niche</tspan> = its role in the ecosystem</text>
+</svg>`
+  },
+  {
+    q:'Food Web Diagram — African Savanna',
+    content:`<h3>Food Web — African Savanna Diagram</h3><p>Study this diagram carefully. A food web shows the feeding relationships between multiple organisms in an ecosystem. Unlike a simple food chain, a food web is more realistic because most organisms eat more than one thing and are eaten by more than one predator. Arrows show the direction of energy flow — always from food to the organism eating it.</p><ul><li><strong>Grass (producer):</strong> captures energy from sunlight through photosynthesis; forms the base of all food chains — it has the most energy and the greatest biomass</li><li><strong>Primary consumers (zebra, locust, impala):</strong> herbivores that eat the grass; they receive about 10% of the energy the grass captured</li><li><strong>Secondary consumers (cheetah, mongoose):</strong> carnivores that eat the primary consumers; each level retains only 10% of the energy from the level below</li><li><strong>Lion (tertiary consumer/top predator):</strong> sits at the apex of this web; has the least energy and smallest population; removing it would cause cascading effects throughout the web (trophic cascade)</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="310" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Food Web — African Savanna</text>
+  <text x="210" y="35" text-anchor="middle" font-size="9" fill="#555">(arrows show direction of energy flow)</text>
+  <!-- PRODUCER: Grass -->
+  <rect x="155" y="260" width="110" height="38" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="2"/>
+  <text x="210" y="277" text-anchor="middle" font-size="11" fill="#1b5e20" font-weight="bold">GRASS</text>
+  <text x="210" y="291" text-anchor="middle" font-size="9" fill="#2e7d32">Producer (photosynthesis)</text>
+  <!-- PRIMARY CONSUMERS -->
+  <rect x="30" y="175" width="100" height="38" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="80" y="191" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">ZEBRA</text>
+  <text x="80" y="206" text-anchor="middle" font-size="8" fill="#555">Primary consumer</text>
+  <rect x="165" y="175" width="100" height="38" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="215" y="191" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">LOCUST</text>
+  <text x="215" y="206" text-anchor="middle" font-size="8" fill="#555">Primary consumer</text>
+  <rect x="295" y="175" width="100" height="38" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="345" y="191" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">IMPALA</text>
+  <text x="345" y="206" text-anchor="middle" font-size="8" fill="#555">Primary consumer</text>
+  <!-- Grass → primary consumers -->
+  <line x1="185" y1="260" x2="115" y2="213" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="210" y1="260" x2="215" y2="213" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="235" y1="260" x2="308" y2="213" stroke="#2e7d32" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- SECONDARY CONSUMERS -->
+  <rect x="60" y="95" width="115" height="38" rx="6" fill="#ffccbc" stroke="#bf360c" stroke-width="1.5"/>
+  <text x="117" y="111" text-anchor="middle" font-size="11" fill="#bf360c" font-weight="bold">CHEETAH</text>
+  <text x="117" y="125" text-anchor="middle" font-size="8" fill="#555">Secondary consumer</text>
+  <rect x="250" y="95" width="115" height="38" rx="6" fill="#ffccbc" stroke="#bf360c" stroke-width="1.5"/>
+  <text x="307" y="111" text-anchor="middle" font-size="11" fill="#bf360c" font-weight="bold">MONGOOSE</text>
+  <text x="307" y="125" text-anchor="middle" font-size="8" fill="#555">Secondary consumer</text>
+  <!-- Primary → secondary -->
+  <line x1="80" y1="175" x2="105" y2="133" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="215" y1="175" x2="145" y2="133" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="215" y1="175" x2="272" y2="133" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="345" y1="175" x2="330" y2="133" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- TERTIARY: Lion -->
+  <rect x="145" y="48" width="130" height="38" rx="6" fill="#ef9a9a" stroke="#c62828" stroke-width="2"/>
+  <text x="210" y="64" text-anchor="middle" font-size="12" fill="#c62828" font-weight="bold">LION</text>
+  <text x="210" y="80" text-anchor="middle" font-size="8" fill="#555">Tertiary consumer / Top predator</text>
+  <!-- Secondary → tertiary -->
+  <line x1="155" y1="95" x2="195" y2="86" stroke="#bf360c" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="307" y1="95" x2="267" y2="86" stroke="#bf360c" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- Key -->
+  <rect x="20" y="38" width="95" height="22" rx="3" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1"/>
+  <text x="67" y="53" text-anchor="middle" font-size="8" fill="#1b5e20">Green = Producer</text>
+  <rect x="20" y="63" width="95" height="22" rx="3" fill="#fff9c4" stroke="#f9a825" stroke-width="1"/>
+  <text x="67" y="78" text-anchor="middle" font-size="8" fill="#e65100">Yellow = 1° Consumer</text>
+</svg>`
+  },
+  {
+    title:'Energy Transfer — The 10% Rule',
+    body:`At each step in a food chain, only about <strong>10% of energy</strong> is passed on to the next level.
+    <br><br>
+    The rest is lost as:
+    <ul style="margin:6px 0 0 18px;line-height:1.8">
+      <li><strong>Heat</strong> — from respiration</li>
+      <li><strong>Excretion</strong> — in urine/faeces</li>
+      <li><strong>Movement</strong> — kinetic energy</li>
+      <li>Parts not eaten/digested</li>
+    </ul>
+    This is why food chains rarely have more than 4–5 levels — not enough energy remains at higher levels.
+    <br><br>
+    A <strong>pyramid of energy</strong> shows the total energy at each trophic level.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height;
+      const levels=[
+        {label:'Producers',energy:10000,c:[46,204,113]},
+        {label:'Primary consumers',energy:1000,c:[241,196,15]},
+        {label:'Secondary consumers',energy:100,c:[231,76,60]},
+        {label:'Tertiary consumers',energy:10,c:[155,89,182]},
+      ];
+      const maxW=W*0.75;
+      levels.forEach((lv,i)=>{
+        const w=maxW*(lv.energy/levels[0].energy);
+        const h=H*0.15;
+        const y=H*0.1+i*(H*0.18);
+        const x=(W-w)/2;
+        sk.fill(...lv.c,180);sk.noStroke();sk.rect(x,y,w,h,4);
+        sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);
+        sk.text(lv.label,W/2,y+h/2-6);
+        sk.textSize(9);sk.text(lv.energy.toLocaleString()+' J',W/2,y+h/2+8);
+        // 10% arrow
+        if(i<levels.length-1){
+          sk.fill(255,200,50);sk.textSize(9);sk.textAlign(sk.RIGHT);
+          sk.text('10% →',x-4,y+h+6);
+        }
+      });
+    }
+  },
+  {
+    title:'The Carbon Cycle',
+    body:`Carbon is constantly recycled through the ecosystem:
+    <br><br>
+    <strong>Carbon enters the atmosphere as CO₂ from:</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Respiration (all living organisms)</li>
+      <li>Combustion (burning fossil fuels/wood)</li>
+      <li>Decomposition of dead matter</li>
+    </ul>
+    <strong>CO₂ is removed from the atmosphere by:</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Photosynthesis (plants absorb CO₂)</li>
+      <li>Dissolving into oceans</li>
+      <li>Formation of fossil fuels (long-term)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,15,25]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // CO2 cloud in atmosphere
+      for(let ring=0;ring<3;ring++){
+        const r=((t*20+ring*14)%60);
+        sk.stroke(100,180,255,120-r*1.5);sk.strokeWeight(1);sk.noFill();
+        sk.circle(W/2,H*0.18,r*2);
+      }
+      sk.fill(100,180,255,200);sk.noStroke();sk.textSize(12);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);
+      sk.text('CO₂ in Atmosphere',W/2,H*0.18);sk.textStyle(sk.NORMAL);
+      // Plant (photosynthesis)
+      sk.fill(46,204,113);sk.textSize(22);sk.textAlign(sk.CENTER);sk.text('🌿',W*0.18,H*0.62);
+      // Factory (combustion)
+      sk.textSize(22);sk.text('🏭',W*0.82,H*0.62);
+      // Decomposer
+      sk.textSize(18);sk.text('🍄',W*0.5,H*0.78);
+      // Arrows
+      const arrows=[
+        {x1:W*0.22,y1:H*0.58,x2:W*0.35,y2:H*0.22,label:'Photosynthesis ↑',c:[46,204,113]},
+        {x1:W*0.5,y1:H*0.32,x2:W*0.28,y2:H*0.52,label:'Respiration ↓',c:[231,76,60]},
+        {x1:W*0.78,y1:H*0.57,x2:W*0.65,y2:H*0.22,label:'Combustion ↑',c:[255,165,50]},
+        {x1:W*0.5,y1:H*0.72,x2:W*0.5,y2:H*0.24,label:'Decomposition ↑',c:[155,89,182]},
+      ];
+      arrows.forEach(a=>{
+        const prog=((t*0.3+a.x1/W)%1);
+        const px=sk.lerp(a.x1,a.x2,prog),py=sk.lerp(a.y1,a.y2,prog);
+        sk.stroke(...a.c.slice(0,3),80);sk.strokeWeight(1.5);sk.noFill();
+        sk.line(a.x1,a.y1,a.x2,a.y2);
+        sk.fill(...a.c.slice(0,3),200);sk.noStroke();sk.circle(px,py,8);
+      });
+    }
+  },
+  {
+    q:'Carbon Cycle — Labeled Diagram',
+    content:`<h3>The Carbon Cycle Diagram</h3><p>Study this diagram carefully. The carbon cycle describes how carbon atoms are continuously recycled between the atmosphere, living organisms, and the Earth. Carbon enters the atmosphere mainly as carbon dioxide (CO₂) and is removed by plants through photosynthesis. Understanding all the pathways is essential for BGCSE questions on carbon and global warming.</p><ul><li><strong>Carbon removed from atmosphere:</strong> photosynthesis by plants and algae converts CO₂ → organic molecules (glucose); dissolving into oceans; fossilisation over millions of years forms coal, oil, and natural gas</li><li><strong>Carbon returned to atmosphere:</strong> respiration by all living organisms releases CO₂; decomposition by bacteria and fungi of dead organic matter releases CO₂; combustion (burning fossil fuels and wood) rapidly releases stored carbon as CO₂</li><li><strong>Human impact:</strong> burning fossil fuels releases CO₂ that was locked away for millions of years, increasing atmospheric CO₂ concentration and contributing to global warming; deforestation reduces CO₂ removal by photosynthesis</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="310" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">The Carbon Cycle</text>
+  <!-- Atmosphere box -->
+  <rect x="110" y="32" width="200" height="40" rx="6" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="49" text-anchor="middle" font-size="12" fill="#0d47a1" font-weight="bold">CO₂ in Atmosphere</text>
+  <text x="210" y="65" text-anchor="middle" font-size="9" fill="#1565c0">0.04% of air</text>
+  <!-- Plants box -->
+  <rect x="20" y="130" width="120" height="45" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="80" y="148" text-anchor="middle" font-size="11" fill="#1b5e20" font-weight="bold">PLANTS</text>
+  <text x="80" y="163" text-anchor="middle" font-size="9" fill="#333">Organic carbon</text>
+  <!-- Animals box -->
+  <rect x="170" y="130" width="120" height="45" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="230" y="148" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">ANIMALS</text>
+  <text x="230" y="163" text-anchor="middle" font-size="9" fill="#333">Eat plants/animals</text>
+  <!-- Fossil fuels box -->
+  <rect x="320" y="130" width="85" height="45" rx="6" fill="#cfd8dc" stroke="#546e7a" stroke-width="1.5"/>
+  <text x="362" y="148" text-anchor="middle" font-size="10" fill="#263238" font-weight="bold">FOSSIL</text>
+  <text x="362" y="161" text-anchor="middle" font-size="10" fill="#263238" font-weight="bold">FUELS</text>
+  <!-- Dead organic matter -->
+  <rect x="90" y="235" width="160" height="45" rx="6" fill="#d7ccc8" stroke="#5d4037" stroke-width="1.5"/>
+  <text x="170" y="253" text-anchor="middle" font-size="10" fill="#3e2723" font-weight="bold">DEAD ORGANIC MATTER</text>
+  <text x="170" y="268" text-anchor="middle" font-size="9" fill="#555">Decomposers break down</text>
+  <!-- Photosynthesis: atmosphere → plants -->
+  <line x1="145" y1="72" x2="105" y2="128" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="108" y="104" text-anchor="end" font-size="9" fill="#2e7d32" font-weight="bold">Photosyn-</text>
+  <text x="108" y="116" text-anchor="end" font-size="9" fill="#2e7d32" font-weight="bold">thesis</text>
+  <!-- Respiration: plants → atmosphere -->
+  <line x1="90" y1="130" x2="155" y2="74" stroke="#e53935" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="138" y="92" text-anchor="start" font-size="9" fill="#e53935">Respiration</text>
+  <!-- Feeding: plants → animals -->
+  <line x1="140" y1="152" x2="168" y2="152" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <text x="154" y="145" text-anchor="middle" font-size="8" fill="#e65100">Feeding</text>
+  <!-- Animals respiration → atmosphere -->
+  <line x1="260" y1="130" x2="248" y2="74" stroke="#e53935" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="275" y="100" text-anchor="start" font-size="9" fill="#e53935">Respiration</text>
+  <!-- Death: animals → dead matter -->
+  <line x1="205" y1="175" x2="190" y2="233" stroke="#5d4037" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="80" y1="175" x2="135" y2="233" stroke="#5d4037" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="200" y="210" text-anchor="start" font-size="9" fill="#5d4037">Death</text>
+  <!-- Decomposition → atmosphere -->
+  <line x1="200" y1="248" x2="248" y2="72" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+  <text x="255" y="170" text-anchor="start" font-size="9" fill="#7b1fa2">Decomposition</text>
+  <!-- Fossilisation -->
+  <line x1="250" y1="175" x2="325" y2="163" stroke="#546e7a" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+  <text x="285" y="177" text-anchor="middle" font-size="8" fill="#546e7a">fossilisation</text>
+  <!-- Combustion -->
+  <line x1="362" y1="130" x2="298" y2="72" stroke="#ff5722" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="375" y="100" text-anchor="start" font-size="9" fill="#ff5722">Combustion</text>
+  <text x="375" y="112" text-anchor="start" font-size="8" fill="#ff5722">(burning)</text>
+</svg>`
+  },
+  {
+    title:'🎮 Check — Food Chains & Carbon Cycle',
+    body:'Test your understanding of energy transfer and the carbon cycle.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which organism is always at the START of a food chain?',opts:['Consumer','Decomposer','Producer','Secondary consumer'],ans:2,exp:'Producers (plants/algae) are always first in a food chain. They make organic molecules through photosynthesis, capturing energy from sunlight.'},
+      {q:'About what percentage of energy is passed between trophic levels?',opts:['90%','50%','25%','10%'],ans:3,exp:'Only about 10% of energy is transferred to the next trophic level. The rest is lost as heat, movement, excretion, and uneaten material.'},
+      {q:'Which process REMOVES CO₂ from the atmosphere?',opts:['Respiration','Combustion','Photosynthesis','Decomposition'],ans:2,exp:'Photosynthesis absorbs CO₂ from the air and converts it into glucose (organic carbon) using light energy. This is how carbon enters food chains.'},
+      {q:'Why are food chains rarely longer than 4–5 links?',opts:['Animals refuse to eat more','Not enough water at top levels','Too little energy remains at higher levels','Temperature is too cold at the top'],ans:2,exp:'Because only 10% of energy passes to each next level, there is very little energy left at the 4th or 5th level to support a population of organisms.'},
+    ]}
+  },
+  {
+    title:'The Nitrogen Cycle',
+    body:`Plants need nitrogen to make <strong>proteins and DNA</strong>. Air is 78% nitrogen (N₂) but plants cannot use it directly.
+    <br><br>
+    <strong>Nitrogen cycle stages:</strong>
+    <ul style="margin:6px 0 0 18px;line-height:2">
+      <li><strong>Nitrogen fixation</strong> — bacteria in soil/root nodules convert N₂ → ammonium (NH₄⁺)</li>
+      <li><strong>Nitrification</strong> — bacteria convert ammonium → nitrates (NO₃⁻), usable by plants</li>
+      <li><strong>Decomposition</strong> — decomposers break down dead organisms → ammonium</li>
+      <li><strong>Denitrification</strong> — bacteria convert nitrates back to N₂ gas</li>
+      <li><strong>Uptake</strong> — plants absorb nitrates from soil via roots</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      const nodes=[
+        {label:'N₂\n(Atmosphere)',x:0.5,y:0.12,c:[100,180,255]},
+        {label:'NH₄⁺\n(Ammonium)',x:0.15,y:0.5,c:[241,196,15]},
+        {label:'NO₃⁻\n(Nitrates)',x:0.85,y:0.5,c:[46,204,113]},
+        {label:'Dead\nOrganic',x:0.5,y:0.82,c:[155,89,182]},
+        {label:'Plants\n& Animals',x:0.5,y:0.5,c:[231,76,60]},
+      ];
+      const arcs=[
+        {from:0,to:1,label:'N-fixation',c:[241,196,15]},
+        {from:1,to:2,label:'Nitrification',c:[46,204,113]},
+        {from:2,to:4,label:'Uptake',c:[231,76,60]},
+        {from:4,to:3,label:'Death',c:[155,89,182]},
+        {from:3,to:1,label:'Decomposition',c:[241,196,15]},
+        {from:2,to:0,label:'Denitrification',c:[100,180,255]},
+      ];
+      arcs.forEach(a=>{
+        const s=nodes[a.from],e=nodes[a.to];
+        sk.stroke(...a.c.slice(0,3),80);sk.strokeWeight(1.5);sk.noFill();
+        sk.line(s.x*W,s.y*H,e.x*W,e.y*H);
+        const prog=((t*0.25+a.from*0.2)%1);
+        sk.fill(...a.c.slice(0,3),200);sk.noStroke();
+        sk.circle(sk.lerp(s.x*W,e.x*W,prog),sk.lerp(s.y*H,e.y*H,prog),7);
+        sk.fill(...a.c.slice(0,3),160);sk.textSize(8.5);sk.textAlign(sk.CENTER);
+        sk.text(a.label,(s.x+e.x)/2*W,(s.y+e.y)/2*H-8);
+      });
+      nodes.forEach(n=>{
+        const pulse=1+Math.sin(t*1.5+n.x*4)*0.06;
+        sk.fill(...n.c.slice(0,3),50);sk.noStroke();sk.ellipse(n.x*W,n.y*H,72*pulse,48*pulse);
+        sk.fill(...n.c.slice(0,3));sk.ellipse(n.x*W,n.y*H,58,40);
+        sk.fill(255);sk.textSize(9);sk.textAlign(sk.CENTER,sk.CENTER);sk.text(n.label,n.x*W,n.y*H);
+      });
+    }
+  },
+  {
+    q:'Nitrogen Cycle — Labeled Diagram',
+    content:`<h3>The Nitrogen Cycle Diagram</h3><p>Study this diagram carefully. The nitrogen cycle describes how nitrogen is converted between different chemical forms as it circulates through the atmosphere, soil, and living organisms. Plants need nitrogen to make proteins, DNA, and amino acids — but they cannot use atmospheric N₂ directly and depend on bacteria in the soil to convert it into usable forms.</p><ul><li><strong>Nitrogen fixation:</strong> nitrogen-fixing bacteria (free-living in soil, or in root nodules of legumes like beans and peas) convert atmospheric N₂ → ammonium (NH₄⁺); lightning also fixes small amounts of nitrogen</li><li><strong>Nitrification:</strong> nitrifying bacteria in soil convert ammonium → nitrites → nitrates (NO₃⁻); nitrates are the form plants absorb through their roots</li><li><strong>Death and decomposition:</strong> when organisms die, decomposers (bacteria and fungi) break down proteins in dead matter → ammonium, returning nitrogen to the soil</li><li><strong>Denitrification:</strong> denitrifying bacteria in waterlogged, anaerobic soils convert nitrates back to N₂ gas, completing the cycle; this reduces soil fertility</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="310" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">The Nitrogen Cycle</text>
+  <!-- Atmosphere -->
+  <rect x="105" y="32" width="210" height="36" rx="6" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+  <text x="210" y="48" text-anchor="middle" font-size="12" fill="#0d47a1" font-weight="bold">N₂ in Atmosphere (78%)</text>
+  <text x="210" y="62" text-anchor="middle" font-size="9" fill="#555">Plants cannot use N₂ directly</text>
+  <!-- Ammonium in soil -->
+  <rect x="20" y="165" width="145" height="42" rx="6" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+  <text x="92" y="182" text-anchor="middle" font-size="11" fill="#e65100" font-weight="bold">NH₄⁺ (Ammonium)</text>
+  <text x="92" y="197" text-anchor="middle" font-size="9" fill="#555">in soil</text>
+  <!-- Nitrates -->
+  <rect x="255" y="165" width="145" height="42" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="327" y="182" text-anchor="middle" font-size="11" fill="#1b5e20" font-weight="bold">NO₃⁻ (Nitrates)</text>
+  <text x="327" y="197" text-anchor="middle" font-size="9" fill="#555">in soil water</text>
+  <!-- Plants and Animals -->
+  <rect x="135" y="245" width="150" height="42" rx="6" fill="#ffccbc" stroke="#bf360c" stroke-width="1.5"/>
+  <text x="210" y="262" text-anchor="middle" font-size="11" fill="#bf360c" font-weight="bold">PLANTS &amp; ANIMALS</text>
+  <text x="210" y="277" text-anchor="middle" font-size="9" fill="#555">Proteins, DNA, amino acids</text>
+  <!-- Arrow: N-fixation (atmosphere → ammonium) -->
+  <line x1="155" y1="68" x2="115" y2="163" stroke="#1565c0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="98" y="115" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold">Nitrogen</text>
+  <text x="98" y="127" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold">fixation</text>
+  <text x="98" y="139" text-anchor="middle" font-size="8" fill="#555">(bacteria in</text>
+  <text x="98" y="150" text-anchor="middle" font-size="8" fill="#555">root nodules)</text>
+  <!-- Arrow: denitrification (nitrates → atmosphere) -->
+  <line x1="310" y1="165" x2="275" y2="70" stroke="#9c27b0" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="335" y="105" text-anchor="start" font-size="9" fill="#9c27b0" font-weight="bold">Denitrification</text>
+  <text x="335" y="117" text-anchor="start" font-size="8" fill="#555">(bacteria convert</text>
+  <text x="335" y="129" text-anchor="start" font-size="8" fill="#555">NO₃⁻ → N₂)</text>
+  <!-- Arrow: nitrification (ammonium → nitrates) -->
+  <line x1="165" y1="186" x2="253" y2="186" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="210" y="178" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Nitrification</text>
+  <text x="210" y="195" text-anchor="middle" font-size="8" fill="#555">(nitrifying bacteria)</text>
+  <!-- Arrow: nitrate uptake (nitrates → plants) -->
+  <line x1="310" y1="207" x2="265" y2="243" stroke="#f9a825" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="326" y="230" text-anchor="start" font-size="9" fill="#e65100" font-weight="bold">Uptake</text>
+  <text x="326" y="242" text-anchor="start" font-size="8" fill="#555">(roots absorb</text>
+  <text x="326" y="254" text-anchor="start" font-size="8" fill="#555">nitrates)</text>
+  <!-- Arrow: death/excretion (plants/animals → ammonium) -->
+  <line x1="155" y1="258" x2="115" y2="209" stroke="#bf360c" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="58" y="238" text-anchor="middle" font-size="9" fill="#bf360c" font-weight="bold">Death &amp;</text>
+  <text x="58" y="250" text-anchor="middle" font-size="9" fill="#bf360c" font-weight="bold">decomp.</text>
+  <text x="58" y="262" text-anchor="middle" font-size="8" fill="#555">(decomposers</text>
+  <text x="58" y="274" text-anchor="middle" font-size="8" fill="#555">→ NH₄⁺)</text>
+</svg>`
+  },
+  {
+    q:'Pyramids of Numbers, Biomass and Energy',
+    content:`<h3>Ecological Pyramids — Numbers, Biomass and Energy</h3><p>Study this diagram carefully. Ecological pyramids represent the quantity of organisms (or energy) at each trophic level of a food chain. There are three types, and you must know when each can be inverted (show an unusual shape) and when they cannot. The pyramid of energy is the most accurate representation of energy transfer in ecosystems.</p><ul><li><strong>Pyramid of numbers:</strong> counts the number of individual organisms at each level; CAN be inverted — for example, one oak tree supports thousands of caterpillars which are eaten by fewer birds; parasitic food chains also produce inverted pyramids</li><li><strong>Pyramid of biomass:</strong> shows the total dry mass at each trophic level; usually pyramid-shaped but CAN be inverted in aquatic ecosystems where phytoplankton (producers) reproduce very rapidly and are quickly consumed, so their biomass at any one moment is less than the zooplankton eating them</li><li><strong>Pyramid of energy:</strong> shows the total energy stored at each trophic level; ALWAYS pyramid-shaped and can NEVER be inverted because energy is always lost (as heat and waste) at each transfer — energy cannot be created</li></ul>`,
+    visual:`<svg viewBox="0 0 420 310" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="310" fill="#ffebee" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#c62828">Ecological Pyramids — Numbers vs Biomass vs Energy</text>
+  <!-- PYRAMID OF NUMBERS -->
+  <text x="70" y="44" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">Numbers</text>
+  <!-- Unusual shape (oak tree: 1 tree, many caterpillars) -->
+  <rect x="50" y="50" width="40" height="24" rx="3" fill="#7b1fa2" stroke="#c62828" stroke-width="1"/>
+  <text x="70" y="66" text-anchor="middle" font-size="8" fill="#fff">Birds (few)</text>
+  <rect x="22" y="78" width="96" height="24" rx="3" fill="#c62828" stroke="#c62828" stroke-width="1"/>
+  <text x="70" y="94" text-anchor="middle" font-size="8" fill="#fff">Caterpillars (many)</text>
+  <rect x="38" y="106" width="64" height="24" rx="3" fill="#1565c0" stroke="#c62828" stroke-width="1"/>
+  <text x="70" y="122" text-anchor="middle" font-size="8" fill="#fff">Oak trees (1)</text>
+  <text x="70" y="145" text-anchor="middle" font-size="8" fill="#555">Can be irregular —</text>
+  <text x="70" y="157" text-anchor="middle" font-size="8" fill="#555">1 tree hosts 1000s</text>
+  <text x="70" y="169" text-anchor="middle" font-size="8" fill="#e53935">May be inverted!</text>
+  <!-- PYRAMID OF BIOMASS -->
+  <text x="210" y="44" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">Biomass</text>
+  <rect x="192" y="50" width="36" height="24" rx="3" fill="#7b1fa2" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="66" text-anchor="middle" font-size="8" fill="#fff">3° consumer</text>
+  <rect x="172" y="78" width="76" height="24" rx="3" fill="#c62828" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="94" text-anchor="middle" font-size="8" fill="#fff">2° consumer</text>
+  <rect x="148" y="106" width="124" height="24" rx="3" fill="#1565c0" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="122" text-anchor="middle" font-size="8" fill="#fff">1° consumer</text>
+  <rect x="120" y="134" width="180" height="24" rx="3" fill="#2e7d32" stroke="#c62828" stroke-width="1"/>
+  <text x="210" y="150" text-anchor="middle" font-size="8" fill="#fff">Producer (largest biomass)</text>
+  <text x="210" y="175" text-anchor="middle" font-size="8" fill="#555">Usually pyramid shaped</text>
+  <text x="210" y="187" text-anchor="middle" font-size="8" fill="#555">(total dry mass at each level)</text>
+  <text x="210" y="199" text-anchor="middle" font-size="8" fill="#e53935">Can be inverted in sea!</text>
+  <!-- PYRAMID OF ENERGY -->
+  <text x="355" y="44" text-anchor="middle" font-size="10" fill="#c62828" font-weight="bold">Energy</text>
+  <rect x="340" y="50" width="30" height="24" rx="3" fill="#7b1fa2" stroke="#c62828" stroke-width="1"/>
+  <text x="355" y="66" text-anchor="middle" font-size="8" fill="#fff">3° con.</text>
+  <rect x="325" y="78" width="60" height="24" rx="3" fill="#c62828" stroke="#c62828" stroke-width="1"/>
+  <text x="355" y="94" text-anchor="middle" font-size="8" fill="#fff">2° con.</text>
+  <rect x="308" y="106" width="94" height="24" rx="3" fill="#1565c0" stroke="#c62828" stroke-width="1"/>
+  <text x="355" y="122" text-anchor="middle" font-size="8" fill="#fff">1° consumer</text>
+  <rect x="290" y="134" width="130" height="24" rx="3" fill="#2e7d32" stroke="#c62828" stroke-width="1"/>
+  <text x="355" y="150" text-anchor="middle" font-size="8" fill="#fff">Producer</text>
+  <text x="355" y="175" text-anchor="middle" font-size="8" fill="#555">ALWAYS pyramid</text>
+  <text x="355" y="187" text-anchor="middle" font-size="8" fill="#555">shaped (energy lost</text>
+  <text x="355" y="199" text-anchor="middle" font-size="8" fill="#555">at every level)</text>
+  <text x="355" y="211" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold">Never inverted!</text>
+  <!-- Comparison table at bottom -->
+  <rect x="15" y="225" width="390" height="78" rx="5" fill="#fff" stroke="#c62828" stroke-width="1"/>
+  <line x1="135" y1="225" x2="135" y2="303" stroke="#c62828" stroke-width="1"/>
+  <line x1="265" y1="225" x2="265" y2="303" stroke="#c62828" stroke-width="1"/>
+  <line x1="15" y1="245" x2="405" y2="245" stroke="#c62828" stroke-width="1"/>
+  <text x="75" y="239" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Numbers</text>
+  <text x="200" y="239" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Biomass</text>
+  <text x="335" y="239" text-anchor="middle" font-size="9" fill="#c62828" font-weight="bold">Energy</text>
+  <text x="75" y="260" text-anchor="middle" font-size="8" fill="#333">Count of</text>
+  <text x="75" y="272" text-anchor="middle" font-size="8" fill="#333">organisms</text>
+  <text x="200" y="260" text-anchor="middle" font-size="8" fill="#333">Total dry mass</text>
+  <text x="200" y="272" text-anchor="middle" font-size="8" fill="#333">(g or kg)</text>
+  <text x="335" y="260" text-anchor="middle" font-size="8" fill="#333">Energy stored</text>
+  <text x="335" y="272" text-anchor="middle" font-size="8" fill="#333">(J or kJ)</text>
+  <text x="75" y="290" text-anchor="middle" font-size="8" fill="#e53935">Can be inverted</text>
+  <text x="200" y="290" text-anchor="middle" font-size="8" fill="#e65100">Can be inverted</text>
+  <text x="335" y="290" text-anchor="middle" font-size="8" fill="#2e7d32">NEVER inverted</text>
+</svg>`
+  },
+  {
+    title:'Human Impact on Ecosystems',
+    body:`Human activities disturb natural ecosystems:
+    <br><br>
+    <strong>Deforestation</strong> — removes carbon sinks, destroys habitats, increases CO₂
+    <br><br>
+    <strong>Eutrophication</strong> — excess fertilisers run into water:
+    <ol style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Algae bloom (rapid growth) → blocks light</li>
+      <li>Aquatic plants die</li>
+      <li>Decomposers increase, use up O₂</li>
+      <li>Fish and other animals die — <em>deoxygenation</em></li>
+    </ol>
+    <strong>Bioaccumulation</strong> — pesticides build up in fatty tissues, becoming more concentrated up the food chain (e.g. DDT in eagles).`,
+    draw:(sk)=>{
+      bg(sk,[10,18,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Water surface
+      sk.fill(30,80,130,200);sk.noStroke();sk.rect(0,H*0.38,W,H*0.62);
+      // Algae bloom spreading
+      for(let i=0;i<12;i++){
+        const x=W*(0.1+i*0.07+Math.sin(t+i)*0.02);
+        const y=H*0.4+Math.sin(t*0.8+i)*8;
+        const s=Math.min(1,(t*0.02));
+        sk.fill(0,200,50,160);sk.noStroke();sk.ellipse(x,y,30*s,18*s);
+      }
+      sk.fill(0,200,50,200);sk.noStroke();sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('Algae Bloom',W/2,H*0.35);
+      // Dead fish
+      if(t>5){
+        sk.textSize(18);sk.text('🐟',W*0.3,H*0.75);
+        sk.fill(231,76,60);sk.textSize(9);sk.textAlign(sk.LEFT);
+        sk.text('Low O₂ → fish die',W*0.35,H*0.76);
+      }
+      // Fertiliser arrow
+      sk.stroke(241,196,15,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.7,H*0.1,W*0.7,H*0.36);
+      sk.fill(241,196,15,200);sk.noStroke();sk.triangle(W*0.7,H*0.38,W*0.7-8,H*0.28,W*0.7+8,H*0.28);
+      sk.fill(241,196,15);sk.textSize(10);sk.textAlign(sk.CENTER);
+      sk.text('Fertiliser\nrun-off',W*0.7,H*0.07);
+    }
+  },
+  {
+    title:'🎮 Final — Nitrogen Cycle & Ecosystems',
+    body:'Apply your knowledge of nutrient cycles and human impact.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'Which organisms convert nitrogen gas (N₂) into ammonium that plants can use?',opts:['Plants themselves','Decomposers only','Nitrogen-fixing bacteria','Denitrifying bacteria'],ans:2,exp:'Nitrogen-fixing bacteria (in soil or root nodules of legumes) convert atmospheric N₂ into ammonium (NH₄⁺) — a form plants can absorb.'},
+      {q:'What is denitrification?',opts:['Bacteria converting nitrates back to N₂ gas','Plants absorbing nitrates from soil','Decomposers breaking down proteins','Bacteria converting ammonium to nitrates'],ans:0,exp:'Denitrifying bacteria convert nitrates (NO₃⁻) back into nitrogen gas (N₂), returning nitrogen to the atmosphere and completing the cycle.'},
+      {q:'Eutrophication causes fish to die because:',opts:['Too many fish compete for food','Fertilisers are directly toxic to fish','Algae use up all the dissolved oxygen','Nitrates poison fish directly'],ans:2,exp:'The algae bloom blocks light, aquatic plants die, decomposers multiply and use up dissolved O₂. Low oxygen levels (deoxygenation) kill fish.'},
+      {q:'Bioaccumulation means that toxic chemicals:',opts:['Decrease in concentration up the food chain','Are removed by decomposers','Build up in higher concentrations at higher trophic levels','Evaporate from organisms'],ans:2,exp:'Toxic substances like pesticides are stored in fatty tissues and not broken down. They accumulate in greater concentrations at each level up the food chain — most concentrated in top predators.'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#2e7d32',dark:'#1b5e20',light:'#e8f5e9',
+  title:'Ecosystems — Food Chains, Carbon & Nitrogen Cycles',
+});
+</script></body></html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sound Properties — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f0f7f0; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0 0 40px; }
+    .topbar { width:100%; background:#1b5e20; padding:10px 20px; display:flex; align-items:center; gap:16px; }
+    .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
+    .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
+    .topbar a:hover { color:#fff; }
+    .topic-header { width:100%; background:#4a148c; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .topic-header .label { background:#ce93d8; color:#4a148c; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
+    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #e1bee7; }
+    #controls { display:flex; gap:24px; margin-top:14px; align-items:center; flex-wrap:wrap; justify-content:center; }
+    .slider-group { display:flex; gap:8px; align-items:center; }
+    label { font-size:0.85rem; font-weight:600; color:#4a148c; }
+    input[type=range] { width:140px; accent-color:#7b1fa2; }
+    .val-badge { font-size:0.82rem; font-weight:700; color:#fff; background:#7b1fa2; padding:2px 8px; border-radius:999px; min-width:36px; text-align:center; }
+    .btn { padding:8px 18px; border:2.5px solid; border-radius:24px; cursor:pointer; font-size:0.88rem; font-weight:700; transition:all 0.15s; }
+    .btn-m { border-color:#4a148c; color:#4a148c; background:#fff; }
+    .btn-m.on { background:#4a148c; color:#fff; }
+  </style>
+</head>
+<body>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ce93d8;color:#4a148c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header">
+  <span class="label">JCE · Form 3 Physics</span>
+  <h1>Sound Properties</h1>
+</div>
+<div id="sketch"></div>
+<div id="controls">
+  <div class="slider-group">
+    <label>Frequency (Pitch):</label>
+    <input type="range" id="freqSlider" min="1" max="4" step="0.1" value="2">
+    <span class="val-badge" id="freqVal">2×</span>
+  </div>
+  <div class="slider-group">
+    <label>Amplitude (Volume):</label>
+    <input type="range" id="ampSlider" min="5" max="38" step="1" value="20">
+    <span class="val-badge" id="ampVal">Med</span>
+  </div>
+  <button class="btn btn-m on" id="bAir"   onclick="setMedium('air')">Air</button>
+  <button class="btn btn-m"    id="bWater" onclick="setMedium('water')">Water</button>
+  <button class="btn btn-m"    id="bSolid" onclick="setSolid()">Solid (Steel)</button>
+  <button class="btn btn-m"    id="b-prac-s" onclick="setSoundPractice(!soundMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Sound Quiz</button>
+</div>
+
+<script>
+function printNotes(){
+  let html='<html><head><title>Sound Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#4a148c;border-bottom:2px solid #4a148c;padding-bottom:8px}h2{color:#6a1b9a;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#4a148c;color:#fff}@media print{body{padding:10px}}</style></head><body>';
+  html+='<h1>Sound Properties — Study Notes</h1>';
+  html+='<h2>What is Sound?</h2><p>Sound is a longitudinal wave (compressions and rarefactions) that requires a medium to travel through.</p>';
+  html+='<h2>Key Properties</h2><ul><li><strong>Frequency (Hz):</strong> Number of vibrations per second — determines pitch (high/low)</li><li><strong>Amplitude:</strong> Size of vibration — determines loudness (volume)</li><li><strong>Wavelength:</strong> Distance between two identical points of the wave</li><li><strong>Speed:</strong> How fast the wave travels through a medium</li></ul>';
+  html+='<h2>Speed of Sound in Different Media</h2><table><tr><th>Medium</th><th>Speed (approx.)</th></tr><tr><td>Air</td><td>~340 m/s</td></tr><tr><td>Water</td><td>~1,480 m/s</td></tr><tr><td>Steel</td><td>~5,100 m/s</td></tr></table>';
+  html+='<p>Sound travels fastest in solids and slowest in gases because particles are closest together in solids.</p>';
+  html+='<h2>Pitch vs Loudness</h2><ul><li>Higher frequency = higher pitch</li><li>Higher amplitude = louder sound</li></ul>';
+  html+='</body></html>';
+  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+}
+let soundMcq=false;
+const SOUND_MCQ=[
+  {q:'What property of sound determines its PITCH?',opts:['Frequency (number of vibrations per second)','Amplitude (size of vibration)','Wavelength length','Speed of sound'],c:0,tip:'High frequency = high pitch. Frequency is measured in Hertz (Hz).'},
+  {q:'What property of sound determines its LOUDNESS?',opts:['Amplitude (size of vibrations)','Frequency','Wavelength','Speed'],c:0,tip:'Larger amplitude = louder sound. Amplitude is the height of the wave.'},
+  {q:'Sound travels FASTEST in:',opts:['Solids (steel, iron)','Liquids (water)','Gases (air)','A vacuum'],c:0,tip:'Sound travels fastest in solids because particles are packed closely together and can vibrate more rapidly.'},
+  {q:'Sound CANNOT travel through:',opts:['A vacuum (no particles)','Water','Steel','Air'],c:0,tip:'Sound is a mechanical wave that needs particles to travel. In a vacuum there are no particles.'},
+  {q:'Which wave type is sound?',opts:['Longitudinal (compressions and rarefactions)','Transverse (vibrations perpendicular to travel)','Electromagnetic','Circular'],c:0,tip:'Sound waves are longitudinal — particles vibrate parallel (back and forth) to the direction of travel.'},
+  {q:'The approximate speed of sound in air is:',opts:['340 m/s','3×10⁸ m/s (speed of light)','1,480 m/s','5,100 m/s'],c:0,tip:'Sound travels at approximately 340 m/s in air at room temperature. Light travels at 3×10⁸ m/s (much faster!).'},
+  {q:'If frequency DOUBLES, what happens to pitch?',opts:['Pitch goes up by one octave (sounds twice as high)','Pitch goes down','Pitch stays the same','Sound becomes louder'],c:0,tip:'Doubling the frequency raises the pitch by one octave — e.g., from middle C to the next C above.'},
+];
+let soundMcqIdx=0,soundMcqSel=-1,soundMcqScore=0,soundMcqDone=false,soundMcqFeedback=null;
+function setSoundPractice(on){ soundMcq=on; let b=document.getElementById('b-prac-s'); b.style.background=on?'#f9a825':''; b.style.color=on?'#fff':'#f9a825'; if(on){soundMcqIdx=0;soundMcqSel=-1;soundMcqScore=0;soundMcqDone=false;soundMcqFeedback=null;} }
+function drawSoundMCQ(s){
+  s.background(248,240,255);
+  if(soundMcqDone){
+    s.fill(74,20,140);s.noStroke();s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.CENTER);
+    s.text('Quiz Complete!',440,170);s.fill(100);s.textSize(15);s.textStyle(s.NORMAL);
+    s.text('Score: '+soundMcqScore+'/'+SOUND_MCQ.length,440,210);
+    s.text(soundMcqScore>=6?'Excellent! Sound knowledge!':soundMcqScore>=4?'Good work!':'Review sound properties!',440,240);
+    s.fill(106,27,154);s.noStroke();s.rect(310,265,260,44,10);s.fill(255);s.textSize(14);s.textStyle(s.BOLD);s.text('↺ Try Again',440,287+4);
+    return;
+  }
+  let q=SOUND_MCQ[soundMcqIdx];
+  s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(106,27,154);s.rect(30,18,820*(soundMcqIdx/SOUND_MCQ.length),10,5);
+  s.fill(74,20,140);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(soundMcqIdx+1)+' of '+SOUND_MCQ.length,30,32);
+  s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(q.q,440,80,820,60);
+  q.opts.forEach((opt,i)=>{
+    let by=110+i*80,isSel=soundMcqSel===i,correct=soundMcqFeedback!==null&&i===q.c,wrong=soundMcqFeedback!==null&&isSel&&i!==q.c;
+    s.fill(correct?[180,255,180]:wrong?[255,180,180]:isSel?[255,235,59]:[248,240,255]);
+    s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[210]);s.strokeWeight(isSel||correct?2.5:1.5);
+    s.rect(60,by,760,64,10);s.noStroke();s.fill(30);s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.CENTER);
+    s.text(['A','B','C','D'][i]+'. '+opt,76,by+32,728,56);
+  });
+  if(soundMcqFeedback){
+    s.fill(soundMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();
+    s.text(soundMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,36);
+    s.fill(206,147,216);s.rect(330,458,220,36,8);s.fill(30);s.textSize(12);s.textStyle(s.BOLD);s.text('Next →',440,476);
+  }
+  s.textAlign(s.LEFT,s.BASELINE);s.textStyle(s.NORMAL);
+}
+function soundMcqClick(mx,my){
+  if(soundMcqDone){if(mx>310&&mx<570&&my>265&&my<309){soundMcqIdx=0;soundMcqSel=-1;soundMcqScore=0;soundMcqDone=false;soundMcqFeedback=null;}return;}
+  let q=SOUND_MCQ[soundMcqIdx];
+  if(soundMcqFeedback){if(mx>330&&mx<550&&my>458&&my<494){soundMcqFeedback=null;soundMcqSel=-1;soundMcqIdx++;if(soundMcqIdx>=SOUND_MCQ.length)soundMcqDone=true;}return;}
+  q.opts.forEach((_,i)=>{let by=110+i*80;if(mx>60&&mx<820&&my>by&&my<by+64&&soundMcqFeedback===null){soundMcqSel=i;soundMcqFeedback=i===q.c?'correct':'wrong';if(i===q.c)soundMcqScore++;}});
+}
+let freq = 2, amp = 20, medium = 'air';
+let mediumSpeed = {air:1, water:3.5, solid:8};
+
+document.getElementById('freqSlider').addEventListener('input', function() {
+  freq = parseFloat(this.value);
+  document.getElementById('freqVal').textContent = freq.toFixed(1)+'×';
+});
+document.getElementById('ampSlider').addEventListener('input', function() {
+  amp = parseFloat(this.value);
+  let lbl = amp < 14 ? 'Low' : amp < 27 ? 'Med' : 'High';
+  document.getElementById('ampVal').textContent = lbl;
+});
+function setMedium(m) {
+  medium = m;
+  ['air','water','solid'].forEach(x => {
+    let id = 'b'+x.charAt(0).toUpperCase()+x.slice(1);
+    let el = document.getElementById(id);
+    if(el) el.classList.toggle('on', x===m);
+  });
+}
+function setSolid() { setMedium('solid'); }
+
+new p5(function(sk) {
+  const W = 880, H = 510;
+  let tick = 0;
+  const N_ROWS = 7;
+  const N_DOTS = 28;
+  const DOT_START = 78, DOT_END = 480;
+  const DOT_SPACING = (DOT_END - DOT_START) / (N_DOTS - 1);
+  const ROW_TOP = 68, ROW_SPACING = 28;
+
+  sk.setup = function() {
+    sk.createCanvas(W, H).parent('sketch');
+    sk.textFont('Arial');
+  };
+
+  sk.draw = function() {
+    if(soundMcq){ drawSoundMCQ(sk); return; }
+    tick += 0.04;
+    sk.background(248, 248, 252);
+
+    let spd = mediumSpeed[medium];
+    let waveLen = N_DOTS / (freq * 2.2); // wave length in dot units
+
+    drawBackground();
+    drawSource();
+    drawMolecules(spd, waveLen);
+    drawWaveGraph(spd, waveLen);
+    drawInfoPanel();
+    drawLabels(waveLen, spd);
+  };
+
+  function drawBackground() {
+    // Air/water/solid background tint
+    let bgCols = {air:[245,248,255], water:[235,245,255], solid:[245,245,240]};
+    let bc = bgCols[medium];
+    sk.fill(bc[0],bc[1],bc[2]); sk.noStroke();
+    sk.rect(55, 50, 440, N_ROWS*ROW_SPACING + 40, 8);
+
+    // Medium label
+    let mlCols = {air:[40,80,180], water:[0,100,180], solid:[80,60,30]};
+    let mc = mlCols[medium];
+    sk.fill(mc[0],mc[1],mc[2],80); sk.textSize(26); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text(medium.toUpperCase(), 270, 168); sk.textStyle(sk.NORMAL);
+  }
+
+  function drawSource() {
+    let sx = 38, sy = ROW_TOP + (N_ROWS-1)*ROW_SPACING/2;
+    // Speaker vibration
+    let pulse = sk.sin(tick * freq * 3) * amp * 0.3;
+
+    // Speaker body
+    sk.fill(80,80,100); sk.stroke(60); sk.strokeWeight(1.5);
+    sk.rect(12, sy-22, 22, 44, 3);
+    // Speaker cone
+    sk.fill(120,120,140); sk.noStroke();
+    sk.triangle(34, sy-22, 34, sy+22, sx+pulse+12, sy);
+    sk.stroke(100); sk.strokeWeight(2); sk.noFill();
+    sk.triangle(34, sy-22, 34, sy+22, sx+pulse+12, sy);
+    // Vibration indicator
+    sk.fill(80,80,100,150); sk.noStroke();
+    sk.ellipse(sx+pulse+14, sy, 6, 30);
+
+    // "Source" label
+    sk.fill(60); sk.textSize(9); sk.textAlign(sk.CENTER);
+    sk.text('Source', 22, sy+33);
+  }
+
+  function drawMolecules(spd, waveLen) {
+    for (let row = 0; row < N_ROWS; row++) {
+      let rowY = ROW_TOP + row * ROW_SPACING;
+      let rowOffset = row * 0.4; // slight phase stagger between rows
+
+      for (let i = 0; i < N_DOTS; i++) {
+        let xBase = DOT_START + i * DOT_SPACING;
+
+        // Longitudinal displacement
+        let phase = (i / waveLen) - tick * spd * freq * 0.6 + rowOffset;
+        let disp = amp * 0.55 * sk.sin(phase * sk.TWO_PI);
+
+        // Actual x position
+        let xActual = xBase + disp;
+
+        // Calculate local density (how compressed are neighbours)
+        let phaseNext = ((i+1) / waveLen) - tick * spd * freq * 0.6 + rowOffset;
+        let dispNext = amp * 0.55 * sk.sin(phaseNext * sk.TWO_PI);
+        let xNext = DOT_START + (i+1)*DOT_SPACING + dispNext;
+        let localDist = Math.max(1, xNext - xActual);
+        let density = DOT_SPACING / localDist;
+
+        // Color: compression = dark blue, rarefaction = light
+        let dotR = sk.map(density, 0.4, 2.0, 210, 30);
+        let dotG = sk.map(density, 0.4, 2.0, 220, 80);
+        let dotB = sk.map(density, 0.4, 2.0, 240, 190);
+
+        // Medium tint
+        if (medium === 'water') { dotR = dotR*0.6; dotG = dotG*0.8; dotB = Math.min(255, dotB*1.1); }
+        if (medium === 'solid') { dotR = dotR*0.6; dotG = dotG*0.6; dotB = dotB*0.5; }
+
+        let dotSize = sk.map(density, 0.4, 2.0, 6, 11);
+
+        sk.fill(dotR, dotG, dotB, 220); sk.noStroke();
+        sk.ellipse(xActual, rowY, dotSize);
+      }
+    }
+  }
+
+  function drawWaveGraph(spd, waveLen) {
+    let gx = 55, gy = 365, gw = 440, gh = 110;
+
+    // Graph background
+    sk.fill(250,250,255,230); sk.stroke(180,180,220); sk.strokeWeight(1.5);
+    sk.rect(gx, gy, gw, gh, 6); sk.noStroke();
+
+    // Centre line
+    sk.stroke(180,180,200); sk.strokeWeight(1); sk.setLineDash([3,3]);
+    sk.line(gx+4, gy+gh/2, gx+gw-4, gy+gh/2); sk.setLineDash([]);
+
+    // Draw sine wave
+    sk.stroke(140,30,180); sk.strokeWeight(2.5); sk.noFill();
+    sk.beginShape();
+    for (let x=0; x<=gw-8; x+=2) {
+      let phase = (x / (gw/freq/2.5)) - tick * spd * freq * 0.6;
+      let y = (gh/2) - amp * 1.15 * sk.sin(phase * sk.TWO_PI);
+      y = sk.constrain(y, 8, gh-8);
+      sk.vertex(gx+4+x, gy+y);
+    }
+    sk.endShape();
+
+    // Amplitude annotation (left side)
+    let midY = gy + gh/2;
+    let topY = midY - amp * 1.15;
+    sk.stroke(220,50,50,160); sk.strokeWeight(1.5); sk.setLineDash([3,3]);
+    sk.line(gx+4, midY, gx+4, topY);
+    sk.setLineDash([]); sk.noStroke();
+    sk.fill(200,30,30); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.RIGHT);
+    sk.text('A', gx+2, (midY+topY)/2+3); sk.textStyle(sk.NORMAL);
+
+    // Wavelength annotation (mark one full cycle)
+    let wavePixels = (gw-8) / freq / 2.5;
+    let wx1 = gx + 24, wx2 = wx1 + wavePixels;
+    sk.stroke(0,100,180,160); sk.strokeWeight(1.5);
+    sk.line(wx1, gy+gh-12, wx2, gy+gh-12);
+    sk.line(wx1, gy+gh-18, wx1, gy+gh-6);
+    sk.line(wx2, gy+gh-18, wx2, gy+gh-6);
+    sk.noStroke(); sk.fill(0,80,160); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('λ (wavelength)', (wx1+wx2)/2, gy+gh-2); sk.textStyle(sk.NORMAL);
+
+    // Graph labels
+    sk.fill(100,20,140); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Transverse representation of sound wave (displacement vs position)', gx+6, gy-4); sk.textStyle(sk.NORMAL);
+    sk.fill(60); sk.textSize(9); sk.textAlign(sk.LEFT); sk.text('Displacement', gx+4, gy+gh/2-2);
+    sk.textAlign(sk.RIGHT); sk.text('Position →', gx+gw-4, gy+gh-2);
+  }
+
+  function drawLabels(waveLen, spd) {
+    // Compression / Rarefaction labels
+    let labelY = ROW_TOP + (N_ROWS-1)*ROW_SPACING/2;
+    let phase0 = -tick * spd * freq * 0.6;
+    // Find a compression peak (sin=1 → displacement max pushing dots together)
+    // Compression where d/dx displacement = 0 and dots are crowded
+    // That's approximately at phase = 0.75 of a cycle → x = (0.75 - phase0) * waveLen * DOT_SPACING
+    let compI = ((0.75 - phase0 % 1) * waveLen) % N_DOTS;
+    if (compI < 0) compI += N_DOTS;
+    let compX = DOT_START + compI * DOT_SPACING;
+    let rareI = ((0.25 - phase0 % 1) * waveLen) % N_DOTS;
+    if (rareI < 0) rareI += N_DOTS;
+    let rareX = DOT_START + rareI * DOT_SPACING;
+
+    if (compX > 85 && compX < DOT_END - 10) {
+      sk.fill(20,60,180); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('▼', compX, ROW_TOP - 14);
+      sk.text('Compression', compX, ROW_TOP - 24); sk.textStyle(sk.NORMAL);
+    }
+    if (rareX > 85 && rareX < DOT_END - 10) {
+      sk.fill(180,30,30); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+      sk.text('▼', rareX, ROW_TOP - 14);
+      sk.text('Rarefaction', rareX, ROW_TOP - 24); sk.textStyle(sk.NORMAL);
+    }
+
+    // Ear/receiver on the right
+    sk.fill(255,200,160); sk.stroke(200,140,100); sk.strokeWeight(1.5);
+    sk.ellipse(DOT_END+20, labelY, 18, 32);
+    sk.noStroke(); sk.fill(60); sk.textSize(9); sk.textAlign(sk.CENTER);
+    sk.text('Ear', DOT_END+20, labelY+28);
+
+    // Direction arrow
+    sk.stroke(60); sk.strokeWeight(1.5); sk.noFill();
+    arrowLine(sk, DOT_END+2, labelY, DOT_END+12, labelY);
+  }
+
+  // ─── Info Panel ────────────────────────────────────────────
+  function drawInfoPanel() {
+    let px=508, py=8, pw=364, ph=494;
+    sk.fill(255,255,255,235); sk.stroke(100,30,140); sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10); sk.noStroke();
+
+    // Title
+    sk.fill(74,20,140); sk.textSize(14); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('Sound Properties', px+14, py+26); sk.textStyle(sk.NORMAL);
+
+    // Current values
+    let vy = py+36;
+    sk.fill(74,20,140,30); sk.noStroke(); sk.rect(px+10,vy,pw-20,26,5);
+    sk.fill(74,20,140); sk.textSize(10); sk.textAlign(sk.LEFT);
+    let medNames={air:'Air (340 m/s)',water:'Water (1500 m/s)',solid:'Steel (5100 m/s)'};
+    sk.text('Freq: '+freq.toFixed(1)+'×  |  Amp: '+amp+'  |  Medium: '+medNames[medium], px+14, vy+16);
+
+    // Key properties
+    const props = [
+      { title:'Frequency (f)', col:[140,30,180],
+        body:'Number of waves passing a point per second.\nUnit: Hertz (Hz)\n→ Higher frequency = HIGHER PITCH (shriller sound)' },
+      { title:'Amplitude (A)', col:[200,50,30],
+        body:'Maximum displacement of particles from rest.\n→ Higher amplitude = LOUDER SOUND (more energy)' },
+      { title:'Wavelength (λ)', col:[0,100,180],
+        body:'Distance between two successive compressions\n(or rarefactions). Unit: metre (m)\nv = f × λ  (wave speed equation)' },
+      { title:'Speed of Sound', col:[0,140,60],
+        body:'Air: ~340 m/s  |  Water: ~1500 m/s\nSteel: ~5100 m/s\nSound travels FASTEST in solids, SLOWEST in gases.' },
+    ];
+
+    let sy = vy + 36;
+    for (let p of props) {
+      let ph2 = 16 + p.body.split('\n').length * 15 + 4;
+      sk.fill(p.col[0],p.col[1],p.col[2],20); sk.noStroke(); sk.rect(px+10,sy,pw-20,ph2,5);
+      sk.fill(p.col[0],p.col[1],p.col[2]); sk.textSize(10.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+      sk.text(p.title, px+14, sy+14); sk.textStyle(sk.NORMAL);
+      sk.fill(30); sk.textSize(10.2);
+      p.body.split('\n').forEach((l,i) => sk.text(l, px+14, sy+28+i*15));
+      sy += ph2 + 8;
+    }
+
+    // Wave equation box
+    sy += 2;
+    sk.fill(230,220,255,220); sk.stroke(100,60,200); sk.strokeWeight(1.5);
+    sk.rect(px+10,sy,pw-20,38,6); sk.noStroke();
+    sk.fill(60,20,150); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Wave Speed Equation', px+pw/2, sy+14); sk.textStyle(sk.NORMAL);
+    sk.fill(30); sk.textSize(14); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('v  =  f  ×  λ', px+pw/2, sy+32); sk.textStyle(sk.NORMAL);
+
+    sy += 48;
+    // Medium comparison
+    sk.fill(240,252,240,200); sk.stroke(80,160,80); sk.strokeWeight(1.2);
+    sk.rect(px+10,sy,pw-20,56,6); sk.noStroke();
+    sk.fill(0,100,30); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('SPEED IN DIFFERENT MEDIA:', px+14, sy+14); sk.textStyle(sk.NORMAL);
+    const meds = [{n:'Air (gas)',v:340,c:[100,140,220]},{n:'Water (liquid)',v:1500,c:[0,120,200]},{n:'Steel (solid)',v:5100,c:[100,80,50]}];
+    for (let i=0;i<3;i++) {
+      let m=meds[i], bw=sk.map(m.v,0,5200,(pw-60)*0.05,(pw-60)*0.95);
+      sk.fill(m.c[0],m.c[1],m.c[2],160); sk.rect(px+14,sy+20+i*11,bw,9,3);
+      sk.fill(m.c[0],m.c[1],m.c[2]); sk.textSize(8.5); sk.textAlign(sk.LEFT);
+      sk.text(m.n+': '+m.v+' m/s', px+14, sy+28+i*11);
+    }
+
+    // Fun fact
+    let ffy = sy + 66;
+    sk.fill(255,253,231,220); sk.stroke(255,213,79); sk.strokeWeight(1.5);
+    sk.rect(px+10,ffy,pw-20,ph-(ffy-py)-14,6); sk.noStroke();
+    sk.fill(130,100,0); sk.textSize(9.5); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text('💡 Did you know?', px+16, ffy+14); sk.textStyle(sk.NORMAL);
+    sk.fill(60); sk.textSize(10);
+    sk.text('Sound CANNOT travel through a vacuum (empty space).', px+16, ffy+30);
+    sk.text('This is why space is completely silent! Sound needs', px+16, ffy+45);
+    sk.text('particles (gas, liquid, or solid) to carry vibrations.', px+16, ffy+60);
+  }
+
+  function arrowLine(sk, x1, y1, x2, y2) {
+    sk.line(x1,y1,x2,y2);
+    let a = sk.atan2(y2-y1,x2-x1);
+    sk.fill(60); sk.noStroke();
+    sk.push(); sk.translate(x2,y2); sk.rotate(a);
+    sk.triangle(0,0,-9,3,-9,-3); sk.pop();
+  }
+
+  sk.setLineDash = function(a){ sk.drawingContext.setLineDash(a); };
+  sk.mouseClicked=function(){ if(soundMcq){ soundMcqClick(sk.mouseX,sk.mouseY); return; } };
+});
+</script>
+</body>
+</html>

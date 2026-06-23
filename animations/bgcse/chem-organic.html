@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organic Chemistry — BEC Animations</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#f0f7f0;font-family:'Segoe UI',Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:0 0 40px}
+    .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
+    .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
+    .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
+    .topic-header{width:100%;background:#33691e;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
+    .topic-header .label{background:#aed581;color:#33691e;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
+    .topic-header h1{font-size:1.25rem;font-weight:700}
+    #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #aed581}
+    #controls{display:flex;gap:10px;margin-top:14px}
+    .btn{padding:8px 18px;border:2.5px solid #33691e;border-radius:24px;cursor:pointer;font-size:.85rem;font-weight:700;background:#fff;color:#33691e;transition:all .15s}
+    .btn.on{background:#33691e;color:#fff}
+    /* ── Mobile responsive ── */
+    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
+    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
+    @media(max-width:900px){
+      #sketch-wrap{transform-origin:top center}
+      body{padding:0 0 20px}
+    }
+    
+    @media(orientation:landscape)and(max-height:500px){
+      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
+      .topbar{width:100%}
+      .topic-header{width:100%}
+      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
+      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
+      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
+      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
+      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
+    }
+    
+    
+    }
+    
+    }    /* ── Auto-rotate for small phones in portrait ── */
+    @media(max-width:560px)and(orientation:portrait){
+      html,body{overflow:hidden}
+      body{
+        position:fixed;
+        width:100vh;
+        height:100vw;
+        top:calc(50% - 50vw);
+        left:calc(50% - 50vh);
+        transform:rotate(90deg);
+        transform-origin:center;
+        overflow:hidden;
+      }
+    }  </style>
+</head>
+<body>
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Organic Chemistry</h1></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
+<div id="controls">
+  <button class="btn on" id="b0" onclick="setTab(0)">⛽ Alkanes</button>
+  <button class="btn"    id="b1" onclick="setTab(1)">🔗 Alkenes</button>
+  <button class="btn"    id="b2" onclick="setTab(2)">🍷 Alcohols</button>
+  <button class="btn"    id="b3" onclick="setTab(3)">📋 Functional Groups</button>
+  <button class="btn" id="b-prac" onclick="setOrgPractice(!orgMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+</div>
+<script>
+let tab=0;
+function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
+function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Organic Chemistry</h2><ul><li><b>Alkanes</b>: CₙH₂ₙ₊₂. Saturated (single bonds only). Methane CH₄, Ethane C₂H₆, etc. Used as fuels.</li><li><b>Alkenes</b>: CₙH₂ₙ. Unsaturated (C=C double bond). Ethene C₂H₄. More reactive than alkanes.</li><li><b>Alcohols</b>: Functional group −OH. Ethanol C₂H₅OH. Made by fermentation or addition of water to ethene.</li><li><b>Functional groups</b>: −OH (alcohol), −COOH (carboxylic acid), −NH₂ (amine).</li><li><b>Fractional distillation</b>: Separates crude oil by boiling point — shorter chains are more flammable, lower bp.</li><li><b>Combustion</b>: Alkane + O₂ → CO₂ + H₂O (complete) or CO + soot (incomplete).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+let orgMcq=false;
+const ORG_MCQ=[
+  {q:'What is the general formula of alkanes?',opts:['CₙH₂ₙ₊₂','CₙH₂ₙ','CₙH₂ₙ₋₂','CₙHₙ'],c:0,tip:'Alkanes: CₙH₂ₙ₊₂ (e.g., CH₄, C₂H₆, C₃H₈).'},
+  {q:'Alkenes contain which structural feature that alkanes do not?',opts:['A C=C double bond','A C≡C triple bond','An OH group','A COOH group'],c:0,tip:'Alkenes are unsaturated — they have at least one C=C double bond.'},
+  {q:'What is the first member of the alkane series?',opts:['Methane (CH₄)','Ethane (C₂H₆)','Ethene (C₂H₄)','Propane (C₃H₈)'],c:0,tip:'Methane (CH₄) is the simplest alkane, with just 1 carbon atom.'},
+  {q:'What is the functional group of alcohols?',opts:['-OH (hydroxyl)','C=C double bond','-COOH','C=O only'],c:0,tip:'The hydroxyl group (-OH) defines alcohols.'},
+  {q:'Ethene + H₂ → ? (addition reaction)',opts:['Ethane (C₂H₆)','Ethanol (C₂H₅OH)','Methane (CH₄)','Propane (C₃H₈)'],c:0,tip:'H₂ adds across the C=C double bond of ethene to give ethane.'},
+  {q:'Fractional distillation of crude oil separates fractions by:',opts:['Boiling point','Colour','Density','Solubility in water'],c:0,tip:'Different hydrocarbons condense at different levels in the fractionating column based on boiling point.'},
+  {q:'Complete combustion of alkanes produces:',opts:['CO₂ and H₂O','CO and soot','Only CO₂','H₂O and CO'],c:0,tip:'Complete combustion (excess O₂) gives CO₂ + H₂O. Incomplete combustion gives CO and/or soot.'}
+];
+let orgMcqIdx=0,orgMcqSel=-1,orgMcqScore=0,orgMcqDone=false,orgMcqFeedback=null;
+function setOrgPractice(on){orgMcq=on;let b=document.getElementById('b-prac');b.classList.toggle('on',on);b.style.background=on?'#f9a825':'';b.style.color=on?'#fff':'#f9a825';if(on){orgMcqIdx=0;orgMcqSel=-1;orgMcqScore=0;orgMcqDone=false;orgMcqFeedback=null;}}
+function drawOrgMCQ(s){s.background(252,252,240);if(orgMcqDone){s.fill(51,105,30);s.textSize(22);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text('Quiz Complete!',440,180);s.textSize(16);s.text('Score: '+orgMcqScore+'/'+ORG_MCQ.length,440,215);let msg=orgMcqScore===ORG_MCQ.length?'Perfect! You know Organic Chemistry!':orgMcqScore>=5?'Great job!':'Review alkanes, alkenes & functional groups.';s.textSize(13);s.fill(60);s.text(msg,440,250);s.fill(249,168,37);s.noStroke();s.rect(310,290,260,44,22);s.fill(255);s.textSize(14);s.text('Play Again',440,317);return;}let q=ORG_MCQ[orgMcqIdx];s.fill(220);s.noStroke();s.rect(30,18,820,10,5);s.fill(100,180,100);s.rect(30,18,820*(orgMcqIdx/ORG_MCQ.length),10,5);s.fill(51,105,30);s.textSize(10);s.textStyle(s.NORMAL);s.textAlign(s.LEFT,s.TOP);s.text('Question '+(orgMcqIdx+1)+' of '+ORG_MCQ.length,30,32);s.fill(30);s.textSize(15);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.TOP);s.text(q.q,440,55,820,80);q.opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;let isSel=orgMcqSel===i,correct=orgMcqFeedback!==null&&i===q.c,wrong=orgMcqFeedback!==null&&isSel&&i!==q.c;s.fill(correct?[220,255,220]:wrong?[255,220,220]:isSel?[255,248,200]:[248,248,255]);s.stroke(correct?[0,150,0]:wrong?[200,0,0]:isSel?[200,160,0]:[200]);s.strokeWeight(isSel||correct?2.5:1.5);s.rect(x,y,w,h,10);s.fill(30);s.noStroke();s.textSize(13);s.textStyle(s.NORMAL);s.textAlign(s.CENTER,s.CENTER);s.text(o,x+w/2,y+h/2,w-20,h-10);});if(orgMcqFeedback){s.fill(orgMcqFeedback==='correct'?[0,120,0]:[150,0,0]);s.textSize(11);s.textStyle(s.BOLD);s.textAlign(s.CENTER,s.BASELINE);s.noStroke();s.text(orgMcqFeedback==='correct'?'✓ Correct!':'✗ Wrong — '+q.tip,440,450,820,40);}}
+function orgMcqClick(mx,my){if(orgMcqDone){if(mx>310&&mx<570&&my>290&&my<334){orgMcqIdx=0;orgMcqSel=-1;orgMcqScore=0;orgMcqDone=false;orgMcqFeedback=null;}return;}if(orgMcqFeedback!==null){orgMcqIdx++;orgMcqSel=-1;orgMcqFeedback=null;if(orgMcqIdx>=ORG_MCQ.length)orgMcqDone=true;return;}ORG_MCQ[orgMcqIdx].opts.forEach((o,i)=>{let x=30+(i%2)*430,y=155+(Math.floor(i/2))*90,w=410,h=70;if(mx>x&&mx<x+w&&my>y&&my<y+h){orgMcqSel=i;orgMcqFeedback=i===ORG_MCQ[orgMcqIdx].c?'correct':'wrong';if(i===ORG_MCQ[orgMcqIdx].c)orgMcqScore++;}});}
+new p5(sk=>{
+  const W=880,H=510;let tick=0;
+  sk.setup=()=>{sk.createCanvas(W,H).parent('sketch');sk.textFont('Arial');};
+  sk.draw=()=>{if(orgMcq){ drawOrgMCQ(sk); return; }tick+=0.02;sk.background(248,255,245);
+    if(tab===0) drawAlkanes();
+    else if(tab===1) drawAlkenes();
+    else if(tab===2) drawAlcohols();
+    else drawFunctionalGroups();
+    drawInfoPanel();
+  };
+
+  // Helper: draw a carbon chain
+  function drawChain(atoms, bonds, x, y){
+    let gap=48;
+    // Draw bonds first
+    bonds.forEach(b=>{
+      let x1=x+b[0]*gap,y1=y+(b[0]%2===0?0:0);
+      let x2=x+b[1]*gap,y2=y;
+      sk.stroke(60,60,60,200);sk.strokeWeight(b[2]===2?2:2.5);
+      if(b[2]===2){sk.line(x1,y1-4,x2,y2-4);sk.line(x1,y1+4,x2,y2+4);}
+      else sk.line(x1,y1,x2,y2);
+    });
+    // Draw atoms
+    atoms.forEach((a,i)=>{
+      let ax=x+i*gap;let ay=a.y||y;
+      let isC=a.sym==='C';
+      sk.fill(isC?[60,60,60]:[200,60,60]);sk.noStroke();
+      if(isC) sk.fill(80,80,80,220);else if(a.sym==='O') sk.fill(200,60,60,220);else sk.fill(30,80,200,200);
+      sk.ellipse(ax,ay,a.sym.length>1?26:22);
+      sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text(a.sym,ax,ay+3);sk.textStyle(sk.NORMAL);
+    });
+  }
+
+  function drawAlkanes(){
+    sk.fill(40,80,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Alkanes — Saturated Hydrocarbons (C-C single bonds only)',248,22);sk.textStyle(sk.NORMAL);
+    const alkanes=[
+      {n:'Methane CH₄',f:'CH₄',use:'Natural gas, fuel',nC:1},
+      {n:'Ethane C₂H₆',f:'CH₃-CH₃',use:'Petrochemical feedstock',nC:2},
+      {n:'Propane C₃H₈',f:'CH₃-CH₂-CH₃',use:'LPG, camping gas',nC:3},
+      {n:'Butane C₄H₁₀',f:'CH₃-CH₂-CH₂-CH₃',use:'Lighter fuel, LPG',nC:4},
+    ];alkanes.forEach((a,i)=>{
+      let y=56+i*106;
+      sk.fill(220,240,210,200);sk.stroke(60,120,30,100);sk.strokeWeight(1);sk.rect(14,y,462,96,6);sk.noStroke();
+      sk.fill(30,100,0);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(a.n+'  ('+a.f+')',20,y+16);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(9.5);sk.text('Use: '+a.use,20,y+32);
+      // Structural formula
+      let cx=20,cy=y+65;
+      let C=[],B=[];
+      for(let j=0;j<a.nC;j++){C.push({sym:'C'});if(j>0)B.push([j-1,j,1]);}
+      // H atoms above/below each C
+      C.forEach((c,j)=>{sk.stroke(100,100,200,160);sk.strokeWeight(1.5);
+        let nx=cx+j*48;
+        sk.line(nx,cy-11,nx,cy-28);sk.line(nx,cy+11,nx,cy+28);
+        sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(nx,cy-32,16);sk.ellipse(nx,cy+32,16);
+        sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+        sk.text('H',nx,cy-29);sk.text('H',nx,cy+35);sk.textStyle(sk.NORMAL);
+      });
+      if(a.nC>1){
+        sk.stroke(100,100,200,160);sk.strokeWeight(1.5);
+        sk.line(cx,cy-11,cx-18,cy-28);sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(cx-22,cy-32,16);
+        sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('H',cx-22,cy-29);sk.textStyle(sk.NORMAL);
+        let lx=cx+(a.nC-1)*48;
+        sk.stroke(100,100,200,160);sk.strokeWeight(1.5);sk.line(lx,cy-11,lx+18,cy-28);
+        sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(lx+22,cy-32,16);
+        sk.fill(255);sk.textSize(7.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('H',lx+22,cy-29);sk.textStyle(sk.NORMAL);
+      }
+      drawChain(C,B,cx,cy);
+    });
+    // General formula
+    sk.fill(40,80,0,180);sk.noStroke();sk.rect(14,490,462,14,4);
+    sk.fill(255);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('General formula: CₙH₂ₙ₊₂   Combustion: CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O',248,500);sk.textStyle(sk.NORMAL);
+  }
+
+  function drawAlkenes(){
+    sk.fill(0,100,40);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Alkenes — Unsaturated (C=C double bond)',248,22);sk.textStyle(sk.NORMAL);
+    // Ethene structural
+    let cy=105;
+    sk.fill(30);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('Ethene (C₂H₄) — simplest alkene:',14,44);sk.textStyle(sk.NORMAL);
+    // C=C bond
+    let c1x=120,c2x=200,cy2=cy;
+    sk.stroke(60,60,60);sk.strokeWeight(3);sk.line(c1x+11,cy2-5,c2x-11,cy2-5);sk.line(c1x+11,cy2+5,c2x-11,cy2+5);
+    sk.fill(80,80,80,220);sk.noStroke();sk.ellipse(c1x,cy2,24);sk.ellipse(c2x,cy2,24);
+    sk.fill(255);sk.textSize(9);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('C',c1x,cy2+3);sk.text('C',c2x,cy2+3);sk.textStyle(sk.NORMAL);
+    // H atoms
+    [[c1x,-30,-30],[c1x,-30,30],[c2x,30,-30],[c2x,30,30]].forEach(([cx,dx,dy])=>{
+      sk.stroke(60,60,200,160);sk.strokeWeight(1.5);sk.line(cx,cy2,cx+dx*0.6,cy2+dy*0.6);
+      sk.fill(30,80,200,200);sk.noStroke();sk.ellipse(cx+dx,cy2+dy,18);
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('H',cx+dx,cy2+dy+3);sk.textStyle(sk.NORMAL);
+    });
+    sk.noStroke();sk.fill(0,100,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('C=C double bond (1 σ + 1 π bond)',165,cy2+55);sk.textStyle(sk.NORMAL);
+    // Addition reactions
+    let ry=170;
+    sk.fill(235,255,235,220);sk.stroke(0,140,40,80);sk.strokeWeight(1);sk.rect(14,ry,462,100,7);sk.noStroke();
+    sk.fill(0,100,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ADDITION REACTIONS (alkenes are very reactive at C=C):',20,ry+14);sk.textStyle(sk.NORMAL);
+    [['+ H₂ (hydrogenation)','→  C-C  (alkane) — with Ni catalyst, e.g. hardening oils'],
+     ['+ Br₂ (bromination)','→  BrC-CBr (dibromoalkane) — decolourises orange bromine water'],
+     ['+ H₂O (hydration)','→  alcohol (with H₃PO₄ catalyst)'],
+     ['+ HCl (addition)','→  chloroalkane'],
+    ].forEach((r,i)=>{
+      sk.fill(0,100,40);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);sk.text(r[0],20,ry+30+i*18);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(r[1],160,ry+30+i*18);
+    });
+    // Bromine water test
+    let ty=282;
+    sk.fill(255,240,200,220);sk.stroke(180,100,0,80);sk.strokeWeight(1);sk.rect(14,ty,462,62,7);sk.noStroke();
+    sk.fill(150,70,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('TEST for DOUBLE BOND (bromine water):',20,ty+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Shake with orange bromine water:',20,ty+30);
+    sk.fill(200,100,0);sk.text('Alkene → decolourises (orange to colourless)',20,ty+48);
+    sk.fill(140,60,0);sk.text('Alkane → stays orange (no reaction)',300,ty+48);
+    // Polymerisation
+    let py=354;
+    sk.fill(240,255,240,220);sk.stroke(0,120,40,80);sk.strokeWeight(1);sk.rect(14,py,462,148,7);sk.noStroke();
+    sk.fill(0,100,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('ADDITION POLYMERISATION:',20,py+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10);sk.text('Many alkene monomers join to form a polymer (long chain).',20,py+30);
+    sk.text('n(CH₂=CH₂) → -(CH₂-CH₂)ₙ-   (polyethene/polythene)',20,py+48);
+    const polymers=[['Ethene → Polyethene (PE)','Bags, bottles, plastic pipes'],['Propene → Polypropylene (PP)','Ropes, car parts, packaging'],['Chloroethene → PVC','Pipes, flooring, window frames'],['Styrene → Polystyrene','Cups, insulation, packaging'],['Tetrafluoroethene → PTFE','Non-stick pans (Teflon)']];
+    polymers.forEach((p,i)=>{
+      sk.fill(0,100,40);sk.textStyle(sk.BOLD);sk.textSize(9.5);sk.textAlign(sk.LEFT);sk.text(p[0]+':',20,py+68+i*16);
+      sk.fill(30);sk.textStyle(sk.NORMAL);sk.text(p[1],230,py+68+i*16);
+    });
+  }
+
+  function drawAlcohols(){
+    sk.fill(160,0,100);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Alcohols — contain the -OH (hydroxyl) functional group',248,22);sk.textStyle(sk.NORMAL);
+    const alcs=[
+      {n:'Methanol (CH₃OH)',use:'Fuel, solvent, industrial chemical',f:'CH₃-OH'},
+      {n:'Ethanol (C₂H₅OH)',use:'Alcoholic drinks, hand sanitiser, fuel',f:'CH₃-CH₂-OH'},
+      {n:'Propanol (C₃H₇OH)',use:'Cosmetics, cleaning products',f:'CH₃-CH₂-CH₂-OH'},
+    ];
+    alcs.forEach((a,i)=>{
+      let y=46+i*66;
+      sk.fill(255,230,245,200);sk.stroke(160,0,100,80);sk.strokeWeight(1);sk.rect(14,y,462,58,6);sk.noStroke();
+      sk.fill(120,0,80);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(a.n+' — '+a.f,20,y+16);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(9.5);sk.text('Use: '+a.use,20,y+36);
+      // -OH group highlight
+      sk.fill(200,0,100,200);sk.noStroke();sk.ellipse(436,y+28,28);
+      sk.fill(255);sk.textSize(8.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text('-OH',436,y+31);sk.textStyle(sk.NORMAL);
+    });
+    // Properties
+    let ry=250;
+    sk.fill(255,240,250,220);sk.stroke(160,0,100,80);sk.strokeWeight(1);sk.rect(14,ry,462,92,7);sk.noStroke();
+    sk.fill(120,0,80);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('PROPERTIES of alcohols:',20,ry+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    ['Soluble in water (due to -OH hydrogen bonding)','Flammable — burn completely in oxygen: CₙH₂ₙ₊₁OH + O₂ → CO₂ + H₂O','-OH group undergoes reactions: oxidation, dehydration, esterification'].forEach((l,i)=>sk.text(l,20,ry+30+i*20));
+    // Fermentation
+    let fy=352;
+    sk.fill(255,245,220,220);sk.stroke(180,100,0,80);sk.strokeWeight(1);sk.rect(14,fy,462,78,7);sk.noStroke();
+    sk.fill(140,60,0);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('FERMENTATION (making ethanol):',20,fy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('C₆H₁₂O₆  →  2C₂H₅OH  +  2CO₂    (enzyme: zymase from yeast)',20,fy+32);
+    sk.text('Conditions: 30–37°C, anaerobic, yeast present. Ethanol ~15% max (kills yeast)',20,fy+52);
+    // Industrial ethanol
+    let iy=440;
+    sk.fill(240,255,240,220);sk.stroke(0,120,60,80);sk.strokeWeight(1);sk.rect(14,iy,462,62,7);sk.noStroke();
+    sk.fill(0,100,40);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+    sk.text('INDUSTRIAL SYNTHESIS of ethanol:',20,iy+14);sk.textStyle(sk.NORMAL);
+    sk.fill(30);sk.textSize(10.5);
+    sk.text('Hydration of ethene:  CH₂=CH₂  +  H₂O  →  C₂H₅OH',20,iy+32);
+    sk.text('Conditions: 300°C, 60 atm, H₃PO₄ catalyst. Fast, high purity.',20,iy+50);
+  }
+
+  function drawFunctionalGroups(){
+    sk.fill(60,60,0);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    sk.text('Organic Functional Groups — Summary',248,22);sk.textStyle(sk.NORMAL);
+    const fgs=[
+      {name:'Alkane',fg:'-C-C-',gen:'CₙH₂ₙ₊₂',ex:'CH₄ methane',col:[80,80,80],prop:'Saturated; unreactive; combustion; substitution with halogens'},
+      {name:'Alkene',fg:'C=C',gen:'CₙH₂ₙ',ex:'C₂H₄ ethene',col:[0,120,40],prop:'Unsaturated; addition reactions; decolourises Br₂(aq)'},
+      {name:'Alcohol',fg:'-OH',gen:'CₙH₂ₙ₊₁OH',ex:'C₂H₅OH ethanol',col:[160,0,100],prop:'Soluble in water; burns; reacts with Na (H₂ gas); oxidised to acid'},
+      {name:'Carboxylic acid',fg:'-COOH',gen:'CₙH₂ₙ₊₁COOH',ex:'CH₃COOH ethanoic acid',col:[200,60,0],prop:'Weak acid; reacts with bases, carbonates; forms esters'},
+      {name:'Ester',fg:'-COO-',gen:'RCOOR\'',ex:'CH₃COOC₂H₅ ethyl ethanoate',col:[80,0,180],prop:'Fruity smell; formed from acid + alcohol (esterification)'},
+      {name:'Amine',fg:'-NH₂',gen:'RNH₂',ex:'CH₃NH₂ methylamine',col:[0,80,160],prop:'Basic (ammonium salts); nylon is a polyamide'},
+    ];
+    fgs.forEach((fg,i)=>{
+      let y=46+i*76;
+      sk.fill(fg.col[0],fg.col[1],fg.col[2],30);sk.stroke(fg.col[0],fg.col[1],fg.col[2],100);sk.strokeWeight(1.5);
+      sk.rect(14,y,462,68,6);sk.noStroke();
+      // Functional group badge
+      sk.fill(fg.col[0],fg.col[1],fg.col[2],200);sk.noStroke();sk.rect(17,y+8,52,52,5);
+      sk.fill(255);sk.textSize(10.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);sk.text(fg.fg,43,y+37);sk.textStyle(sk.NORMAL);
+      // Name + gen
+      sk.fill(fg.col[0],fg.col[1],fg.col[2]);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(fg.name+' — '+fg.gen,78,y+18);sk.textStyle(sk.NORMAL);
+      sk.fill(80);sk.textSize(9);sk.text('e.g. '+fg.ex,78,y+32);
+      sk.fill(30);sk.textSize(9);sk.text(fg.prop,78,y+52,380,20);
+    });
+  }
+
+  function drawInfoPanel(){
+    let px=498,py=8,pw=374,ph=494;let c=[50,100,20];
+    sk.fill(255,255,255,240);sk.stroke(c[0],c[1],c[2]);sk.strokeWeight(2.5);
+    sk.rect(px,py,pw,ph,10);sk.noStroke();
+    sk.fill(c[0],c[1],c[2],210);sk.rect(px+8,py+8,pw-16,34,7);
+    sk.fill(255);sk.textSize(13);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+    const titles=['Alkanes','Alkenes','Alcohols','Functional Groups'];
+    sk.text(titles[tab],px+pw/2,py+30);sk.textStyle(sk.NORMAL);
+    let sy=py+52;
+    const allBoxes=[
+      [{t:'Homologous Series',b:'A series of compounds with same functional group.\nDiffer by CH₂ each time.\nGradual change in physical properties.'},{t:'Combustion of Alkanes',b:'Complete: CₙH₂ₙ₊₂ + O₂ → CO₂ + H₂O\nIncomplete (limited O₂): produces CO + C (soot).\nCO is toxic — colourless, odourless gas.'},{t:'Fractional Distillation',b:'Crude oil separated into fractions.\nSmaller molecules: lower BP → more volatile.\nFractions: refinery gas, petrol, kerosene, diesel, fuel oil, bitumen.'},{t:'Cracking',b:'Long-chain alkanes → shorter alkanes + alkenes.\nThermal: high temp (500°C), steam.\nCatalytic: Al₂O₃ catalyst, 500°C.\nProvides more useful fuels and feedstocks.'}],
+      [{t:'Isomers',b:'Same molecular formula, different structure.\nExample: C₄H₈ — but-1-ene vs but-2-ene.\nIsomers have different physical/chemical properties.'},{t:'Bromine Water Test',b:'Add alkene to orange bromine water.\nAlkene decolourises → C=C present.\nAlkane stays orange → no C=C.'},{t:'Hydrogenation',b:'Alkene + H₂ → alkane\nNickel catalyst, ~180°C.\nUsed industrially to harden vegetable oils → margarine.'},{t:'Addition Polymerisation',b:'Monomers with C=C join together.\nDouble bond opens up → chain forms.\nNo small molecule produced (unlike condensation).'}],
+      [{t:'Oxidation of Alcohols',b:'Alcohol + oxygen (air) → carboxylic acid.\nAgent: K₂Cr₂O₇ (dichromate) or acidified KMnO₄.\nColour change: orange → green (dichromate).'},{t:'Dehydration of Alcohols',b:'Alcohol → alkene + water\nConc H₃PO₄, 170°C.\nE.g. ethanol → ethene + H₂O.'},{t:'Esterification',b:'Alcohol + carboxylic acid → ester + water\nConc H₂SO₄ catalyst, warm gently.\nEsters have fruity smells → flavourings.'},{t:'Dangers of Ethanol',b:'Social and health risks of alcohol.\nMethanol is highly toxic (causes blindness/death).\nAlcohol in drinks is ethanol only.'}],
+      [{t:'Naming Organic Compounds',b:'Prefix: meth(1C), eth(2C), prop(3C), but(4C).\nSuffix: -ane (alkane), -ene (alkene), -ol (alcohol),\n-anoic acid, -anoate (ester).'},{t:'Condensation Polymerisation',b:'Monomers join with loss of small molecule (H₂O or HCl).\nPolyamides (nylon): formed from diamine + dicarboxylic acid.\nPolyesters (Terylene): diol + dicarboxylic acid.'},{t:'Carboxylic Acids',b:'React with carbonates → salt + CO₂ + H₂O.\nReact with alcohols → ester + water.\nWeak acids (partially dissociate in water).'},{t:'Environmental Impact',b:'Plastics not biodegradable → pollution.\nBurning fossil fuels → CO₂, SO₂, NOₓ.\nGreen chemistry aims for sustainable processes.'}],
+    ];
+    allBoxes[tab].forEach(box=>{
+      let lines=box.b.split('\n');let bh=16+lines.length*14+8;
+      sk.fill(c[0],c[1],c[2],18);sk.stroke(c[0],c[1],c[2],60);sk.strokeWeight(1);
+      sk.rect(px+10,sy,pw-20,bh,6);sk.noStroke();
+      sk.fill(c[0],c[1],c[2]);sk.textSize(9.5);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text(box.t,px+16,sy+13);sk.textStyle(sk.NORMAL);
+      sk.fill(30);sk.textSize(10.5);lines.forEach((l,i)=>sk.text(l,px+16,sy+27+i*14));
+      sy+=bh+10;
+    });
+  }
+  sk.mouseClicked=()=>{ if(orgMcq){ orgMcqClick(sk.mouseX,sk.mouseY); } };
+});
+</script>
+</body>
+</html>
+
+
+
+

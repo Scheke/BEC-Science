@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mechanics — BEC Study</title>
+<style>*,*::before,*::after{box-sizing:border-box}</style>
+</head><body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="../study-engine.js"></script>
+<script>
+function bg(sk,c){sk.background(...(c||[12,15,25]))}
+
+const STEPS=[
+  {
+    title:'Motion — Distance, Speed & Velocity',
+    body:`<strong>Distance</strong> — total path length (scalar, has magnitude only)
+    <br><br>
+    <strong>Displacement</strong> — straight-line distance from start to finish, with direction (vector)
+    <br><br>
+    <strong>Speed</strong> = distance ÷ time (scalar)
+    <br><br>
+    <strong>Velocity</strong> = displacement ÷ time (vector — has direction)
+    <br><br>
+    <strong>Acceleration</strong> = change in velocity ÷ time = (v − u) / t
+    <br><br>
+    Key: scalars have magnitude only; vectors have magnitude AND direction.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Car moving
+      const carX=(t*15)%(W+60)-60;
+      sk.fill(52,152,219,200);sk.noStroke();sk.rect(carX,H*0.42,60,28,6);
+      sk.fill(255,220,50);sk.circle(carX+12,H*0.7,18);sk.circle(carX+48,H*0.7,18);
+      // Distance path
+      sk.stroke(255,255,255,40);sk.strokeWeight(1);sk.setLineDash?.[5,5];
+      sk.line(0,H*0.56,W,H*0.56);
+      // Speed indicator
+      const spd=Math.floor(t*8%100);
+      sk.fill(100,255,100);sk.noStroke();sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('Speed: '+spd+' m/s',W/2,H*0.82);sk.textStyle(sk.NORMAL);
+      // Scalars vs Vectors
+      const items=[
+        {label:'Distance ✓',t:'scalar',c:[46,204,113]},
+        {label:'Speed ✓',t:'scalar',c:[46,204,113]},
+        {label:'Displacement →',t:'vector',c:[231,76,60]},
+        {label:'Velocity →',t:'vector',c:[231,76,60]},
+        {label:'Acceleration →',t:'vector',c:[231,76,60]},
+      ];
+      items.forEach((it,i)=>{
+        sk.fill(...it.c,160);sk.noStroke();sk.textSize(9);sk.textAlign(sk.LEFT);
+        sk.text(it.label,W*0.04,H*0.1+i*H*0.07);
+      });
+    }
+  },
+  {
+    title:'Motion Graphs',
+    body:`Two key graph types:
+    <br><br>
+    <strong>Distance–Time (d–t) graph:</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Gradient = speed</li>
+      <li>Horizontal line = stationary</li>
+      <li>Steeper slope = faster speed</li>
+    </ul>
+    <strong>Velocity–Time (v–t) graph:</strong>
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>Gradient = acceleration</li>
+      <li>Horizontal line = constant velocity</li>
+      <li>Area under graph = displacement (distance)</li>
+    </ul>`,
+    draw:(sk)=>{
+      bg(sk,[10,14,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // d-t graph (left)
+      const ax=W*0.07,ay=H*0.88,gw=W*0.38,gh=H*0.7;
+      sk.stroke(255,255,255,50);sk.strokeWeight(1);sk.noFill();
+      sk.line(ax,ay-gh,ax,ay);sk.line(ax,ay,ax+gw,ay);
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('d–t graph',ax+gw/2,H*0.1);
+      sk.fill(255,255,255,60);sk.textAlign(sk.LEFT);sk.text('d',ax-12,ay-gh);
+      sk.textAlign(sk.CENTER);sk.text('t →',ax+gw,ay+12);
+      // Segments: steep / flat / steep
+      sk.stroke(52,152,219,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(ax,ay,ax+gw*0.35,ay-gh*0.45); // moving
+      sk.line(ax+gw*0.35,ay-gh*0.45,ax+gw*0.6,ay-gh*0.45); // stopped
+      sk.line(ax+gw*0.6,ay-gh*0.45,ax+gw,ay-gh*0.85); // faster
+      // v-t graph (right)
+      const bx=W*0.55,by=H*0.88;
+      sk.stroke(255,255,255,50);sk.strokeWeight(1);sk.noFill();
+      sk.line(bx,by-gh,bx,by);sk.line(bx,by,bx+gw,by);
+      sk.fill(255,255,255,80);sk.noStroke();sk.textSize(8.5);sk.textAlign(sk.CENTER);
+      sk.text('v–t graph',bx+gw/2,H*0.1);
+      sk.fill(255,255,255,60);sk.textAlign(sk.LEFT);sk.text('v',bx-12,by-gh);
+      sk.textAlign(sk.CENTER);sk.text('t →',bx+gw,by+12);
+      // Segments: accelerating / constant / decelerating
+      sk.stroke(231,76,60,200);sk.strokeWeight(2.5);sk.noFill();
+      sk.line(bx,by,bx+gw*0.35,by-gh*0.6); // accelerating
+      sk.line(bx+gw*0.35,by-gh*0.6,bx+gw*0.65,by-gh*0.6); // constant
+      sk.line(bx+gw*0.65,by-gh*0.6,bx+gw,by); // decelerating
+      // Area shading
+      sk.fill(231,76,60,25);sk.noStroke();
+      sk.quad(bx+gw*0.35,by,bx+gw*0.35,by-gh*0.6,bx+gw*0.65,by-gh*0.6,bx+gw*0.65,by);
+      sk.fill(231,76,60,80);sk.textSize(8);sk.textAlign(sk.CENTER);
+      sk.text('Area =\ndispl.',bx+gw*0.5,by-gh*0.2);
+    }
+  },
+  {
+    title:'Newton\'s Laws of Motion',
+    body:`<strong>1st Law (Inertia)</strong>: An object stays at rest or moves at constant velocity unless a resultant force acts on it.
+    <br><br>
+    <strong>2nd Law</strong>: F = ma
+    <ul style="margin:4px 0 0 14px;line-height:1.8">
+      <li>F = resultant force (N)</li>
+      <li>m = mass (kg)</li>
+      <li>a = acceleration (m/s²)</li>
+    </ul>
+    <strong>3rd Law</strong>: Every action has an equal and opposite reaction.
+    (Forces come in pairs on DIFFERENT objects)
+    <br><br>
+    Example: Rocket pushes gas backwards → gas pushes rocket forwards.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // F=ma diagram
+      const cx=W/2,cy=H*0.42;
+      // Box (mass)
+      sk.fill(100,150,200,200);sk.noStroke();sk.rect(cx-40,cy-28,80,56,6);
+      sk.fill(255);sk.textSize(11);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('m',cx,cy);sk.textStyle(sk.NORMAL);
+      // Force arrow
+      const F=W*0.22+Math.sin(t*1.5)*W*0.04;
+      sk.stroke(231,76,60,220);sk.strokeWeight(3);sk.noFill();
+      sk.line(cx+40,cy,cx+40+F,cy);
+      sk.fill(231,76,60,220);sk.noStroke();
+      sk.triangle(cx+40+F,cy,cx+40+F-12,cy-6,cx+40+F-12,cy+6);
+      sk.fill(231,76,60);sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.LEFT);
+      sk.text('F',cx+40+F+6,cy+4);sk.textStyle(sk.NORMAL);
+      // Acceleration arrow (smaller)
+      sk.stroke(46,204,113,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(cx-40,cy,cx-40-W*0.14,cy);
+      sk.fill(46,204,113,180);sk.noStroke();
+      sk.triangle(cx-40-W*0.14,cy,cx-40-W*0.14+10,cy-5,cx-40-W*0.14+10,cy+5);
+      sk.fill(255,220,50);sk.textSize(14);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('F = m × a',cx,H*0.76);sk.textStyle(sk.NORMAL);
+      // 3rd law
+      sk.stroke(155,89,182,180);sk.strokeWeight(2);sk.noFill();
+      sk.line(W*0.12,H*0.9,W*0.38,H*0.9);
+      sk.fill(155,89,182,180);sk.noStroke();
+      sk.triangle(W*0.38,H*0.9,W*0.28,H*0.9-5,W*0.28,H*0.9+5);
+      sk.line(W*0.88,H*0.9,W*0.62,H*0.9);
+      sk.triangle(W*0.62,H*0.9,W*0.72,H*0.9-5,W*0.72,H*0.9+5);
+      sk.fill(155,89,182);sk.textSize(9);sk.textAlign(sk.CENTER);
+      sk.text('3rd Law: equal & opposite forces on different objects',W/2,H*0.97);
+    }
+  },
+  {
+    title:'🎮 Check — Motion & Newton\'s Laws',
+    body:'Test your understanding of motion concepts and Newton\'s Laws.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'On a velocity-time graph, what does the area under the line represent?',opts:['Acceleration','Speed','Distance (displacement)','Force'],ans:2,exp:'The area under a velocity-time graph = displacement (distance). A large area means the object travelled far.'},
+      {q:'A 5 kg object accelerates at 3 m/s². What force acts on it?',opts:['15 N','1.67 N','8 N','0.6 N'],ans:0,exp:'F = ma = 5 × 3 = 15 N. Remember to always state the unit (Newton, N) in your answer.'},
+      {q:'Newton\'s 3rd Law states that action-reaction force pairs:',opts:['Act on the same object','Are never equal','Act on DIFFERENT objects and are equal in size','Always produce movement'],ans:2,exp:'Action and reaction forces are EQUAL in size and OPPOSITE in direction, but they act on DIFFERENT objects. A rocket and its exhaust gas are a good example.'},
+      {q:'On a distance-time graph, a horizontal (flat) line means:',opts:['Accelerating','Moving at constant speed','Decelerating','Not moving (stationary)'],ans:3,exp:'A flat line on a d-t graph means distance is not changing over time — the object is STATIONARY. Speed = gradient = 0.'},
+    ]}
+  },
+  {
+    title:'Momentum & Impulse',
+    body:`<strong>Momentum</strong> (p) = mass × velocity
+    <br>
+    p = mv &emsp;(units: kg⋅m/s)
+    <br><br>
+    <strong>Conservation of momentum:</strong> In a closed system, total momentum before = total momentum after a collision.
+    <br><br>
+    <strong>Impulse</strong> = Force × time = change in momentum
+    <br>
+    F⋅t = Δp = m(v − u)
+    <br><br>
+    Crash barriers, crumple zones, and airbags all work by <em>increasing collision time</em> → reducing force on passengers (same impulse, longer time = smaller force).`,
+    draw:(sk)=>{
+      bg(sk,[15,14,28]);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Two balls colliding
+      const sep=Math.max(0,Math.cos(t)*W*0.2);
+      const cx=W/2;
+      // Ball 1 (blue, moving right)
+      const b1x=cx-sep-28;
+      sk.fill(52,152,219,200);sk.noStroke();sk.circle(b1x,H*0.42,50);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('2kg\n4m/s',b1x,H*0.42);
+      // Ball 2 (red, stationary)
+      const b2x=cx+sep+28;
+      sk.fill(231,76,60,200);sk.noStroke();sk.circle(b2x,H*0.42,50);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('2kg\n0m/s',b2x,H*0.42);
+      // Momentum labels
+      if(sep>10){
+        sk.stroke(52,152,219,180);sk.strokeWeight(2);sk.noFill();
+        sk.line(b1x+25,H*0.42,b1x+60,H*0.42);
+        sk.fill(52,152,219,180);sk.noStroke();
+        sk.triangle(b1x+60,H*0.42,b1x+52,H*0.42-5,b1x+52,H*0.42+5);
+      }else{
+        // After collision
+        sk.fill(46,204,113);sk.noStroke();sk.textSize(9);sk.textAlign(sk.CENTER);
+        sk.text('p before = p after',cx,H*0.6);
+        sk.text('2×4 + 2×0 = 2×0 + 2×4',cx,H*0.68);
+        sk.text('8 = 8 ✓',cx,H*0.76);
+        sk.stroke(46,204,113,180);sk.strokeWeight(2);sk.noFill();
+        sk.line(b2x-25,H*0.42,b2x+50,H*0.42);
+        sk.fill(46,204,113,180);sk.noStroke();
+        sk.triangle(b2x+50,H*0.42,b2x+42,H*0.42-5,b2x+42,H*0.42+5);
+      }
+      sk.fill(255,220,50);sk.noStroke();sk.textSize(10);sk.textStyle(sk.BOLD);sk.textAlign(sk.CENTER);
+      sk.text('p = mv',cx,H*0.88);
+    }
+  },
+  {
+    title:'Energy — KE & GPE',
+    body:`<strong>Kinetic Energy (KE)</strong> = ½mv²
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>m = mass (kg), v = velocity (m/s)</li>
+      <li>KE in joules (J)</li>
+    </ul>
+    <strong>Gravitational Potential Energy (GPE)</strong> = mgh
+    <ul style="margin:4px 0 0 18px;line-height:1.8">
+      <li>m = mass (kg), g = 10 N/kg, h = height (m)</li>
+    </ul>
+    <strong>Conservation of energy:</strong> Energy cannot be created or destroyed — only converted between forms.
+    <br><br>
+    A falling object converts GPE → KE. A roller coaster converts KE → GPE and back.`,
+    draw:(sk)=>{
+      bg(sk);
+      const W=sk.width,H=sk.height,t=sk.frameCount*0.025;
+      // Ball falling from height
+      const ht=H*0.12;
+      const bt=H*0.8;
+      const ballY=ht+(bt-ht)*((Math.sin(t)+1)/2);
+      const h=bt-ballY;
+      const v=Math.sqrt(2*10*Math.max(0,bt-ht-h)/100);// simplified
+      // Height line
+      sk.stroke(255,255,255,30);sk.strokeWeight(1);sk.noFill();
+      sk.line(W*0.15,ht,W*0.85,ht);sk.line(W*0.15,bt,W*0.85,bt);
+      sk.stroke(255,255,255,60);
+      sk.line(W*0.5,ht,W*0.5,bt);
+      // Ball
+      sk.fill(255,220,50,220);sk.noStroke();sk.circle(W*0.5,ballY,32);
+      sk.fill(255);sk.textSize(10);sk.textAlign(sk.CENTER,sk.CENTER);sk.text('m',W*0.5,ballY);
+      // GPE bar
+      const gpeH=(bt-ht)*((Math.sin(t)+1)/2);
+      sk.fill(52,152,219,160);sk.noStroke();sk.rect(W*0.18,bt-gpeH,W*0.1,gpeH,2,2,0,0);
+      sk.fill(52,152,219);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('GPE',W*0.23,bt+12);
+      // KE bar
+      const keH=(bt-ht)-(bt-ht)*((Math.sin(t)+1)/2);
+      sk.fill(231,76,60,160);sk.noStroke();sk.rect(W*0.32,bt-keH,W*0.1,keH,2,2,0,0);
+      sk.fill(231,76,60);sk.textSize(8.5);sk.textAlign(sk.CENTER);sk.text('KE',W*0.37,bt+12);
+      // Formula labels
+      sk.fill(52,152,219);sk.textSize(9);sk.textAlign(sk.CENTER);sk.text('GPE = mgh',W*0.72,H*0.15);
+      sk.fill(231,76,60);sk.text('KE = ½mv²',W*0.72,H*0.28);
+    }
+  },
+  {
+    q:'Free Body Diagram — Forces on an Object',
+    content:`<h3>Free Body Diagram — Forces on an Object</h3><p>A free body diagram shows all forces acting on a single object as arrows pointing in the direction each force acts. The length of each arrow represents the magnitude of the force. This technique is essential for applying Newton's second law.</p><ul><li>Weight (W = mg) always acts downward toward the centre of the Earth.</li><li>The normal force acts perpendicular to the contact surface, opposing weight.</li><li>The resultant (net) force determines acceleration: F<sub>net</sub> = ma.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+  <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2e7d32"/></marker>
+  <marker id="arrO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#e65100"/></marker></defs>
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">Free Body Diagram</text>
+  <!-- Object box -->
+  <rect x="160" y="100" width="100" height="60" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="210" y="135" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Object</text>
+  <text x="210" y="151" text-anchor="middle" font-size="11" fill="#333">m = 5 kg</text>
+  <!-- Weight arrow (down) -->
+  <line x1="210" y1="160" x2="210" y2="225" stroke="#c62828" stroke-width="3" marker-end="url(#arrR)"/>
+  <text x="225" y="200" font-size="11" fill="#c62828" font-weight="bold">W = mg</text>
+  <text x="225" y="214" font-size="10" fill="#c62828">= 50 N ↓</text>
+  <!-- Normal force arrow (up) -->
+  <line x1="210" y1="100" x2="210" y2="38" stroke="#2e7d32" stroke-width="3" marker-end="url(#arrG)"/>
+  <text x="215" y="72" font-size="11" fill="#2e7d32" font-weight="bold">N = 50 N ↑</text>
+  <text x="215" y="86" font-size="10" fill="#2e7d32">Normal force</text>
+  <!-- Friction arrow (left) -->
+  <line x1="160" y1="130" x2="80" y2="130" stroke="#283593" stroke-width="3" marker-end="url(#arr)"/>
+  <text x="85" y="120" font-size="11" fill="#283593" font-weight="bold">f = 8 N</text>
+  <text x="85" y="134" font-size="10" fill="#283593">Friction</text>
+  <!-- Applied force arrow (right) -->
+  <line x1="260" y1="130" x2="345" y2="130" stroke="#e65100" stroke-width="3" marker-end="url(#arrO)"/>
+  <text x="263" y="120" font-size="11" fill="#e65100" font-weight="bold">F = 20 N</text>
+  <text x="263" y="134" font-size="10" fill="#e65100">Applied</text>
+  <!-- Resultant note -->
+  <text x="210" y="248" text-anchor="middle" font-size="11" fill="#333">Resultant F = 20 − 8 = 12 N → &nbsp; a = F/m = 2.4 m/s²</text>
+</svg>`
+  },
+  {
+    q:'Newton\'s Three Laws — Summary',
+    content:`<h3>Newton's Three Laws of Motion</h3><p>Newton's three laws form the foundation of classical mechanics. Together they explain why objects move the way they do under the action of forces, from everyday situations to rocket launches.</p><ul><li><strong>1st Law (Inertia):</strong> An object remains at rest or moves at constant velocity unless a resultant force acts on it.</li><li><strong>2nd Law:</strong> F = ma — the resultant force equals mass times acceleration.</li><li><strong>3rd Law:</strong> Every action has an equal and opposite reaction acting on a DIFFERENT object.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="270" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">Newton's Three Laws of Motion</text>
+  <!-- Law 1 box -->
+  <rect x="15" y="35" width="118" height="110" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="74" y="56" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">1st Law</text>
+  <text x="74" y="72" text-anchor="middle" font-size="10" fill="#333">Inertia</text>
+  <line x1="25" y1="78" x2="122" y2="78" stroke="#283593" stroke-width="1"/>
+  <text x="74" y="94" text-anchor="middle" font-size="9.5" fill="#333">An object stays</text>
+  <text x="74" y="108" text-anchor="middle" font-size="9.5" fill="#333">at rest or constant</text>
+  <text x="74" y="122" text-anchor="middle" font-size="9.5" fill="#333">velocity unless a</text>
+  <text x="74" y="136" text-anchor="middle" font-size="9.5" fill="#333">net force acts.</text>
+  <!-- Stationary block -->
+  <rect x="30" y="148" width="32" height="20" rx="3" fill="#7986cb" stroke="#283593" stroke-width="1.5"/>
+  <text x="46" y="162" text-anchor="middle" font-size="9" fill="#fff">REST</text>
+  <text x="74" y="175" text-anchor="middle" font-size="9" fill="#555">No net force → no change</text>
+  <!-- Law 2 box -->
+  <rect x="151" y="35" width="118" height="110" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="210" y="56" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">2nd Law</text>
+  <text x="210" y="72" text-anchor="middle" font-size="10" fill="#333">F = ma</text>
+  <line x1="161" y1="78" x2="258" y2="78" stroke="#283593" stroke-width="1"/>
+  <text x="210" y="94" text-anchor="middle" font-size="9.5" fill="#333">Resultant force</text>
+  <text x="210" y="108" text-anchor="middle" font-size="9.5" fill="#333">= mass ×</text>
+  <text x="210" y="122" text-anchor="middle" font-size="9.5" fill="#333">acceleration</text>
+  <text x="210" y="136" text-anchor="middle" font-size="9.5" fill="#333">F (N), m (kg), a (m/s²)</text>
+  <!-- F=ma arrow -->
+  <rect x="165" y="148" width="28" height="20" rx="3" fill="#7986cb" stroke="#283593" stroke-width="1.5"/>
+  <text x="179" y="162" text-anchor="middle" font-size="9" fill="#fff">m</text>
+  <line x1="193" y1="158" x2="240" y2="158" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="215" y="175" text-anchor="middle" font-size="9" fill="#c62828">F → a</text>
+  <!-- Law 3 box -->
+  <rect x="287" y="35" width="118" height="110" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="346" y="56" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">3rd Law</text>
+  <text x="346" y="72" text-anchor="middle" font-size="10" fill="#333">Action–Reaction</text>
+  <line x1="297" y1="78" x2="394" y2="78" stroke="#283593" stroke-width="1"/>
+  <text x="346" y="94" text-anchor="middle" font-size="9.5" fill="#333">Every action has</text>
+  <text x="346" y="108" text-anchor="middle" font-size="9.5" fill="#333">an equal and</text>
+  <text x="346" y="122" text-anchor="middle" font-size="9.5" fill="#333">opposite reaction</text>
+  <text x="346" y="136" text-anchor="middle" font-size="9.5" fill="#333">on a DIFFERENT object.</text>
+  <!-- Action-reaction arrows -->
+  <rect x="302" y="148" width="28" height="20" rx="3" fill="#7986cb" stroke="#283593" stroke-width="1.5"/>
+  <rect x="372" y="148" width="28" height="20" rx="3" fill="#ef5350" stroke="#283593" stroke-width="1.5"/>
+  <line x1="330" y1="158" x2="372" y2="158" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <line x1="372" y1="163" x2="330" y2="163" stroke="#e65100" stroke-width="2" marker-end="url(#arr)"/>
+  <!-- Bottom note -->
+  <text x="210" y="210" text-anchor="middle" font-size="10" fill="#283593" font-weight="bold">Example: Rocket exhaust (action) → Rocket thrust (reaction)</text>
+  <text x="210" y="256" text-anchor="middle" font-size="10" fill="#333">Key: Action–Reaction pairs act on DIFFERENT objects, not the same one.</text>
+</svg>`
+  },
+  {
+    q:'Distance-Time vs Velocity-Time Graphs',
+    content:`<h3>Distance-Time vs Velocity-Time Graphs</h3><p>Motion graphs are a powerful way to represent and analyse movement. The two most common types each reveal different information about an object's motion through the gradient and area under the line.</p><ul><li><strong>d–t graph:</strong> gradient = speed; a flat (horizontal) line means the object is stationary.</li><li><strong>v–t graph:</strong> gradient = acceleration; area under the line = displacement.</li><li>A steeper slope on either graph means a greater speed or acceleration respectively.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 270" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <rect width="420" height="270" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="20" text-anchor="middle" font-size="13" font-weight="bold" fill="#283593">Motion Graphs Comparison</text>
+  <!-- d-t graph -->
+  <rect x="18" y="30" width="180" height="140" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="108" y="46" text-anchor="middle" font-size="11" font-weight="bold" fill="#283593">Distance–Time (d–t)</text>
+  <!-- Axes -->
+  <line x1="35" y1="155" x2="35" y2="58" stroke="#333" stroke-width="1.5"/>
+  <line x1="35" y1="155" x2="190" y2="155" stroke="#333" stroke-width="1.5"/>
+  <text x="28" y="57" font-size="9" fill="#333" text-anchor="middle">d</text>
+  <text x="193" y="158" font-size="9" fill="#333">t</text>
+  <!-- d-t line: moving, stationary, faster -->
+  <polyline points="35,155 80,120 110,120 180,70" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+  <!-- Labels on d-t -->
+  <text x="58" y="148" font-size="8" fill="#1565c0">Moving</text>
+  <text x="90" y="115" font-size="8" fill="#c62828">Still</text>
+  <text x="138" y="88" font-size="8" fill="#2e7d32">Faster</text>
+  <text x="108" y="172" text-anchor="middle" font-size="9" fill="#555">Gradient = speed</text>
+  <!-- v-t graph -->
+  <rect x="222" y="30" width="180" height="140" rx="5" fill="#fff" stroke="#283593" stroke-width="1.5"/>
+  <text x="312" y="46" text-anchor="middle" font-size="11" font-weight="bold" fill="#283593">Velocity–Time (v–t)</text>
+  <!-- Axes -->
+  <line x1="238" y1="155" x2="238" y2="58" stroke="#333" stroke-width="1.5"/>
+  <line x1="238" y1="155" x2="394" y2="155" stroke="#333" stroke-width="1.5"/>
+  <text x="231" y="57" font-size="9" fill="#333" text-anchor="middle">v</text>
+  <text x="397" y="158" font-size="9" fill="#333">t</text>
+  <!-- v-t line: accelerating, constant, decelerating -->
+  <polyline points="238,155 278,100 330,100 394,155" fill="none" stroke="#c62828" stroke-width="2.5"/>
+  <!-- Shaded area under constant part -->
+  <polygon points="278,100 330,100 330,155 278,155" fill="#ef9a9a" opacity="0.5"/>
+  <text x="304" y="135" text-anchor="middle" font-size="8" fill="#c62828">Area = dist.</text>
+  <text x="255" y="140" font-size="8" fill="#1565c0">Accel.</text>
+  <text x="292" y="96" font-size="8" fill="#2e7d32">Constant v</text>
+  <text x="350" y="140" font-size="8" fill="#e65100">Decel.</text>
+  <text x="312" y="172" text-anchor="middle" font-size="9" fill="#555">Gradient = acceleration</text>
+  <!-- Summary table -->
+  <rect x="18" y="187" width="384" height="72" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="30" y="202" font-size="10" font-weight="bold" fill="#283593">d–t graph:</text>
+  <text x="30" y="217" font-size="9.5" fill="#333">Slope = speed &nbsp;|&nbsp; Flat line = stationary &nbsp;|&nbsp; Curve = acceleration</text>
+  <text x="30" y="233" font-size="10" font-weight="bold" fill="#c62828">v–t graph:</text>
+  <text x="30" y="248" font-size="9.5" fill="#333">Slope = acceleration &nbsp;|&nbsp; Flat = constant velocity &nbsp;|&nbsp; Area = displacement</text>
+</svg>`
+  },
+  {
+    q:'Moments — The Principle of Moments (See-Saw)',
+    content:`<h3>Moments and the Principle of Moments</h3><p>A moment (torque) is the turning effect of a force about a pivot point. The principle of moments states that for an object in rotational equilibrium, the total anticlockwise moment equals the total clockwise moment about any pivot.</p><ul><li>Moment = Force × perpendicular distance from pivot (unit: N·m).</li><li>A larger distance from the pivot produces a greater turning effect for the same force.</li><li>Applications include levers, seesaws, spanners, and the operation of joints in the human body.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 260" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker>
+  <marker id="arrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker></defs>
+  <rect width="420" height="260" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">Moments &amp; The Principle of Moments</text>
+  <!-- Pivot -->
+  <polygon points="210,175 195,200 225,200" fill="#283593"/>
+  <rect x="185" y="200" width="50" height="10" rx="2" fill="#283593"/>
+  <!-- See-saw beam -->
+  <rect x="40" y="168" width="340" height="10" rx="3" fill="#7986cb" stroke="#283593" stroke-width="1.5"/>
+  <!-- Left force (person A) -->
+  <rect x="68" y="138" width="32" height="32" rx="4" fill="#ef5350" stroke="#c62828" stroke-width="1.5"/>
+  <text x="84" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">A</text>
+  <!-- Left force arrow -->
+  <line x1="84" y1="170" x2="84" y2="218" stroke="#c62828" stroke-width="2.5" marker-end="url(#arrR)"/>
+  <text x="92" y="200" font-size="11" fill="#c62828" font-weight="bold">F₁=300N</text>
+  <!-- Left distance label -->
+  <line x1="84" y1="125" x2="210" y2="125" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="84" y="121" font-size="8" fill="#2e7d32">|</text>
+  <text x="210" y="121" font-size="8" fill="#2e7d32">|</text>
+  <text x="147" y="118" text-anchor="middle" font-size="10" fill="#2e7d32" font-weight="bold">d₁ = 1.2 m</text>
+  <!-- Right force (person B) -->
+  <rect x="316" y="138" width="32" height="32" rx="4" fill="#1565c0" stroke="#283593" stroke-width="1.5"/>
+  <text x="332" y="158" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">B</text>
+  <!-- Right force arrow -->
+  <line x1="332" y1="170" x2="332" y2="218" stroke="#283593" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="340" y="200" font-size="11" fill="#283593" font-weight="bold">F₂=200N</text>
+  <!-- Right distance label -->
+  <line x1="210" y1="130" x2="332" y2="130" stroke="#e65100" stroke-width="1.5"/>
+  <text x="210" y="126" font-size="8" fill="#e65100">|</text>
+  <text x="332" y="126" font-size="8" fill="#e65100">|</text>
+  <text x="271" y="123" text-anchor="middle" font-size="10" fill="#e65100" font-weight="bold">d₂ = 1.8 m</text>
+  <!-- Pivot label -->
+  <text x="210" y="220" text-anchor="middle" font-size="10" fill="#333">Pivot</text>
+  <!-- Formula box -->
+  <rect x="18" y="225" width="384" height="28" rx="5" fill="#c5cae9" stroke="#283593" stroke-width="1.5"/>
+  <text x="210" y="236" text-anchor="middle" font-size="10" font-weight="bold" fill="#283593">Moment = Force × perpendicular distance from pivot (N⋅m)</text>
+  <text x="210" y="250" text-anchor="middle" font-size="10" fill="#333">Anticlockwise: 300×1.2 = 360 N⋅m &nbsp;|&nbsp; Clockwise: 200×1.8 = 360 N⋅m ✓ Balanced!</text>
+</svg>`
+  },
+  {
+    q:'Work, Energy and Power — Relationships',
+    content:`<h3>Work, Energy and Power — Relationships</h3><p>Work, energy, and power are closely linked concepts. Work done on an object transfers energy to it, and the rate at which this happens is power. Understanding these relationships is key to solving a wide range of mechanics problems.</p><ul><li><strong>Work:</strong> W = F × d (Joules); work is done only when a force causes displacement.</li><li><strong>Energy:</strong> KE = ½mv² and GPE = mgh; energy is conserved and converted, never created or destroyed.</li><li><strong>Power:</strong> P = W/t (Watts); greater power means the same work is done in less time.</li></ul>`,
+    visual:`<svg viewBox="0 0 420 265" width="100%" style="display:block;max-width:420px;margin:0 auto;font-family:system-ui,sans-serif">
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#283593"/></marker></defs>
+  <rect width="420" height="265" fill="#e8eaf6" rx="8"/>
+  <text x="210" y="22" text-anchor="middle" font-size="14" font-weight="bold" fill="#283593">Work, Energy &amp; Power Flowchart</text>
+  <!-- Work box -->
+  <rect x="140" y="34" width="140" height="50" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="210" y="55" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">WORK (W)</text>
+  <text x="210" y="72" text-anchor="middle" font-size="11" fill="#333">W = F × d &nbsp;(Joules, J)</text>
+  <!-- Arrow W -> E -->
+  <line x1="210" y1="84" x2="210" y2="108" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="216" y="100" font-size="9" fill="#283593">= Energy transferred</text>
+  <!-- Energy box -->
+  <rect x="140" y="108" width="140" height="50" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="210" y="129" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">ENERGY (E)</text>
+  <text x="210" y="146" text-anchor="middle" font-size="11" fill="#333">KE = ½mv² &nbsp; GPE = mgh</text>
+  <!-- Arrow E left -> KE -->
+  <line x1="140" y1="133" x2="82" y2="133" stroke="#c62828" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="15" y="118" width="68" height="30" rx="4" fill="#ffcdd2" stroke="#c62828" stroke-width="1.5"/>
+  <text x="49" y="131" text-anchor="middle" font-size="9" font-weight="bold" fill="#c62828">Kinetic</text>
+  <text x="49" y="143" text-anchor="middle" font-size="9" fill="#c62828">½mv²</text>
+  <!-- Arrow E right -> GPE -->
+  <line x1="280" y1="133" x2="338" y2="133" stroke="#2e7d32" stroke-width="2" marker-end="url(#arr)"/>
+  <rect x="337" y="118" width="68" height="30" rx="4" fill="#c8e6c9" stroke="#2e7d32" stroke-width="1.5"/>
+  <text x="371" y="131" text-anchor="middle" font-size="9" font-weight="bold" fill="#2e7d32">Gravitational</text>
+  <text x="371" y="143" text-anchor="middle" font-size="9" fill="#2e7d32">mgh</text>
+  <!-- Arrow E -> Power -->
+  <line x1="210" y1="158" x2="210" y2="182" stroke="#283593" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="216" y="174" font-size="9" fill="#283593">÷ time</text>
+  <!-- Power box -->
+  <rect x="140" y="182" width="140" height="50" rx="6" fill="#c5cae9" stroke="#283593" stroke-width="2"/>
+  <text x="210" y="203" text-anchor="middle" font-size="12" font-weight="bold" fill="#283593">POWER (P)</text>
+  <text x="210" y="220" text-anchor="middle" font-size="11" fill="#333">P = W/t = E/t &nbsp;(Watts, W)</text>
+  <!-- Conservation note -->
+  <rect x="18" y="240" width="384" height="20" rx="4" fill="#c5cae9" stroke="#283593" stroke-width="1"/>
+  <text x="210" y="254" text-anchor="middle" font-size="10" fill="#283593" font-weight="bold">Conservation of Energy: Energy cannot be created or destroyed — only converted.</text>
+</svg>`
+  },
+  {
+    title:'🎮 Final — Mechanics',
+    body:'Apply momentum, energy, and Newton\'s Laws to solve problems.',
+    draw:null,
+    game:{type:'mcq',questions:[
+      {q:'A 3 kg ball moves at 4 m/s. What is its momentum?',opts:['7 kg⋅m/s','12 kg⋅m/s','1.3 kg⋅m/s','0.75 kg⋅m/s'],ans:1,exp:'p = mv = 3 × 4 = 12 kg⋅m/s.'},
+      {q:'A 2 kg object is at 5 m height. Its GPE (g=10) is:',opts:['1 J','10 J','25 J','100 J'],ans:3,exp:'GPE = mgh = 2 × 10 × 5 = 100 J.'},
+      {q:'Airbags in cars work by:',opts:['Reducing the mass of the car','Increasing the force on the passenger','Increasing the time of impact to reduce force','Absorbing momentum permanently'],ans:2,exp:'Airbags INCREASE the collision time. Since Impulse = F × t = constant, a longer time means a SMALLER force — reducing injury to passengers.'},
+      {q:'A car accelerates from rest to 20 m/s in 4 s. Its acceleration is:',opts:['80 m/s²','5 m/s²','0.2 m/s²','24 m/s²'],ans:1,exp:'a = (v − u) ÷ t = (20 − 0) ÷ 4 = 5 m/s².'},
+    ]}
+  },
+];
+
+new StudyEngine(STEPS,{
+  color:'#0d47a1',dark:'#002171',light:'#e3f2fd',
+  title:'Mechanics — Motion, Forces, Momentum & Energy',
+});
+</script></body></html>
