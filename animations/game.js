@@ -1,11 +1,38 @@
-/* BEC Game Engine — XP, Streaks, Hearts, Crowns, Badges */
+/* BEC Game Engine — XP, Streaks, Hearts, Crowns, Badges (Firestore-backed) */
 const BEC = (() => {
   'use strict';
 
   /* ── Constants ── */
-  const KEY      = 'bec-game';
   const HEART_MAX = 5;
   const HEART_MS  = 30 * 60 * 1000; // 30 min per heart refill
+
+  /* ── Firestore helpers ── */
+  // db and currentUID are set by index.html after Firebase initialises
+  function _uid() {
+    return window._becUID || null;
+  }
+
+  function _docRef() {
+    if (!window._becDB || !_uid()) return null;
+    return window._becDB.collection('users').doc(_uid());
+  }
+
+  async function _saveToCloud(data) {
+    const ref = _docRef();
+    if (!ref) return;
+    try {
+      await ref.set(data, { merge: true });
+    } catch(e) { console.warn('BEC cloud save failed', e); }
+  }
+
+  async function _loadFromCloud() {
+    const ref = _docRef();
+    if (!ref) return null;
+    try {
+      const snap = await ref.get();
+      return snap.exists ? snap.data() : null;
+    } catch(e) { console.warn('BEC cloud load failed', e); return null; }
+  }
 
   const LEVELS = [
     { name:'Seedling',  icon:'🌱', min:0    },
@@ -421,14 +448,28 @@ const BEC = (() => {
   }
 
   function _load() {
-    try { _s = JSON.parse(localStorage.getItem(KEY)) || _fresh(); }
-    catch(e) { _s = _fresh(); }
-    if (_s.totalCorrect === undefined) _s.totalCorrect = 0; // migrate old saves
+    // Sync load from memory; cloud load is async via loadFromCloud()
+    if (!_s) _s = _fresh();
+    if (_s.totalCorrect === undefined) _s.totalCorrect = 0;
     _refillHearts();
   }
 
+  async function loadFromCloud() {
+    const data = await _loadFromCloud();
+    if (data) {
+      _s = { ..._fresh(), ...data };
+      if (_s.totalCorrect === undefined) _s.totalCorrect = 0;
+      _refillHearts();
+    } else {
+      _s = _fresh();
+    }
+    _checkBadges();
+    _refreshUI();
+  }
+
   function _save() {
-    try { localStorage.setItem(KEY, JSON.stringify(_s)); } catch(e) {}
+    // Fire-and-forget cloud save
+    if (_uid()) _saveToCloud({ ..._s });
   }
 
   /* ── Hearts ── */
@@ -934,6 +975,7 @@ const BEC = (() => {
     setCrown, getCrown, getLevel, getNextLevel, getState, getSlug,
     markPerfectQuiz, recordChallengeScore,
     renderStatsBar, crownHtml, confetti,
+    loadFromCloud,
     LEVELS, BADGES, _showProfile, _showDetailedStats,
   };
 })();

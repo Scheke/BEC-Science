@@ -861,19 +861,23 @@
 </div>
 
 <!-- ════════════ CARD LOCK OVERLAY ════════════ -->
-<!-- Firebase SDK (compat v9) + Google Sign-In -->
+<!-- Firebase SDK (compat) + Firestore + Google Sign-In -->
 <script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
 <script src="https://accounts.google.com/gsi/client"></script>
 <script>
   firebase.initializeApp(FIREBASE_CONFIG);
   const fbAuth      = firebase.auth();
+  const fbDB        = firebase.firestore();
   const fbAnalytics = firebase.analytics();
   fbAuth.useDeviceLanguage();
   const googleProvider = new firebase.auth.GoogleAuthProvider();
   googleProvider.setCustomParameters({ prompt: 'select_account' });
+  // Expose to game engine
+  window._becDB = fbDB;
 </script>
 
 <script>
@@ -898,16 +902,20 @@ const DEMO_CARDS = {
 let _authTab = 'signin'; // 'signin' | 'signup'
 
 function initAuth() {
-  fbAuth.onAuthStateChanged(user => {
+  fbAuth.onAuthStateChanged(async user => {
     if (user) {
       currentUser = {
         name: user.displayName || (user.email ? user.email.split('@')[0] : 'Guest'),
         email: user.email,
         uid: user.uid,
-        isAnonymous: user.isAnonymous   // ← carry Firebase flag through
+        isAnonymous: user.isAnonymous
       };
+      // Wire Firestore UID for game engine then load cloud progress
+      window._becUID = user.uid;
+      if (typeof BEC !== 'undefined') await BEC.loadFromCloud();
     } else {
       currentUser = null;
+      window._becUID = null;
     }
     if (typeof renderGrid === 'function')
       renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
@@ -1436,7 +1444,6 @@ let dSearchQ = '';
 function openLevel(level) {
   curLevel = level;
   dSearchQ = '';
-  localStorage.setItem('bec-level', level);
   applyTokens(level);
   document.getElementById('v-land').classList.add('hidden');
   document.getElementById('v-dash').classList.remove('hidden');
@@ -1449,8 +1456,6 @@ function openCategory(level, group) {
   curLevel = level;
   curSubj  = level === 'primary' ? 'Science' : 'All';
   dSearchQ = '';
-  localStorage.setItem('bec-level', level);
-  localStorage.setItem('bec-cat-' + level, group);
   applyTokens(level);
   document.getElementById('v-land').classList.add('hidden');
   document.getElementById('v-dash').classList.remove('hidden');
@@ -1846,20 +1851,47 @@ function openRandom() {
 }
 
 /* ══════════════════════════════════════════
-   VISIT TRACKING (localStorage)
+   VISIT TRACKING (Firestore)
 ══════════════════════════════════════════ */
-function trackVisit(url) {
-  const key = 'bec-visited-' + curLevel;
-  let v = JSON.parse(localStorage.getItem(key) || '[]');
-  v = [url, ...v.filter(u => u !== url)].slice(0, 20);
-  localStorage.setItem(key, JSON.stringify(v));
+const _visitedCache = {};   // level → Set of URLs, in-memory fallback
+
+function _userDocRef() {
+  if (!window._becDB || !window._becUID) return null;
+  return window._becDB.collection('users').doc(window._becUID);
+}
+
+async function trackVisit(url) {
+  if (!_visitedCache[curLevel]) _visitedCache[curLevel] = new Set();
+  _visitedCache[curLevel].add(url);
+  const ref = _userDocRef();
+  if (ref) {
+    const field = 'visited_' + curLevel;
+    ref.set({ [field]: firebase.firestore.FieldValue.arrayUnion(url) }, { merge: true })
+       .catch(() => {});
+  }
   return true;
 }
 
+async function _loadVisitedFromCloud(level) {
+  const ref = _userDocRef();
+  if (!ref) return;
+  try {
+    const snap = await ref.get();
+    if (snap.exists) {
+      const data = snap.data()['visited_' + level] || [];
+      _visitedCache[level] = new Set(data);
+    }
+  } catch(e) {}
+}
+
 function getVisited(level) {
-  const all  = ANIM[level].flatMap(g => g.items).map(a => a.url);
-  const raw  = JSON.parse(localStorage.getItem('bec-visited-' + level) || '[]');
-  return [...new Set(raw)].filter(u => all.includes(u));
+  const all = ANIM[level].flatMap(g => g.items).map(a => a.url);
+  const cached = _visitedCache[level];
+  if (!cached) {
+    _loadVisitedFromCloud(level);
+    return [];
+  }
+  return [...cached].filter(u => all.includes(u));
 }
 
 /* ══════════════════════════════════════════
@@ -1922,7 +1954,8 @@ function _launchTest(title, items, examName) {
     const j = Math.floor(Math.random() * (i + 1));
     [qs[i], qs[j]] = [qs[j], qs[i]];
   }
-  localStorage.setItem('bec-pending-test', JSON.stringify({title, examName, qs}));
+  // Pass exam data via sessionStorage (tab-scoped, no cloud needed for transient state)
+  sessionStorage.setItem('bec-pending-test', JSON.stringify({title, examName, qs}));
   location.href = 'animations/multi-quiz.html';
 }
 
@@ -2005,12 +2038,9 @@ function renderLandingStats() {
     else openLevel(level);
   }
 
-  const hash  = location.hash.slice(1);
-  const saved = localStorage.getItem('bec-level');
+  const hash = location.hash.slice(1);
   if (hash) {
     handleHash(hash);
-  } else if (['primary','junior','senior'].includes(saved)) {
-    openLevel(saved);
   } else {
     // Show sign-up page on first visit
     showAuthModal();

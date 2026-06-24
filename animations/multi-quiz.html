@@ -197,8 +197,8 @@ const LETTERS = ['A','B','C','D'];
 let data, qs, idx, correct, topicScores, _origQs;
 
 function init() {
-  const raw = localStorage.getItem('bec-pending-test');
-  localStorage.removeItem('bec-pending-test');
+  const raw = sessionStorage.getItem('bec-pending-test');
+  sessionStorage.removeItem('bec-pending-test');
   if (!raw) { location.href = '../index.html'; return; }
   data = JSON.parse(raw);
   qs = data.qs;
