@@ -451,6 +451,14 @@
       background:transparent;color:#bbb;border-color:#ddd;
       cursor:not-allowed;opacity:.7;pointer-events:none;
     }
+    .acard-btn-bookmark{
+      background:transparent;color:#f9a825;border-color:#f9a825;font-size:1rem;
+      transition:all .2s;
+    }
+    .acard-btn-bookmark:hover{opacity:.85}
+    .acard-btn-bookmark.bookmarked{
+      background:#f9a825;color:#fff;
+    }
     .grp-hidden{display:none}
     /* Crown badge on cards */
     .acard-crown{position:absolute;top:8px;right:10px;font-size:1.1rem;line-height:1;
@@ -539,8 +547,9 @@
     <div class="l-logo">BEC <span>Science</span> Animations</div>
     <div class="l-badge">41 animations • 123 study items • 50+ quizzes • 47+ badges</div>
     <div class="l-hdr-btns">
+      <button onclick="showLeaderboard()" class="l-hdr-btn" style="background:transparent;color:#2e7d32;border:1.5px solid #2e7d32">🏆 Leaderboard</button>
       <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit">🌐 Visit Us</a>
-      <button onclick="showAuthModal()" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
+      <button id="auth-header-btn" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
     </div>
   </header>
 
@@ -548,6 +557,18 @@
     <div class="l-eyebrow">✨ Botswana Examinations Council Curriculum</div>
     <h1 class="l-h1">Learn Science Like Never Before</h1>
     <p class="l-sub">Interactive animations, real-time quizzes, detailed study guides, and achievements. Everything you need to excel in your exams.</p>
+
+    <!-- Continue Banner -->
+    <div id="continue-banner" style="display:none;margin:20px 0;padding:16px;background:linear-gradient(90deg,#e8f5e9 0%,rgba(232,245,233,0.5) 100%);border-left:4px solid #2e7d32;border-radius:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:1.5rem">▶️</span>
+        <div style="flex:1">
+          <div style="font-weight:700;color:#1a1a1a;font-size:.95rem">Continue where you left off</div>
+          <div style="color:#666;font-size:.85rem;margin-top:2px" id="continue-text"></div>
+        </div>
+        <a id="continue-btn" href="#" style="background:#2e7d32;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem;white-space:nowrap;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Continue →</a>
+      </div>
+    </div>
 
     <div class="l-cards">
 
@@ -664,7 +685,7 @@
     <nav class="d-nav" id="d-nav"></nav>
     <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
     <button class="d-rnd" onclick="showDonateModal()" title="Support us">❤️</button>
-    <button class="d-rnd" onclick="showAuthModal()" title="Sign in" style="font-size:.95rem">🔐</button>
+    <button id="auth-dash-btn" class="d-rnd" title="Sign in" style="font-size:.95rem">🔐</button>
   </header>
 
   <!-- Game stats bar -->
@@ -912,11 +933,17 @@ function initAuth() {
       };
       // Wire Firestore UID for game engine then load cloud progress
       window._becUID = user.uid;
-      if (typeof BEC !== 'undefined') await BEC.loadFromCloud();
+      if (typeof BEC !== 'undefined') {
+        await BEC.loadFromCloud();
+        // Load bookmarks
+        window._becBookmarks = BEC.getBookmarks();
+      }
     } else {
       currentUser = null;
       window._becUID = null;
+      window._becBookmarks = [];
     }
+    updateAuthButtons();
     if (typeof renderGrid === 'function')
       renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
   });
@@ -1078,9 +1105,39 @@ async function loginLater() {
 async function signOut() {
   await fbAuth.signOut();
   currentUser = null;
+  window._becUID = null;
+  window._becBookmarks = [];
   closeAuthPage();
+  updateAuthButtons();
   if (typeof renderGrid === 'function')
     renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
+}
+
+function updateAuthButtons() {
+  // Update landing header button
+  const landingBtn = document.getElementById('auth-header-btn');
+  if (landingBtn) {
+    if (currentUser) {
+      landingBtn.textContent = '🚪 Logout';
+      landingBtn.onclick = () => signOut();
+    } else {
+      landingBtn.textContent = '🔐 Sign In';
+      landingBtn.onclick = () => showAuthModal();
+    }
+  }
+  // Update dashboard header button
+  const dashBtn = document.getElementById('auth-dash-btn');
+  if (dashBtn) {
+    if (currentUser) {
+      dashBtn.title = 'Logout';
+      dashBtn.textContent = '🚪';
+      dashBtn.onclick = () => signOut();
+    } else {
+      dashBtn.title = 'Sign in';
+      dashBtn.textContent = '🔐';
+      dashBtn.onclick = () => showAuthModal();
+    }
+  }
 }
 
 function _friendlyAuthError(code) {
@@ -1622,7 +1679,10 @@ function renderDashboard(level, group) {
 
   // Subject filter nav — only show when not in a category view (or for senior where subjects = categories)
   const nav = document.getElementById('d-nav');
-  nav.innerHTML = '';
+  nav.innerHTML = m.subjects.map(s =>
+    `<button class="d-nbtn ${s === curSubj ? 'on' : ''}" onclick="filterSubj('${s}')" style="padding:8px 16px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .2s;font-family:inherit">${s}</button>`
+  ).join('') +
+  `<button class="d-nbtn ${curSubj === 'Saved' ? 'on' : ''}" onclick="showBookmarksTab()" style="padding:8px 16px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .2s;font-family:inherit;margin-left:auto">🔖 My Saved</button>`;
 
   // Widgets
   renderWidgets(level, all);
@@ -1670,7 +1730,44 @@ function renderWidgets(level, all) {
     ${recentItems || '<div class="prog-empty">None yet — start exploring!</div>'}
   `;
 
-  // ── 3. Study Tips ─────────────────────────
+  // ── 3. Personalized Recommendations ──────
+  let recsHTML = '';
+  if (typeof BEC !== 'undefined') {
+    const notStarted = all.filter(it => {
+      const slug = it.url.replace('animations/','').replace('.html','');
+      return BEC.getCrown(slug) === 0 && isCardUnlocked(it.url);
+    }).slice(0, 3);
+    const readyForChallenge = all.filter(it => {
+      const slug = it.url.replace('animations/','').replace('.html','');
+      return BEC.getCrown(slug) === 1;
+    }).slice(0, 3);
+
+    let recsList = '';
+    if (notStarted.length > 0) {
+      recsList += '<div style="margin-bottom:12px"><div style="font-size:.75rem;font-weight:700;color:#f9a825;text-transform:uppercase;margin-bottom:6px;letter-spacing:.7px">📚 Get Started</div>';
+      notStarted.forEach(it => {
+        recsList += `<a href="${it.url}" onclick="trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${it.url.replace('animations/','').replace('.html','')}',1);BEC.addXP(5,'Opened animation')}" style="display:block;padding:8px;background:rgba(249,168,37,.08);border-left:3px solid #f9a825;color:#f9a825;text-decoration:none;border-radius:4px;font-size:.85rem;font-weight:600;margin-bottom:4px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">${it.icon} ${it.title}</a>`;
+      });
+      recsList += '</div>';
+    }
+    if (readyForChallenge.length > 0) {
+      recsList += '<div style="margin-bottom:12px"><div style="font-size:.75rem;font-weight:700;color:#4caf50;text-transform:uppercase;margin-bottom:6px;letter-spacing:.7px">🚀 Ready for Challenge?</div>';
+      readyForChallenge.forEach(it => {
+        const quizUrl = it.url.replace('.html', '-quiz.html');
+        recsList += `<a href="${quizUrl}" onclick="trackVisit('${it.url}')" style="display:block;padding:8px;background:rgba(76,175,80,.08);border-left:3px solid #4caf50;color:#4caf50;text-decoration:none;border-radius:4px;font-size:.85rem;font-weight:600;margin-bottom:4px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">🧠 ${it.title} Quiz</a>`;
+      });
+      recsList += '</div>';
+    }
+    if (recsList) {
+      recsHTML = `
+      <div class="wid">
+        <div class="wid-hdr"><span class="wid-hdr-icon">💫</span>Recommended For You</div>
+        <div style="padding:12px 0">${recsList}</div>
+      </div>`;
+    }
+  }
+
+  // ── 4. Study Tips ─────────────────────────
   const tipsHTML = m.tips.map(t => {
     const [emoji,...rest] = t.split(' ');
     return `<div class="tip-item"><span class="tip-emoji">${emoji}</span><span>${rest.join(' ')}</span></div>`;
@@ -1685,6 +1782,7 @@ function renderWidgets(level, all) {
       <div class="wid-hdr"><span class="wid-hdr-icon">📊</span>Your Progress</div>
       ${progHTML}
     </div>
+    ${recsHTML}
     <div class="wid">
       <div class="wid-hdr"><span class="wid-hdr-icon">💡</span>Study Tips</div>
       ${tipsHTML}
@@ -1786,8 +1884,9 @@ function renderGridFiltered(level, filteredData, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showAuthModal()`;
+          const bookmarked = window._becBookmarks?.includes('${it.url}') ? 'bookmarked' : '';
           return `
           <div class="acard">
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
@@ -1797,7 +1896,7 @@ function renderGridFiltered(level, filteredData, query) {
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+              <a class="acard-btn acard-btn-bookmark ${bookmarked}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" style="cursor:pointer">🔖</a>
             </div>
           </div>`;
         }).join('')}
@@ -1820,6 +1919,71 @@ function filterSubj(subj) {
   curSubj = subj;
   document.querySelectorAll('.d-nbtn').forEach(b => b.classList.toggle('on', b.textContent === subj));
   renderGrid(curLevel, subj, dSearchQ);
+}
+
+function showBookmarksTab() {
+  if (!currentUser) { showAuthModal(); return; }
+  curSubj = 'Saved';
+  document.querySelectorAll('.d-nbtn').forEach(b => b.classList.toggle('on', b.textContent.includes('Saved')));
+  const bookmarks = BEC?.getBookmarks() || [];
+  if (!bookmarks.length) {
+    document.getElementById('d-grid').innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#999">
+        <div style="font-size:2rem;margin-bottom:10px">🔖</div>
+        <div style="font-weight:700;color:#666;margin-bottom:8px">No saved animations yet</div>
+        <div style="font-size:.9rem">Click the star icon on any animation to save it for later.</div>
+      </div>`;
+    return;
+  }
+  // Find all bookmarked animations
+  let bookmarkedItems = [];
+  for (const level in ANIM) {
+    for (const g of ANIM[level]) {
+      bookmarkedItems.push(...g.items.filter(it => bookmarks.includes(it.url)).map(it => ({...it, group: g.group, level})));
+    }
+  }
+  // Render them
+  let html = '';
+  const groups = {};
+  bookmarkedItems.forEach(it => {
+    if (!groups[it.group]) groups[it.group] = [];
+    groups[it.group].push(it);
+  });
+  Object.entries(groups).forEach(([group, items]) => {
+    html += `
+      <div class="sec-div">
+        <span class="sec-div-label">${group}</span>
+        <div class="sec-div-line"></div>
+      </div>
+      <div class="card-grid">
+        ${items.map(it => {
+          const studyUrl = it.url.replace('.html', '-study.html');
+          const quizUrl  = it.url.replace('.html', '-quiz.html');
+          const slug     = it.url.replace('animations/','').replace('.html','');
+          const crownIcon = BEC ? BEC.crownHtml(BEC.getCrown(slug)) : '';
+          const isUnlocked = isCardUnlocked(it.url);
+          const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
+          const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
+          const animClick = isUnlocked
+            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showAuthModal()`;
+          return `
+          <div class="acard">
+            <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
+            <div class="acard-icon">${it.icon}</div>
+            <div class="acard-title">${it.title}</div>
+            <div class="acard-sub">${it.sub}</div>
+            <div class="acard-btns">
+              <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
+              <a class="acard-btn acard-btn-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" style="cursor:pointer">🔖</a>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  });
+  document.getElementById('d-grid').innerHTML = html;
+  document.getElementById('d-no-results').style.display = 'none';
 }
 
 /* ══════════════════════════════════════════
@@ -1962,9 +2126,30 @@ function _launchTest(title, items, examName) {
 /* ══════════════════════════════════════════
    LANDING STATS PANEL
 ══════════════════════════════════════════ */
+function showContinueBanner() {
+  if (typeof BEC === 'undefined') return;
+  const lastUrl = BEC.getLastVisited();
+  if (!lastUrl) return;
+  // Find the animation title from ANIM data
+  let title = 'Your last animation';
+  for (const level in ANIM) {
+    for (const g of ANIM[level]) {
+      const found = g.items.find(it => it.url === lastUrl);
+      if (found) { title = found.title; break; }
+    }
+  }
+  const banner = document.getElementById('continue-banner');
+  if (banner) {
+    document.getElementById('continue-text').textContent = `Last opened: ${title}`;
+    document.getElementById('continue-btn').href = lastUrl;
+    banner.style.display = 'flex';
+  }
+}
+
 function renderLandingStats() {
   const el = document.getElementById('player-card');
   if (!el || typeof BEC === 'undefined') return;
+  showContinueBanner();
   const s   = BEC.getState();
   const lv  = BEC.getLevel(s.xp);
   const nx  = BEC.getNextLevel(s.xp);
@@ -2005,6 +2190,10 @@ function renderLandingStats() {
           <span class="pc-stat-val">${s.hearts ?? HMAX}/${HMAX}</span>
           <span class="pc-stat-lbl">lives</span>
         </div>
+        ${BEC?.canFreezeStreak() ? `<button onclick="freezeStreakUI()" style="padding:8px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s;font-family:inherit" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🛡️ ${s.xp} XP</button>` : ''}
+        <button onclick="showQuizHistory()" class="pc-badge-btn" style="padding:8px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+          <span style="display:block">📊 History</span>
+        </button>
         <button class="pc-badge-btn" onclick="BEC._showProfile()">
           <span class="pc-badge-big">🏅 ${earned.length}</span>
           <span class="pc-badge-lbl">of ${BEC.BADGES.length} badges</span>
@@ -2017,6 +2206,157 @@ function renderLandingStats() {
         <span class="pc-next-badge">${nextBdg.icon} <strong style="color:rgba(255,255,255,.75)">${nextBdg.name}</strong> — ${nextBdg.desc}</span>` : ''}
       ${earnedIconsHtml ? `<span class="pc-earned-icons">${earnedIconsHtml}</span>` : ''}
     </div>` : ''}`;
+}
+
+/* ══════════════════════════════════════════
+   BOOKMARKS & LEADERBOARD
+══════════════════════════════════════════ */
+window._becBookmarks = [];
+
+function toggleBookmarkCard(url) {
+  if (!currentUser) { showAuthModal(); return; }
+  const isBookmarked = BEC.toggleBookmark(url);
+  window._becBookmarks = BEC.getBookmarks();
+  // Visual feedback
+  const cards = document.querySelectorAll('[onclick*="toggleBookmarkCard"]');
+  cards.forEach(c => {
+    if (c.getAttribute('onclick').includes(`'${url}'`)) {
+      c.classList.toggle('bookmarked', isBookmarked);
+    }
+  });
+}
+
+function showQuizHistory() {
+  if (!currentUser) { showAuthModal(); return; }
+  if (typeof BEC === 'undefined') return;
+
+  const modal = document.createElement('div');
+  modal.id = 'quiz-history-modal';
+  modal.className = 'te-overlay';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000';
+  modal.onclick = e => e.target === modal && modal.remove();
+
+  const history = BEC.getQuizHistory() || [];
+  if (!history.length) {
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:40px;max-width:500px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+        <div style="font-size:2rem;margin-bottom:10px">📊</div>
+        <h2 style="margin:0 0 8px;font-size:1.3rem;font-weight:800;color:#1a1a1a">No Quiz Attempts Yet</h2>
+        <p style="margin:0;color:#666;font-size:.95rem">Start taking quizzes to track your progress and see it here!</p>
+        <button onclick="this.closest('.te-overlay').remove()" style="margin-top:20px;padding:10px 20px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit">Close</button>
+      </div>`;
+    document.body.appendChild(modal);
+    return;
+  }
+
+  const grouped = {};
+  history.forEach(h => {
+    if (!grouped[h.topic]) grouped[h.topic] = [];
+    grouped[h.topic].push(h);
+  });
+
+  let html = `
+    <div style="background:#fff;border-radius:16px;max-width:600px;max-height:70vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+      <div style="padding:24px;border-bottom:1px solid #e8e8e8;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff">
+        <h2 style="margin:0;font-size:1.3rem;font-weight:800;color:#1a1a1a">📊 Quiz History</h2>
+        <button onclick="this.closest('.te-overlay').remove()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:#ccc">✕</button>
+      </div>
+      <div style="padding:20px">`;
+
+  Object.entries(grouped).forEach(([topic, attempts]) => {
+    html += `
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;color:#1a1a1a;margin-bottom:12px;font-size:.95rem">${topic}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">`;
+    attempts.forEach(a => {
+      const pct = Math.round(a.score / a.totalQs * 100);
+      const color = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';
+      const date = new Date(a.timestamp).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+      html += `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#f5f5f5;border-radius:8px">
+            <div style="color:${color};font-weight:700;font-size:1rem;min-width:40px;text-align:center">${a.score}/${a.totalQs}</div>
+            <div style="flex:1">
+              <div style="font-size:.85rem;font-weight:600;color:#1a1a1a">${pct}%</div>
+              <div style="font-size:.75rem;color:#999">${date}</div>
+            </div>
+            <div style="font-weight:700;color:${color};font-size:.9rem">${pct >= 90 ? '🌟' : pct >= 80 ? '✅' : pct >= 60 ? '⚠️' : '❌'}</div>
+          </div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  html += `</div></div>`;
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+
+async function freezeStreakUI() {
+  if (typeof BEC === 'undefined') return;
+  if (!BEC.canFreezeStreak()) {
+    alert('You need at least 100 XP to protect your streak.');
+    return;
+  }
+  const confirmed = confirm('Spend 100 XP to protect your streak if you miss a day?\n\nYour streak will be protected once and consumed if you miss studying tomorrow.');
+  if (confirmed) {
+    if (BEC.freezeStreak()) {
+      renderLandingStats();
+      BEC.confetti();
+      alert('🛡️ Your streak is now protected! Miss one day without losing your progress.');
+    }
+  }
+}
+
+async function showLeaderboard() {
+  if (!window._becDB || !window._becUID) return;
+  const modal = document.createElement('div');
+  modal.id = 'leaderboard-modal';
+  modal.className = 'te-overlay';
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000';
+  modal.onclick = e => e.target === modal && modal.remove();
+
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:16px;padding:28px;max-width:500px;max-height:70vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="margin:0;font-size:1.3rem;font-weight:800;color:#1a1a1a">🏆 Top Students</h2>
+        <button onclick="this.closest('.te-overlay').remove()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:#ccc">✕</button>
+      </div>
+      <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:12px">
+        <div style="text-align:center;color:#999;padding:20px">Loading leaderboard...</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  try {
+    const snap = await window._becDB.collection('users')
+      .orderBy('xp', 'desc')
+      .limit(10)
+      .get();
+    const list = document.getElementById('leaderboard-list');
+    list.innerHTML = '';
+    let rank = 1;
+    snap.forEach(doc => {
+      const data = doc.data();
+      const isSelf = doc.id === window._becUID;
+      list.innerHTML += `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isSelf ? '#e8f5e9' : '#f5f5f5'};border-radius:10px;border:${isSelf ? '2px solid #2e7d32' : 'none'}">
+          <div style="font-size:1.2rem;font-weight:800;color:#2e7d32;width:28px">${rank}</div>
+          <div style="flex:1">
+            <div style="font-weight:700;color:#1a1a1a">${data.name || 'Anonymous'}</div>
+            <div style="font-size:.85rem;color:#999">${BEC.LEVELS[Math.min(Math.floor((data.xp || 0) / 200), BEC.LEVELS.length - 1)].icon} ${BEC.LEVELS[Math.min(Math.floor((data.xp || 0) / 200), BEC.LEVELS.length - 1)].name}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:700;color:#2e7d32;font-size:1.1rem">${data.xp || 0}</div>
+            <div style="font-size:.75rem;color:#999">XP</div>
+          </div>
+        </div>
+      `;
+      rank++;
+    });
+  } catch(e) {
+    console.warn('Leaderboard load failed', e);
+    document.getElementById('leaderboard-list').innerHTML = '<div style="color:#c62828;text-align:center;padding:20px">Failed to load leaderboard</div>';
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -2049,6 +2389,7 @@ function renderLandingStats() {
   window.addEventListener('hashchange', () => handleHash(location.hash.slice(1)));
 
   // Initialize Firebase Auth listener (async — re-renders grid when user state resolves)
+  updateAuthButtons();
   initAuth();
 })();
 </script>

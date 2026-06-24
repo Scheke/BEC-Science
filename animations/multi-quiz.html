@@ -280,6 +280,11 @@ function showResults() {
   window.BEC?.addXP(xpEarned >= 10 ? xpEarned - correct * 10 : 0, 'Test bonus');
   if (pct >= 80 && window.BEC?.confetti) BEC.confetti();
 
+  // Record quiz attempt to Firestore for history
+  if (window.BEC?.recordQuizAttempt) {
+    BEC.recordQuizAttempt(data.title, correct, total);
+  }
+
   // Score circle colour
   const circle = document.getElementById('mq-circle');
   const col = pct >= 80 ? '#2e7d32' : pct >= 60 ? '#e65100' : '#c62828';

@@ -444,6 +444,10 @@ const BEC = (() => {
       _perfectCount: 0, _weeksStudied: 0, _comebacks: 0,
       _earlyBird: false, _nightOwl: false, _longestSession: 0, _topicsInDay: 0,
       _lastWeekNum: 0, _topicsInDayDate: null,
+      last_visited: null,
+      bookmarks: [],
+      quiz_history: [],
+      streak_freeze_date: null,
     };
   }
 
@@ -600,6 +604,74 @@ const BEC = (() => {
     if (score > (_s._bestChallenge || 0)) {
       _s._bestChallenge = score; _save(); _checkBadges();
     }
+  }
+
+  function recordLastVisited(url) {
+    _load();
+    _s.last_visited = url;
+    _save();
+  }
+
+  function getLastVisited() {
+    _load();
+    return _s.last_visited || null;
+  }
+
+  function toggleBookmark(url) {
+    _load();
+    if (!_s.bookmarks) _s.bookmarks = [];
+    const idx = _s.bookmarks.indexOf(url);
+    if (idx >= 0) _s.bookmarks.splice(idx, 1);
+    else _s.bookmarks.push(url);
+    _save();
+    return _s.bookmarks.includes(url); // true if now bookmarked
+  }
+
+  function getBookmarks() {
+    _load();
+    return _s.bookmarks || [];
+  }
+
+  function recordQuizAttempt(topic, score, totalQs) {
+    _load();
+    if (!_s.quiz_history) _s.quiz_history = [];
+    _s.quiz_history.push({
+      topic, score, totalQs,
+      timestamp: new Date().toISOString(),
+    });
+    // Keep last 50 attempts
+    if (_s.quiz_history.length > 50) _s.quiz_history.shift();
+    _save();
+  }
+
+  function getQuizHistory() {
+    _load();
+    return _s.quiz_history || [];
+  }
+
+  function canFreezeStreak() {
+    _load();
+    return _s.xp >= 100 && !_s.streak_freeze_date;
+  }
+
+  function freezeStreak() {
+    _load();
+    if (_s.xp < 100) return false;
+    _s.xp -= 100;
+    _s.streak_freeze_date = _today();
+    _save();
+    _refreshUI();
+    return true;
+  }
+
+  function consumeStreakFreeze() {
+    _load();
+    if (_s.streak_freeze_date) {
+      _s.streak_freeze_date = null;
+      _save();
+      return true;
+    }
+    return false;
   }
 
   function getState() { _load(); return { ..._s }; }
@@ -976,6 +1048,10 @@ const BEC = (() => {
     markPerfectQuiz, recordChallengeScore,
     renderStatsBar, crownHtml, confetti,
     loadFromCloud,
+    recordLastVisited, getLastVisited,
+    toggleBookmark, getBookmarks,
+    recordQuizAttempt, getQuizHistory,
+    canFreezeStreak, freezeStreak, consumeStreakFreeze,
     LEVELS, BADGES, _showProfile, _showDetailedStats,
   };
 })();
