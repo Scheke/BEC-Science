@@ -806,17 +806,57 @@
 
 <!-- ════════════ DONATE MODAL ════════════ -->
 <div id="donate-modal" class="te-overlay hidden" onclick="if(event.target===this)closeDonateModal()">
-  <div class="te-modal-box" style="max-width:450px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div class="te-modal-title">Support Us 💚</div>
-      <button onclick="closeDonateModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#bbb">&times;</button>
+  <div class="te-modal-box" style="max-width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h2 style="margin:0;font-size:1.4rem;font-weight:800;color:#1a1a1a">Please donate any amount 🙏</h2>
+      <button onclick="closeDonateModal()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:#ddd;transition:color .2s" onmouseover="this.style.color='#999'" onmouseout="this.style.color='#ddd'">✕</button>
     </div>
-    <p style="color:#666;margin-bottom:20px;line-height:1.6">Help us create more FREE educational content. Your donation directly funds new animations, study guides, and features.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
-      <a href="https://paypal.me/scheke" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:15px;background:#0070ba;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💳 PayPal</a>
-      <a href="https://buymeacoffee.com/scheke" target="_blank" style="display:flex;align-items:center;justify-content:center;padding:15px;background:#ffdd00;color:#000;border-radius:8px;text-decoration:none;font-weight:700;cursor:pointer;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">☕ Coffee</a>
+
+    <p style="color:#666;margin-bottom:24px;line-height:1.7;font-size:.95rem">
+      Keeping this app free isn't free — it comes with costs. Your support helps pay for servers, updates, and new features so that every Motswana can access quality science education. Thank you. ❤️
+    </p>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/26775777413?text=Hi%20Scheke%2C%20I%20want%20to%20support%20BEC%20Science" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;margin-bottom:20px;cursor:pointer;transition:opacity .2s;font-family:inherit" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371 0-.57 0-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.725.738 5.385 2.124 7.667L2.957 24l8.25-2.164a9.844 9.844 0 004.604 1.17h.004c5.444 0 9.944-4.467 9.967-9.978.012-2.763-.69-5.329-1.984-7.569A9.847 9.847 0 0011.051 6.979z"/>
+      </svg>
+      Click here to contact us on WhatsApp for support. 😊
+    </a>
+
+    <!-- Payment Methods -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <!-- Orange Money -->
+      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.4rem">📱</span>
+          <div style="font-weight:700;color:#ff7a00;font-size:.95rem">ORANGE MONEY</div>
+        </div>
+        <div style="color:#333;font-weight:600;font-size:1.05rem">Send any amount to <span style="color:#1a1a1a">+267 75 777 413</span></div>
+        <div style="color:#999;font-size:.85rem;margin-top:4px">Reference: <span style="color:#666;font-weight:600">BECScience</span></div>
+      </div>
+
+      <!-- Smega BTC -->
+      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.4rem">📱</span>
+          <div style="font-weight:700;color:#0066ff;font-size:.95rem">SMEGA BTC</div>
+        </div>
+        <div style="color:#333;font-weight:600;font-size:1.05rem">Send any amount to <span style="color:#1a1a1a">+267 73 476 667</span></div>
+        <div style="color:#999;font-size:.85rem;margin-top:4px">Reference: <span style="color:#666;font-weight:600">BECScience</span></div>
+      </div>
+
+      <!-- Pay2Cell FNBB -->
+      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.4rem">🏦</span>
+          <div style="font-weight:700;color:#0066cc;font-size:.95rem">PAY2CELL - FNBB</div>
+        </div>
+        <div style="color:#333;font-weight:600;font-size:1.05rem">Account no: <span style="color:#1a1a1a">+267 75 777 413</span></div>
+      </div>
     </div>
-    <button onclick="closeDonateModal()" style="width:100%;padding:12px;background:#2e7d32;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit">Close</button>
+
+    <button onclick="closeDonateModal()" style="width:100%;padding:12px;margin-top:20px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Close</button>
   </div>
 </div>
 
