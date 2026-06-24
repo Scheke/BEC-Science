@@ -811,6 +811,10 @@ const BEC = (() => {
     document.querySelectorAll('[data-bec-crown]').forEach(el => {
       el.textContent = _crownIcon(_s.crowns[el.dataset.becCrown] || 0);
     });
+    // Update landing stats card if it exists
+    if (typeof window.renderLandingStats === 'function') {
+      window.renderLandingStats();
+    }
   }
 
   function _heartsHtml() {

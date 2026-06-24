@@ -1118,10 +1118,16 @@ function updateAuthButtons() {
   const landingBtn = document.getElementById('auth-header-btn');
   if (landingBtn) {
     if (currentUser) {
-      landingBtn.textContent = '🚪 Logout';
+      landingBtn.textContent = '⏻ Logout';
+      landingBtn.style.background = 'rgba(198,40,40,.2)';
+      landingBtn.style.borderColor = 'rgba(198,40,40,.4)';
+      landingBtn.style.color = '#ef5350';
       landingBtn.onclick = () => signOut();
     } else {
       landingBtn.textContent = '🔐 Sign In';
+      landingBtn.style.background = 'rgba(255,255,255,.15)';
+      landingBtn.style.borderColor = 'rgba(255,255,255,.3)';
+      landingBtn.style.color = '#fff';
       landingBtn.onclick = () => showAuthModal();
     }
   }
@@ -1130,11 +1136,13 @@ function updateAuthButtons() {
   if (dashBtn) {
     if (currentUser) {
       dashBtn.title = 'Logout';
-      dashBtn.textContent = '🚪';
+      dashBtn.textContent = '⏻';
+      dashBtn.style.color = '#ef5350';
       dashBtn.onclick = () => signOut();
     } else {
       dashBtn.title = 'Sign in';
       dashBtn.textContent = '🔐';
+      dashBtn.style.color = 'inherit';
       dashBtn.onclick = () => showAuthModal();
     }
   }
