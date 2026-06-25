@@ -451,14 +451,14 @@
       background:transparent;color:#bbb;border-color:#ddd;
       cursor:not-allowed;opacity:.7;pointer-events:none;
     }
-    .acard-btn-bookmark{
-      background:transparent;color:#f9a825;border-color:#f9a825;font-size:1rem;
-      transition:all .2s;
+    .acard-bookmark{
+      position:absolute;top:7px;left:10px;
+      background:none;border:none;cursor:pointer;
+      font-size:1rem;line-height:1;padding:2px;
+      color:#ddd;transition:color .2s,transform .15s;
     }
-    .acard-btn-bookmark:hover{opacity:.85}
-    .acard-btn-bookmark.bookmarked{
-      background:#f9a825;color:#fff;
-    }
+    .acard-bookmark:hover{color:#f9a825;transform:scale(1.2)}
+    .acard-bookmark.bookmarked{color:#f9a825}
     .grp-hidden{display:none}
     /* Crown badge on cards */
     .acard-crown{position:absolute;top:8px;right:10px;font-size:1.1rem;line-height:1;
@@ -517,6 +517,43 @@
     .te-modal-btn-start:hover{opacity:.85}
     .te-modal-btn-cancel{background:#f5f5f5;color:#666}
     .te-modal-btn-cancel:hover{background:#e8e8e8}
+    /* ── Mobile Sidebar ── */
+    #mob-sidebar{
+      position:fixed;top:0;left:-100%;width:min(280px,80vw);height:100%;
+      background:#fff;z-index:9000;box-shadow:4px 0 24px rgba(0,0,0,.25);
+      display:flex;flex-direction:column;transition:left .25s cubic-bezier(.4,0,.2,1);
+      overflow-y:auto;
+    }
+    #mob-sidebar.open{left:0}
+    #mob-overlay{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:8999;
+    }
+    #mob-overlay.open{display:block}
+    .mob-sb-hdr{
+      background:var(--c);padding:20px 18px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .mob-sb-logo{color:#fff;font-weight:900;font-size:1rem}
+    .mob-sb-close{background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:4px 8px;line-height:1}
+    .mob-sb-section{padding:12px 0;border-bottom:1px solid #f0f0f0}
+    .mob-sb-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#999;padding:0 18px;margin-bottom:6px}
+    .mob-sb-btn{
+      display:flex;align-items:center;gap:10px;width:100%;padding:12px 18px;
+      background:none;border:none;font-family:inherit;font-size:.9rem;font-weight:600;
+      color:#1a1a1a;cursor:pointer;text-align:left;text-decoration:none;transition:background .15s;
+    }
+    .mob-sb-btn:hover,.mob-sb-btn.active{background:#e8f5e9;color:#2e7d32}
+    .mob-sb-btn-icon{font-size:1.1rem;width:22px;text-align:center}
+    .mob-sb-donate{
+      margin:16px;padding:12px;background:#2e7d32;color:#fff;border:none;
+      border-radius:10px;font-family:inherit;font-size:.9rem;font-weight:700;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+    }
+    #mob-menu-btn{
+      display:none;background:rgba(255,255,255,.15);border:none;color:#fff;
+      font-size:1.3rem;cursor:pointer;padding:8px;border-radius:8px;line-height:1;
+    }
+
     /* Landing page mobile */
     @media(max-width:768px){
       .l-hdr{padding:12px 16px;flex-wrap:wrap;gap:10px}
@@ -524,6 +561,15 @@
       .l-badge{font-size:.7rem;padding:6px 12px}
       .l-hdr-btns{margin-left:0;width:100%;gap:8px}
       .l-hdr-btn{flex:1;font-size:.75rem;padding:8px 10px!important}
+    }
+    @media(max-width:640px){
+      /* Show hamburger, hide nav clutter in dashboard */
+      #mob-menu-btn{display:block}
+      .d-hdr .d-back{display:none}
+      .d-hdr .d-lvdrop{display:none}
+      .d-hdr #d-nav{display:none}
+      .d-hdr #d-rnd{display:none}
+      /* Keep donate & auth always */
     }
     @media(max-width:480px){
       .l-hdr{padding:10px 12px;gap:8px}
@@ -533,6 +579,8 @@
       .l-sub{font-size:.9rem;padding:0 12px}
       .l-hdr-btns{width:100%;gap:6px}
       .l-hdr-btn{font-size:.65rem;padding:6px 10px!important}
+      .card-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+      .acard{padding:12px}
     }
   </style>
   <script src="animations/game.js"></script>
@@ -672,7 +720,38 @@
 ════════════════════════════════════ -->
 <div id="v-dash" class="hidden">
 
+  <!-- Mobile Sidebar Overlay -->
+  <div id="mob-overlay" onclick="closeMobSidebar()"></div>
+
+  <!-- Mobile Sidebar -->
+  <div id="mob-sidebar">
+    <div class="mob-sb-hdr">
+      <span class="mob-sb-logo">BEC Science</span>
+      <button class="mob-sb-close" onclick="closeMobSidebar()">✕</button>
+    </div>
+    <div class="mob-sb-section">
+      <div class="mob-sb-label">Levels</div>
+      <button class="mob-sb-btn" onclick="openLevel('primary');closeMobSidebar()"><span class="mob-sb-btn-icon">🏫</span>Primary (PSLE)</button>
+      <button class="mob-sb-btn" onclick="openLevel('junior');closeMobSidebar()"><span class="mob-sb-btn-icon">📚</span>Junior (JCE)</button>
+      <button class="mob-sb-btn" onclick="openLevel('senior');closeMobSidebar()"><span class="mob-sb-btn-icon">🎓</span>Senior (BGCSE)</button>
+    </div>
+    <div class="mob-sb-section">
+      <div class="mob-sb-label">Tools</div>
+      <button class="mob-sb-btn" onclick="openRandom();closeMobSidebar()"><span class="mob-sb-btn-icon">🎲</span>Random Animation</button>
+      <button class="mob-sb-btn" onclick="showLeaderboard();closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
+      <button class="mob-sb-btn" onclick="showBookmarksTab();closeMobSidebar()"><span class="mob-sb-btn-icon">🔖</span>My Saved</button>
+      <button class="mob-sb-btn" onclick="showQuizHistory();closeMobSidebar()"><span class="mob-sb-btn-icon">📊</span>Quiz History</button>
+    </div>
+    <div class="mob-sb-section">
+      <div class="mob-sb-label">Navigation</div>
+      <button class="mob-sb-btn" onclick="goHome();closeMobSidebar()"><span class="mob-sb-btn-icon">🏠</span>Home</button>
+      <button id="mob-auth-btn" class="mob-sb-btn" onclick="showAuthModal();closeMobSidebar()"><span class="mob-sb-btn-icon">🔐</span>Sign In</button>
+    </div>
+    <button class="mob-sb-donate" onclick="showDonateModal();closeMobSidebar()">❤️ Support BEC Science</button>
+  </div>
+
   <header class="d-hdr" id="d-hdr">
+    <button id="mob-menu-btn" onclick="openMobSidebar()" title="Menu">☰</button>
     <button class="d-back" onclick="goHome()">&#8592; Home</button>
     <div class="d-lvdrop">
       <button class="d-lvdrop-btn" id="d-lvdrop-toggle" onclick="toggleLevelDropdown()">📚 Level ⌄</button>
@@ -957,18 +1036,14 @@ function isCardUnlocked(url) {
 }
 
 function showAuthModal() {
+  // Already logged in — nothing to show
+  if (currentUser && !currentUser.isAnonymous) return;
   const page = document.getElementById('v-auth');
   page.classList.remove('hidden');
   page.style.display = 'flex';
-  // Show form for anonymous/new users, show success only for authenticated (non-anonymous) users
-  if (currentUser && !currentUser.isAnonymous) {
-    _showSignedInState();
-  } else {
-    document.getElementById('auth-form').style.display = 'block';
-    document.getElementById('auth-signed-in').style.display = 'none';
-    switchAuthTab('signin');
-  }
-  // clear fields
+  document.getElementById('auth-form').style.display = 'block';
+  document.getElementById('auth-signed-in').style.display = 'none';
+  switchAuthTab('signin');
   document.getElementById('auth-email').value = '';
   document.getElementById('auth-password').value = '';
   document.getElementById('auth-username').value = '';
@@ -1043,7 +1118,7 @@ async function signIn() {
       currentUser = { name, email, uid: cred.user.uid };
       fbAnalytics.logEvent('login', { method: 'email' });
     }
-    _showSignedInState();
+    closeAuthPage();
     if (typeof renderGrid === 'function')
       renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
   } catch (err) {
@@ -1065,7 +1140,7 @@ async function signInWithGoogle() {
       uid: result.user.uid
     };
     fbAnalytics.logEvent('login', { method: 'google' });
-    _showSignedInState();
+    closeAuthPage();
     if (typeof renderGrid === 'function')
       renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
   } catch (err) {
@@ -1113,8 +1188,19 @@ async function signOut() {
     renderGrid(curLevel || 'primary', curSubj || 'All', dSearchQ || '');
 }
 
+function openMobSidebar() {
+  document.getElementById('mob-sidebar').classList.add('open');
+  document.getElementById('mob-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobSidebar() {
+  document.getElementById('mob-sidebar').classList.remove('open');
+  document.getElementById('mob-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 function updateAuthButtons() {
-  // Update landing header button
+  // Landing header button
   const landingBtn = document.getElementById('auth-header-btn');
   if (landingBtn) {
     if (currentUser) {
@@ -1131,7 +1217,7 @@ function updateAuthButtons() {
       landingBtn.onclick = () => showAuthModal();
     }
   }
-  // Update dashboard header button
+  // Dashboard header button
   const dashBtn = document.getElementById('auth-dash-btn');
   if (dashBtn) {
     if (currentUser) {
@@ -1144,6 +1230,17 @@ function updateAuthButtons() {
       dashBtn.textContent = '🔐';
       dashBtn.style.color = 'inherit';
       dashBtn.onclick = () => showAuthModal();
+    }
+  }
+  // Mobile sidebar auth button
+  const mobAuthBtn = document.getElementById('mob-auth-btn');
+  if (mobAuthBtn) {
+    if (currentUser) {
+      mobAuthBtn.innerHTML = '<span class="mob-sb-btn-icon" style="color:#ef5350">⏻</span><span style="color:#ef5350">Logout</span>';
+      mobAuthBtn.onclick = () => { signOut(); closeMobSidebar(); };
+    } else {
+      mobAuthBtn.innerHTML = '<span class="mob-sb-btn-icon">🔐</span>Sign In';
+      mobAuthBtn.onclick = () => { showAuthModal(); closeMobSidebar(); };
     }
   }
 }
@@ -1838,8 +1935,10 @@ function renderGrid(level, subj, query) {
           const animClick = isUnlocked
             ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showAuthModal()`;
+          const bmCls = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
+            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" title="Bookmark">🔖</button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
@@ -1894,9 +1993,10 @@ function renderGridFiltered(level, filteredData, query) {
           const animClick = isUnlocked
             ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showAuthModal()`;
-          const bookmarked = window._becBookmarks?.includes('${it.url}') ? 'bookmarked' : '';
+          const bmCls2 = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
+            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" title="Bookmark">🔖</button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
@@ -1904,7 +2004,7 @@ function renderGridFiltered(level, filteredData, query) {
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn acard-btn-bookmark ${bookmarked}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" style="cursor:pointer">🔖</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
             </div>
           </div>`;
         }).join('')}
@@ -1975,16 +2075,19 @@ function showBookmarksTab() {
           const animClick = isUnlocked
             ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showAuthModal()`;
+          const quizUrl2 = it.url.replace('.html', '-quiz.html');
+          const studyUrl2 = it.url.replace('.html', '-study.html');
           return `
           <div class="acard">
+            <button class="acard-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" title="Remove bookmark">🔖</button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn acard-btn-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" style="cursor:pointer">🔖</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl2 : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl2 : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
             </div>
           </div>`;
         }).join('')}
