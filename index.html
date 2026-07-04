@@ -1258,6 +1258,33 @@
 .dm-plan.lifetime.on .dm-plan-radio::after{background:#1a1a2e}
 </style>
 
+<!-- ════════════ LEADERBOARD PAGE ════════════ -->
+<div id="v-leaderboard" class="hidden" style="min-height:100vh;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column">
+
+  <!-- Sticky header -->
+  <div style="padding:13px 20px;display:flex;align-items:center;gap:12px;background:#161b22;border-bottom:1px solid #21262d;position:sticky;top:0;z-index:10">
+    <button id="lb-back-btn" onclick="closeLeaderboard()" style="background:rgba(255,255,255,.08);border:1px solid #30363d;color:#c9d1d9;border-radius:10px;padding:7px 14px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit">← Back</button>
+    <div style="font-size:1rem;font-weight:900;color:#e6edf3;flex:1">🏆 Leaderboard</div>
+    <div style="font-size:.75rem;color:#484f58">Top students in Botswana</div>
+  </div>
+
+  <!-- Section tabs -->
+  <div style="display:flex;gap:8px;padding:14px 20px;background:#161b22;border-bottom:1px solid #21262d">
+    <button id="lb-tab-primary" onclick="loadLeaderboardTab('primary')" style="flex:1;padding:9px 6px;font-size:.83rem;font-weight:700;border-radius:9px;cursor:pointer;font-family:inherit;transition:all .15s;border:1.5px solid #30363d;background:#0d1117;color:#8b949e">🏫 PSLE</button>
+    <button id="lb-tab-junior"  onclick="loadLeaderboardTab('junior')"  style="flex:1;padding:9px 6px;font-size:.83rem;font-weight:700;border-radius:9px;cursor:pointer;font-family:inherit;transition:all .15s;border:1.5px solid #30363d;background:#0d1117;color:#8b949e">📚 JCE</button>
+    <button id="lb-tab-senior"  onclick="loadLeaderboardTab('senior')"  style="flex:1;padding:9px 6px;font-size:.83rem;font-weight:700;border-radius:9px;cursor:pointer;font-family:inherit;transition:all .15s;border:1.5px solid #30363d;background:#0d1117;color:#8b949e">🎓 BGCSE</button>
+  </div>
+
+  <!-- Subtitle row -->
+  <div id="lb-subtitle" style="padding:12px 20px 0;font-size:.78rem;color:#484f58;text-align:center"></div>
+
+  <!-- Content list -->
+  <div id="lb-content" style="max-width:640px;width:100%;margin:0 auto;padding:16px 20px 40px;flex:1">
+    <div style="text-align:center;padding:60px 0;color:#484f58">Loading…</div>
+  </div>
+
+</div>
+
 <!-- ════════════ CARD LOCK OVERLAY ════════════ -->
 <!-- Firebase SDK (compat) + Firestore + Google Sign-In -->
 <script src="firebase-config.js"></script>
@@ -1734,9 +1761,12 @@ var _prxFrom = 'land';
 function showPricing() {
   const vDash = document.getElementById('v-dash');
   const vLand = document.getElementById('v-land');
-  _prxFrom = vDash && !vDash.classList.contains('hidden') ? 'dash' : 'land';
+  const vLb   = document.getElementById('v-leaderboard');
+  if (vLb && !vLb.classList.contains('hidden')) { _prxFrom = _lbFrom; }
+  else { _prxFrom = (vDash && !vDash.classList.contains('hidden')) ? 'dash' : 'land'; }
   if (vDash) vDash.classList.add('hidden');
   if (vLand) vLand.classList.add('hidden');
+  vLb?.classList.add('hidden');
   document.getElementById('donate-modal')?.classList.add('hidden');
   document.getElementById('v-pricing').classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -2966,97 +2996,125 @@ async function freezeStreakUI() {
   }
 }
 
-async function showLeaderboard(level) {
-  if (!isLoggedIn()) { showLockedFeaturePopup('🏆 Leaderboard', 'Sign in to see the top students in Botswana and compete for the top spot!'); return; }
-  if (!window._becDB || !window._becUID) return;
+// ── Leaderboard full page ─────────────────────────────────────────────────────
+var _lbFrom  = 'land';
+var _lbLevel = 'primary';
 
-  const lvMeta = {
-    primary: { label: '🏫 PSLE Top Students',  field: 'primaryVisited', unit: 'animations' },
-    junior:  { label: '📚 JCE Top Students',   field: 'juniorVisited',  unit: 'animations' },
-    senior:  { label: '🎓 BGCSE Top Students', field: 'seniorVisited',  unit: 'animations' },
+function showLeaderboard(level) {
+  if (!isLoggedIn()) {
+    showLockedFeaturePopup('🏆 Leaderboard', 'Sign in to see the top students in Botswana and compete for the top spot!');
+    return;
+  }
+  _lbLevel = level || curLevel || 'primary';
+  const vDash = document.getElementById('v-dash');
+  const vLand = document.getElementById('v-land');
+  _lbFrom = (vDash && !vDash.classList.contains('hidden')) ? 'dash' : 'land';
+  vDash?.classList.add('hidden');
+  vLand?.classList.add('hidden');
+  document.getElementById('v-pricing')?.classList.add('hidden');
+  document.getElementById('v-leaderboard').classList.remove('hidden');
+  window.scrollTo(0, 0);
+  loadLeaderboardTab(_lbLevel);
+}
+
+function closeLeaderboard() {
+  document.getElementById('v-leaderboard').classList.add('hidden');
+  if (_lbFrom === 'dash') {
+    document.getElementById('v-dash')?.classList.remove('hidden');
+  } else {
+    document.getElementById('v-land')?.classList.remove('hidden');
+  }
+}
+
+async function loadLeaderboardTab(level) {
+  _lbLevel = level;
+  const LV = {
+    primary: { label:'🏫 PSLE',  field:'primaryVisited', unit:'animations opened', color:'#58a6ff' },
+    junior:  { label:'📚 JCE',   field:'juniorVisited',  unit:'animations opened', color:'#3fb950' },
+    senior:  { label:'🎓 BGCSE', field:'seniorVisited',  unit:'animations opened', color:'#f9a825' },
   };
-  const meta       = lvMeta[level] || { label: '🏆 Top Students', field: 'xp', unit: 'XP' };
-  const orderField = meta.field;
-  const unit       = meta.unit;
+  const meta = LV[level];
 
-  document.getElementById('leaderboard-modal')?.remove();
-  const modal = document.createElement('div');
-  modal.id = 'leaderboard-modal';
-  modal.className = 'te-overlay';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000';
-  modal.onclick = e => e.target === modal && modal.remove();
+  // Update tab styles
+  ['primary','junior','senior'].forEach(lv => {
+    const btn = document.getElementById('lb-tab-' + lv);
+    if (!btn) return;
+    const active = lv === level;
+    btn.style.background = active ? LV[lv].color : '#0d1117';
+    btn.style.color      = active ? '#0d1117'    : '#8b949e';
+    btn.style.borderColor= active ? LV[lv].color : '#30363d';
+  });
 
-  // Section tabs
-  const tabHtml = [
-    { lv:'primary', icon:'🏫', short:'PSLE' },
-    { lv:'junior',  icon:'📚', short:'JCE'  },
-    { lv:'senior',  icon:'🎓', short:'BGCSE' },
-  ].map(t => `
-    <button onclick="this.closest('.te-overlay').remove();showLeaderboard('${t.lv}')"
-      style="flex:1;padding:8px 4px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;
-             background:${level===t.lv?'#1b5e20':'#f0f0f0'};color:${level===t.lv?'#fff':'#555'};
-             border-radius:8px;transition:all .15s">${t.icon} ${t.short}</button>
-  `).join('');
+  const subtitle = document.getElementById('lb-subtitle');
+  if (subtitle) subtitle.textContent = `Ranked by ${meta.unit} in the ${meta.label.replace(/^[^ ]+ /,'')} curriculum`;
 
-  modal.innerHTML = `
-    <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:460px;max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.3)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-        <h2 style="margin:0;font-size:1.2rem;font-weight:800;color:#1a1a1a">${meta.label}</h2>
-        <button onclick="document.getElementById('leaderboard-modal').remove()" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#ccc;line-height:1">✕</button>
-      </div>
-      <div style="display:flex;gap:6px;margin-bottom:18px">${tabHtml}</div>
-      <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:10px">
-        <div style="text-align:center;color:#999;padding:20px">Loading…</div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
+  const content = document.getElementById('lb-content');
+  content.innerHTML = `<div style="text-align:center;padding:60px 0;color:#484f58">
+    <div style="font-size:2rem;margin-bottom:10px">⏳</div>Loading…</div>`;
+
+  if (!window._becDB) {
+    content.innerHTML = `<div style="text-align:center;padding:40px;color:#f85149">Not connected. Please sign in.</div>`;
+    return;
+  }
 
   try {
     const snap = await window._becDB.collection('leaderboard')
-      .orderBy(orderField, 'desc')
+      .orderBy(meta.field, 'desc')
       .limit(10)
       .get();
-    const list = document.getElementById('leaderboard-list');
-    if (!list) return;
+
     if (snap.empty) {
-      list.innerHTML = '<div style="text-align:center;color:#999;padding:24px">No data yet — be the first!</div>';
+      content.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#484f58">
+        <div style="font-size:3rem;margin-bottom:12px">🌱</div>
+        <div style="font-size:1rem;font-weight:700;color:#8b949e;margin-bottom:6px">No entries yet</div>
+        <div style="font-size:.85rem">Be the first to explore the ${meta.label} curriculum!</div>
+      </div>`;
       return;
     }
+
     const medals = ['🥇','🥈','🥉'];
     let html = '';
     let rank = 1;
     snap.forEach(doc => {
-      const d = doc.data();
+      const d      = doc.data();
       const isSelf = doc.id === window._becUID;
-      const val = d[orderField] || 0;
-      const medal = medals[rank-1] || `<span style="font-weight:800;color:#2e7d32">${rank}</span>`;
-      const lvl = typeof BEC !== 'undefined'
+      const val    = d[meta.field] || 0;
+      const rankDisplay = medals[rank - 1]
+        ? `<span style="font-size:1.5rem">${medals[rank-1]}</span>`
+        : `<span style="font-size:1rem;font-weight:800;color:#484f58">${rank}</span>`;
+      const becLvl = (typeof BEC !== 'undefined' && BEC.LEVELS)
         ? BEC.LEVELS[Math.min(Math.floor((d.xp || 0) / 200), BEC.LEVELS.length - 1)]
         : null;
       html += `
-        <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;
-                    background:${isSelf ? '#e8f5e9' : '#f7f7f7'};border-radius:10px;
-                    border:${isSelf ? '2px solid #2e7d32' : '1px solid #ebebeb'}">
-          <div style="font-size:1.3rem;min-width:28px;text-align:center">${medal}</div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;
+                    background:${isSelf ? 'rgba(63,185,80,.08)' : '#161b22'};
+                    border:1.5px solid ${isSelf ? '#3fb950' : '#21262d'};
+                    border-radius:12px;margin-bottom:8px;transition:border-color .15s"
+             onmouseover="if(!${isSelf})this.style.borderColor='#30363d'"
+             onmouseout="if(!${isSelf})this.style.borderColor='#21262d'">
+          <div style="min-width:32px;text-align:center">${rankDisplay}</div>
           <div style="flex:1;min-width:0">
-            <div style="font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-              ${d.name || 'Student'}${isSelf ? ' <span style="font-size:.7rem;color:#2e7d32">(You)</span>' : ''}
+            <div style="font-weight:700;color:${isSelf ? '#3fb950' : '#e6edf3'};
+                        white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem">
+              ${d.name || 'Student'}${isSelf ? ' <span style="font-size:.7rem;opacity:.7">(You)</span>' : ''}
             </div>
-            ${lvl ? `<div style="font-size:.78rem;color:#888">${lvl.icon} ${lvl.name} · ${d.xp||0} XP</div>` : ''}
+            ${becLvl ? `<div style="font-size:.75rem;color:#484f58;margin-top:2px">${becLvl.icon} ${becLvl.name} · ${(d.xp||0).toLocaleString()} XP total</div>` : ''}
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-weight:800;color:#1b5e20;font-size:1.05rem">${val}</div>
-            <div style="font-size:.7rem;color:#aaa">${unit}</div>
+            <div style="font-weight:800;color:${meta.color};font-size:1.1rem">${val}</div>
+            <div style="font-size:.68rem;color:#484f58">${meta.unit}</div>
           </div>
         </div>`;
       rank++;
     });
-    list.innerHTML = html;
+
+    content.innerHTML = html;
   } catch(e) {
     console.warn('Leaderboard load failed', e);
-    const list = document.getElementById('leaderboard-list');
-    if (list) list.innerHTML = '<div style="color:#c62828;text-align:center;padding:20px">Failed to load leaderboard</div>';
+    content.innerHTML = `<div style="text-align:center;padding:40px;color:#f85149">
+      <div style="font-size:1.5rem;margin-bottom:8px">⚠️</div>
+      Failed to load leaderboard. Check your connection and try again.
+    </div>`;
   }
 }
 
