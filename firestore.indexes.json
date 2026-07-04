@@ -25,6 +25,30 @@
       ]
     },
     {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "primaryVisited", "order": "DESCENDING" },
+        { "fieldPath": "updatedAt",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "juniorVisited", "order": "DESCENDING" },
+        { "fieldPath": "updatedAt",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "leaderboard",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "seniorVisited", "order": "DESCENDING" },
+        { "fieldPath": "updatedAt",     "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "quizHistory",
       "queryScope": "COLLECTION_GROUP",
       "fields": [

@@ -819,7 +819,7 @@
     <div class="mob-sb-section">
       <div class="mob-sb-label">Tools</div>
       <button class="mob-sb-btn" onclick="openRandom();closeMobSidebar()"><span class="mob-sb-btn-icon">🎲</span>Random Animation</button>
-      <button class="mob-sb-btn" onclick="showLeaderboard();closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
+      <button class="mob-sb-btn" onclick="showLeaderboard(curLevel);closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
       <button class="mob-sb-btn" onclick="showBookmarksTab();closeMobSidebar()"><span class="mob-sb-btn-icon">🔖</span>My Saved</button>
       <button class="mob-sb-btn" onclick="showQuizHistory();closeMobSidebar()"><span class="mob-sb-btn-icon">📊</span>Quiz History</button>
     </div>
@@ -844,6 +844,7 @@
     </div>
     <nav class="d-nav" id="d-nav"></nav>
     <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
+    <button class="d-rnd" onclick="showLeaderboard(curLevel)" title="Leaderboard">🏆</button>
     <button class="d-rnd d-rnd-donate" onclick="showPricing()" title="Upgrade to Premium">⭐</button>
     <button id="auth-dash-btn" class="d-rnd" title="Sign in" style="font-size:.95rem">🔐</button>
   </header>
@@ -886,7 +887,7 @@
             📋 Full Exams &nbsp;<span id="fpl-exams" style="color:#e6edf3;font-weight:700"></span>
           </div>
         </div>
-        <button onclick="showPricing()" style="background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:10px;padding:11px 20px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap">⭐ Unlimited — P200</button>
+        <button onclick="showPricing()" style="background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:10px;padding:11px 20px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap">⭐ one-time payment—P200</button>
       </div>
     </div>
 
@@ -1325,6 +1326,21 @@ function initAuth() {
         displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
         lastSeen:    new Date().toISOString(),
       }, { merge: true }).catch(() => {});
+      // Sync public leaderboard snapshot (readable by all signed-in users)
+      try {
+        const userSnap = await window._becDB.collection('users').doc(user.uid).get();
+        const ud = userSnap.exists ? userSnap.data() : {};
+        const state = (typeof BEC !== 'undefined') ? BEC.getState() : {};
+        await window._becDB.collection('leaderboard').doc(user.uid).set({
+          name:           currentUser.name,
+          xp:             state.xp || 0,
+          streak:         state.streak || 0,
+          primaryVisited: (ud.visited_primary || []).length,
+          juniorVisited:  (ud.visited_junior  || []).length,
+          seniorVisited:  (ud.visited_senior  || []).length,
+          updatedAt:      new Date().toISOString(),
+        }, { merge: true });
+      } catch(e) {}
     } else {
       currentUser = null;
       window._becUID = null;
@@ -1402,7 +1418,7 @@ function showDailyLimitPopup(type, label) {
       <h3 style="color:#fff;font-size:1.1rem;font-weight:900;margin-bottom:8px">Daily limit reached</h3>
       <p style="color:#aaa;font-size:.85rem;line-height:1.5;margin-bottom:6px">Free accounts get <strong style="color:#f9a825">${lim} ${noun}${lim > 1 ? 's' : ''} per day</strong>. You've used all ${lim} today.</p>
       <p style="color:#6e7681;font-size:.78rem;margin-bottom:18px;background:rgba(255,255,255,.05);border-radius:8px;padding:8px 12px">🕐 Resets at <strong style="color:#c9d1d9">midnight</strong> (~${hLeft}h from now) &nbsp;·&nbsp; Or upgrade for unlimited</p>
-      <button onclick="document.getElementById('bec-limit-popup')?.remove();showPricing()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:10px">⭐ Unlock Unlimited — P200</button>
+      <button onclick="document.getElementById('bec-limit-popup')?.remove();showPricing()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:10px">⭐ one-time payment—P200</button>
       <button onclick="document.getElementById('bec-limit-popup')?.remove()" style="background:none;border:none;color:#555;font-size:.8rem;cursor:pointer;font-family:inherit">Come back tomorrow</button>
     </div>`;
   el.onclick = e => { if (e.target === el) el.remove(); };
@@ -2950,57 +2966,97 @@ async function freezeStreakUI() {
   }
 }
 
-async function showLeaderboard() {
+async function showLeaderboard(level) {
   if (!isLoggedIn()) { showLockedFeaturePopup('🏆 Leaderboard', 'Sign in to see the top students in Botswana and compete for the top spot!'); return; }
   if (!window._becDB || !window._becUID) return;
+
+  const lvMeta = {
+    primary: { label: '🏫 PSLE Top Students',  field: 'primaryVisited', unit: 'animations' },
+    junior:  { label: '📚 JCE Top Students',   field: 'juniorVisited',  unit: 'animations' },
+    senior:  { label: '🎓 BGCSE Top Students', field: 'seniorVisited',  unit: 'animations' },
+  };
+  const meta       = lvMeta[level] || { label: '🏆 Top Students', field: 'xp', unit: 'XP' };
+  const orderField = meta.field;
+  const unit       = meta.unit;
+
+  document.getElementById('leaderboard-modal')?.remove();
   const modal = document.createElement('div');
   modal.id = 'leaderboard-modal';
   modal.className = 'te-overlay';
   modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000';
   modal.onclick = e => e.target === modal && modal.remove();
 
+  // Section tabs
+  const tabHtml = [
+    { lv:'primary', icon:'🏫', short:'PSLE' },
+    { lv:'junior',  icon:'📚', short:'JCE'  },
+    { lv:'senior',  icon:'🎓', short:'BGCSE' },
+  ].map(t => `
+    <button onclick="this.closest('.te-overlay').remove();showLeaderboard('${t.lv}')"
+      style="flex:1;padding:8px 4px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;
+             background:${level===t.lv?'#1b5e20':'#f0f0f0'};color:${level===t.lv?'#fff':'#555'};
+             border-radius:8px;transition:all .15s">${t.icon} ${t.short}</button>
+  `).join('');
+
   modal.innerHTML = `
-    <div style="background:#fff;border-radius:16px;padding:28px;max-width:500px;max-height:70vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <h2 style="margin:0;font-size:1.3rem;font-weight:800;color:#1a1a1a">🏆 Top Students</h2>
-        <button onclick="this.closest('.te-overlay').remove()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:#ccc">✕</button>
+    <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:460px;max-height:80vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h2 style="margin:0;font-size:1.2rem;font-weight:800;color:#1a1a1a">${meta.label}</h2>
+        <button onclick="document.getElementById('leaderboard-modal').remove()" style="background:none;border:none;font-size:1.6rem;cursor:pointer;color:#ccc;line-height:1">✕</button>
       </div>
-      <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:12px">
-        <div style="text-align:center;color:#999;padding:20px">Loading leaderboard...</div>
+      <div style="display:flex;gap:6px;margin-bottom:18px">${tabHtml}</div>
+      <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:10px">
+        <div style="text-align:center;color:#999;padding:20px">Loading…</div>
       </div>
     </div>
   `;
   document.body.appendChild(modal);
 
   try {
-    const snap = await window._becDB.collection('users')
-      .orderBy('xp', 'desc')
+    const snap = await window._becDB.collection('leaderboard')
+      .orderBy(orderField, 'desc')
       .limit(10)
       .get();
     const list = document.getElementById('leaderboard-list');
-    list.innerHTML = '';
+    if (!list) return;
+    if (snap.empty) {
+      list.innerHTML = '<div style="text-align:center;color:#999;padding:24px">No data yet — be the first!</div>';
+      return;
+    }
+    const medals = ['🥇','🥈','🥉'];
+    let html = '';
     let rank = 1;
     snap.forEach(doc => {
-      const data = doc.data();
+      const d = doc.data();
       const isSelf = doc.id === window._becUID;
-      list.innerHTML += `
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:${isSelf ? '#e8f5e9' : '#f5f5f5'};border-radius:10px;border:${isSelf ? '2px solid #2e7d32' : 'none'}">
-          <div style="font-size:1.2rem;font-weight:800;color:#2e7d32;width:28px">${rank}</div>
-          <div style="flex:1">
-            <div style="font-weight:700;color:#1a1a1a">${data.name || 'Anonymous'}</div>
-            <div style="font-size:.85rem;color:#999">${BEC.LEVELS[Math.min(Math.floor((data.xp || 0) / 200), BEC.LEVELS.length - 1)].icon} ${BEC.LEVELS[Math.min(Math.floor((data.xp || 0) / 200), BEC.LEVELS.length - 1)].name}</div>
+      const val = d[orderField] || 0;
+      const medal = medals[rank-1] || `<span style="font-weight:800;color:#2e7d32">${rank}</span>`;
+      const lvl = typeof BEC !== 'undefined'
+        ? BEC.LEVELS[Math.min(Math.floor((d.xp || 0) / 200), BEC.LEVELS.length - 1)]
+        : null;
+      html += `
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;
+                    background:${isSelf ? '#e8f5e9' : '#f7f7f7'};border-radius:10px;
+                    border:${isSelf ? '2px solid #2e7d32' : '1px solid #ebebeb'}">
+          <div style="font-size:1.3rem;min-width:28px;text-align:center">${medal}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              ${d.name || 'Student'}${isSelf ? ' <span style="font-size:.7rem;color:#2e7d32">(You)</span>' : ''}
+            </div>
+            ${lvl ? `<div style="font-size:.78rem;color:#888">${lvl.icon} ${lvl.name} · ${d.xp||0} XP</div>` : ''}
           </div>
-          <div style="text-align:right">
-            <div style="font-weight:700;color:#2e7d32;font-size:1.1rem">${data.xp || 0}</div>
-            <div style="font-size:.75rem;color:#999">XP</div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-weight:800;color:#1b5e20;font-size:1.05rem">${val}</div>
+            <div style="font-size:.7rem;color:#aaa">${unit}</div>
           </div>
-        </div>
-      `;
+        </div>`;
       rank++;
     });
+    list.innerHTML = html;
   } catch(e) {
     console.warn('Leaderboard load failed', e);
-    document.getElementById('leaderboard-list').innerHTML = '<div style="color:#c62828;text-align:center;padding:20px">Failed to load leaderboard</div>';
+    const list = document.getElementById('leaderboard-list');
+    if (list) list.innerHTML = '<div style="color:#c62828;text-align:center;padding:20px">Failed to load leaderboard</div>';
   }
 }
 

@@ -277,7 +277,7 @@ function renderTable() {
       <td style="color:#8b949e">${fmtDate(u.lastSeen)}</td>
       <td>${u.premium
         ? '<span class="badge-premium">⭐ Lifetime</span><div style="font-size:.68rem;color:#3fb950;margin-top:3px">Unlimited · all 90+ animations</div>'
-        : '<span class="badge-free">Free</span><div style="font-size:.68rem;color:#f85149;margin-top:3px">🕐 7 sessions · 3 tests · 1 exam/day<br>Resets midnight · all 90+ available</div>'}</td>
+        : '<span class="badge-free">Free</span>'}</td>
       <td>${u.premium
         ? `<button class="btn-revoke" onclick="openRevoke('${u.uid}','${esc(u.name)}')">Revoke</button>`
         : `<button class="btn-grant"  onclick="openGrant('${u.uid}','${esc(u.name)}')" >Grant</button>`}</td>
