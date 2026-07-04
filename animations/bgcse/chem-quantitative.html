@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Quantitative Chemistry</h2><ul><li><b>Mole</b>: Amount of substance. 1 mole = 6.02×10²³ particles (Avogadro\'s number).</li><li><b>Molar mass</b>: Mass of 1 mole in g/mol (equals relative formula mass).</li><li><b>Moles = mass ÷ molar mass</b>. Rearranges to: mass = moles × Mr.</li><li><b>Stoichiometry</b>: Mole ratios from balanced equations. E.g. N₂+3H₂→2NH₃: 1 mol N₂ gives 2 mol NH₃.</li><li><b>% yield</b> = (actual yield ÷ theoretical yield) × 100.</li><li><b>Concentration</b> = moles ÷ volume (in dm³). Unit: mol/dm³.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Quantitative Chemistry</h2><ul><li><b>Mole</b>: Amount of substance. 1 mole = 6.02×10²³ particles (Avogadro\'s number).</li><li><b>Molar mass</b>: Mass of 1 mole in g/mol (equals relative formula mass).</li><li><b>Moles = mass ÷ molar mass</b>. Rearranges to: mass = moles × Mr.</li><li><b>Stoichiometry</b>: Mole ratios from balanced equations. E.g. N₂+3H₂→2NH₃: 1 mol N₂ gives 2 mol NH₃.</li><li><b>% yield</b> = (actual yield ÷ theoretical yield) × 100.</li><li><b>Concentration</b> = moles ÷ volume (in dm³). Unit: mol/dm³.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let quantMcq=false;
 const QUANT_MCQ=[
   {q:'One mole of a substance contains how many particles?',opts:['6.02 × 10²³','6.02 × 10²⁶','1 × 10²³','3.01 × 10²³'],c:0,tip:'Avogadro\'s number = 6.02 × 10²³ particles per mole.'},
@@ -329,6 +330,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(quantMcq){ quantMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

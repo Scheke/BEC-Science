@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Electricity</h2><ul><li><b>Ohm\'s law</b>: V = IR (voltage = current × resistance). Ohm\'s unit: Ω.</li><li><b>Series circuit</b>: Same current throughout; voltages add; total R = R₁+R₂.</li><li><b>Parallel circuit</b>: Same voltage across each branch; currents add; 1/R = 1/R₁+1/R₂.</li><li><b>Power</b>: P = VI = I²R = V²/R. Unit: watt (W).</li><li><b>Energy</b>: E = Pt = VIt. Unit: joule (J) or kWh.</li><li><b>Fuse</b>: Melts when current exceeds rated value, protecting the circuit.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Electricity</h2><ul><li><b>Ohm\'s law</b>: V = IR (voltage = current × resistance). Ohm\'s unit: Ω.</li><li><b>Series circuit</b>: Same current throughout; voltages add; total R = R₁+R₂.</li><li><b>Parallel circuit</b>: Same voltage across each branch; currents add; 1/R = 1/R₁+1/R₂.</li><li><b>Power</b>: P = VI = I²R = V²/R. Unit: watt (W).</li><li><b>Energy</b>: E = Pt = VIt. Unit: joule (J) or kWh.</li><li><b>Fuse</b>: Melts when current exceeds rated value, protecting the circuit.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let elecMcq=false;
 const ELEC_MCQ=[
   {q:'Ohm\'s law states that V = ?',opts:['IR (current × resistance)','I/R','I+R','I²R'],c:0,tip:'V = IR: voltage = current × resistance. Rearranges to I = V/R, R = V/I.'},
@@ -359,6 +360,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

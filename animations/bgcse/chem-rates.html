@@ -71,7 +71,8 @@
 let mode=0;
 function setMode(n){mode=n;[0,1,2,3,4].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Rates of Reaction</h2><ul><li><b>Collision theory</b>: Reactions occur when particles collide with sufficient energy (≥ activation energy) and correct orientation.</li><li><b>Activation energy</b>: Minimum energy needed for a reaction to occur.</li><li><b>Factors</b>: Temperature, concentration, surface area, catalysts all affect rate.</li><li><b>Temperature</b>: Higher temp → more frequent collisions with ≥ activation energy → faster rate.</li><li><b>Catalyst</b>: Provides alternative pathway with lower activation energy — speeds up reaction without being consumed.</li><li><b>Concentration/pressure</b>: More particles per unit volume → more collisions → faster rate.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Rates of Reaction</h2><ul><li><b>Collision theory</b>: Reactions occur when particles collide with sufficient energy (≥ activation energy) and correct orientation.</li><li><b>Activation energy</b>: Minimum energy needed for a reaction to occur.</li><li><b>Factors</b>: Temperature, concentration, surface area, catalysts all affect rate.</li><li><b>Temperature</b>: Higher temp → more frequent collisions with ≥ activation energy → faster rate.</li><li><b>Catalyst</b>: Provides alternative pathway with lower activation energy — speeds up reaction without being consumed.</li><li><b>Concentration/pressure</b>: More particles per unit volume → more collisions → faster rate.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let ratesMcq=false;
 const RATES_MCQ=[
   {q:'According to collision theory, a reaction occurs when particles:',opts:['Collide with sufficient energy and correct orientation','Simply touch each other','Are heated to 100°C','Are dissolved in water'],c:0,tip:'Collisions must have energy ≥ activation energy AND the correct orientation.'},
@@ -364,6 +365,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

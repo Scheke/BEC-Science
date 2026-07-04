@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Metals</h2><ul><li><b>Reactivity series</b> (most → least): K, Na, Ca, Mg, Al, (C), Zn, Fe, (H), Cu, Ag, Au.</li><li><b>Extraction</b>: Metals above carbon extracted by electrolysis (Al, Na). Metals below C extracted by reduction with carbon (Fe).</li><li><b>Displacement</b>: More reactive metal displaces less reactive from its salt solution (Mg + CuSO₄ → MgSO₄ + Cu).</li><li><b>Rusting</b>: Requires both water AND oxygen. Prevented by galvanising (zinc coating), painting, or alloying.</li><li><b>Galvanising</b>: Coating iron with zinc — zinc acts as sacrificial anode.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Metals</h2><ul><li><b>Reactivity series</b> (most → least): K, Na, Ca, Mg, Al, (C), Zn, Fe, (H), Cu, Ag, Au.</li><li><b>Extraction</b>: Metals above carbon extracted by electrolysis (Al, Na). Metals below C extracted by reduction with carbon (Fe).</li><li><b>Displacement</b>: More reactive metal displaces less reactive from its salt solution (Mg + CuSO₄ → MgSO₄ + Cu).</li><li><b>Rusting</b>: Requires both water AND oxygen. Prevented by galvanising (zinc coating), painting, or alloying.</li><li><b>Galvanising</b>: Coating iron with zinc — zinc acts as sacrificial anode.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let metalsMcq=false;
 const METALS_MCQ=[
   {q:'Which metal is MOST reactive in the reactivity series?',opts:['Potassium (K)','Sodium (Na)','Iron (Fe)','Gold (Au)'],c:0,tip:'Potassium is at the top of the reactivity series — most reactive metal.'},
@@ -285,6 +286,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(metalsMcq){ metalsMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

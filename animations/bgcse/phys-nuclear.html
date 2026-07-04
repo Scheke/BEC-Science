@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nuclear Physics</h2><ul><li><b>Alpha (α)</b>: 2 protons + 2 neutrons (He nucleus). Stopped by paper. Highly ionising.</li><li><b>Beta (β)</b>: Fast electron from nucleus (neutron → proton). Stopped by 3mm Al.</li><li><b>Gamma (γ)</b>: High-energy electromagnetic wave. Stopped by thick lead/concrete. Most penetrating.</li><li><b>Half-life</b>: Time for half the radioactive nuclei to decay (activity halves each half-life).</li><li><b>After n half-lives</b>: Fraction remaining = (½)ⁿ. e.g., 3 half-lives → 1/8 remains.</li><li><b>Fission</b>: Large nucleus splits → 2 smaller nuclei + neutrons + energy.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nuclear Physics</h2><ul><li><b>Alpha (α)</b>: 2 protons + 2 neutrons (He nucleus). Stopped by paper. Highly ionising.</li><li><b>Beta (β)</b>: Fast electron from nucleus (neutron → proton). Stopped by 3mm Al.</li><li><b>Gamma (γ)</b>: High-energy electromagnetic wave. Stopped by thick lead/concrete. Most penetrating.</li><li><b>Half-life</b>: Time for half the radioactive nuclei to decay (activity halves each half-life).</li><li><b>After n half-lives</b>: Fraction remaining = (½)ⁿ. e.g., 3 half-lives → 1/8 remains.</li><li><b>Fission</b>: Large nucleus splits → 2 smaller nuclei + neutrons + energy.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let nuclearMcq=false;
 const NUCLEAR_MCQ=[
   {q:'An alpha particle consists of:',opts:['2 protons and 2 neutrons (helium nucleus)','1 proton and 0 neutrons','0 protons and 1 neutron','1 electron'],c:0,tip:'Alpha particles are identical to helium-4 nuclei: 2 protons + 2 neutrons.'},
@@ -302,6 +303,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

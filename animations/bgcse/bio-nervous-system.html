@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nervous System</h2><ul><li><b>Neuron</b>: Nerve cell. Dendrites receive signals; axon carries signal away from cell body.</li><li><b>Myelin sheath</b>: Insulates axon; speeds up nerve impulse conduction.</li><li><b>Synapse</b>: Gap between neurons. Neurotransmitters (e.g., acetylcholine) carry signal across.</li><li><b>Reflex arc</b>: Receptor → Sensory neuron → Relay neuron → Motor neuron → Effector.</li><li><b>Hormones vs nervous system</b>: Nervous is faster but short-lived; hormones are slower but longer-lasting.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Nervous System</h2><ul><li><b>Neuron</b>: Nerve cell. Dendrites receive signals; axon carries signal away from cell body.</li><li><b>Myelin sheath</b>: Insulates axon; speeds up nerve impulse conduction.</li><li><b>Synapse</b>: Gap between neurons. Neurotransmitters (e.g., acetylcholine) carry signal across.</li><li><b>Reflex arc</b>: Receptor → Sensory neuron → Relay neuron → Motor neuron → Effector.</li><li><b>Hormones vs nervous system</b>: Nervous is faster but short-lived; hormones are slower but longer-lasting.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let nerveMcq=false;
 const NERVE_MCQ=[
   {q:'What is the function of the myelin sheath?',opts:['Speeds up nerve impulse conduction','Produces neurotransmitters','Connects neurons at a synapse','Detects stimuli'],c:0,tip:'Myelin insulates the axon, greatly increasing impulse speed.'},
@@ -344,6 +345,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

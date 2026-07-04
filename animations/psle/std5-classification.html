@@ -114,7 +114,8 @@ function printNotes(){
     html+=`</ul><p><span class="tag">Examples:</span> ${g.ex}</p>`;
   });
   html+='<h2>Vertebrates vs Invertebrates</h2><ul><li>Vertebrates have a backbone (fish, amphibians, reptiles, birds, mammals)</li><li>Invertebrates have no backbone (insects, arachnids)</li><li>Plants make their own food using sunlight (photosynthesis)</li></ul>';
-  html+='</body></html>';
+  html+='
+</body></html>';
   let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
 }
 const SORT_ITEMS=[
@@ -389,6 +390,9 @@ new p5(sk=>{
   };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

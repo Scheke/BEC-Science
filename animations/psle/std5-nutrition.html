@@ -115,7 +115,8 @@ function printNotes(){
     html+=`<p><span class="tag">Deficiency:</span> ${n.defic}</p>`;
   });
   html+='<h2>Key Points</h2><ul><li>Macronutrients: Carbohydrates, Proteins, Fats (needed in large amounts)</li><li>Micronutrients: Vitamins and Minerals (needed in small amounts)</li><li>Water: drink 6–8 glasses per day; Fibre: aids digestion</li><li>A balanced diet has the RIGHT amounts of each nutrient</li></ul>';
-  html+='</body></html>';
+  html+='
+</body></html>';
   let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
 }
 const PLATE_FOODS=[
@@ -396,6 +397,9 @@ new p5(sk=>{
   };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

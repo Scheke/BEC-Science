@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Waves</h2><ul><li><b>Wave speed</b> = frequency × wavelength (v = fλ). Unit: m/s.</li><li><b>Transverse waves</b>: Oscillation ⊥ direction of travel (e.g., light, water waves).</li><li><b>Longitudinal waves</b>: Oscillation ∥ direction of travel (e.g., sound).</li><li><b>Reflection</b>: Angle of incidence = angle of reflection.</li><li><b>Refraction</b>: Wave bends as speed changes (e.g., light slows in glass).</li><li><b>Total internal reflection</b>: When angle of incidence > critical angle in a denser medium.</li><li><b>EM spectrum</b> (lowest to highest frequency): Radio, Microwave, IR, Visible, UV, X-ray, Gamma.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Waves</h2><ul><li><b>Wave speed</b> = frequency × wavelength (v = fλ). Unit: m/s.</li><li><b>Transverse waves</b>: Oscillation ⊥ direction of travel (e.g., light, water waves).</li><li><b>Longitudinal waves</b>: Oscillation ∥ direction of travel (e.g., sound).</li><li><b>Reflection</b>: Angle of incidence = angle of reflection.</li><li><b>Refraction</b>: Wave bends as speed changes (e.g., light slows in glass).</li><li><b>Total internal reflection</b>: When angle of incidence > critical angle in a denser medium.</li><li><b>EM spectrum</b> (lowest to highest frequency): Radio, Microwave, IR, Visible, UV, X-ray, Gamma.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let wavesMcq=false;
 const WAVES_MCQ=[
   {q:'Wave speed is calculated by:',opts:['frequency × wavelength','amplitude × frequency','wavelength ÷ frequency','frequency ÷ wavelength'],c:0,tip:'v = fλ: wave speed = frequency × wavelength.'},
@@ -334,6 +335,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

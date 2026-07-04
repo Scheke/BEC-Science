@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Mechanics</h2><ul><li><b>Momentum</b> = mass × velocity (kg·m/s). Always conserved in collisions.</li><li><b>Impulse</b> = force × time = change in momentum.</li><li><b>Work</b> = force × distance (J). <b>Power</b> = work ÷ time (W).</li><li><b>KE</b> = ½mv². <b>GPE</b> = mgh.</li><li><b>Newton\'s 3rd law</b>: For every action there is an equal and opposite reaction.</li><li><b>Velocity-time graph</b>: Gradient = acceleration; area under graph = displacement.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Mechanics</h2><ul><li><b>Momentum</b> = mass × velocity (kg·m/s). Always conserved in collisions.</li><li><b>Impulse</b> = force × time = change in momentum.</li><li><b>Work</b> = force × distance (J). <b>Power</b> = work ÷ time (W).</li><li><b>KE</b> = ½mv². <b>GPE</b> = mgh.</li><li><b>Newton\'s 3rd law</b>: For every action there is an equal and opposite reaction.</li><li><b>Velocity-time graph</b>: Gradient = acceleration; area under graph = displacement.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let mechMcq=false;
 const MECH_MCQ=[
   {q:'Momentum is calculated by:',opts:['mass × velocity','force × time','mass × acceleration','force × distance'],c:0,tip:'Momentum (p) = mass (m) × velocity (v). Unit: kg·m/s.'},
@@ -326,6 +327,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

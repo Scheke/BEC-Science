@@ -82,7 +82,8 @@ const ELEMENTS=[
 ];
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Atomic Structure</h2><ul><li><b>Nucleus</b>: Contains protons (+) and neutrons (0). Electrons (−) orbit in shells.</li><li><b>Proton number</b>: Number of protons = number of electrons in a neutral atom.</li><li><b>Mass number</b>: Protons + neutrons.</li><li><b>Isotopes</b>: Same element, different number of neutrons (same proton number).</li><li><b>Electron configuration</b>: Shells fill as 2, 8, 8... e.g. Na = 2,8,1.</li><li><b>Ions</b>: Atoms that have gained or lost electrons. Cations (+) lost electrons; anions (−) gained.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Atomic Structure</h2><ul><li><b>Nucleus</b>: Contains protons (+) and neutrons (0). Electrons (−) orbit in shells.</li><li><b>Proton number</b>: Number of protons = number of electrons in a neutral atom.</li><li><b>Mass number</b>: Protons + neutrons.</li><li><b>Isotopes</b>: Same element, different number of neutrons (same proton number).</li><li><b>Electron configuration</b>: Shells fill as 2, 8, 8... e.g. Na = 2,8,1.</li><li><b>Ions</b>: Atoms that have gained or lost electrons. Cations (+) lost electrons; anions (−) gained.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let atomMcq=false;
 const ATOM_MCQ=[
   {q:'Where are protons and neutrons found in an atom?',opts:['In the nucleus','In the electron shells','Around the nucleus','In the valence shell'],c:0,tip:'Protons and neutrons are in the nucleus; electrons orbit in shells.'},
@@ -314,6 +315,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

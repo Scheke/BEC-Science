@@ -163,7 +163,8 @@ function printNotes(){
     h+=`<h2>${tabs[i]}</h2>`;
     boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
   });
-  h+=`</body></html>`;
+  h+=`
+</body></html>`;
   const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
 }
 
@@ -391,6 +392,9 @@ new p5(sk=>{
   };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

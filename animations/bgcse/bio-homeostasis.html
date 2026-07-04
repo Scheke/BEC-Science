@@ -72,7 +72,8 @@ let mode=0,envTemp=0,bloodGlucose=0.5;
 function setMode(n){mode=n;[0,1,2].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Homeostasis</h2><ul><li><b>Homeostasis</b>: Maintaining a constant internal environment despite external changes.</li><li><b>Insulin</b>: Produced by pancreas β-cells; lowers blood glucose by stimulating uptake and glycogen storage.</li><li><b>Glucagon</b>: Produced by pancreas α-cells; raises blood glucose by breaking down glycogen.</li><li><b>Temperature regulation</b>: Hypothalamus detects changes; sweating and vasodilation cool the body; shivering and vasoconstriction warm it.</li><li><b>Negative feedback</b>: The response opposes the original change, restoring balance.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Homeostasis</h2><ul><li><b>Homeostasis</b>: Maintaining a constant internal environment despite external changes.</li><li><b>Insulin</b>: Produced by pancreas β-cells; lowers blood glucose by stimulating uptake and glycogen storage.</li><li><b>Glucagon</b>: Produced by pancreas α-cells; raises blood glucose by breaking down glycogen.</li><li><b>Temperature regulation</b>: Hypothalamus detects changes; sweating and vasodilation cool the body; shivering and vasoconstriction warm it.</li><li><b>Negative feedback</b>: The response opposes the original change, restoring balance.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let homeostasisMcq=false;
 const HOMEOSTASIS_MCQ=[
   {q:'What is homeostasis?',opts:['Maintaining a constant internal environment','Increasing body temperature','Breaking down glucose','Producing hormones'],c:0,tip:'Homeostasis keeps internal conditions stable despite external changes.'},
@@ -298,6 +299,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(homeostasisMcq){ homeostasisMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

@@ -111,7 +111,8 @@ function printNotes(){
   html+='<h1>SI Units &amp; Measurement — Study Notes</h1><h2>The 7 SI Base Units</h2><table><tr><th>Quantity</th><th>Unit</th><th>Symbol</th><th>Instrument</th></tr>';
   BASE_UNITS.forEach(u=>html+=`<tr><td>${u.qty}</td><td>${u.unit}</td><td><strong>${u.sym}</strong></td><td>${u.inst.split(',')[0]}</td></tr>`);
   html+='</table><h2>Key Formula</h2><p>Density (ρ) = mass (m) ÷ volume (V)</p><ul><li>Unit of density: kg/m³ or g/cm³</li><li>Object floats if density &lt; liquid density</li></ul>';
-  html+='</body></html>';
+  html+='
+</body></html>';
   let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
 }
 let umSel=-1, umMatched, umWrong, umShuffled;
@@ -409,6 +410,9 @@ new p5(sk=>{
   }
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

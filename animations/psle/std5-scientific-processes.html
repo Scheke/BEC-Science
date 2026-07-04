@@ -114,7 +114,8 @@ function printNotes(){
     }</style></head><body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>PSLE Science — Scientific Processes</h1>`;
   STEPS.forEach((s,i)=>{h+=`<h2>${s.icon} Step ${i+1}: ${s.title}</h2><h3>What to do</h3><p>${s.text.replace(/\n/g,'<br>')}</p><h3>Example</h3><p>${s.ex.replace(/\n/g,'<br>')}</p><h3>Key Concept</h3><p>${s.key}</p>`;});
-  h+=`</body></html>`;const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+  h+=`
+</body></html>`;const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
 }
 const STEPS=[
   {title:'Observation',col:[74,144,226],icon:'👁',
@@ -434,6 +435,9 @@ new p5(sk=>{
   }
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

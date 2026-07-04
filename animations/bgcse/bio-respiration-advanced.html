@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Advanced Respiration</h2><ul><li><b>Glycolysis</b>: In cytoplasm. Glucose → 2 pyruvate + 2 ATP (net).</li><li><b>Link reaction</b>: Pyruvate → Acetyl-CoA + CO₂. Occurs in mitochondrial matrix.</li><li><b>Krebs cycle</b>: In mitochondrial matrix. Produces CO₂, NADH, FADH₂, and 2 ATP per cycle.</li><li><b>Oxidative phosphorylation</b>: On inner mitochondrial membrane. NADH/FADH₂ → ~34 ATP via electron transport chain.</li><li><b>Total ATP yield</b>: ~36–38 ATP per glucose (aerobic).</li><li><b>Anaerobic</b>: In animals → lactate; in yeast → ethanol + CO₂. Only 2 ATP.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Advanced Respiration</h2><ul><li><b>Glycolysis</b>: In cytoplasm. Glucose → 2 pyruvate + 2 ATP (net).</li><li><b>Link reaction</b>: Pyruvate → Acetyl-CoA + CO₂. Occurs in mitochondrial matrix.</li><li><b>Krebs cycle</b>: In mitochondrial matrix. Produces CO₂, NADH, FADH₂, and 2 ATP per cycle.</li><li><b>Oxidative phosphorylation</b>: On inner mitochondrial membrane. NADH/FADH₂ → ~34 ATP via electron transport chain.</li><li><b>Total ATP yield</b>: ~36–38 ATP per glucose (aerobic).</li><li><b>Anaerobic</b>: In animals → lactate; in yeast → ethanol + CO₂. Only 2 ATP.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let respAdvMcq=false;
 const RESP_ADV_MCQ=[
   {q:'Where does glycolysis take place in the cell?',opts:['Cytoplasm','Mitochondrial matrix','Inner mitochondrial membrane','Nucleus'],c:0,tip:'Glycolysis occurs in the cytoplasm — it does not require mitochondria.'},
@@ -322,6 +323,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(respAdvMcq){ respAdvMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

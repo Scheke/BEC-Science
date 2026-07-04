@@ -70,7 +70,8 @@
 let tab=0;let traitA='B',traitB='b';
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Genetics</h2><ul><li><b>DNA</b>: Double helix made of nucleotides. Base pairs: A-T, G-C.</li><li><b>Dominant allele</b>: Always expressed when present (capital letter). <b>Recessive</b>: Only expressed when homozygous.</li><li><b>Homozygous</b>: Two identical alleles (BB or bb). <b>Heterozygous</b>: Two different alleles (Bb).</li><li><b>Mitosis</b>: Cell division for growth/repair — produces 2 identical diploid cells.</li><li><b>Meiosis</b>: Cell division for gametes — produces 4 haploid cells with genetic variation.</li><li><b>RNA base</b>: Uses Uracil (U) instead of Thymine (T).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Genetics</h2><ul><li><b>DNA</b>: Double helix made of nucleotides. Base pairs: A-T, G-C.</li><li><b>Dominant allele</b>: Always expressed when present (capital letter). <b>Recessive</b>: Only expressed when homozygous.</li><li><b>Homozygous</b>: Two identical alleles (BB or bb). <b>Heterozygous</b>: Two different alleles (Bb).</li><li><b>Mitosis</b>: Cell division for growth/repair — produces 2 identical diploid cells.</li><li><b>Meiosis</b>: Cell division for gametes — produces 4 haploid cells with genetic variation.</li><li><b>RNA base</b>: Uses Uracil (U) instead of Thymine (T).</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let genMcq=false;
 const GEN_MCQ=[
   {q:'DNA is made up of repeating units called:',opts:['Nucleotides','Amino acids','Fatty acids','Monosaccharides'],c:0,tip:'DNA nucleotides each contain a sugar, phosphate, and a base (A, T, G or C).'},
@@ -331,6 +332,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

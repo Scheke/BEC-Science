@@ -119,7 +119,8 @@ function printNotes(){
   APPARATUS.forEach(a=>html+=`<li><strong>${a.name}:</strong> ${a.desc.replace(/\n/g,' ')}</li>`);
   html+='</ul><h2>Physical vs Chemical Changes</h2><table border="1" style="border-collapse:collapse;width:100%"><tr><th>Physical Change</th><th>Chemical Change</th></tr><tr><td>No new substance formed</td><td>New substance formed</td></tr><tr><td>Usually reversible</td><td>Usually NOT reversible</td></tr></table>';
   html+='<h2>Elements, Compounds and Mixtures</h2><ul><li><strong>Element:</strong> One type of atom. Cannot be broken down further.</li><li><strong>Compound:</strong> Two+ different elements chemically bonded.</li><li><strong>Mixture:</strong> Two+ substances NOT chemically bonded. Can be separated.</li></ul>';
-  html+='</body></html>';
+  html+='
+</body></html>';
   let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
 }
 let amSel=-1, amMatched, amWrong, amShuffled;
@@ -396,6 +397,9 @@ new p5(sk=>{
   }
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

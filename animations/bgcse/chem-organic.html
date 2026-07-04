@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Organic Chemistry</h2><ul><li><b>Alkanes</b>: CₙH₂ₙ₊₂. Saturated (single bonds only). Methane CH₄, Ethane C₂H₆, etc. Used as fuels.</li><li><b>Alkenes</b>: CₙH₂ₙ. Unsaturated (C=C double bond). Ethene C₂H₄. More reactive than alkanes.</li><li><b>Alcohols</b>: Functional group −OH. Ethanol C₂H₅OH. Made by fermentation or addition of water to ethene.</li><li><b>Functional groups</b>: −OH (alcohol), −COOH (carboxylic acid), −NH₂ (amine).</li><li><b>Fractional distillation</b>: Separates crude oil by boiling point — shorter chains are more flammable, lower bp.</li><li><b>Combustion</b>: Alkane + O₂ → CO₂ + H₂O (complete) or CO + soot (incomplete).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Organic Chemistry</h2><ul><li><b>Alkanes</b>: CₙH₂ₙ₊₂. Saturated (single bonds only). Methane CH₄, Ethane C₂H₆, etc. Used as fuels.</li><li><b>Alkenes</b>: CₙH₂ₙ. Unsaturated (C=C double bond). Ethene C₂H₄. More reactive than alkanes.</li><li><b>Alcohols</b>: Functional group −OH. Ethanol C₂H₅OH. Made by fermentation or addition of water to ethene.</li><li><b>Functional groups</b>: −OH (alcohol), −COOH (carboxylic acid), −NH₂ (amine).</li><li><b>Fractional distillation</b>: Separates crude oil by boiling point — shorter chains are more flammable, lower bp.</li><li><b>Combustion</b>: Alkane + O₂ → CO₂ + H₂O (complete) or CO + soot (incomplete).</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let orgMcq=false;
 const ORG_MCQ=[
   {q:'What is the general formula of alkanes?',opts:['CₙH₂ₙ₊₂','CₙH₂ₙ','CₙH₂ₙ₋₂','CₙHₙ'],c:0,tip:'Alkanes: CₙH₂ₙ₊₂ (e.g., CH₄, C₂H₆, C₃H₈).'},
@@ -315,6 +316,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(orgMcq){ orgMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

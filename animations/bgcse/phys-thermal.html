@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Thermal Physics</h2><ul><li><b>Conduction</b>: Heat transfer through solids via vibrating particles and free electrons.</li><li><b>Convection</b>: Heat transfer in fluids — warm fluid rises, cool fluid sinks (convection currents).</li><li><b>Radiation</b>: Heat transfer by infrared waves — can travel through vacuum.</li><li><b>Thermal energy</b>: Q = mcΔT (m=mass, c=specific heat capacity, ΔT=temperature change).</li><li><b>Specific heat of water</b>: 4200 J/(kg·°C).</li><li><b>Latent heat</b>: Energy absorbed/released during change of state (no temperature change).</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Thermal Physics</h2><ul><li><b>Conduction</b>: Heat transfer through solids via vibrating particles and free electrons.</li><li><b>Convection</b>: Heat transfer in fluids — warm fluid rises, cool fluid sinks (convection currents).</li><li><b>Radiation</b>: Heat transfer by infrared waves — can travel through vacuum.</li><li><b>Thermal energy</b>: Q = mcΔT (m=mass, c=specific heat capacity, ΔT=temperature change).</li><li><b>Specific heat of water</b>: 4200 J/(kg·°C).</li><li><b>Latent heat</b>: Energy absorbed/released during change of state (no temperature change).</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let thermalMcq=false;
 const THERMAL_MCQ=[
   {q:'Heat transfer through a vacuum occurs by:',opts:['Radiation','Conduction','Convection','All three equally'],c:0,tip:'Only radiation (infrared waves) can travel through a vacuum — conduction and convection need matter.'},
@@ -336,6 +337,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

@@ -70,7 +70,8 @@
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Chemical Bonding</h2><ul><li><b>Ionic bonding</b>: Transfer of electrons from metal to non-metal. Forms ions. High melting point, conducts when molten/dissolved.</li><li><b>Covalent bonding</b>: Sharing of electron pairs between non-metals. Can be single, double or triple bonds.</li><li><b>Metallic bonding</b>: Metal ions in a lattice surrounded by a sea of delocalised electrons. Good conductors.</li><li><b>Giant ionic</b>: NaCl, MgO — high mp, brittle. <b>Simple molecular</b>: CO₂, H₂O — low mp.</li><li><b>Giant covalent</b>: Diamond, SiO₂ — very high mp, hard.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Chemical Bonding</h2><ul><li><b>Ionic bonding</b>: Transfer of electrons from metal to non-metal. Forms ions. High melting point, conducts when molten/dissolved.</li><li><b>Covalent bonding</b>: Sharing of electron pairs between non-metals. Can be single, double or triple bonds.</li><li><b>Metallic bonding</b>: Metal ions in a lattice surrounded by a sea of delocalised electrons. Good conductors.</li><li><b>Giant ionic</b>: NaCl, MgO — high mp, brittle. <b>Simple molecular</b>: CO₂, H₂O — low mp.</li><li><b>Giant covalent</b>: Diamond, SiO₂ — very high mp, hard.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let bondMcq=false;
 const BOND_MCQ=[
   {q:'Ionic bonding involves:',opts:['Transfer of electrons between atoms','Sharing of electron pairs','A sea of delocalised electrons','Hydrogen bonds between molecules'],c:0,tip:'In ionic bonding, electrons are transferred from metal to non-metal atoms.'},
@@ -336,6 +337,9 @@ new p5(sk=>{
   sk.setLineDash=a=>sk.drawingContext.setLineDash(a);
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

@@ -108,7 +108,8 @@ const INFO=[
 ];
 
 function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Cell Transport</h2><ul><li><b>Diffusion</b>: Movement from high to low concentration, no energy needed.</li><li><b>Osmosis</b>: Diffusion of water through a semi-permeable membrane from high to low water potential.</li><li><b>Active Transport</b>: Movement against gradient — requires ATP and carrier proteins.</li><li><b>Turgid</b>: Plant cell full of water. <b>Plasmolysed</b>: cytoplasm shrinks from wall.</li><li><b>Crenated</b>: Animal cell shrinks. <b>Lysis</b>: Animal cell bursts in hypotonic solution.</li></ul></body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
+<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Cell Transport</h2><ul><li><b>Diffusion</b>: Movement from high to low concentration, no energy needed.</li><li><b>Osmosis</b>: Diffusion of water through a semi-permeable membrane from high to low water potential.</li><li><b>Active Transport</b>: Movement against gradient — requires ATP and carrier proteins.</li><li><b>Turgid</b>: Plant cell full of water. <b>Plasmolysed</b>: cytoplasm shrinks from wall.</li><li><b>Crenated</b>: Animal cell shrinks. <b>Lysis</b>: Animal cell bursts in hypotonic solution.</li></ul>
+</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let cellTransMcq=false;
 const CELL_TRANS_MCQ=[
   {q:'Which process moves molecules from high to low concentration without energy?',opts:['Diffusion','Active transport','Osmosis','Endocytosis'],c:0,tip:'Diffusion is passive — no ATP needed.'},
@@ -289,6 +290,9 @@ new p5(sk=>{
   sk.mouseClicked=()=>{ if(cellTransMcq){ cellTransMcqClick(sk.mouseX,sk.mouseY); } };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 

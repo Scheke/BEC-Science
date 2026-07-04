@@ -17,11 +17,17 @@
     .topic-header .label{background:#f48fb1;color:#880e4f;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
     .topic-header h1{font-size:1.25rem;font-weight:700}
     #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #f48fb1}
-    #controls{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
-    .btn{padding:8px 18px;border:2.5px solid #880e4f;border-radius:24px;cursor:pointer;font-size:.84rem;font-weight:700;background:#fff;color:#880e4f;transition:all .15s;font-family:inherit}
+    #controls{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;justify-content:center;padding:0 8px}
+    .btn{padding:7px 14px;border:2px solid #880e4f;border-radius:20px;cursor:pointer;font-size:.8rem;font-weight:700;background:#fff;color:#880e4f;transition:all .15s;font-family:inherit}
     .btn:hover,.btn.on{background:#880e4f;color:#fff}
     .btn.practice{border-color:#e65100;color:#e65100}
     .btn.practice:hover,.btn.practice.on{background:#e65100;color:#fff;border-color:#e65100}
+    /* ── HTML Notes Panel ── */
+    #notes-panel{width:100%;max-width:500px;padding:12px 16px 24px;box-sizing:border-box}
+    .note-box{background:#880e4f;color:#fff;border-radius:9px;padding:10px 14px;margin-bottom:10px}
+    .note-box-title{font-size:.85rem;font-weight:800;margin-bottom:6px;letter-spacing:.3px}
+    .note-box ul{margin:0;padding:0 0 0 14px;font-size:.82rem;line-height:1.7}
+    .note-box li{margin-bottom:2px}
     /* ── Mobile responsive ── */
     #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
     #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
@@ -78,13 +84,26 @@
   <button class="btn"     id="btn3" onclick="setTab(3)">Blood Components</button>
   <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Digestion Journey</button>
 </div>
+<div id="notes-panel"></div>
 <script>
 let tab=0;
+function renderNotes(n){
+  const panel=document.getElementById('notes-panel');
+  if(n===4||!allBoxes[n]){panel.innerHTML='';return;}
+  panel.innerHTML=allBoxes[n].map(box=>
+    `<div class="note-box">
+      <div class="note-box-title">${box.t}</div>
+      <ul>${box.b.map(l=>`<li>${l}</li>`).join('')}</ul>
+    </div>`
+  ).join('');
+}
 function setTab(n){
   tab=n;
   for(let i=0;i<5;i++) document.getElementById('btn'+i).classList.toggle('on',i===n);
   if(n===4) resetGame();
+  renderNotes(n);
 }
+renderNotes(0);
 
 const allBoxes=[
   [
@@ -163,7 +182,8 @@ function printNotes(){
     h+=`<h2>${tabs[i]}</h2>`;
     boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
   });
-  h+=`</body></html>`;
+  h+=`
+</body></html>`;
   const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
 }
 
@@ -186,7 +206,7 @@ function resetGame(){
 resetGame();
 
 new p5(sk=>{
-  const W=880, H=510;
+  const W=490, H=490;
   let tick=0;
 
   sk.setup=()=>{ sk.createCanvas(W,H).parent('sketch'); sk.textFont('Arial'); };
@@ -194,25 +214,9 @@ new p5(sk=>{
   sk.draw=()=>{
     tick++;
     sk.background(255,248,250);
-    if(tab<4){ drawBodyAnim(); drawInfoPanel(); }
+    if(tab<4){ drawBodyAnim(); }
     else { drawGame(); }
   };
-
-  function drawInfoPanel(){
-    const PX=498,PW=370,PAD=14;
-    sk.fill(255,240,245); sk.noStroke(); sk.rect(PX,0,PW,H);
-    let boxes=allBoxes[tab];
-    let y=16;
-    boxes.forEach(box=>{
-      let lines=box.b, bh=16+lines.length*14+8;
-      sk.fill(136,14,79); sk.noStroke(); sk.rect(PX+PAD,y,PW-PAD*2,bh,6);
-      sk.fill(255); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
-      sk.text(box.t, PX+PAD+8, y+13);
-      sk.textStyle(sk.NORMAL); sk.textSize(11);
-      lines.forEach((l,i)=>sk.text(l, PX+PAD+10, y+24+i*14));
-      y+=bh+8;
-    });
-  }
 
   function drawBodyAnim(){
     if(tab===0) drawDigestAnim();
@@ -296,9 +300,9 @@ new p5(sk=>{
       let midA=a+sw/2;
       sk.fill(30); sk.noStroke(); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
       sk.text(percs[i]+'%', cx+Math.cos(midA)*r*0.65, cy+Math.sin(midA)*r*0.65);
-      sk.fill(c[0]*0.7,c[1]*0.7,c[2]*0.7); sk.rect(320, 130+i*50, 18, 18, 3);
-      sk.fill(30); sk.textSize(11); sk.textAlign(sk.LEFT,sk.CENTER);
-      sk.text(c[3].replace('\n',' — '), 345, 139+i*50);
+      sk.fill(c[0]*0.7,c[1]*0.7,c[2]*0.7); sk.rect(300, 130+i*50, 16, 16, 3);
+      sk.fill(30); sk.textSize(10); sk.textAlign(sk.LEFT,sk.CENTER);
+      sk.text(c[3].replace('\n',' — '), 322, 138+i*50);
       a+=sw;
     });
     sk.textAlign(sk.LEFT,sk.BASELINE);
@@ -307,8 +311,8 @@ new p5(sk=>{
   // ── GAME (Tab 4) ─────────────────────────────────────
   function drawGame(){
     sk.background(255,248,250);
-    sk.fill(136,14,79); sk.noStroke(); sk.textSize(12); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
-    sk.text('Digestion Journey — click the organs IN ORDER to guide food through the body', W/2,22);
+    sk.fill(136,14,79); sk.noStroke(); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER);
+    sk.text('Click organs IN ORDER to guide food through digestion', W/2,20);
 
     // Draw organs
     ORGANS.forEach((org,i)=>{
@@ -332,23 +336,23 @@ new p5(sk=>{
     }
 
     // Info box
-    sk.fill(255,240,245); sk.noStroke(); sk.rect(30,410,450,70,8);
-    sk.fill(136,14,79); sk.textSize(11); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
-    sk.text(gameMsg, 42,432);
+    sk.fill(255,240,245); sk.noStroke(); sk.rect(20,410,450,70,8);
+    sk.fill(136,14,79); sk.textSize(10); sk.textStyle(sk.BOLD); sk.textAlign(sk.LEFT);
+    sk.text(gameMsg, 30,428,430,40);
     if(selectedOrgan>=0&&selectedOrgan<ORGANS.length){
       sk.fill(60); sk.textStyle(sk.NORMAL); sk.textSize(10);
-      sk.text(ORGANS[selectedOrgan].desc,42,450);
+      sk.text(ORGANS[selectedOrgan].desc,30,455,430);
     }
 
     // Win
     if(foodTarget>=ORGANS.length){
-      sk.fill(0,150,0,220); sk.noStroke(); sk.rect(120,160,250,120,12);
+      sk.fill(0,150,0,220); sk.noStroke(); sk.rect(100,160,290,120,12);
       sk.fill(255); sk.textSize(16); sk.textStyle(sk.BOLD); sk.textAlign(sk.CENTER,sk.CENTER);
-      sk.text('Digestion Complete!',245,200);
+      sk.text('Digestion Complete!',W/2,200);
       sk.textSize(11); sk.textStyle(sk.NORMAL);
-      sk.text('Food absorbed → nutrients in blood → liver!',245,225);
-      sk.fill(255,220,100); sk.rect(185,244,120,30,8);
-      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',245,259);
+      sk.text('Food absorbed → nutrients in blood → liver!',W/2,225);
+      sk.fill(255,220,100); sk.rect(175,244,140,30,8);
+      sk.fill(30); sk.textSize(12); sk.textStyle(sk.BOLD); sk.text('↺ Play Again',W/2,259);
     }
     sk.textAlign(sk.LEFT,sk.BASELINE);
   }
@@ -356,7 +360,7 @@ new p5(sk=>{
   sk.mousePressed=()=>{
     if(tab!==4) return;
     let mx=sk.mouseX, my=sk.mouseY;
-    if(foodTarget>=ORGANS.length&&mx>185&&mx<305&&my>244&&my<274){ resetGame(); return; }
+    if(foodTarget>=ORGANS.length&&mx>175&&mx<315&&my>244&&my<274){ resetGame(); return; }
     ORGANS.forEach((org,i)=>{
       if(mx>org.x&&mx<org.x+org.w&&my>org.y&&my<org.y+org.h){
         selectedOrgan=i;
@@ -370,6 +374,9 @@ new p5(sk=>{
   };
 });
 </script>
+
+
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
 
