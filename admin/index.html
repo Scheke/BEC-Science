@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEC Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; font-size: 14px; }
+    .hidden { display: none !important; }
+
+    /* ── Guard overlay ── */
+    #guard {
+      position: fixed; inset: 0; background: #0d1117;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; flex-direction: column; gap: 16px; text-align: center; padding: 24px;
+    }
+    #guard h1 { font-size: 2rem; color: #f85149; }
+    #guard p  { color: #8b949e; max-width: 420px; line-height: 1.6; }
+
+    /* ── Login screen ── */
+    #login {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at top, #161b22 0%, #0d1117 100%);
+    }
+    .login-box {
+      background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+      padding: 40px 36px; width: 100%; max-width: 380px; text-align: center;
+    }
+    .login-logo { font-size: 2.6rem; margin-bottom: 10px; }
+    .login-title { font-size: 1.3rem; font-weight: 800; color: #e6edf3; margin-bottom: 4px; }
+    .login-sub   { color: #8b949e; font-size: .85rem; margin-bottom: 28px; }
+    .login-badge {
+      display: inline-block; background: #1f2d1f; border: 1px solid #2ea043;
+      color: #3fb950; font-size: .75rem; font-weight: 700; padding: 4px 12px;
+      border-radius: 999px; margin-bottom: 20px;
+    }
+    .btn-signin {
+      width: 100%; padding: 12px; background: #238636; color: #fff;
+      border: none; border-radius: 10px; font-weight: 700; font-size: .95rem;
+      cursor: pointer; font-family: inherit; transition: background .15s;
+    }
+    .btn-signin:hover { background: #2ea043; }
+    #login-error { margin-top: 14px; color: #f85149; font-size: .82rem; min-height: 20px; }
+
+    /* ── App shell ── */
+    #app { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Header */
+    .adm-hdr {
+      background: #161b22; border-bottom: 1px solid #21262d;
+      padding: 12px 28px; display: flex; align-items: center; gap: 16px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .adm-logo { font-size: 1.05rem; font-weight: 900; color: #3fb950; flex: 1; }
+    .adm-logo span { color: #8b949e; font-weight: 400; font-size: .82rem; margin-left: 8px; }
+    .adm-user { font-size: .82rem; color: #8b949e; }
+    .btn-sm {
+      padding: 6px 14px; border-radius: 8px; border: 1px solid #30363d;
+      background: transparent; color: #c9d1d9; font-size: .8rem; cursor: pointer;
+      font-family: inherit; transition: all .15s;
+    }
+    .btn-sm:hover { background: #21262d; border-color: #8b949e; }
+    .btn-danger { border-color: #da3633; color: #f85149; }
+    .btn-danger:hover { background: rgba(248,81,73,.1); }
+
+    /* Stats bar */
+    #stats-bar {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px; padding: 20px 28px; background: #0d1117;
+      border-bottom: 1px solid #21262d;
+    }
+    .stat-card {
+      background: #161b22; border: 1px solid #21262d; border-radius: 12px;
+      padding: 16px 18px; transition: border-color .15s;
+    }
+    .stat-card:hover { border-color: #30363d; }
+    .stat-label { font-size: .72rem; color: #8b949e; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; }
+    .stat-value { font-size: 1.6rem; font-weight: 800; color: #e6edf3; line-height: 1; }
+    .stat-sub   { font-size: .75rem; color: #8b949e; margin-top: 4px; }
+    .stat-card.green  { border-color: rgba(63,185,80,.3); }
+    .stat-card.green .stat-value { color: #3fb950; }
+    .stat-card.gold   { border-color: rgba(249,168,37,.3); }
+    .stat-card.gold .stat-value { color: #f9a825; }
+    .stat-card.blue   { border-color: rgba(88,166,255,.3); }
+    .stat-card.blue .stat-value { color: #58a6ff; }
+
+    /* Controls row */
+    #controls {
+      padding: 14px 28px; display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid #21262d; background: #0d1117; flex-wrap: wrap;
+    }
+    #search {
+      flex: 1; min-width: 200px; max-width: 340px;
+      background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+      color: #c9d1d9; padding: 8px 12px; font-size: .88rem; font-family: inherit;
+      outline: none; transition: border-color .15s;
+    }
+    #search:focus { border-color: #3fb950; }
+    #search::placeholder { color: #484f58; }
+    .sort-btn {
+      padding: 7px 14px; background: #161b22; border: 1px solid #30363d;
+      border-radius: 8px; color: #8b949e; font-size: .8rem; cursor: pointer;
+      font-family: inherit; transition: all .15s; white-space: nowrap;
+    }
+    .sort-btn:hover  { border-color: #8b949e; color: #c9d1d9; }
+    .sort-btn.active { border-color: #3fb950; color: #3fb950; background: rgba(63,185,80,.06); }
+    #refresh-btn {
+      padding: 7px 14px; background: #238636; border: none; border-radius: 8px;
+      color: #fff; font-size: .8rem; cursor: pointer; font-family: inherit;
+      font-weight: 700; transition: background .15s; margin-left: auto;
+    }
+    #refresh-btn:hover { background: #2ea043; }
+    .filter-label { font-size: .8rem; color: #8b949e; margin-left: 4px; }
+
+    /* Table */
+    #table-wrap {
+      flex: 1; overflow-x: auto; padding: 0 28px 28px;
+    }
+    #users-table {
+      width: 100%; border-collapse: collapse; margin-top: 16px;
+      min-width: 860px;
+    }
+    #users-table th {
+      text-align: left; font-size: .72rem; font-weight: 700; color: #8b949e;
+      text-transform: uppercase; letter-spacing: .8px; padding: 8px 12px;
+      border-bottom: 1px solid #21262d; white-space: nowrap;
+      cursor: pointer; user-select: none;
+    }
+    #users-table th:hover { color: #c9d1d9; }
+    #users-table th.sorted { color: #3fb950; }
+    #users-table td {
+      padding: 11px 12px; border-bottom: 1px solid #161b22;
+      vertical-align: middle; white-space: nowrap;
+    }
+    #users-table td:nth-child(2),
+    #users-table td:nth-child(8) { white-space: normal; }
+    #users-table tr:hover td { background: #161b22; }
+    .td-user { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+    .td-name  { font-weight: 600; color: #e6edf3; font-size: .88rem; }
+    .td-email { font-size: .75rem; color: #8b949e; margin-top: 2px; }
+    .badge-level {
+      display: inline-block; font-size: .68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 4px; margin-left: 6px;
+      background: rgba(88,166,255,.15); color: #58a6ff; border: 1px solid rgba(88,166,255,.25);
+    }
+    .badge-premium {
+      display: inline-block; font-size: .7rem; font-weight: 800;
+      padding: 3px 10px; border-radius: 6px;
+      background: rgba(249,168,37,.15); color: #f9a825; border: 1px solid rgba(249,168,37,.3);
+    }
+    .badge-free {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 6px;
+      background: #161b22; color: #484f58; border: 1px solid #21262d;
+    }
+    .btn-grant {
+      padding: 5px 12px; background: rgba(63,185,80,.12); color: #3fb950;
+      border: 1px solid rgba(63,185,80,.35); border-radius: 7px;
+      font-size: .76rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: all .15s; white-space: nowrap;
+    }
+    .btn-grant:hover { background: rgba(63,185,80,.25); }
+    .btn-revoke {
+      padding: 5px 12px; background: rgba(248,81,73,.1); color: #f85149;
+      border: 1px solid rgba(248,81,73,.3); border-radius: 7px;
+      font-size: .76rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: all .15s; white-space: nowrap;
+    }
+    .btn-revoke:hover { background: rgba(248,81,73,.2); }
+    .td-num { font-variant-numeric: tabular-nums; }
+    .streak-fire { color: #ff6b35; }
+    .no-data { text-align: center; color: #484f58; padding: 40px; font-size: .9rem; }
+
+    /* Grant modal */
+    #grant-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    .grant-box {
+      background: #161b22; border: 1px solid #30363d; border-radius: 16px;
+      padding: 28px 26px; width: 100%; max-width: 420px;
+    }
+    .grant-title { font-size: 1rem; font-weight: 800; color: #e6edf3; margin-bottom: 4px; }
+    .grant-sub   { font-size: .82rem; color: #8b949e; margin-bottom: 20px; }
+    .grant-label { font-size: .78rem; font-weight: 700; color: #8b949e; display: block; margin-bottom: 6px; }
+    .grant-input {
+      width: 100%; background: #0d1117; border: 1px solid #30363d;
+      border-radius: 8px; color: #c9d1d9; padding: 9px 12px;
+      font-size: .88rem; font-family: inherit; outline: none; margin-bottom: 16px;
+    }
+    .grant-input:focus { border-color: #3fb950; }
+    .grant-actions { display: flex; gap: 10px; }
+    .btn-confirm {
+      flex: 1; padding: 11px; background: #238636; color: #fff;
+      border: none; border-radius: 9px; font-weight: 700; font-size: .9rem;
+      cursor: pointer; font-family: inherit; transition: background .15s;
+    }
+    .btn-confirm:hover { background: #2ea043; }
+    .btn-cancel {
+      flex: 1; padding: 11px; background: transparent; color: #8b949e;
+      border: 1px solid #30363d; border-radius: 9px; font-size: .9rem;
+      cursor: pointer; font-family: inherit; transition: all .15s;
+    }
+    .btn-cancel:hover { background: #21262d; color: #c9d1d9; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+      padding: 12px 20px; font-size: .88rem; color: #e6edf3;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 600;
+      transition: opacity .3s; pointer-events: none;
+    }
+    #toast.hidden { opacity: 0; }
+
+    /* Loading */
+    .spinner {
+      width: 18px; height: 18px; border: 2px solid #30363d;
+      border-top-color: #3fb950; border-radius: 50%;
+      animation: spin .6s linear infinite; display: inline-block; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-row td { padding: 32px; text-align: center; color: #8b949e; }
+  </style>
+</head>
+<body>
+
+<!-- ── Localhost guard ── -->
+<div id="guard" class="hidden">
+  <div style="font-size:3rem">🔒</div>
+  <h1>Access Denied</h1>
+  <p>This admin panel is only accessible from <strong>localhost</strong>.<br>
+     It is not available on the live website.</p>
+</div>
+
+<!-- ── Auth loading splash (shown while Firebase resolves) ── -->
+<div id="splash" style="position:fixed;inset:0;background:#0d1117;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9000">
+  <div style="font-size:2.4rem">🔬</div>
+  <span class="spinner" style="width:24px;height:24px;border-width:3px"></span>
+  <div id="splash-msg" style="color:#484f58;font-size:.85rem">Loading BEC Admin…</div>
+</div>
+
+<!-- ── Login screen ── -->
+<div id="login" class="hidden">
+  <div class="login-box">
+    <div class="login-logo">🔬</div>
+    <div class="login-title">BEC Admin</div>
+    <div class="login-sub">Science Animations — Operations Dashboard</div>
+    <div class="login-badge">🔒 Restricted Access</div>
+    <input id="login-email" type="email" placeholder="Email" autocomplete="off" style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;padding:10px 12px;font-size:.9rem;font-family:inherit;outline:none;margin-bottom:10px;display:block" />
+    <input id="login-pass"  type="password" placeholder="Password" autocomplete="off" style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;padding:10px 12px;font-size:.9rem;font-family:inherit;outline:none;margin-bottom:14px;display:block" />
+    <button class="btn-signin" id="signin-btn">Sign In</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- ── Main app ── -->
+<div id="app" class="hidden">
+
+  <header class="adm-hdr">
+    <div class="adm-logo">BEC Admin <span>Science Animations — Operations</span></div>
+    <div class="adm-user" id="adm-user"></div>
+    <button class="btn-sm btn-danger" id="logout-btn">Sign Out</button>
+  </header>
+
+  <div id="stats-bar">
+    <div class="stat-card">
+      <div class="stat-label">Total Users</div>
+      <div class="stat-value" id="s-total">—</div>
+      <div class="stat-sub">registered accounts</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Premium Users</div>
+      <div class="stat-value" id="s-premium">—</div>
+      <div class="stat-sub" id="s-conv">— conversion rate</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-label">Revenue Estimate</div>
+      <div class="stat-value" id="s-revenue">—</div>
+      <div class="stat-sub">P200 × premium users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Quizzes</div>
+      <div class="stat-value" id="s-quizzes">—</div>
+      <div class="stat-sub">across all users</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">Avg XP / User</div>
+      <div class="stat-value" id="s-avgxp">—</div>
+      <div class="stat-sub" id="s-totalxp">— total XP awarded</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg Streak</div>
+      <div class="stat-value" id="s-avgstreak">—</div>
+      <div class="stat-sub">days (active users)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active (7 days)</div>
+      <div class="stat-value" id="s-active7">—</div>
+      <div class="stat-sub" id="s-active7-pct">— of registered</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Animations Opened</div>
+      <div class="stat-value" id="s-anims">—</div>
+      <div class="stat-sub">total across all users</div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <input id="search" type="text" placeholder="Search by name or email…" oninput="filterTable()">
+    <span class="filter-label">Sort:</span>
+    <button class="sort-btn active" onclick="setSort('xp')">XP ↓</button>
+    <button class="sort-btn" onclick="setSort('streak')">Streak</button>
+    <button class="sort-btn" onclick="setSort('quizCount')">Quizzes</button>
+    <button class="sort-btn" onclick="setSort('lastSeen')">Last Seen</button>
+    <button class="sort-btn" onclick="setSort('animCount')">Animations</button>
+    <button id="refresh-btn" onclick="loadData()">↺ Refresh</button>
+  </div>
+
+  <div id="table-wrap">
+    <table id="users-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th onclick="setSort('xp')">XP</th>
+          <th onclick="setSort('streak')">Streak</th>
+          <th onclick="setSort('quizCount')">Quizzes</th>
+          <th onclick="setSort('animCount')">Animations</th>
+          <th onclick="setSort('lastSeen')">Last Seen</th>
+          <th>Premium</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody">
+        <tr id="loading-row"><td colspan="9"><span class="spinner"></span> Loading users…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ── Grant premium modal ── -->
+<div id="grant-modal" class="hidden">
+  <div class="grant-box">
+    <div class="grant-title" id="grant-title">Grant Lifetime Premium</div>
+    <div class="grant-sub" id="grant-sub">This user will be marked as a lifetime premium member.</div>
+    <label class="grant-label">Notes (optional — e.g. payment method, date)</label>
+    <input class="grant-input" id="grant-notes" type="text" placeholder="e.g. Paid P200 via Orange Money on 04 Jul 2026">
+    <div class="grant-actions">
+      <button class="btn-confirm" id="grant-confirm">✅ Confirm Grant</button>
+      <button class="btn-cancel" onclick="closeGrantModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="toast" class="hidden"></div>
+
+<script type="module" src="main.js"></script>
+
+
+</body>
+</html>

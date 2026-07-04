@@ -1,0 +1,73 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    // Real sign-in (not anonymous)
+    function isAuth() {
+      return request.auth != null
+          && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    // Caller owns the document (uid matches the doc's ID)
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    // Admin — email check only, no email_verified requirement
+    // (Google sign-in always verifies, but the claim can be absent in edge cases)
+    function isAdmin() {
+      return request.auth != null
+          && request.auth.token.email == 'schekes23@gmail.com';
+    }
+
+    // ── users/{uid} ──────────────────────────────────────────────────────────
+    // Game engine writes: xp, streak, quizCount, hearts, crowns, badges,
+    //                     visited_*, displayName, email, lastSeen
+    match /users/{uid} {
+      // Owner reads/writes their own doc (game engine + profile save)
+      // Admin reads any doc (admin panel user list)
+      allow read:   if isOwner(uid) || isAdmin();
+      allow write:  if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // ── entitlements/{uid} ───────────────────────────────────────────────────
+    // Set by admin panel only. Read by owner to check premium status.
+    // Fields: premium (bool), plan, pula, grantedAt, grantedBy, notes
+    match /entitlements/{uid} {
+      allow read:   if isOwner(uid) || isAdmin();
+      allow write:  if isAdmin();
+      allow delete: if false;
+    }
+
+    // ── leaderboard/{uid} ────────────────────────────────────────────────────
+    // Public snapshot. Any signed-in user can read; only owner can write.
+    match /leaderboard/{uid} {
+      allow read:   if isAuth();
+      allow write:  if isOwner(uid);
+      allow delete: if false;
+    }
+
+    // ── quizHistory/{uid}/results/{resultId} ─────────────────────────────────
+    // Append-only quiz log. No updates or deletes once written.
+    match /quizHistory/{uid}/results/{resultId} {
+      allow read:          if isOwner(uid) || isAdmin();
+      allow create:        if isOwner(uid);
+      allow update, delete: if false;
+    }
+
+    // ── bookmarks/{uid} ──────────────────────────────────────────────────────
+    match /bookmarks/{uid} {
+      allow read, write: if isOwner(uid);
+      allow delete:      if false;
+    }
+
+    // ── Catch-all: deny everything not matched above ──────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

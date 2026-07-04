@@ -677,6 +677,7 @@
     <div class="l-hdr-btns">
       <button onclick="showLeaderboard()" class="l-hdr-btn" style="background:transparent;color:#2e7d32;border:1.5px solid #2e7d32">🏆 Leaderboard</button>
       <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit">🌐 Visit Us</a>
+      <button onclick="showPricing()" class="l-hdr-btn" style="color:#f9a825;border:1.5px solid rgba(249,168,37,.5);background:rgba(249,168,37,.1);font-weight:800">⭐ Pricing</button>
       <button id="auth-header-btn" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
     </div>
   </header>
@@ -827,7 +828,7 @@
       <button class="mob-sb-btn" onclick="goHome();closeMobSidebar()"><span class="mob-sb-btn-icon">🏠</span>Home</button>
       <button id="mob-auth-btn" class="mob-sb-btn" onclick="showAuthModal();closeMobSidebar()"><span class="mob-sb-btn-icon">🔐</span>Sign In</button>
     </div>
-    <button class="mob-sb-donate" onclick="showDonateModal();closeMobSidebar()">❤️ Support BEC Science</button>
+    <button class="mob-sb-donate" onclick="showPricing();closeMobSidebar()">⭐ Upgrade to Premium</button>
   </div>
 
   <header class="d-hdr" id="d-hdr">
@@ -843,12 +844,19 @@
     </div>
     <nav class="d-nav" id="d-nav"></nav>
     <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
-    <button class="d-rnd d-rnd-donate" onclick="showDonateModal()" title="Support us">❤️</button>
+    <button class="d-rnd d-rnd-donate" onclick="showPricing()" title="Upgrade to Premium">⭐</button>
     <button id="auth-dash-btn" class="d-rnd" title="Sign in" style="font-size:.95rem">🔐</button>
   </header>
 
   <!-- Game stats bar -->
   <div id="bec-stats"></div>
+
+  <!-- Premium upgrade banner (visitors only) -->
+  <div id="premium-banner" class="hidden" style="background:linear-gradient(90deg,#1b2a0f,#1e3a10);border-bottom:1.5px solid rgba(249,168,37,.35);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+    <span style="font-size:.85rem;color:rgba(255,255,255,.85)">🌟 <strong style="color:#f9a825">Lifetime Access — P200</strong> · Unlock all 90+ animations forever, one-time payment</span>
+    <button onclick="showPricing()" style="background:#f9a825;color:#1a1000;border:none;border-radius:8px;padding:6px 14px;font-weight:800;font-size:.8rem;cursor:pointer;font-family:inherit;flex-shrink:0">View Plans ↗</button>
+    <button onclick="document.getElementById('premium-banner').classList.add('hidden')" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:1.1rem;cursor:pointer;padding:0 4px;flex-shrink:0" title="Dismiss">✕</button>
+  </div>
 
   <!-- Hero -->
   <div class="d-hero" id="d-hero">
@@ -865,6 +873,22 @@
 
     <!-- Widgets row -->
     <div class="d-widgets" id="d-widgets"></div>
+
+    <!-- Free account daily-limits panel (hidden for premium users) -->
+    <div id="free-locked-panel" class="hidden" style="margin:0 0 16px;background:linear-gradient(135deg,#12121e,#1a1a2e);border:1.5px solid rgba(249,168,37,.35);border-radius:14px;padding:16px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+        <div style="flex:1;min-width:220px">
+          <div style="font-size:.75rem;font-weight:800;color:#f9a825;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">🕐 Free Account — Today's Sessions <span style="font-weight:500;color:#6e7681;text-transform:none;letter-spacing:0">(resets at midnight)</span></div>
+          <div style="font-size:.82rem;color:#8b949e;line-height:2">
+            ✅ All 90+ animations available &nbsp;·&nbsp; ✅ XP · Streaks · Leaderboard · Bookmarks<br>
+            📽️ Animate / Study / Quiz &nbsp;<span id="fpl-cards" style="color:#e6edf3;font-weight:700"></span><br>
+            📝 Practice Tests &nbsp;<span id="fpl-tests" style="color:#e6edf3;font-weight:700"></span><br>
+            📋 Full Exams &nbsp;<span id="fpl-exams" style="color:#e6edf3;font-weight:700"></span>
+          </div>
+        </div>
+        <button onclick="showPricing()" style="background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:10px;padding:11px 20px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap">⭐ Unlimited — P200</button>
+      </div>
+    </div>
 
     <!-- Standalone search (inside body for mobile fallback) -->
     <div class="d-search-wrap">
@@ -900,8 +924,8 @@
     <button class="mbn-btn" id="mbn-progress" onclick="mbnGo('progress')">
       <span class="mbn-icon">📊</span><span class="mbn-lbl">Progress</span>
     </button>
-    <button class="mbn-btn" id="mbn-donate" onclick="showDonateModal()">
-      <span class="mbn-icon">❤️</span><span class="mbn-lbl">Support</span>
+    <button class="mbn-btn" id="mbn-pricing" onclick="showPricing()">
+      <span class="mbn-icon">⭐</span><span class="mbn-lbl">Upgrade</span>
     </button>
   </nav>
 </div>
@@ -997,7 +1021,7 @@
     <div id="auth-signed-in" style="display:none;text-align:center">
       <div style="font-size:3rem;margin-bottom:12px">🎉</div>
       <div style="font-size:1.1rem;font-weight:800;color:#1b5e20;margin-bottom:6px" id="signed-in-name"></div>
-      <div style="color:#666;font-size:.9rem;margin-bottom:24px">All content unlocked!</div>
+      <div style="color:#666;font-size:.9rem;margin-bottom:24px">All 90+ animations available! Free: 7 sessions · 3 tests · 1 exam/day — resets at midnight. <a onclick="closeAuthPage();showPricing()" style="color:#e65100;cursor:pointer;text-decoration:underline">Upgrade P200</a> for unlimited.</div>
       <button onclick="closeAuthPage()"
         style="width:100%;padding:14px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;margin-bottom:10px">🚀 Start Learning</button>
       <button onclick="signOut()"
@@ -1008,59 +1032,230 @@
 
 <!-- ════════════ DONATE MODAL ════════════ -->
 <div id="donate-modal" class="te-overlay hidden" onclick="if(event.target===this)closeDonateModal()">
-  <div class="te-modal-box" style="max-width:480px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-      <h2 style="margin:0;font-size:1.4rem;font-weight:800;color:#1a1a1a">Please donate any amount 🙏</h2>
-      <button onclick="closeDonateModal()" style="background:none;border:none;font-size:1.8rem;cursor:pointer;color:#ddd;transition:color .2s" onmouseover="this.style.color='#999'" onmouseout="this.style.color='#ddd'">✕</button>
+  <div id="donate-box" style="background:#1a1a2e;color:#fff;border-radius:20px;padding:24px 22px;max-width:420px;width:calc(100% - 32px);max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div>
+        <div style="font-size:1.25rem;font-weight:900;color:#fff">Local Payment Methods</div>
+        <div style="font-size:.82rem;color:#888;margin-top:2px">Pay in Pula &middot; Botswana 🇧🇼</div>
+      </div>
+      <button onclick="closeDonateModal()" style="background:none;border:none;color:#666;font-size:1.5rem;cursor:pointer;padding:0;line-height:1;margin-top:-2px">✕</button>
     </div>
 
-    <p style="color:#666;margin-bottom:24px;line-height:1.7;font-size:.95rem">
-      Keeping this app free isn't free — it comes with costs. Your support helps pay for servers, updates, and new features so that every Motswana can access quality science education. Thank you. ❤️
-    </p>
+    <!-- Plan display (single plan) -->
+    <div style="background:rgba(249,168,37,.1);border:1.5px solid rgba(249,168,37,.5);border-radius:14px;padding:16px 18px;margin:18px 0 18px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:900;font-size:1rem;color:#f9a825">🌟 Lifetime Unlock</div>
+        <div style="font-size:.78rem;color:#aaa;margin-top:3px">Unlock everything — forever. No daily limits.</div>
+        <div style="font-size:.68rem;background:#f9a825;color:#1a1000;border-radius:4px;padding:2px 8px;font-weight:800;display:inline-block;margin-top:6px">ONE-TIME PAYMENT</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;padding-left:12px">
+        <div style="font-weight:900;font-size:1.4rem;color:#f9a825">P200</div>
+        <div style="font-size:.72rem;color:#666;margin-top:2px">one-time · no monthly fees</div>
+      </div>
+    </div>
 
-    <!-- WhatsApp Button -->
-    <a href="https://wa.me/26775777413?text=Hi%20Scheke%2C%20I%20want%20to%20support%20BEC%20Science" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;margin-bottom:20px;cursor:pointer;transition:opacity .2s;font-family:inherit" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371 0-.57 0-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.725.738 5.385 2.124 7.667L2.957 24l8.25-2.164a9.844 9.844 0 004.604 1.17h.004c5.444 0 9.944-4.467 9.967-9.978.012-2.763-.69-5.329-1.984-7.569A9.847 9.847 0 0011.051 6.979z"/>
-      </svg>
-      Click here to contact us on WhatsApp for support. 😊
+    <!-- Payment Method -->
+    <div style="margin:0 0 10px;font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px">1 · CHOOSE PAYMENT METHOD</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+      <button class="dm-method on" id="dm-m-orange" onclick="dmSetMethod('orange')">
+        <div style="font-size:1.6rem;margin-bottom:4px">🟠</div>
+        <div style="font-size:.72rem;font-weight:800;color:#ff8c00">Orange Money</div>
+      </button>
+      <button class="dm-method" id="dm-m-smega" onclick="dmSetMethod('smega')">
+        <div style="font-size:1.6rem;margin-bottom:4px">💜</div>
+        <div style="font-size:.72rem;font-weight:800;color:#9c27b0">Smega</div>
+      </button>
+      <button class="dm-method" id="dm-m-fnb" onclick="dmSetMethod('fnb')">
+        <div style="font-size:1.6rem;margin-bottom:4px">🏦</div>
+        <div style="font-size:.72rem;font-weight:800;color:#4fc3f7">FNB Pay2Cell</div>
+      </button>
+    </div>
+
+    <!-- Summary card -->
+    <div id="dm-summary" style="background:#252540;border:1.5px solid #333;border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div id="dm-sum-title" style="font-weight:800;font-size:.92rem;color:#fff"></div>
+        <div id="dm-sum-sub" style="font-size:.78rem;color:#888;margin-top:3px"></div>
+      </div>
+      <div style="text-align:right">
+        <div id="dm-sum-pula" style="font-weight:900;font-size:1rem;color:#fff"></div>
+        <div id="dm-sum-usd" style="font-size:.75rem;color:#666;margin-top:2px"></div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div style="font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px;margin-bottom:10px">HOW IT WORKS</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="background:#25d366;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0">1</span>
+        <span style="font-size:.85rem;color:#ccc">Tap the WhatsApp button below to start a chat</span>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="background:#25d366;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0">2</span>
+        <span id="dm-step2" style="font-size:.85rem;color:#ccc"></span>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="background:#25d366;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0">3</span>
+        <span style="font-size:.85rem;color:#ccc">We'll send you the payment details securely</span>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <span style="background:#25d366;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0">4</span>
+        <span style="font-size:.85rem;color:#ccc">Send payment — your plan is activated within minutes</span>
+      </div>
+    </div>
+
+    <!-- WhatsApp CTA -->
+    <a id="dm-wa-btn" href="#" target="_blank"
+      style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;background:#25d366;color:#fff;border-radius:14px;text-decoration:none;font-weight:800;font-size:.95rem;margin-bottom:12px;transition:filter .15s"
+      onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter=''">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.67-.51-.173-.008-.371 0-.57 0-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421-7.403h-.004a9.87 9.87 0 00-9.746 9.798c0 2.725.738 5.385 2.124 7.667L2.957 24l8.25-2.164a9.844 9.844 0 004.604 1.17h.004c5.444 0 9.944-4.467 9.967-9.978.012-2.763-.69-5.329-1.984-7.569A9.847 9.847 0 0011.051 6.979z"/></svg>
+      Chat on WhatsApp to pay ↗
     </a>
-
-    <!-- Payment Methods -->
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <!-- Orange Money -->
-      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:1.4rem">📱</span>
-          <div style="font-weight:700;color:#ff7a00;font-size:.95rem">ORANGE MONEY</div>
-        </div>
-        <div style="color:#333;font-weight:600;font-size:1.05rem">Send any amount to <span style="color:#1a1a1a">+267 75 777 413</span></div>
-        <div style="color:#999;font-size:.85rem;margin-top:4px">Reference: <span style="color:#666;font-weight:600">BECScience</span></div>
-      </div>
-
-      <!-- Smega BTC -->
-      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:1.4rem">📱</span>
-          <div style="font-weight:700;color:#0066ff;font-size:.95rem">SMEGA BTC</div>
-        </div>
-        <div style="color:#333;font-weight:600;font-size:1.05rem">Send any amount to <span style="color:#1a1a1a">+267 73 476 667</span></div>
-        <div style="color:#999;font-size:.85rem;margin-top:4px">Reference: <span style="color:#666;font-weight:600">BECScience</span></div>
-      </div>
-
-      <!-- Pay2Cell FNBB -->
-      <div style="padding:16px;border:1.5px solid #e8e8e8;border-radius:10px;background:#f9f9f9">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:1.4rem">🏦</span>
-          <div style="font-weight:700;color:#0066cc;font-size:.95rem">PAY2CELL - FNBB</div>
-        </div>
-        <div style="color:#333;font-weight:600;font-size:1.05rem">Account no: <span style="color:#1a1a1a">+267 75 777 413</span></div>
-      </div>
-    </div>
-
-    <button onclick="closeDonateModal()" style="width:100%;padding:12px;margin-top:20px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Close</button>
+    <div style="text-align:center;font-size:.72rem;color:#555">Available 8am – 8pm · Plan activated within ~1 hour after payment</div>
   </div>
 </div>
+
+<!-- ════════════ PRICING PAGE ════════════ -->
+<div id="v-pricing" class="hidden" style="min-height:100vh;background:linear-gradient(155deg,#071a09 0%,#0d2b11 30%,#1b5e20 65%,#2e7d32 100%);color:#fff;padding-bottom:80px">
+
+  <!-- Header bar -->
+  <div style="padding:14px 20px;display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.25);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.1);position:sticky;top:0;z-index:10">
+    <button onclick="closePricing()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">← Back</button>
+    <div style="font-size:1rem;font-weight:900;color:#fff;flex:1">Premium Plans</div>
+    <button onclick="showDonateModal()" style="background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#25d366;border-radius:10px;padding:7px 14px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit">💬 Pay via WhatsApp</button>
+  </div>
+
+  <!-- Hero text -->
+  <div style="text-align:center;padding:32px 20px 20px">
+    <div style="font-size:.72rem;font-weight:800;letter-spacing:1.8px;color:#81c784;text-transform:uppercase;margin-bottom:10px;animation:slideDown .6s ease-out">UNLOCK EVERYTHING</div>
+    <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin-bottom:12px;background:linear-gradient(135deg,#fff 0%,#a5d6a7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+      Science for Every Student 🔬
+    </h1>
+    <p style="color:rgba(255,255,255,.65);font-size:.9rem;max-width:380px;margin:0 auto 6px">
+      Animated lessons for PSLE · JCE · BGCSE — Pay in Pula 🇧🇼
+    </p>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.35)">Orange Money · Smega · FNB Pay2Cell</div>
+  </div>
+
+  <!-- Plan cards -->
+  <div style="display:flex;flex-direction:column;gap:14px;max-width:500px;margin:0 auto;padding:0 16px 16px">
+
+    <!-- Lifetime -->
+    <div class="prx-card prx-lifetime" onclick="showDonateModalPlan('lifetime')">
+      <div class="prx-badge">BEST VALUE</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <div class="prx-plan-name">🌟 Lifetime Unlock</div>
+          <div class="prx-plan-tagline">Pay once — use forever</div>
+        </div>
+        <div style="text-align:right">
+          <div class="prx-price prx-price-gold">P200</div>
+          <div class="prx-price-sub">one-time · no monthly fees</div>
+        </div>
+      </div>
+      <ul class="prx-perks">
+        <li>✅ All 90+ animations unlocked</li>
+        <li>✅ No daily limits — ever</li>
+        <li>✅ All 3 levels (PSLE, JCE, BGCSE)</li>
+        <li>✅ Progress tracking & leaderboard</li>
+        <li>✅ Bookmarks & achievements</li>
+        <li>✅ Future animations included free</li>
+      </ul>
+      <button class="prx-cta prx-cta-gold" onclick="showDonateModalPlan()">Get Lifetime Access — P200 ↗</button>
+    </div>
+
+    <!-- Free tier info -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px 18px;text-align:center">
+      <div style="font-size:.82rem;font-weight:700;color:#888;margin-bottom:6px">Free (Visitor)</div>
+      <div style="font-size:.78rem;color:#555;line-height:1.5">1 preview animation per level · No bookmarks, progress, or leaderboard<br>No sign-in needed — just browse</div>
+    </div>
+
+    <!-- Payment note -->
+    <div style="text-align:center;padding:8px 0 0;font-size:.75rem;color:rgba(255,255,255,.3);line-height:1.7">
+      Pay via Orange Money · Smega · FNB Pay2Cell<br>
+      Available 8am–8pm · Plan activated within ~1 hour after payment<br>
+      <strong style="color:rgba(255,255,255,.5)">Questions? WhatsApp 75 777 413</strong>
+    </div>
+
+  </div>
+</div>
+
+<style>
+.prx-card{
+  background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);
+  border-radius:18px;padding:20px;cursor:pointer;position:relative;
+  transition:transform .2s,background .2s,box-shadow .2s;
+}
+.prx-card:hover{background:rgba(255,255,255,.13);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.prx-lifetime{border-color:rgba(249,168,37,.5)!important;background:rgba(249,168,37,.07)!important}
+.prx-lifetime:hover{background:rgba(249,168,37,.16)!important}
+.prx-badge{
+  position:absolute;top:-11px;right:16px;
+  background:linear-gradient(135deg,#f9a825,#ff8f00);
+  color:#fff;font-size:.62rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  padding:4px 12px;border-radius:999px;box-shadow:0 4px 12px rgba(249,168,37,.4);
+}
+.prx-plan-name{font-size:1rem;font-weight:800;color:#fff;margin-bottom:3px}
+.prx-lifetime .prx-plan-name{color:#f9a825}
+.prx-plan-tagline{font-size:.78rem;color:#888}
+.prx-price{font-size:1.4rem;font-weight:900;color:#fff}
+.prx-price-gold{color:#f9a825}
+.prx-price-sub{font-size:.7rem;color:#777;margin-top:2px}
+.prx-perks{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:7px}
+.prx-perks li{font-size:.82rem;color:rgba(255,255,255,.8)}
+.prx-cta{
+  width:100%;padding:13px;border:1px solid rgba(255,255,255,.2);border-radius:12px;
+  background:rgba(255,255,255,.1);color:#fff;
+  font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.prx-cta:hover{background:rgba(255,255,255,.2)}
+.prx-cta-gold{background:linear-gradient(135deg,#f9a825,#ff8f00)!important;color:#1a1000!important;border:none!important;font-size:.92rem}
+.prx-cta-gold:hover{filter:brightness(1.1)!important}
+</style>
+
+<style>
+.dm-method{
+  background:#252540;border:2px solid #333;border-radius:12px;
+  padding:12px 6px;cursor:pointer;transition:all .15s;
+  display:flex;flex-direction:column;align-items:center;
+  font-family:inherit;
+}
+.dm-method:hover{border-color:#555;background:#2d2d50}
+.dm-method.on{border-color:currentColor}
+#dm-m-orange.on{border-color:#ff8c00;background:rgba(255,140,0,.12)}
+#dm-m-smega.on{border-color:#9c27b0;background:rgba(156,39,176,.12)}
+#dm-m-fnb.on{border-color:#4fc3f7;background:rgba(79,195,247,.12)}
+.dm-plan{
+  background:#252540;border:1.5px solid #333;border-radius:12px;
+  padding:14px 16px;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:12px;
+  font-family:inherit;color:#fff;width:100%;text-align:left;
+}
+.dm-plan:hover{border-color:#555}
+.dm-plan.on{border-color:#fff;background:#2e2e55}
+.dm-plan-radio{
+  width:20px;height:20px;border-radius:50%;border:2px solid #555;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .15s;
+}
+.dm-plan.on .dm-plan-radio{border-color:#fff;background:#fff}
+.dm-plan.on .dm-plan-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#252540}
+.dm-plan-body{flex:1}
+.dm-plan-name{font-weight:800;font-size:.9rem}
+.dm-plan-desc{font-size:.75rem;color:#888;margin-top:2px}
+.dm-plan-price{text-align:right;flex-shrink:0}
+.dm-plan-pula{font-weight:900;font-size:.95rem;color:#fff}
+.dm-plan-usd{font-size:.72rem;color:#666;margin-top:2px}
+/* Lifetime plan highlight */
+.dm-plan.lifetime{border-color:#f9a825;background:rgba(249,168,37,.08)}
+.dm-plan.lifetime.on{border-color:#f9a825;background:rgba(249,168,37,.18)}
+.dm-plan.lifetime .dm-plan-name{color:#f9a825}
+.dm-plan.lifetime .dm-plan-radio{border-color:#f9a825}
+.dm-plan.lifetime.on .dm-plan-radio{background:#f9a825;border-color:#f9a825}
+.dm-plan.lifetime.on .dm-plan-radio::after{background:#1a1a2e}
+</style>
 
 <!-- ════════════ CARD LOCK OVERLAY ════════════ -->
 <!-- Firebase SDK (compat) + Firestore + Google Sign-In -->
@@ -1110,15 +1305,26 @@ function initAuth() {
         name: user.displayName || (user.email ? user.email.split('@')[0] : 'Guest'),
         email: user.email,
         uid: user.uid,
-        isAnonymous: user.isAnonymous
+        isAnonymous: user.isAnonymous,
+        isPremium: false,
       };
       // Wire Firestore UID for game engine then load cloud progress
       window._becUID = user.uid;
       if (typeof BEC !== 'undefined') {
         await BEC.loadFromCloud();
-        // Load bookmarks
         window._becBookmarks = BEC.getBookmarks();
       }
+      // Check premium entitlement
+      try {
+        const entDoc = await window._becDB.collection('entitlements').doc(user.uid).get();
+        if (entDoc.exists && entDoc.data()?.premium === true) currentUser.isPremium = true;
+      } catch(e) {}
+      // Save profile snapshot for admin panel visibility
+      window._becDB.collection('users').doc(user.uid).set({
+        email:       user.email || '',
+        displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
+        lastSeen:    new Date().toISOString(),
+      }, { merge: true }).catch(() => {});
     } else {
       currentUser = null;
       window._becUID = null;
@@ -1131,10 +1337,90 @@ function initAuth() {
 }
 
 function isCardUnlocked(url) {
-  // Full access for authenticated (non-anonymous) users
+  // All signed-in (non-anonymous) users can see all cards — limits enforced by session counts
   if (currentUser && !currentUser.isAnonymous) return true;
-  // Demo cards only for anonymous/visitor users
+  // Visitors: only 9 demo preview cards
   return Object.values(DEMO_CARDS).includes(url);
+}
+
+// ── Daily session limits ─────────────────────────────────────────────────────
+const DAILY_LIMITS = { cards: 7, tests: 3, exams: 1 };
+
+function getDailyUsage() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const s = JSON.parse(localStorage.getItem('bec_daily') || '{}');
+    if (s.date === today) return s;
+  } catch(e) {}
+  return { date: today, cards: 0, tests: 0, exams: 0 };
+}
+function saveDailyUsage(u) {
+  try { localStorage.setItem('bec_daily', JSON.stringify(u)); } catch(e) {}
+}
+
+// Returns false and shows popup if limit exceeded; otherwise increments count.
+function tryUseDaily(event, type, label) {
+  if (currentUser?.isPremium) return true;
+  const u = getDailyUsage();
+  if (u[type] >= DAILY_LIMITS[type]) {
+    if (event) event.preventDefault();
+    showDailyLimitPopup(type, label);
+    return false;
+  }
+  u[type]++;
+  saveDailyUsage(u);
+  updateFreePanelUsage();
+  return true;
+}
+
+// Shorthand used inline in onclick strings for card buttons
+function tryCardNav(event, url, title) { return tryUseDaily(event, 'cards', title); }
+
+function tryOpenTest(group, level) {
+  if (!tryUseDaily(null, 'tests', group + ' Test')) return;
+  openTestModal(group, level);
+}
+function tryStartExam(level) {
+  if (!tryUseDaily(null, 'exams', 'Full Exam')) return;
+  startExam(level);
+}
+
+function showDailyLimitPopup(type, label) {
+  document.getElementById('bec-limit-popup')?.remove();
+  const limitMap  = { cards: 3, tests: 2, exams: 1 };
+  const nounMap   = { cards: 'animation session', tests: 'practice test', exams: 'full exam' };
+  const lim  = limitMap[type];
+  const noun = nounMap[type];
+  const resets = new Date(); resets.setHours(24, 0, 0, 0);
+  const hLeft = Math.ceil((resets - Date.now()) / 3600000);
+  const el = document.createElement('div');
+  el.id = 'bec-limit-popup';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease';
+  el.innerHTML = `
+    <div style="background:#1a1a2e;border-radius:22px;padding:28px 24px;max-width:360px;width:100%;text-align:center;border:1.5px solid rgba(249,168,37,.4);box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="font-size:2.8rem;margin-bottom:8px">⏰</div>
+      <h3 style="color:#fff;font-size:1.1rem;font-weight:900;margin-bottom:8px">Daily limit reached</h3>
+      <p style="color:#aaa;font-size:.85rem;line-height:1.5;margin-bottom:6px">Free accounts get <strong style="color:#f9a825">${lim} ${noun}${lim > 1 ? 's' : ''} per day</strong>. You've used all ${lim} today.</p>
+      <p style="color:#6e7681;font-size:.78rem;margin-bottom:18px;background:rgba(255,255,255,.05);border-radius:8px;padding:8px 12px">🕐 Resets at <strong style="color:#c9d1d9">midnight</strong> (~${hLeft}h from now) &nbsp;·&nbsp; Or upgrade for unlimited</p>
+      <button onclick="document.getElementById('bec-limit-popup')?.remove();showPricing()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:10px">⭐ Unlock Unlimited — P200</button>
+      <button onclick="document.getElementById('bec-limit-popup')?.remove()" style="background:none;border:none;color:#555;font-size:.8rem;cursor:pointer;font-family:inherit">Come back tomorrow</button>
+    </div>`;
+  el.onclick = e => { if (e.target === el) el.remove(); };
+  document.body.appendChild(el);
+}
+
+function updateFreePanelUsage() {
+  const panel = document.getElementById('free-locked-panel');
+  if (!panel || panel.classList.contains('hidden')) return;
+  const u = getDailyUsage();
+  const dot = (used, limit) => Array.from({length: limit}, (_, i) =>
+    `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 2px;vertical-align:middle;background:${i < used ? '#f85149' : '#238636'}"></span>`
+  ).join('');
+  const rem = (type) => Math.max(0, DAILY_LIMITS[type] - u[type]);
+  const el = id => document.getElementById(id);
+  if (el('fpl-cards')) el('fpl-cards').innerHTML = `${rem('cards')} left &nbsp;${dot(u.cards, DAILY_LIMITS.cards)}`;
+  if (el('fpl-tests')) el('fpl-tests').innerHTML = `${rem('tests')} left &nbsp;${dot(u.tests, DAILY_LIMITS.tests)}`;
+  if (el('fpl-exams')) el('fpl-exams').innerHTML = `${rem('exams')} left &nbsp;${dot(u.exams, DAILY_LIMITS.exams)}`;
 }
 
 function showAuthModal() {
@@ -1292,7 +1578,7 @@ async function signOut() {
 
 function mbnGo(tab) {
   document.querySelectorAll('.mbn-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('mbn-' + tab)?.classList.add('active');
+  document.getElementById('mbn-' + (tab === 'pricing' ? 'pricing' : tab))?.classList.add('active');
   if (tab === 'home') {
     goHome();
   } else if (tab === 'browse') {
@@ -1377,6 +1663,30 @@ function updateAuthButtons() {
       mobAuthBtn.onclick = () => { showAuthModal(); closeMobSidebar(); };
     }
   }
+  // Premium banner: visitors see upgrade pitch; free signed-in see "what's locked" reminder
+  const premBanner = document.getElementById('premium-banner');
+  if (premBanner) {
+    const isPrem = !!(currentUser && currentUser.isPremium);
+    const bannerSpan = premBanner.querySelector('span');
+    if (!loggedIn) {
+      // Visitor
+      premBanner.classList.remove('hidden');
+      if (bannerSpan) bannerSpan.innerHTML = '🌟 <strong style="color:#f9a825">Lifetime Access — P200</strong> · Unlock all 90+ animations forever, one-time payment';
+    } else if (!isPrem) {
+      // Free signed-in user
+      premBanner.classList.remove('hidden');
+      if (bannerSpan) bannerSpan.innerHTML = '🕐 <strong style="color:#f9a825">Free Account</strong> — 7 sessions · 3 tests · 1 exam/day (resets midnight) &nbsp;·&nbsp; <strong style="color:#fff">P200 one-time</strong> removes all limits';
+    } else {
+      premBanner.classList.add('hidden');
+    }
+  }
+  // Free-account daily-limit panel inside dashboard
+  const freePanel = document.getElementById('free-locked-panel');
+  if (freePanel) {
+    const isPrem = !!(currentUser && currentUser.isPremium);
+    freePanel.classList.toggle('hidden', !loggedIn || isPrem);
+    if (loggedIn && !isPrem) updateFreePanelUsage();
+  }
 }
 
 function _friendlyAuthError(code) {
@@ -1403,8 +1713,99 @@ function closeDonateModal() {
   document.getElementById('donate-modal').classList.add('hidden');
 }
 
+// ── Pricing page ─────────────────────────────────────────────────────────────
+var _prxFrom = 'land';
+function showPricing() {
+  const vDash = document.getElementById('v-dash');
+  const vLand = document.getElementById('v-land');
+  _prxFrom = vDash && !vDash.classList.contains('hidden') ? 'dash' : 'land';
+  if (vDash) vDash.classList.add('hidden');
+  if (vLand) vLand.classList.add('hidden');
+  document.getElementById('donate-modal')?.classList.add('hidden');
+  document.getElementById('v-pricing').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+function closePricing() {
+  document.getElementById('v-pricing').classList.add('hidden');
+  if (_prxFrom === 'dash') {
+    document.getElementById('v-dash')?.classList.remove('hidden');
+  } else {
+    document.getElementById('v-land')?.classList.remove('hidden');
+  }
+}
+function showDonateModalPlan() {
+  closePricing();
+  showDonateModal();
+}
+
+function showUpgradePopup(title) {
+  document.getElementById('bec-upgrade-popup')?.remove();
+  const el = document.createElement('div');
+  el.id = 'bec-upgrade-popup';
+  el.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease';
+  el.innerHTML = `
+    <div style="background:#1a1a2e;border-radius:22px;padding:28px 24px;max-width:360px;width:100%;text-align:center;border:1.5px solid rgba(249,168,37,.4);box-shadow:0 20px 60px rgba(0,0,0,.6)">
+      <div style="font-size:2.8rem;margin-bottom:8px">🔒</div>
+      <h3 style="color:#fff;font-size:1.1rem;font-weight:900;margin-bottom:8px">${title || 'This animation'} is locked</h3>
+      <p style="color:#aaa;font-size:.85rem;line-height:1.5;margin-bottom:16px">Sign in for free to access all 90+ animations with a daily session limit, or pay <strong style="color:#f9a825">P200 once</strong> for unlimited access forever.</p>
+      <button onclick="document.getElementById('bec-upgrade-popup')?.remove();showPricing()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f9a825,#ff8f00);color:#1a1000;border:none;border-radius:12px;font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;margin-bottom:10px">⭐ See Pricing — P200 Unlimited</button>
+      <button onclick="document.getElementById('bec-upgrade-popup')?.remove();showAuthModal()" style="width:100%;padding:12px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:12px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;margin-bottom:10px">🔐 Sign In / Create Free Account</button>
+      <button onclick="document.getElementById('bec-upgrade-popup')?.remove()" style="background:none;border:none;color:#555;font-size:.8rem;cursor:pointer;font-family:inherit">Continue as visitor</button>
+    </div>`;
+  el.onclick = e => { if (e.target === el) el.remove(); };
+  document.body.appendChild(el);
+}
+
+// ── Payment Modal Logic ──────────────────────────────────────────────────────
+const DM_PLANS = [
+  { id:'lifetime', name:'🌟 Lifetime Unlock', desc:'Unlock everything — forever. No daily limits.', pula:'P200', badge:'lifetime', once:true },
+];
+const DM_METHODS = {
+  orange: { label:'Orange Money', step:'Tell us you want {PLAN} via Orange Money' },
+  smega:  { label:'Smega',        step:'Tell us you want {PLAN} via Smega' },
+  fnb:    { label:'FNB Pay2Cell', step:'Tell us you want {PLAN} via FNB Pay2Cell' },
+};
+let _dmPlan   = 'lifetime';
+let _dmMethod = 'orange';
+
+function dmSetMethod(m) {
+  _dmMethod = m;
+  ['orange','smega','fnb'].forEach(k =>
+    document.getElementById('dm-m-'+k)?.classList.toggle('on', k===m));
+  dmUpdateSummary();
+  dmUpdateWALink();
+}
+function dmUpdateSummary() {
+  const m = DM_METHODS[_dmMethod];
+  if (!m) return;
+  document.getElementById('dm-sum-title').textContent = 'Lifetime Unlock';
+  document.getElementById('dm-sum-sub').textContent   = 'Unlock everything — forever. No daily limits.';
+  document.getElementById('dm-sum-pula').textContent  = 'P200';
+  document.getElementById('dm-sum-usd').textContent   = 'one-time · no monthly fees';
+  document.getElementById('dm-step2').textContent     = m.step.replace('{PLAN}', 'a Lifetime Unlock');
+}
+function dmUpdateWALink() {
+  const m = DM_METHODS[_dmMethod];
+  if (!m) return;
+  const userName = (currentUser && currentUser.name) ? currentUser.name : '';
+  const userId   = (currentUser && currentUser.uid)  ? currentUser.uid  : '';
+  const identity = userName || userId
+    ? `\nName: ${userName || '—'}\nUser ID: ${userId || '—'}`
+    : '';
+  const msg = encodeURIComponent(
+    `Hi! I'd like to pay for BEC Science Animations — Lifetime Unlock (P200 one-time) via ${m.label}.${identity}\nPlease send me the payment details.`
+  );
+  const btn = document.getElementById('dm-wa-btn');
+  if (btn) btn.href = `https://wa.me/26775777413?text=${msg}`;
+}
+
 function showDonateModal() {
   document.getElementById('donate-modal').classList.remove('hidden');
+  _dmMethod = 'orange';
+  dmUpdateSummary();
+  dmUpdateWALink();
+  ['orange','smega','fnb'].forEach(k =>
+    document.getElementById('dm-m-'+k)?.classList.toggle('on', k==='orange'));
 }
 
 /* ══════════════════════════════════════════
@@ -2064,28 +2465,28 @@ function renderGrid(level, subj, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
-            : `event.preventDefault();showAuthModal()`;
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showUpgradePopup('${it.title}')`;
           const bmCls = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" title="Bookmark">🔖</button>
+            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark">🔖</button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `visitorInteraction();trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `visitorInteraction();trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
         }).join('')}
       </div></div>
       <div class="te-bar">
         <span class="te-bar-label">Practice for ${g.group}</span>
-        <button class="te-btn te-btn-test" onclick="${currentUser ? `openTestModal('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
-        <button class="te-btn te-btn-exam" onclick="${currentUser ? `startExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
+        <button class="te-btn te-btn-test" onclick="${currentUser ? `tryOpenTest('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
+        <button class="te-btn te-btn-exam" onclick="${currentUser ? `tryStartExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
       </div>`;
   });
 
@@ -2122,28 +2523,28 @@ function renderGridFiltered(level, filteredData, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
-            : `event.preventDefault();showAuthModal()`;
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showUpgradePopup('${it.title}')`;
           const bmCls2 = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showAuthModal()`}" title="Bookmark">🔖</button>
+            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark">🔖</button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `visitorInteraction();trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `visitorInteraction();trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
         }).join('')}
       </div></div>
       <div class="te-bar">
         <span class="te-bar-label">Practice for ${g.group}</span>
-        <button class="te-btn te-btn-test" onclick="${currentUser ? `openTestModal('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
-        <button class="te-btn te-btn-exam" onclick="${currentUser ? `startExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
+        <button class="te-btn te-btn-test" onclick="${currentUser ? `tryOpenTest('${g.group}','${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📝 ${g.group} Test</button>
+        <button class="te-btn te-btn-exam" onclick="${currentUser ? `tryStartExam('${level}')` : `showAuthModal()`}" style="${!currentUser ? 'opacity:.5;cursor:not-allowed' : ''}">📋 Full ${META[level].exam} Exam</button>
       </div>`;
   });
 
@@ -2203,11 +2604,11 @@ function showBookmarksTab() {
           const isUnlocked = isCardUnlocked(it.url);
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
-          const animClick = isUnlocked
-            ? `trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
-            : `event.preventDefault();showAuthModal()`;
-          const quizUrl2 = it.url.replace('.html', '-quiz.html');
+          const quizUrl2  = it.url.replace('.html', '-quiz.html');
           const studyUrl2 = it.url.replace('.html', '-study.html');
+          const animClick = isUnlocked
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
             <button class="acard-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" title="Remove bookmark">🔖</button>
@@ -2217,8 +2618,8 @@ function showBookmarksTab() {
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl2 : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">📖 Study</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl2 : '#'}" onclick="${isUnlocked ? `trackVisit('${it.url}')` : 'event.preventDefault();showAuthModal()'}">🧠 Quiz</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl2 : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl2}','${it.title}'))return;trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl2 : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl2}','${it.title}'))return;trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
         }).join('')}
@@ -2682,13 +3083,13 @@ function showLockedFeaturePopup(featureName, reason) {
 
   var NUDGES = [
     { after: 2, icon: '⭐', title: 'Track your progress!',
-      body: 'Sign in to earn XP, build streaks, and save your quiz scores — all for free.' },
+      body: 'Sign in to earn XP, build streaks, and save your quiz scores — all for free.', showPricing: false },
     { after: 4, icon: '🏆', title: 'Join the leaderboard!',
-      body: 'Compete with students across Botswana. Sign in to see your rank.' },
-    { after: 7, icon: '🔖', title: 'Save your favourites!',
-      body: 'Bookmark animations so you can find them instantly before exams.' },
-    { after: 11, icon: '🎓', title: 'You\'re learning a lot!',
-      body: 'Sign in to unlock crowns, badges, and a study streak so none of this progress is lost.' },
+      body: 'Compete with students across Botswana. Sign in to see your rank.', showPricing: false },
+    { after: 7, icon: '🌟', title: 'Unlock everything for P200!',
+      body: 'One-time Lifetime plan unlocks all 90+ animations — no monthly fees, no daily limits.', showPricing: true },
+    { after: 11, icon: '🎓', title: 'You\'re a serious learner!',
+      body: 'One payment of P200 unlocks everything forever — no limits, no monthly fees.', showPricing: true },
   ];
 
   // Use the exposed helper from inside the auth IIFE
@@ -2714,15 +3115,21 @@ function showLockedFeaturePopup(featureName, reason) {
       'animation:nudge-in .3s ease;',
     ].join('');
 
+    var primaryBtn = nudge.showPricing
+      ? '<button onclick="showPricing();document.getElementById(\'visitor-nudge\')?.remove()" ' +
+          'style="background:#f9a825;color:#1a1000;border:none;border-radius:8px;' +
+          'padding:7px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit">⭐ See Plans</button>'
+      : '<button onclick="showAuthModal();document.getElementById(\'visitor-nudge\')?.remove()" ' +
+          'style="background:#fff;color:#1b5e20;border:none;border-radius:8px;' +
+          'padding:7px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit">Sign In Free</button>';
+
     el.innerHTML =
       '<span style="font-size:1.6rem;flex-shrink:0">' + nudge.icon + '</span>' +
       '<div style="flex:1">' +
         '<div style="font-weight:800;font-size:.9rem;margin-bottom:4px">' + nudge.title + '</div>' +
         '<div style="font-size:.8rem;opacity:.9;line-height:1.5;margin-bottom:10px">' + nudge.body + '</div>' +
         '<div style="display:flex;gap:8px">' +
-          '<button onclick="showAuthModal();document.getElementById(\'visitor-nudge\')?.remove()" ' +
-            'style="background:#fff;color:#1b5e20;border:none;border-radius:8px;' +
-            'padding:7px 16px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit">Sign In</button>' +
+          primaryBtn +
           '<button onclick="document.getElementById(\'visitor-nudge\')?.remove()" ' +
             'style="background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:8px;' +
             'padding:7px 12px;font-size:.8rem;cursor:pointer;font-family:inherit">Not now</button>' +

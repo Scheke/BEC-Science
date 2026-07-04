@@ -1,0 +1,17 @@
+{
+  "name": "bec-admin",
+  "private": true,
+  "version": "1.0.0",
+  "description": "BEC Science Animations — Admin panel (localhost only)",
+  "scripts": {
+    "dev": "vite --port 5175 --open",
+    "build": "vite build",
+    "preview": "vite preview --port 5175"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "firebase": "^12.15.0"
+  }
+}

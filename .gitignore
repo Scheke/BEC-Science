@@ -1,3 +1,7 @@
 .env
 node_modules/
 *.log
+
+# Admin panel build — never deploy to live site
+dist-admin/
+admin/node_modules/
