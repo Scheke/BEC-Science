@@ -105,21 +105,7 @@ class StudyEngine {
     window.__se = this;
     this._show(0);
 
-    // Load game.js if not present, then award bronze crown
-    if (!window.BEC) {
-      const me = document.querySelector('script[src*="study-engine"]');
-      if (me) {
-        const s = document.createElement('script');
-        s.src = me.src.replace('study-engine.js', 'game.js');
-        document.head.appendChild(s);
-      }
-    }
-    setTimeout(() => {
-      if (typeof BEC !== 'undefined') {
-        BEC.setCrown(BEC.getSlug(), 1);
-        BEC.addXP(5, 'Opened study');
-      }
-    }, 800);
+    // BEC init is handled by _becInitStudy() at module level below
   }
 
   /* ── CSS colour tokens ── */
@@ -469,3 +455,68 @@ class StudyEngine {
     }
   }
 }
+
+/* ── BEC / Firebase init for standalone study pages ────────────────────────
+   Runs immediately when study-engine.js loads.
+   On index.html (SPA): BEC + _becUID already set — awards XP right away.
+   On standalone study pages: loads Firebase CDN + game.js, waits for auth,
+   loads cloud state, THEN awards the open-study XP (no data corruption risk).
+──────────────────────────────────────────────────────────────────────────── */
+(function _becInitStudy() {
+  // SPA path: everything already initialized by index.html
+  if (window.BEC && window._becDB && window._becUID) {
+    BEC.setCrown(BEC.getSlug(), 1);
+    BEC.addXP(5, 'Opened study');
+    return;
+  }
+
+  const me = document.querySelector('script[src*="study-engine"]');
+  if (!me) return;
+  const base = me.src.replace(/study-engine\.js.*$/, '');
+
+  function _ld(src) {
+    return new Promise(function(resolve) {
+      const fn = src.split('/').pop();
+      if (document.querySelector('script[src$="/' + fn + '"], script[src="' + src + '"]')) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src; s.onload = resolve; s.onerror = resolve;
+      document.head.appendChild(s);
+    });
+  }
+
+  const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const CFG = {
+    apiKey:'AIzaSyB8IeTflnPk4DOHXI0FEYs49F_oq6zud9g',
+    authDomain:'bec-science.firebaseapp.com',
+    projectId:'bec-science',
+    storageBucket:'bec-science.firebasestorage.app',
+    messagingSenderId:'587792683722',
+    appId:'1:587792683722:web:04d29061435f1217b09a33',
+  };
+
+  var gameLoad = window.BEC ? Promise.resolve()
+    : _ld(base + 'game.js');
+
+  var fbLoad = window._becDB ? Promise.resolve()
+    : _ld(FB + 'firebase-app-compat.js')
+        .then(function() { return _ld(FB + 'firebase-auth-compat.js'); })
+        .then(function() { return _ld(FB + 'firebase-firestore-compat.js'); })
+        .then(function() {
+          if (typeof firebase === 'undefined') return;
+          if (!firebase.apps.length) firebase.initializeApp(CFG);
+          window._becDB = firebase.firestore();
+        });
+
+  Promise.all([gameLoad, fbLoad]).then(function() {
+    if (typeof BEC === 'undefined' || !window._becDB) return;
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user && !user.isAnonymous) {
+        window._becUID = user.uid;
+        BEC.loadFromCloud().then(function() {
+          BEC.setCrown(BEC.getSlug(), 1);
+          BEC.addXP(5, 'Opened study');
+        }).catch(function() {});
+      }
+    });
+  });
+})();

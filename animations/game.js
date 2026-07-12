@@ -433,8 +433,7 @@ const BEC = (() => {
 
   /* ── State ── */
   let _s;
-
-  function _fresh() {
+  let _cloudLoaded = false; // guard: prevents saves before cloud state is loaded (avoids data corruption)
     return {
       xp: 0, streak: 0, lastStudyDate: null,
       hearts: HEART_MAX, lastHeartTime: Date.now(),
@@ -467,13 +466,15 @@ const BEC = (() => {
     } else {
       _s = _fresh();
     }
+    _cloudLoaded = true;
     _checkBadges();
     _refreshUI();
   }
 
   function _save() {
-    // Fire-and-forget cloud save
-    if (_uid()) _saveToCloud({ ..._s });
+    // Guard: skip save until cloud state is loaded to avoid overwriting real data with empty state
+    if (!_uid() || !_cloudLoaded) return;
+    _saveToCloud({ ..._s });
   }
 
   /* ── Hearts ── */

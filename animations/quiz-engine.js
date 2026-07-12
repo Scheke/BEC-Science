@@ -700,17 +700,61 @@ class QuizEngine {
 // Global reference so inline onclick handlers can reach it
 let QE;
 function initQuiz(data) {
-  if (window.BEC) {
-    QE = new QuizEngine(data);
-  } else {
-    const me = document.querySelector('script[src*="quiz-engine"]');
-    if (me) {
-      const s = document.createElement('script');
-      s.src = me.src.replace('quiz-engine.js', 'game.js');
-      s.onload = () => { QE = new QuizEngine(data); };
-      document.head.appendChild(s);
-    } else {
-      QE = new QuizEngine(data);
-    }
-  }
+  QE = new QuizEngine(data);
 }
+
+/* ── BEC / Firebase init for standalone quiz pages ─────────────────────────
+   Starts loading Firebase + game.js immediately when quiz-engine.js loads,
+   so auth is resolved well before the user answers their first question.
+   Uses _cloudLoaded guard in game.js to prevent data corruption.
+──────────────────────────────────────────────────────────────────────────── */
+(function _becInitQuiz() {
+  if (window.BEC && window._becDB && window._becUID) return; // already set by index.html
+
+  const me = document.querySelector('script[src*="quiz-engine"]');
+  if (!me) return;
+  const base = me.src.replace(/quiz-engine\.js.*$/, '');
+
+  function _ld(src) {
+    return new Promise(function(resolve) {
+      const fn = src.split('/').pop();
+      if (document.querySelector('script[src$="/' + fn + '"], script[src="' + src + '"]')) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = src; s.onload = resolve; s.onerror = resolve;
+      document.head.appendChild(s);
+    });
+  }
+
+  const FB = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const CFG = {
+    apiKey:'AIzaSyB8IeTflnPk4DOHXI0FEYs49F_oq6zud9g',
+    authDomain:'bec-science.firebaseapp.com',
+    projectId:'bec-science',
+    storageBucket:'bec-science.firebasestorage.app',
+    messagingSenderId:'587792683722',
+    appId:'1:587792683722:web:04d29061435f1217b09a33',
+  };
+
+  var gameLoad = window.BEC ? Promise.resolve()
+    : _ld(base + 'game.js');
+
+  var fbLoad = window._becDB ? Promise.resolve()
+    : _ld(FB + 'firebase-app-compat.js')
+        .then(function() { return _ld(FB + 'firebase-auth-compat.js'); })
+        .then(function() { return _ld(FB + 'firebase-firestore-compat.js'); })
+        .then(function() {
+          if (typeof firebase === 'undefined') return;
+          if (!firebase.apps.length) firebase.initializeApp(CFG);
+          window._becDB = firebase.firestore();
+        });
+
+  Promise.all([gameLoad, fbLoad]).then(function() {
+    if (typeof BEC === 'undefined' || !window._becDB) return;
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user && !user.isAnonymous) {
+        window._becUID = user.uid;
+        BEC.loadFromCloud().catch(function() {});
+      }
+    });
+  });
+})();

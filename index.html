@@ -501,11 +501,15 @@
     .acard-bookmark{
       position:absolute;top:7px;left:10px;
       background:none;border:none;cursor:pointer;
-      font-size:1rem;line-height:1;padding:2px;
-      color:#ddd;transition:color .2s,transform .15s;
+      padding:2px;line-height:1;
+      color:#bbb;transition:color .2s,transform .15s;
     }
-    .acard-bookmark:hover{color:#f9a825;transform:scale(1.2)}
+    .acard-bookmark:hover{color:#f9a825;transform:scale(1.15)}
     .acard-bookmark.bookmarked{color:#f9a825}
+    .acard-bookmark svg{display:block;width:18px;height:18px}
+    .acard-bookmark .bm-filled{display:none}
+    .acard-bookmark.bookmarked .bm-outline{display:none}
+    .acard-bookmark.bookmarked .bm-filled{display:block}
     .grp-hidden{display:none}
     /* Crown badge on cards */
     .acard-crown{position:absolute;top:8px;right:10px;font-size:1.1rem;line-height:1;
@@ -676,6 +680,7 @@
     <div class="l-badge">41 animations • 123 study items • 50+ quizzes • 47+ badges</div>
     <div class="l-hdr-btns">
       <button onclick="showLeaderboard()" class="l-hdr-btn" style="background:transparent;color:#2e7d32;border:1.5px solid #2e7d32">🏆 Leaderboard</button>
+      <button onclick="showCommunity()" class="l-hdr-btn" style="background:transparent;color:#58a6ff;border:1.5px solid rgba(88,166,255,.5)">💬 Community</button>
       <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit">🌐 Visit Us</a>
       <button onclick="showPricing()" class="l-hdr-btn" style="color:#f9a825;border:1.5px solid rgba(249,168,37,.5);background:rgba(249,168,37,.1);font-weight:800">⭐ Pricing</button>
       <button id="auth-header-btn" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
@@ -820,6 +825,7 @@
       <div class="mob-sb-label">Tools</div>
       <button class="mob-sb-btn" onclick="openRandom();closeMobSidebar()"><span class="mob-sb-btn-icon">🎲</span>Random Animation</button>
       <button class="mob-sb-btn" onclick="showLeaderboard(curLevel);closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
+      <button class="mob-sb-btn" onclick="showCommunity();closeMobSidebar()"><span class="mob-sb-btn-icon">💬</span>Community</button>
       <button class="mob-sb-btn" onclick="showBookmarksTab();closeMobSidebar()"><span class="mob-sb-btn-icon">🔖</span>My Saved</button>
       <button class="mob-sb-btn" onclick="showQuizHistory();closeMobSidebar()"><span class="mob-sb-btn-icon">📊</span>Quiz History</button>
     </div>
@@ -846,6 +852,7 @@
     <nav class="d-nav" id="d-nav"></nav>
     <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
     <button class="d-rnd" onclick="showLeaderboard(curLevel)" title="Leaderboard">🏆</button>
+    <button class="d-rnd" onclick="showCommunity()" title="Community Q&amp;A">💬</button>
     <a href="https://scheke.com" target="_blank" class="d-rnd" title="Visit scheke.com" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:.85rem">🌐</a>
     <button class="d-rnd d-rnd-donate" onclick="showPricing()" title="Upgrade to Premium">⭐</button>
     <button id="auth-dash-btn" class="d-rnd" title="Sign in" style="font-size:.95rem">🔐</button>
@@ -1261,6 +1268,89 @@
 .dm-plan.lifetime.on .dm-plan-radio::after{background:#1a1a2e}
 </style>
 
+<!-- ════════════ COMMUNITY PAGE ════════════ -->
+<div id="v-community" class="hidden" style="min-height:100vh;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column">
+
+  <!-- Sticky header -->
+  <div style="padding:13px 20px;display:flex;align-items:center;gap:12px;background:#161b22;border-bottom:1px solid #21262d;position:sticky;top:0;z-index:20">
+    <button id="comm-back-btn" onclick="closeCommunity()" style="background:rgba(255,255,255,.08);border:1px solid #30363d;color:#c9d1d9;border-radius:10px;padding:7px 14px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit">← Back</button>
+    <div style="flex:1">
+      <div style="font-size:1rem;font-weight:900;color:#e6edf3">💬 Student Community</div>
+      <div style="font-size:.72rem;color:#484f58;margin-top:1px">Ask questions · Get answers · Help others</div>
+    </div>
+    <button id="comm-ask-toggle" onclick="toggleAskForm()" style="background:#238636;border:none;color:#fff;border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">✏️ Ask</button>
+  </div>
+
+  <!-- Ask question form (hidden by default) -->
+  <div id="comm-ask-form" class="hidden" style="background:#161b22;border-bottom:1px solid #21262d;padding:16px 20px">
+    <div style="max-width:680px;margin:0 auto">
+      <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+        <select id="comm-q-level" style="flex:1;min-width:120px;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;border-radius:8px;padding:8px 10px;font-size:.85rem;font-family:inherit;outline:none">
+          <option value="primary">🏫 PSLE</option>
+          <option value="junior">📚 JCE</option>
+          <option value="senior">🎓 BGCSE</option>
+        </select>
+        <select id="comm-q-subject" style="flex:1;min-width:140px;background:#0d1117;border:1px solid #30363d;color:#c9d1d9;border-radius:8px;padding:8px 10px;font-size:.85rem;font-family:inherit;outline:none">
+          <option value="General">General</option>
+          <option value="Biology">Biology</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Physics">Physics</option>
+          <option value="Science">Science</option>
+        </select>
+      </div>
+      <textarea id="comm-q-text" placeholder="Type your question here… (e.g. How does osmosis work?)" maxlength="1000"
+        style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:10px;color:#e6edf3;padding:12px 14px;font-size:.9rem;font-family:inherit;resize:vertical;min-height:90px;outline:none;transition:border-color .15s;box-sizing:border-box"
+        onfocus="this.style.borderColor='#238636'" onblur="this.style.borderColor='#30363d'"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span id="comm-q-chars" style="font-size:.72rem;color:#484f58">0 / 1000</span>
+        <div style="display:flex;gap:8px">
+          <button onclick="toggleAskForm()" style="background:transparent;border:1px solid #30363d;color:#8b949e;border-radius:8px;padding:7px 14px;font-size:.82rem;cursor:pointer;font-family:inherit">Cancel</button>
+          <button onclick="submitQuestion()" style="background:#238636;border:none;color:#fff;border-radius:8px;padding:7px 18px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit">Post Question</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div style="display:flex;gap:6px;padding:12px 20px;background:#0d1117;border-bottom:1px solid #21262d;overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <button class="comm-filter-btn active" onclick="filterCommunity('all')"     data-filter="all">All</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('primary')" data-filter="primary">🏫 PSLE</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('junior')"  data-filter="junior">📚 JCE</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('senior')"  data-filter="senior">🎓 BGCSE</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('Biology')" data-filter="Biology">🧬 Biology</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('Chemistry')" data-filter="Chemistry">⚗️ Chemistry</button>
+    <button class="comm-filter-btn"        onclick="filterCommunity('Physics')" data-filter="Physics">⚡ Physics</button>
+  </div>
+
+  <!-- Questions list -->
+  <div id="comm-list" style="max-width:680px;width:100%;margin:0 auto;padding:16px 20px 80px;flex:1"></div>
+
+  <!-- Question detail (replies view) — shown instead of list -->
+  <div id="comm-detail" class="hidden" style="max-width:680px;width:100%;margin:0 auto;padding:16px 20px 80px;flex:1"></div>
+
+</div>
+
+<style>
+.comm-filter-btn {
+  flex-shrink:0; padding:6px 14px; font-size:.78rem; font-weight:700;
+  border-radius:8px; cursor:pointer; font-family:inherit; transition:all .15s;
+  border:1.5px solid #30363d; background:#0d1117; color:#8b949e; white-space:nowrap;
+}
+.comm-filter-btn.active { background:#238636; color:#fff; border-color:#238636; }
+.comm-filter-btn:hover:not(.active) { border-color:#8b949e; color:#c9d1d9; }
+.comm-card {
+  background:#161b22; border:1.5px solid #21262d; border-radius:12px;
+  padding:16px; margin-bottom:10px; cursor:pointer; transition:border-color .15s;
+}
+.comm-card:hover { border-color:#30363d; }
+.comm-badge {
+  display:inline-block; font-size:.68rem; font-weight:700; padding:2px 8px;
+  border-radius:5px; margin-right:6px;
+}
+.comm-badge-level  { background:rgba(88,166,255,.15); color:#58a6ff; }
+.comm-badge-subj   { background:rgba(63,185,80,.12);  color:#3fb950; }
+</style>
+
 <!-- ════════════ LEADERBOARD PAGE ════════════ -->
 <div id="v-leaderboard" class="hidden" style="min-height:100vh;background:#0d1117;color:#e6edf3;display:flex;flex-direction:column">
 
@@ -1361,6 +1451,10 @@ function initAuth() {
         const userSnap = await window._becDB.collection('users').doc(user.uid).get();
         const ud = userSnap.exists ? userSnap.data() : {};
         const state = (typeof BEC !== 'undefined') ? BEC.getState() : {};
+        // Pre-populate visited cache from cloud data so trackVisit can detect new unique visits
+        ['primary','junior','senior'].forEach(lv => {
+          _visitedCache[lv] = new Set(ud['visited_' + lv] || []);
+        });
         await window._becDB.collection('leaderboard').doc(user.uid).set({
           name:           currentUser.name,
           xp:             state.xp || 0,
@@ -1765,11 +1859,14 @@ function showPricing() {
   const vDash = document.getElementById('v-dash');
   const vLand = document.getElementById('v-land');
   const vLb   = document.getElementById('v-leaderboard');
+  const vComm = document.getElementById('v-community');
   if (vLb && !vLb.classList.contains('hidden')) { _prxFrom = _lbFrom; }
+  else if (vComm && !vComm.classList.contains('hidden')) { _prxFrom = _commFrom; }
   else { _prxFrom = (vDash && !vDash.classList.contains('hidden')) ? 'dash' : 'land'; }
   if (vDash) vDash.classList.add('hidden');
   if (vLand) vLand.classList.add('hidden');
   vLb?.classList.add('hidden');
+  vComm?.classList.add('hidden');
   document.getElementById('donate-modal')?.classList.add('hidden');
   document.getElementById('v-pricing').classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -2519,7 +2616,7 @@ function renderGrid(level, subj, query) {
           const bmCls = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark">🔖</button>
+            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
@@ -2577,7 +2674,7 @@ function renderGridFiltered(level, filteredData, query) {
           const bmCls2 = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark">🔖</button>
+            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
@@ -2620,7 +2717,7 @@ function showBookmarksTab() {
       <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#999">
         <div style="font-size:2rem;margin-bottom:10px">🔖</div>
         <div style="font-weight:700;color:#666;margin-bottom:8px">No saved animations yet</div>
-        <div style="font-size:.9rem">Click the star icon on any animation to save it for later.</div>
+        <div style="font-size:.9rem">Click the 🔖 icon on any animation card to save it here.</div>
       </div>`;
     return;
   }
@@ -2660,7 +2757,7 @@ function showBookmarksTab() {
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
-            <button class="acard-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" title="Remove bookmark">🔖</button>
+            <button class="acard-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" title="Remove bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
@@ -2718,12 +2815,23 @@ function _userDocRef() {
 
 async function trackVisit(url) {
   if (!_visitedCache[curLevel]) _visitedCache[curLevel] = new Set();
+  const isNew = !_visitedCache[curLevel].has(url);
   _visitedCache[curLevel].add(url);
   const ref = _userDocRef();
   if (ref) {
     const field = 'visited_' + curLevel;
     ref.set({ [field]: firebase.firestore.FieldValue.arrayUnion(url) }, { merge: true })
        .catch(() => {});
+    // Keep leaderboard count current so rankings reflect real activity
+    if (isNew && window._becDB && window._becUID) {
+      const lbFieldMap = { primary:'primaryVisited', junior:'juniorVisited', senior:'seniorVisited' };
+      const lbField = lbFieldMap[curLevel];
+      if (lbField) {
+        window._becDB.collection('leaderboard').doc(window._becUID)
+          .set({ [lbField]: _visitedCache[curLevel].size, updatedAt: new Date().toISOString() }, { merge: true })
+          .catch(() => {});
+      }
+    }
   }
   return true;
 }
@@ -2914,8 +3022,11 @@ function toggleBookmarkCard(url) {
   cards.forEach(c => {
     if (c.getAttribute('onclick').includes(`'${url}'`)) {
       c.classList.toggle('bookmarked', isBookmarked);
+      c.title = isBookmarked ? 'Remove bookmark' : 'Bookmark';
     }
   });
+  // If on Saved tab, refresh list so removed items disappear immediately
+  if (curSubj === 'Saved') showBookmarksTab();
 }
 
 function showQuizHistory() {
@@ -2999,6 +3110,331 @@ async function freezeStreakUI() {
   }
 }
 
+// ── Community ────────────────────────────────────────────────────────────────
+var _commFrom   = 'land';
+var _commFilter = 'all';
+
+function showCommunity() {
+  if (!isLoggedIn()) {
+    showLockedFeaturePopup('💬 Community', 'Sign in to ask questions and help other students — it\'s free!');
+    return;
+  }
+  const vDash = document.getElementById('v-dash');
+  const vLand = document.getElementById('v-land');
+  const vLb = document.getElementById('v-leaderboard');
+  if (vLb && !vLb.classList.contains('hidden')) { _commFrom = _lbFrom; }
+  else { _commFrom = (vDash && !vDash.classList.contains('hidden')) ? 'dash' : 'land'; }
+  vDash?.classList.add('hidden');
+  vLand?.classList.add('hidden');
+  vLb?.classList.add('hidden');
+  document.getElementById('v-pricing')?.classList.add('hidden');
+  document.getElementById('v-community').classList.remove('hidden');
+  window.scrollTo(0, 0);
+  loadCommunityPosts(_commFilter);
+}
+
+function closeCommunity() {
+  document.getElementById('v-community').classList.add('hidden');
+  document.getElementById('comm-ask-form').classList.add('hidden');
+  document.getElementById('comm-detail').classList.add('hidden');
+  document.getElementById('comm-list').classList.remove('hidden');
+  if (_commFrom === 'dash') document.getElementById('v-dash')?.classList.remove('hidden');
+  else document.getElementById('v-land')?.classList.remove('hidden');
+}
+
+function toggleAskForm() {
+  const form = document.getElementById('comm-ask-form');
+  const isHidden = form.classList.toggle('hidden');
+  document.getElementById('comm-ask-toggle').textContent = isHidden ? '✏️ Ask' : '✕ Cancel';
+  if (!isHidden) {
+    document.getElementById('comm-q-text').focus();
+    const ta = document.getElementById('comm-q-text');
+    ta.oninput = () => { document.getElementById('comm-q-chars').textContent = ta.value.length + ' / 1000'; };
+  }
+}
+
+function filterCommunity(filter) {
+  _commFilter = filter;
+  document.querySelectorAll('.comm-filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.filter === filter)
+  );
+  showCommList();
+  loadCommunityPosts(filter);
+}
+
+function showCommList() {
+  document.getElementById('comm-list').classList.remove('hidden');
+  document.getElementById('comm-detail').classList.add('hidden');
+  document.getElementById('comm-ask-toggle').style.display = '';
+}
+
+function _timeAgo(iso) {
+  const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (s < 60)  return 'just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  if (s < 604800) return Math.floor(s/86400) + 'd ago';
+  return new Date(iso).toLocaleDateString('en-GB', {day:'numeric',month:'short'});
+}
+
+function _lvLabel(lv) {
+  return { primary:'PSLE', junior:'JCE', senior:'BGCSE' }[lv] || lv;
+}
+function _subjColor(s) {
+  return { Biology:'rgba(63,185,80,.15)', Chemistry:'rgba(249,168,37,.15)', Physics:'rgba(88,166,255,.15)' }[s] || 'rgba(139,148,158,.12)';
+}
+function _subjText(s) {
+  return { Biology:'#3fb950', Chemistry:'#f9a825', Physics:'#58a6ff' }[s] || '#8b949e';
+}
+
+async function loadCommunityPosts(filter) {
+  const list = document.getElementById('comm-list');
+  list.innerHTML = `<div style="text-align:center;padding:50px 0;color:#484f58">
+    <div style="font-size:1.8rem;margin-bottom:8px">⏳</div>Loading questions…</div>`;
+
+  if (!window._becDB) { list.innerHTML = `<div style="text-align:center;padding:40px;color:#f85149">Not connected.</div>`; return; }
+
+  try {
+    let q = window._becDB.collection('community_posts').orderBy('createdAt', 'desc').limit(40);
+    const snap = await q.get();
+
+    const posts = [];
+    snap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+
+    const filtered = filter === 'all' ? posts : posts.filter(p =>
+      p.level === filter || p.subject === filter
+    );
+
+    if (!filtered.length) {
+      list.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#484f58">
+        <div style="font-size:3rem;margin-bottom:12px">🌱</div>
+        <div style="font-size:1rem;font-weight:700;color:#8b949e;margin-bottom:8px">No questions yet</div>
+        <div style="font-size:.85rem">Be the first to ask something!</div>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(p => {
+      const liked = (p.likes || []).includes(window._becUID);
+      return `
+      <div class="comm-card" onclick="openPost('${p.id}')">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div style="margin-bottom:8px">
+              <span class="comm-badge comm-badge-level">${_lvLabel(p.level)}</span>
+              <span class="comm-badge" style="background:${_subjColor(p.subject)};color:${_subjText(p.subject)}">${p.subject||'General'}</span>
+            </div>
+            <div style="font-size:.95rem;color:#e6edf3;font-weight:600;line-height:1.4;margin-bottom:10px;word-break:break-word">${escHtml(p.question)}</div>
+            <div style="display:flex;align-items:center;gap:14px;font-size:.75rem;color:#484f58">
+              <span>👤 ${escHtml(p.authorName||'Student')}</span>
+              <span>🕐 ${_timeAgo(p.createdAt)}</span>
+              <span style="margin-left:auto;display:flex;gap:12px">
+                <span>💬 ${p.replyCount||0}</span>
+                <span style="color:${liked?'#f85149':'#484f58'}">❤️ ${(p.likes||[]).length}</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:#f85149">Failed to load. Try again.</div>`;
+    console.warn('Community load error', e);
+  }
+}
+
+async function submitQuestion() {
+  if (!isLoggedIn()) return;
+  const text  = (document.getElementById('comm-q-text').value || '').trim();
+  const level = document.getElementById('comm-q-level').value;
+  const subj  = document.getElementById('comm-q-subject').value;
+  if (!text) { document.getElementById('comm-q-text').focus(); return; }
+  if (text.length > 1000) return;
+
+  const btn = document.querySelector('#comm-ask-form button[onclick="submitQuestion()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Posting…'; }
+
+  try {
+    const ref = await window._becDB.collection('community_posts').add({
+      uid:        window._becUID,
+      authorName: currentUser?.name || 'Student',
+      question:   text,
+      level,
+      subject:    subj,
+      createdAt:  new Date().toISOString(),
+      replyCount: 0,
+      likes:      [],
+    });
+    document.getElementById('comm-q-text').value = '';
+    document.getElementById('comm-q-chars').textContent = '0 / 1000';
+    toggleAskForm();
+    loadCommunityPosts(_commFilter);
+  } catch(e) {
+    alert('Failed to post: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Post Question'; }
+  }
+}
+
+async function openPost(postId) {
+  document.getElementById('comm-list').classList.add('hidden');
+  document.getElementById('comm-ask-toggle').style.display = 'none';
+  const detail = document.getElementById('comm-detail');
+  detail.classList.remove('hidden');
+  detail.innerHTML = `<div style="text-align:center;padding:50px 0;color:#484f58">⏳ Loading…</div>`;
+  window.scrollTo(0, 0);
+
+  try {
+    const [postSnap, repliesSnap] = await Promise.all([
+      window._becDB.collection('community_posts').doc(postId).get(),
+      window._becDB.collection('community_posts').doc(postId).collection('replies').orderBy('createdAt','asc').get(),
+    ]);
+    if (!postSnap.exists) { detail.innerHTML = '<div style="text-align:center;padding:40px;color:#f85149">Question not found.</div>'; return; }
+
+    const p = { id: postSnap.id, ...postSnap.data() };
+    const replies = [];
+    repliesSnap.forEach(d => replies.push({ id: d.id, ...d.data() }));
+    const liked = (p.likes || []).includes(window._becUID);
+    const isAuthor = p.uid === window._becUID;
+
+    detail.innerHTML = `
+      <button onclick="showCommList();loadCommunityPosts(_commFilter)" style="background:none;border:none;color:#58a6ff;font-size:.85rem;cursor:pointer;font-family:inherit;padding:0 0 14px;font-weight:700">← Back to questions</button>
+
+      <!-- Question card -->
+      <div style="background:#161b22;border:1.5px solid #30363d;border-radius:14px;padding:18px;margin-bottom:20px">
+        <div style="margin-bottom:10px">
+          <span class="comm-badge comm-badge-level">${_lvLabel(p.level)}</span>
+          <span class="comm-badge" style="background:${_subjColor(p.subject)};color:${_subjText(p.subject)}">${p.subject||'General'}</span>
+        </div>
+        <div style="font-size:1.05rem;color:#e6edf3;font-weight:700;line-height:1.5;margin-bottom:14px;word-break:break-word">${escHtml(p.question)}</div>
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <span style="font-size:.78rem;color:#8b949e">👤 ${escHtml(p.authorName||'Student')}</span>
+          <span style="font-size:.78rem;color:#484f58">🕐 ${_timeAgo(p.createdAt)}</span>
+          <button onclick="toggleLike('${postId}')" id="like-btn-${postId}"
+            style="margin-left:auto;background:${liked?'rgba(248,81,73,.12)':'rgba(255,255,255,.06)'};border:1px solid ${liked?'rgba(248,81,73,.4)':'#30363d'};color:${liked?'#f85149':'#8b949e'};border-radius:8px;padding:5px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;font-weight:700;transition:all .15s">
+            ❤️ <span id="like-count-${postId}">${(p.likes||[]).length}</span>
+          </button>
+          ${isAuthor ? `<button onclick="deletePost('${postId}')" style="background:none;border:none;color:#484f58;font-size:.75rem;cursor:pointer;font-family:inherit;padding:4px 8px" title="Delete question">🗑️</button>` : ''}
+        </div>
+      </div>
+
+      <!-- Replies -->
+      <div style="font-size:.8rem;font-weight:800;color:#484f58;letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px">${replies.length} ${replies.length===1?'Reply':'Replies'}</div>
+      <div id="comm-replies">
+        ${replies.length ? replies.map(r => _replyHtml(r, postId)).join('') : `
+          <div style="text-align:center;padding:28px;color:#484f58;font-size:.88rem">No replies yet — be the first to help!</div>`}
+      </div>
+
+      <!-- Reply form -->
+      <div style="margin-top:20px;background:#161b22;border:1.5px solid #21262d;border-radius:12px;padding:14px">
+        <div style="font-size:.78rem;font-weight:700;color:#8b949e;margin-bottom:8px">Your answer</div>
+        <textarea id="comm-reply-text" placeholder="Write a helpful reply…" maxlength="500"
+          style="width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;padding:10px 12px;font-size:.88rem;font-family:inherit;resize:vertical;min-height:70px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#238636'" onblur="this.style.borderColor='#30363d'"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+          <span id="comm-r-chars" style="font-size:.7rem;color:#484f58">0 / 500</span>
+          <button onclick="submitReply('${postId}')" style="background:#238636;border:none;color:#fff;border-radius:8px;padding:7px 18px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit">Post Reply</button>
+        </div>
+      </div>`;
+
+    // char counter for reply
+    const rta = document.getElementById('comm-reply-text');
+    if (rta) rta.oninput = () => { document.getElementById('comm-r-chars').textContent = rta.value.length + ' / 500'; };
+
+  } catch(e) {
+    detail.innerHTML = `<div style="text-align:center;padding:40px;color:#f85149">Failed to load. Try again.</div>`;
+    console.warn('Post load error', e);
+  }
+}
+
+function _replyHtml(r, postId) {
+  const isOwn = r.uid === window._becUID;
+  return `
+    <div style="background:${isOwn?'rgba(63,185,80,.06)':'#161b22'};border:1.5px solid ${isOwn?'rgba(63,185,80,.25)':'#21262d'};border-radius:10px;padding:12px 14px;margin-bottom:8px">
+      <div style="font-size:.88rem;color:#e6edf3;line-height:1.5;word-break:break-word;margin-bottom:8px">${escHtml(r.reply)}</div>
+      <div style="display:flex;align-items:center;gap:12px;font-size:.72rem;color:#484f58">
+        <span>👤 ${escHtml(r.authorName||'Student')}${isOwn?' <span style="color:#3fb950">(You)</span>':''}</span>
+        <span>🕐 ${_timeAgo(r.createdAt)}</span>
+        ${isOwn ? `<button onclick="deleteReply('${postId}','${r.id}')" style="margin-left:auto;background:none;border:none;color:#484f58;cursor:pointer;font-size:.72rem;font-family:inherit">🗑️ Delete</button>` : ''}
+      </div>
+    </div>`;
+}
+
+async function submitReply(postId) {
+  if (!isLoggedIn()) return;
+  const text = (document.getElementById('comm-reply-text').value || '').trim();
+  if (!text) { document.getElementById('comm-reply-text').focus(); return; }
+
+  const btn = document.querySelector(`#comm-detail button[onclick="submitReply('${postId}')"]`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Posting…'; }
+
+  try {
+    const batch = window._becDB.batch();
+    const replyRef = window._becDB.collection('community_posts').doc(postId).collection('replies').doc();
+    batch.set(replyRef, {
+      uid:        window._becUID,
+      authorName: currentUser?.name || 'Student',
+      reply:      text,
+      createdAt:  new Date().toISOString(),
+    });
+    const postRef = window._becDB.collection('community_posts').doc(postId);
+    batch.update(postRef, { replyCount: firebase.firestore.FieldValue.increment(1) });
+    await batch.commit();
+    await openPost(postId);
+  } catch(e) {
+    alert('Failed to post reply: ' + e.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'Post Reply'; }
+  }
+}
+
+async function toggleLike(postId) {
+  if (!isLoggedIn() || !window._becUID) return;
+  const ref    = window._becDB.collection('community_posts').doc(postId);
+  const snap   = await ref.get();
+  const likes  = snap.data()?.likes || [];
+  const liked  = likes.includes(window._becUID);
+  const newLikes = liked
+    ? firebase.firestore.FieldValue.arrayRemove(window._becUID)
+    : firebase.firestore.FieldValue.arrayUnion(window._becUID);
+  await ref.update({ likes: newLikes });
+  const newCount = liked ? likes.length - 1 : likes.length + 1;
+  const countEl = document.getElementById('like-count-' + postId);
+  if (countEl) countEl.textContent = newCount;
+  const btn = document.getElementById('like-btn-' + postId);
+  if (btn) {
+    btn.style.color       = liked ? '#8b949e' : '#f85149';
+    btn.style.borderColor = liked ? '#30363d'  : 'rgba(248,81,73,.4)';
+    btn.style.background  = liked ? 'rgba(255,255,255,.06)' : 'rgba(248,81,73,.12)';
+  }
+}
+
+async function deletePost(postId) {
+  if (!confirm('Delete this question? This cannot be undone.')) return;
+  try {
+    await window._becDB.collection('community_posts').doc(postId).delete();
+    showCommList();
+    loadCommunityPosts(_commFilter);
+  } catch(e) { alert('Delete failed: ' + e.message); }
+}
+
+async function deleteReply(postId, replyId) {
+  if (!postId || !confirm('Delete this reply?')) return;
+  try {
+    const batch = window._becDB.batch();
+    batch.delete(window._becDB.collection('community_posts').doc(postId).collection('replies').doc(replyId));
+    batch.update(window._becDB.collection('community_posts').doc(postId), {
+      replyCount: firebase.firestore.FieldValue.increment(-1)
+    });
+    await batch.commit();
+    await openPost(postId);
+  } catch(e) { alert('Delete failed: ' + e.message); }
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 // ── Leaderboard full page ─────────────────────────────────────────────────────
 var _lbFrom  = 'land';
 var _lbLevel = 'primary';
@@ -3015,6 +3451,7 @@ function showLeaderboard(level) {
   vDash?.classList.add('hidden');
   vLand?.classList.add('hidden');
   document.getElementById('v-pricing')?.classList.add('hidden');
+  document.getElementById('v-community')?.classList.add('hidden');
   document.getElementById('v-leaderboard').classList.remove('hidden');
   window.scrollTo(0, 0);
   loadLeaderboardTab(_lbLevel);

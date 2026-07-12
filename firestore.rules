@@ -65,6 +65,33 @@ service cloud.firestore {
       allow delete:      if false;
     }
 
+    // ── community_posts/{postId} ─────────────────────────────────────────────
+    // Student Q&A community. Signed-in users read & post; admin can delete anything.
+    match /community_posts/{postId} {
+      allow read:   if isAuth();
+      allow create: if isAuth()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.question is string
+                    && request.resource.data.question.size() <= 1000;
+      // Allow author to update only likes array; admin can update anything
+      allow update: if isAdmin()
+                    || (isAuth() && request.auth.uid == resource.data.uid);
+      allow delete: if isAdmin()
+                    || (isAuth() && request.auth.uid == resource.data.uid);
+    }
+
+    // ── community_posts/{postId}/replies/{replyId} ───────────────────────────
+    match /community_posts/{postId}/replies/{replyId} {
+      allow read:   if isAuth();
+      allow create: if isAuth()
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.reply is string
+                    && request.resource.data.reply.size() <= 500;
+      allow delete: if isAdmin()
+                    || (isAuth() && request.auth.uid == resource.data.uid);
+      allow update: if false;
+    }
+
     // ── Catch-all: deny everything not matched above ──────────────────────────
     match /{document=**} {
       allow read, write: if false;
