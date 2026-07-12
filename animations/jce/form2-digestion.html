@@ -28,27 +28,21 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ce93d8;color:#4a148c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%202">&#8592; Form 2</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 2 Biology</span>
   <h1>Human Nutrition &amp; Digestion</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-prev" onclick="prevStage()">&#9664; Previous</button>
-  <button class="btn btn-play on" id="b-play" onclick="togglePlay()">&#9646;&#9646; Pause</button>
+  <button class="btn btn-prev mode-btn" onclick="prevStage()" title="Previous" aria-label="Previous">&#9664; <span class="mode-lbl">Previous</span></button>
+  <button class="btn btn-play on mode-btn" id="b-play" onclick="togglePlay()" title="Pause" aria-label="Pause">&#9646;&#9646; <span class="mode-lbl">Pause</span></button>
   <span id="stage-label">Stage 1 / 5 — Mouth</span>
-  <button class="btn btn-next" onclick="nextStage()">Next &#9654;</button>
-  <button class="btn btn-prev" id="b-prac2" onclick="setDPractice(!dMcqMode)" style="border-color:#f9a825;color:#f9a825">&#127918; Enzyme Quiz</button>
+  <button class="btn btn-next mode-btn" onclick="nextStage()" title="&#9654;" aria-label="&#9654;">Next <span class="mode-lbl">&#9654;</span></button>
+  <button class="btn btn-prev mode-btn" id="b-prac2" onclick="setDPractice(!dMcqMode)" style="border-color:#f9a825;color:#f9a825" title="Enzyme Quiz" aria-label="Enzyme Quiz">&#127918; <span class="mode-lbl">Enzyme Quiz</span></button>
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Digestion Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#6a1b9a;border-bottom:2px solid #6a1b9a;padding-bottom:8px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#6a1b9a;color:#fff}@media print{body{padding:10px}}</style></head><body><h1>Human Nutrition &amp; Digestion — Study Notes</h1><table><tr><th>Organ</th><th>Process</th><th>Enzyme</th><th>pH</th></tr>';
-  STAGES.forEach(s=>html+=`<tr><td><strong>${s.name}</strong></td><td>${s.process.replace(/\n/g,' ')}</td><td>${s.enzyme}</td><td>${s.phLabel}</td></tr>`);
-  html+='</table><p><strong>Key:</strong> Digestion breaks large food molecules into small ones that can be absorbed into the blood through the small intestine wall (villi).</p></body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let dMcqMode=false;
 const D_MCQ=[
   {q:'Which enzyme in the MOUTH breaks down starch?',opts:['Salivary amylase','Pepsin','Lipase','Protease'],c:0,tip:'Salivary amylase in saliva begins starch digestion in the mouth.'},

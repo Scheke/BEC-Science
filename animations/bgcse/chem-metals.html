@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; Chemistry</a></div>
 <div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Metals, Reactivity &amp; Extraction</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">📊 Reactivity Series</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">⚗️ Displacement</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">🏭 Extraction</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">🔧 Uses of Metals</button>
-  <button class="btn" id="b-prac" onclick="setMetalsPractice(!metalsMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Reactivity Series" aria-label="Reactivity Series">📊 <span class="mode-lbl">Reactivity Series</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Displacement" aria-label="Displacement">⚗️ <span class="mode-lbl">Displacement</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Extraction" aria-label="Extraction">🏭 <span class="mode-lbl">Extraction</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Uses of Metals" aria-label="Uses of Metals">🔧 <span class="mode-lbl">Uses of Metals</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Metals</h2><ul><li><b>Reactivity series</b> (most → least): K, Na, Ca, Mg, Al, (C), Zn, Fe, (H), Cu, Ag, Au.</li><li><b>Extraction</b>: Metals above carbon extracted by electrolysis (Al, Na). Metals below C extracted by reduction with carbon (Fe).</li><li><b>Displacement</b>: More reactive metal displaces less reactive from its salt solution (Mg + CuSO₄ → MgSO₄ + Cu).</li><li><b>Rusting</b>: Requires both water AND oxygen. Prevented by galvanising (zinc coating), painting, or alloying.</li><li><b>Galvanising</b>: Coating iron with zinc — zinc acts as sacrificial anode.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let metalsMcq=false;
 const METALS_MCQ=[
   {q:'Which metal is MOST reactive in the reactivity series?',opts:['Potassium (K)','Sodium (Na)','Iron (Fe)','Gold (Au)'],c:0,tip:'Potassium is at the top of the reactivity series — most reactive metal.'},

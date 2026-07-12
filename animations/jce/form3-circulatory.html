@@ -30,8 +30,8 @@
 <body>
 <div class="topbar">
   <span class="logo">BEC Animations</span>
-  <a href="../../index.html">&#8592; All Topics</a>
-  <button style="margin-left:auto;background:#ef9a9a;color:#b71c1c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button>
+  <a href="../../index.html#junior/Form%203">&#8592; Form 3</a>
+  
 </div>
 <div class="topic-header">
   <span class="label">JCE · Form 3 Biology</span>
@@ -40,10 +40,10 @@
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <span style="font-size:0.85rem;color:#555;font-weight:600;">Heart rate:</span>
-  <button class="btn btn-slow" id="b-slow" onclick="setRate('slow')">&#9664;&#9664; Slow</button>
-  <button class="btn btn-norm on" id="b-norm" onclick="setRate('norm')">&#9654; Normal</button>
-  <button class="btn btn-fast" id="b-fast" onclick="setRate('fast')">&#9654;&#9654; Fast</button>
-  <button class="btn btn-slow" id="b-prac-c" onclick="setCircPractice(!circMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Blood Flow Quiz</button>
+  <button class="btn btn-slow mode-btn" id="b-slow" onclick="setRate('slow')" title="Slow" aria-label="Slow">&#9664;&#9664; <span class="mode-lbl">Slow</span></button>
+  <button class="btn btn-norm on mode-btn" id="b-norm" onclick="setRate('norm')" title="Normal" aria-label="Normal">&#9654; <span class="mode-lbl">Normal</span></button>
+  <button class="btn btn-fast mode-btn" id="b-fast" onclick="setRate('fast')" title="Fast" aria-label="Fast">&#9654;&#9654; <span class="mode-lbl">Fast</span></button>
+  <button class="btn btn-slow mode-btn" id="b-prac-c" onclick="setCircPractice(!circMcq)" style="border-color:#f9a825;color:#f9a825" title="Blood Flow Quiz" aria-label="Blood Flow Quiz">&#127918; <span class="mode-lbl">Blood Flow Quiz</span></button>
 </div>
 <div class="info-strip">
   <strong>Double circulation:</strong>
@@ -53,16 +53,6 @@
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Circulatory System Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#c62828;border-bottom:2px solid #c62828;padding-bottom:8px}h2{color:#b71c1c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Human Circulatory System — Study Notes</h1>';
-  html+='<h2>Double Circulation</h2><ul><li><strong>Pulmonary circuit:</strong> Heart → Lungs (picks up O₂) → Heart</li><li><strong>Systemic circuit:</strong> Heart → Body (delivers O₂) → Heart</li></ul>';
-  html+='<h2>The Heart</h2><ul><li>Right atrium: receives deoxygenated blood from body (via vena cava)</li><li>Right ventricle: pumps deoxygenated blood to lungs (via pulmonary artery)</li><li>Left atrium: receives oxygenated blood from lungs (via pulmonary vein)</li><li>Left ventricle: pumps oxygenated blood to body (via aorta)</li></ul>';
-  html+='<h2>Blood Vessels</h2><ul><li>Arteries: carry blood AWAY from heart (usually oxygenated, thick walls, high pressure)</li><li>Veins: carry blood TO heart (usually deoxygenated, valves, lower pressure)</li><li>Capillaries: tiny vessels for gas/nutrient exchange with tissues</li></ul>';
-  html+='<h2>Components of Blood</h2><ul><li>Red blood cells: carry O₂ (contain haemoglobin)</li><li>White blood cells: fight infection (immune response)</li><li>Platelets: blood clotting</li><li>Plasma: liquid component, carries nutrients and CO₂</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let circMcq=false;
 const CIRC_MCQ=[
   {q:'Which chamber receives DEOXYGENATED blood from the body?',opts:['Right atrium','Left atrium','Right ventricle','Left ventricle'],c:0,tip:'Blood from the body enters the right atrium via the vena cava.'},

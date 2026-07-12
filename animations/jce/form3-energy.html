@@ -23,29 +23,20 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ffcc80;color:#bf360c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%203">&#8592; Form 3</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 3 Physics</span>
   <h1>Energy Forms &amp; Transformations</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-s on" id="b0" onclick="setScene(0)">🔵 Pendulum</button>
-  <button class="btn btn-s"    id="b1" onclick="setScene(1)">⚽ Bouncing Ball</button>
-  <button class="btn btn-s"    id="b2" onclick="setScene(2)">💡 Electric Circuit</button>
-  <button class="btn btn-s"    id="b3" onclick="setEnergyPractice(!energyMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Energy Quiz</button>
+  <button class="btn btn-s on mode-btn" id="b0" onclick="setScene(0)" title="Pendulum" aria-label="Pendulum">🔵 <span class="mode-lbl">Pendulum</span></button>
+  <button class="btn btn-s mode-btn"    id="b1" onclick="setScene(1)" title="Bouncing Ball" aria-label="Bouncing Ball">⚽ <span class="mode-lbl">Bouncing Ball</span></button>
+  <button class="btn btn-s mode-btn"    id="b2" onclick="setScene(2)" title="Electric Circuit" aria-label="Electric Circuit">💡 <span class="mode-lbl">Electric Circuit</span></button>
+  <button class="btn btn-s mode-btn"    id="b3" onclick="setEnergyPractice(!energyMcq)" style="border-color:#f9a825;color:#f9a825" title="Energy Quiz" aria-label="Energy Quiz">&#127918; <span class="mode-lbl">Energy Quiz</span></button>
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Energy Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#e65100;border-bottom:2px solid #e65100;padding-bottom:8px}h2{color:#bf360c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Energy Forms &amp; Transformations — Study Notes</h1><h2>Forms of Energy</h2><ul>';
-  ENERGY_TYPES.forEach(e=>html+=`<li><strong>${e.name} (${e.sym}):</strong> ${e.desc}</li>`);
-  html+='</ul><h2>Law of Conservation of Energy</h2><p>Energy cannot be created or destroyed — it can only be transferred or transformed from one form to another.</p>';
-  html+='<h2>Energy Transformations</h2><ul><li>Pendulum: GPE ↔ KE (ideal) + heat (friction)</li><li>Ball drop: GPE → KE → Thermal (heat on impact)</li><li>Light bulb: Electrical → Light + Heat</li><li>Battery: Chemical → Electrical</li><li>Sun: Nuclear → Light + Thermal</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let energyMcq=false;
 const ENERGY_MCQ=[
   {q:'A swinging pendulum converts energy between:',opts:['Gravitational PE and Kinetic Energy','Kinetic Energy and Electrical Energy','Chemical and Thermal Energy','Light and Sound Energy'],c:0,tip:'At top of swing: max GPE, min KE. At bottom: min GPE, max KE. Some is lost as heat due to friction.'},

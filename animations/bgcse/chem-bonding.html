@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; Chemistry</a></div>
 <div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Chemical Bonding</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">🔴🔵 Ionic</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">🔗 Covalent</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">🔩 Metallic</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">📋 Comparison</button>
-  <button class="btn" id="b-prac" onclick="setBondPractice(!bondMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Ionic" aria-label="Ionic">🔴🔵 <span class="mode-lbl">Ionic</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Covalent" aria-label="Covalent">🔗 <span class="mode-lbl">Covalent</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Metallic" aria-label="Metallic">🔩 <span class="mode-lbl">Metallic</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Comparison" aria-label="Comparison">📋 <span class="mode-lbl">Comparison</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Chemical Bonding</h2><ul><li><b>Ionic bonding</b>: Transfer of electrons from metal to non-metal. Forms ions. High melting point, conducts when molten/dissolved.</li><li><b>Covalent bonding</b>: Sharing of electron pairs between non-metals. Can be single, double or triple bonds.</li><li><b>Metallic bonding</b>: Metal ions in a lattice surrounded by a sea of delocalised electrons. Good conductors.</li><li><b>Giant ionic</b>: NaCl, MgO — high mp, brittle. <b>Simple molecular</b>: CO₂, H₂O — low mp.</li><li><b>Giant covalent</b>: Diamond, SiO₂ — very high mp, hard.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let bondMcq=false;
 const BOND_MCQ=[
   {q:'Ionic bonding involves:',opts:['Transfer of electrons between atoms','Sharing of electron pairs','A sea of delocalised electrons','Hydrogen bonds between molecules'],c:0,tip:'In ionic bonding, electrons are transferred from metal to non-metal atoms.'},

@@ -20,8 +20,7 @@
     #info-box h3 { font-size:0.95rem; color:#1b5e20; margin-bottom:4px; }
     #info-box p { font-size:0.83rem; color:#444; line-height:1.5; }
     .info-strip { margin-top:10px; background:#e8f5e9; border:1px solid #c8e6c9; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#2e7d32; max-width:880px; width:100%; }
-    .print-btn{margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
-    .print-btn:hover{background:#81c784}
+
     .controls{display:flex;justify-content:center;gap:10px;margin-top:10px}
     .mbtn{padding:7px 22px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s}
     .mbtn.anim{background:#2e7d32;color:#fff}.mbtn.anim:hover{background:#1b5e20}
@@ -31,8 +30,8 @@
 <body>
 <div class="topbar">
   <span class="logo">BEC Animations</span>
-  <a href="../../index.html">&#8592; All Topics</a>
-  <button class="print-btn" onclick="printNotes()">&#128438; Print Notes</button>
+  <a href="../../index.html#junior/Form%201">&#8592; Form 1</a>
+  
 </div>
 <div class="topic-header">
   <span class="label">JCE · Form 1 Biology</span>
@@ -55,14 +54,6 @@
 let selectedOrganelle = null;
 let gameMode=0;
 function setGameMode(m){ gameMode=m; document.getElementById('info-box').innerHTML='<h3>'+(m?'Match each organelle to its function — click a name then click the matching description.':'Click any organelle to learn its function')+'</h3><p>'+(m?'':'Hover over the cell diagrams and click the coloured structures to see what they do.')+'</p>'; if(m===1) resetCellMatch(); }
-function printNotes(){
-  let html='<html><head><title>Cell Biology Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1b5e20;border-bottom:2px solid #1b5e20;padding-bottom:8px}h2{color:#2e7d32;margin-top:16px}p{margin:4px 0 10px}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Introduction to Cells — Study Notes</h1>';
-  Object.values(ORGANELLES).forEach(o=>{ html+=`<h2>${o.name}</h2><p>${o.desc}</p>`; });
-  html+='<h2>Key Differences: Plant vs Animal Cells</h2><ul><li>Plant cells: cell wall, large vacuole, chloroplasts</li><li>Animal cells: none of the above</li><li>Both: nucleus, cell membrane, cytoplasm, mitochondria</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 const CELL_MATCH_ITEMS=[];
 let cmSelected=-1, cmMatched, cmWrong, cmShuffled;
 function resetCellMatch(){

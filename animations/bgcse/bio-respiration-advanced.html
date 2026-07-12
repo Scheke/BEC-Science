@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; Biology</a></div>
 <div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Advanced Respiration</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">⚡ Overview</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">🔬 Glycolysis</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">🔄 Krebs Cycle</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">🔋 ETC & ATP Yield</button>
-  <button class="btn" id="b-prac" onclick="setRespAdvPractice(!respAdvMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Overview" aria-label="Overview">⚡ <span class="mode-lbl">Overview</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Glycolysis" aria-label="Glycolysis">🔬 <span class="mode-lbl">Glycolysis</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Krebs Cycle" aria-label="Krebs Cycle">🔄 <span class="mode-lbl">Krebs Cycle</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="ETC & ATP Yield" aria-label="ETC & ATP Yield">🔋 <span class="mode-lbl">ETC & ATP Yield</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Advanced Respiration</h2><ul><li><b>Glycolysis</b>: In cytoplasm. Glucose → 2 pyruvate + 2 ATP (net).</li><li><b>Link reaction</b>: Pyruvate → Acetyl-CoA + CO₂. Occurs in mitochondrial matrix.</li><li><b>Krebs cycle</b>: In mitochondrial matrix. Produces CO₂, NADH, FADH₂, and 2 ATP per cycle.</li><li><b>Oxidative phosphorylation</b>: On inner mitochondrial membrane. NADH/FADH₂ → ~34 ATP via electron transport chain.</li><li><b>Total ATP yield</b>: ~36–38 ATP per glucose (aerobic).</li><li><b>Anaerobic</b>: In animals → lactate; in yeast → ethanol + CO₂. Only 2 ATP.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let respAdvMcq=false;
 const RESP_ADV_MCQ=[
   {q:'Where does glycolysis take place in the cell?',opts:['Cytoplasm','Mitochondrial matrix','Inner mitochondrial membrane','Nucleus'],c:0,tip:'Glycolysis occurs in the cytoplasm — it does not require mitochondria.'},
@@ -131,8 +127,8 @@ new p5(sk=>{
     sk.noStroke();sk.fill(255,200,30,200);sk.ellipse(etcX+90,etcY,30,30);
     sk.fill(160,120,0);sk.textSize(9);sk.textStyle(sk.BOLD);sk.text('+32\nATP',etcX+90,etcY+5);sk.textStyle(sk.NORMAL);
     // Arrow from Krebs to ETC
-    sk.stroke(0,80,120,160);sk.strokeWeight(1.5);sk.setLineDash([5,3]);
-    sk.line(322,440,etcX-75,etcY);sk.setLineDash([]);
+    sk.stroke(0,80,120,160);sk.strokeWeight(1.5);sk.drawingContext.setLineDash([5,3]);
+    sk.line(322,440,etcX-75,etcY);sk.drawingContext.setLineDash([]);
     sk.fill(100,50,150,160);sk.textSize(9);sk.textStyle(sk.ITALIC);sk.textAlign(sk.CENTER);
     sk.text('NADH, FADH₂',360,395);sk.textStyle(sk.NORMAL);
     // Grand total

@@ -122,8 +122,8 @@
 
 <div class="topbar">
   <span class="logo">BEC Animations</span>
-  <a href="../../index.html">&#8592; All Topics</a>
-  <button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button>
+  <a href="../../index.html#junior/Form%202">&#8592; Form 2</a>
+  
 </div>
 
 <div class="topic-header">
@@ -135,10 +135,9 @@
 
 <div id="controls">
   <span class="label">Toggle inputs:</span>
-  <button class="btn btn-l on" id="b-l" onclick="tog('light')">&#9728; Sunlight</button>
-  <button class="btn btn-w on" id="b-w" onclick="tog('water')">&#9650; Water</button>
-  <button class="btn btn-c on" id="b-c" onclick="tog('co2')">CO&#8322; in</button>
-  <button class="btn btn-c" id="b-prac" onclick="setPractice(!mcqMode)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn btn-l on mode-btn" id="b-l" onclick="tog('light')" title="Sunlight" aria-label="Sunlight">&#9728; <span class="mode-lbl">Sunlight</span></button>
+  <button class="btn btn-w on mode-btn" id="b-w" onclick="tog('water')" title="Water" aria-label="Water">&#9650; <span class="mode-lbl">Water</span></button>
+  <button class="btn btn-c on mode-btn" id="b-c" onclick="tog('co2')" title="in" aria-label="in">CO&#8322; <span class="mode-lbl">in</span></button>
 </div>
 
 <div class="info-strip">
@@ -149,17 +148,6 @@
 
 <script>
 const S = { light: true, water: true, co2: true };
-function printNotes(){
-  let html='<html><head><title>Photosynthesis Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#2e7d32;border-bottom:2px solid #2e7d32;padding-bottom:8px}h2{color:#388e3c;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Plant Nutrition &amp; Photosynthesis — Study Notes</h1>';
-  html+='<h2>The Photosynthesis Equation</h2><p><strong>6CO₂ + 6H₂O + Light energy → C₆H₁₂O₆ (glucose) + 6O₂</strong></p>';
-  html+='<h2>Requirements for Photosynthesis</h2><ul><li>Light energy (from sunlight — absorbed by chlorophyll)</li><li>Water (absorbed by roots, transported up xylem)</li><li>Carbon dioxide (enters through stomata in leaves)</li><li>Chlorophyll (green pigment in chloroplasts)</li></ul>';
-  html+='<h2>Products of Photosynthesis</h2><ul><li>Glucose (C₆H₁₂O₆) — used for energy, stored as starch</li><li>Oxygen (O₂) — released through stomata (by-product)</li></ul>';
-  html+='<h2>Limiting Factors</h2><ul><li>Light intensity — more light = faster photosynthesis (up to a limit)</li><li>CO₂ concentration — more CO₂ = faster photosynthesis</li><li>Temperature — enzyme-controlled; stops at extremes</li></ul>';
-  html+='<h2>Leaf Structure</h2><ul><li>Xylem transports water UP to leaves</li><li>Phloem transports glucose DOWN from leaves</li><li>Stomata: pores that let CO₂ in and O₂ out</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let mcqMode=false;
 const MCQ_Q=[
   {q:'What is the correct photosynthesis equation?',opts:['6CO₂+6H₂O+Light→C₆H₁₂O₆+6O₂','C₆H₁₂O₆+6O₂→6CO₂+6H₂O+Energy','6O₂+Glucose→6CO₂+6H₂O','CO₂+H₂O→O₂+Glucose'],c:0,tip:'6 molecules each of CO₂ and H₂O plus light produce glucose and 6O₂.'},

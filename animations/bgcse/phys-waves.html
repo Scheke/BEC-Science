@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; Physics</a></div>
 <div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Waves &amp; the Electromagnetic Spectrum</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">〰️ Wave Types</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">🌈 EM Spectrum</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">↩️ Reflection</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">🔭 Refraction</button>
-  <button class="btn" id="b-prac" onclick="setWavesPractice(!wavesMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Wave Types" aria-label="Wave Types">〰️ <span class="mode-lbl">Wave Types</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="EM Spectrum" aria-label="EM Spectrum">🌈 <span class="mode-lbl">EM Spectrum</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Reflection" aria-label="Reflection">↩️ <span class="mode-lbl">Reflection</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Refraction" aria-label="Refraction">🔭 <span class="mode-lbl">Refraction</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Waves</h2><ul><li><b>Wave speed</b> = frequency × wavelength (v = fλ). Unit: m/s.</li><li><b>Transverse waves</b>: Oscillation ⊥ direction of travel (e.g., light, water waves).</li><li><b>Longitudinal waves</b>: Oscillation ∥ direction of travel (e.g., sound).</li><li><b>Reflection</b>: Angle of incidence = angle of reflection.</li><li><b>Refraction</b>: Wave bends as speed changes (e.g., light slows in glass).</li><li><b>Total internal reflection</b>: When angle of incidence > critical angle in a denser medium.</li><li><b>EM spectrum</b> (lowest to highest frequency): Radio, Microwave, IR, Visible, UV, X-ray, Gamma.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let wavesMcq=false;
 const WAVES_MCQ=[
   {q:'Wave speed is calculated by:',opts:['frequency × wavelength','amplitude × frequency','wavelength ÷ frequency','frequency ÷ wavelength'],c:0,tip:'v = fλ: wave speed = frequency × wavelength.'},

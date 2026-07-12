@@ -11,8 +11,8 @@
     .topbar{width:100%;background:#1b5e20;padding:10px 20px;display:flex;align-items:center;gap:16px}
     .topbar .logo{color:#fff;font-weight:800;font-size:1.1rem}
     .topbar a{color:#a5d6a7;text-decoration:none;font-size:.85rem}
-    .topbar .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
-    .topbar .print-btn:hover{background:rgba(255,255,255,.25)}
+    .topbar
+.topbar .print-btn:hover{background:rgba(255,255,255,.25)}
     .topic-header{width:100%;background:#0d47a1;color:#fff;padding:14px 24px;display:flex;align-items:center;gap:12px}
     .topic-header .label{background:#90caf9;color:#0d47a1;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
     .topic-header h1{font-size:1.25rem;font-weight:700}
@@ -63,7 +63,7 @@
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
 <div class="topbar">
   <span class="logo">BEC Animations</span>
-  <a href="../../index.html#primary/Standard%206">&#8592; All Topics</a>
+  <a href="../../index.html#primary/Standard%206">&#8592; Standard 6</a>
   
 </div>
 <div class="topic-header">
@@ -73,10 +73,10 @@
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <button class="btn on"  id="btn0" onclick="setTab(0)">Circuits</button>
-  <button class="btn"     id="btn1" onclick="setTab(1)">Current &amp; Voltage</button>
-  <button class="btn"     id="btn2" onclick="setTab(2)">Series vs Parallel</button>
-  <button class="btn"     id="btn3" onclick="setTab(3)">Conductors &amp; Insulators</button>
-  <button class="btn practice" id="btn4" onclick="setTab(4)">&#127918; Circuit Builder</button>
+  <button class="btn mode-btn"     id="btn1" onclick="setTab(1)" title="&amp; Voltage" aria-label="&amp; Voltage">Current <span class="mode-lbl">&amp; Voltage</span></button>
+  <button class="btn mode-btn"     id="btn2" onclick="setTab(2)" title="vs Parallel" aria-label="vs Parallel">Series <span class="mode-lbl">vs Parallel</span></button>
+  <button class="btn mode-btn"     id="btn3" onclick="setTab(3)" title="&amp; Insulators" aria-label="&amp; Insulators">Conductors <span class="mode-lbl">&amp; Insulators</span></button>
+  <button class="btn practice mode-btn" id="btn4" onclick="setTab(4)" title="Circuit Builder" aria-label="Circuit Builder">&#127918; <span class="mode-lbl">Circuit Builder</span></button>
 </div>
 
 <script>
@@ -118,60 +118,6 @@ const allBoxes = [
   ],
 ];
 
-function printNotes(){
-  const tabs=['Circuits','Current & Voltage','Series vs Parallel','Conductors & Insulators'];
-  let h=`<html><head><title>Electricity & Magnetism Notes</title><style>
-    body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;color:#111;font-size:14px}
-    h1{font-size:1.3rem;border-bottom:3px solid #0d47a1;padding-bottom:8px;color:#0d47a1}
-    h2{font-size:1rem;color:#1565c0;margin:22px 0 6px;border-left:4px solid #1565c0;padding-left:8px}
-    h3{font-size:.88rem;font-weight:700;margin:10px 0 3px}
-    ul{margin:0 0 8px 18px}li{line-height:1.7}
-    @media print{body{margin:15px}}
-    /* ── Mobile responsive ── */
-    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
-    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
-    @media(max-width:900px){
-      #sketch-wrap{transform-origin:top center}
-      body{padding:0 0 20px}
-    }
-    
-    @media(orientation:landscape)and(max-height:500px){
-      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
-      .topbar{width:100%}
-      .topic-header{width:100%}
-      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
-      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
-      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
-      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
-      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
-    }
-    
-    
-    }
-    
-    }    /* ── Auto-rotate for small phones in portrait ── */
-    @media(max-width:560px)and(orientation:portrait){
-      html,body{overflow:hidden}
-      body{
-        position:fixed;
-        width:100vh;
-        height:100vw;
-        top:calc(50% - 50vw);
-        left:calc(50% - 50vh);
-        transform:rotate(90deg);
-        transform-origin:center;
-        overflow:hidden;
-      }
-    }  </style></head><body>
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h1>Standard 6 Science — Electricity &amp; Magnetism</h1>`;
-  allBoxes.forEach((boxes,i)=>{
-    h+=`<h2>${tabs[i]}</h2>`;
-    boxes.forEach(box=>{h+=`<h3>${box.t}</h3><ul>`;box.b.forEach(l=>h+=`<li>${l}</li>`);h+=`</ul>`;});
-  });
-  h+=`
-</body></html>`;
-  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
-}
 
 // ── GAME STATE ───────────────────────────────────────────
 const SLOT_R = 34;

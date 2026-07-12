@@ -27,7 +27,7 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#ce93d8;color:#4a148c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%203">&#8592; Form 3</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 3 Physics</span>
   <h1>Sound Properties</h1>
@@ -46,22 +46,11 @@
   </div>
   <button class="btn btn-m on" id="bAir"   onclick="setMedium('air')">Air</button>
   <button class="btn btn-m"    id="bWater" onclick="setMedium('water')">Water</button>
-  <button class="btn btn-m"    id="bSolid" onclick="setSolid()">Solid (Steel)</button>
-  <button class="btn btn-m"    id="b-prac-s" onclick="setSoundPractice(!soundMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Sound Quiz</button>
+  <button class="btn btn-m mode-btn"    id="bSolid" onclick="setSolid()" title="(Steel)" aria-label="(Steel)">Solid <span class="mode-lbl">(Steel)</span></button>
+  <button class="btn btn-m mode-btn"    id="b-prac-s" onclick="setSoundPractice(!soundMcq)" style="border-color:#f9a825;color:#f9a825" title="Sound Quiz" aria-label="Sound Quiz">&#127918; <span class="mode-lbl">Sound Quiz</span></button>
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Sound Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#4a148c;border-bottom:2px solid #4a148c;padding-bottom:8px}h2{color:#6a1b9a;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#4a148c;color:#fff}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Sound Properties — Study Notes</h1>';
-  html+='<h2>What is Sound?</h2><p>Sound is a longitudinal wave (compressions and rarefactions) that requires a medium to travel through.</p>';
-  html+='<h2>Key Properties</h2><ul><li><strong>Frequency (Hz):</strong> Number of vibrations per second — determines pitch (high/low)</li><li><strong>Amplitude:</strong> Size of vibration — determines loudness (volume)</li><li><strong>Wavelength:</strong> Distance between two identical points of the wave</li><li><strong>Speed:</strong> How fast the wave travels through a medium</li></ul>';
-  html+='<h2>Speed of Sound in Different Media</h2><table><tr><th>Medium</th><th>Speed (approx.)</th></tr><tr><td>Air</td><td>~340 m/s</td></tr><tr><td>Water</td><td>~1,480 m/s</td></tr><tr><td>Steel</td><td>~5,100 m/s</td></tr></table>';
-  html+='<p>Sound travels fastest in solids and slowest in gases because particles are closest together in solids.</p>';
-  html+='<h2>Pitch vs Loudness</h2><ul><li>Higher frequency = higher pitch</li><li>Higher amplitude = louder sound</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let soundMcq=false;
 const SOUND_MCQ=[
   {q:'What property of sound determines its PITCH?',opts:['Frequency (number of vibrations per second)','Amplitude (size of vibration)','Wavelength length','Speed of sound'],c:0,tip:'High frequency = high pitch. Frequency is measured in Hertz (Hz).'},

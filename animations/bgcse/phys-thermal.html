@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; Physics</a></div>
 <div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Thermal Physics</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">🔥 Heat Transfer</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">💧 Specific Heat</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">❄️ Latent Heat</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">🌡️ Thermal Properties</button>
-  <button class="btn" id="b-prac" onclick="setThermalPractice(!thermalMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Heat Transfer" aria-label="Heat Transfer">🔥 <span class="mode-lbl">Heat Transfer</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Specific Heat" aria-label="Specific Heat">💧 <span class="mode-lbl">Specific Heat</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Latent Heat" aria-label="Latent Heat">❄️ <span class="mode-lbl">Latent Heat</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Thermal Properties" aria-label="Thermal Properties">🌡️ <span class="mode-lbl">Thermal Properties</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Thermal Physics</h2><ul><li><b>Conduction</b>: Heat transfer through solids via vibrating particles and free electrons.</li><li><b>Convection</b>: Heat transfer in fluids — warm fluid rises, cool fluid sinks (convection currents).</li><li><b>Radiation</b>: Heat transfer by infrared waves — can travel through vacuum.</li><li><b>Thermal energy</b>: Q = mcΔT (m=mass, c=specific heat capacity, ΔT=temperature change).</li><li><b>Specific heat of water</b>: 4200 J/(kg·°C).</li><li><b>Latent heat</b>: Energy absorbed/released during change of state (no temperature change).</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let thermalMcq=false;
 const THERMAL_MCQ=[
   {q:'Heat transfer through a vacuum occurs by:',opts:['Radiation','Conduction','Convection','All three equally'],c:0,tip:'Only radiation (infrared waves) can travel through a vacuum — conduction and convection need matter.'},

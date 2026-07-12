@@ -56,15 +56,14 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Chemistry">&#8592; Chemistry</a></div>
 <div class="topic-header"><span class="label">BGCSE · Chemistry</span><h1>Atomic Structure &amp; Periodic Table</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">⚛️ Bohr Model</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">🔢 Electron Config</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">📊 Periodic Trends</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">☢️ Isotopes & Ions</button>
-  <button class="btn" id="b-prac" onclick="setAtomPractice(!atomMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Bohr Model" aria-label="Bohr Model">⚛️ <span class="mode-lbl">Bohr Model</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Electron Config" aria-label="Electron Config">🔢 <span class="mode-lbl">Electron Config</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Periodic Trends" aria-label="Periodic Trends">📊 <span class="mode-lbl">Periodic Trends</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Isotopes & Ions" aria-label="Isotopes & Ions">☢️ <span class="mode-lbl">Isotopes & Ions</span></button>
 </div>
 <script>
 let tab=0;let selElement=6;
@@ -81,9 +80,6 @@ const ELEMENTS=[
   {sym:'Fe',name:'Iron',Z:26,mass:56,shells:[2,8,14,2],col:[100,100,120]},
 ];
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Atomic Structure</h2><ul><li><b>Nucleus</b>: Contains protons (+) and neutrons (0). Electrons (−) orbit in shells.</li><li><b>Proton number</b>: Number of protons = number of electrons in a neutral atom.</li><li><b>Mass number</b>: Protons + neutrons.</li><li><b>Isotopes</b>: Same element, different number of neutrons (same proton number).</li><li><b>Electron configuration</b>: Shells fill as 2, 8, 8... e.g. Na = 2,8,1.</li><li><b>Ions</b>: Atoms that have gained or lost electrons. Cations (+) lost electrons; anions (−) gained.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let atomMcq=false;
 const ATOM_MCQ=[
   {q:'Where are protons and neutrons found in an atom?',opts:['In the nucleus','In the electron shells','Around the nucleus','In the valence shell'],c:0,tip:'Protons and neutrons are in the nucleus; electrons orbit in shells.'},

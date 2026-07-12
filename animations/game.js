@@ -434,6 +434,8 @@ const BEC = (() => {
   /* ── State ── */
   let _s;
   let _cloudLoaded = false; // guard: prevents saves before cloud state is loaded (avoids data corruption)
+
+  function _fresh() {
     return {
       xp: 0, streak: 0, lastStudyDate: null,
       hearts: HEART_MAX, lastHeartTime: Date.now(),

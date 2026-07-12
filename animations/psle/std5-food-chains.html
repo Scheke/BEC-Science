@@ -12,26 +12,23 @@
     .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
     .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
     .topbar a:hover { color:#fff; }
-    .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
-    .print-btn:hover{background:rgba(255,255,255,.25)}
-    .topic-header { width:100%; background:#388e3c; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
-    .topic-header .label { background:#81c784; color:#1b5e20; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:999px; }
-    .topic-header h1 { font-size:1.25rem; font-weight:700; }
+    .topic-header { width:100%; background:#388e3c; color:#fff; padding:9px 20px; display:flex; align-items:center; gap:10px; }
+    .topic-header .label { background:#81c784; color:#1b5e20; font-size:0.68rem; font-weight:700; padding:2px 9px; border-radius:999px; white-space:nowrap; }
+    .topic-header h1 { font-size:1rem; font-weight:700; }
     #sketch { margin-top:18px; border-radius:10px; overflow:hidden; box-shadow:0 2px 20px rgba(0,0,0,0.14); border:2px solid #c8e6c9; }
     .info-strip { margin-top:14px; background:#e8f5e9; border:1px solid #c8e6c9; border-radius:8px; padding:10px 18px; font-size:0.82rem; color:#2e7d32; max-width:880px; width:100%; line-height:1.5; }
     #cascade-msg { margin-top:10px; min-height:32px; background:#fff3e0; border:1px solid #ffcc80; border-radius:8px; padding:8px 18px; font-size:0.82rem; color:#e65100; max-width:880px; width:100%; display:none; }
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button class="print-btn" onclick="printNotes()">&#128203; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#primary/Standard%205">&#8592; Standard 5</a></div>
 <div class="topic-header">
   <span class="label">PSLE · Standard 5</span>
   <h1>Food Chains &amp; Energy Flow</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div style="display:flex;gap:10px;margin-top:12px;justify-content:center">
-  <button onclick="setMode(0)" id="btnAnim" style="padding:8px 18px;border:2.5px solid #2e7d32;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#2e7d32;color:#fff;font-family:inherit">&#9654; Animation</button>
-  <button onclick="setMode(1)" id="btnGame" style="padding:8px 18px;border:2.5px solid #e65100;border-radius:24px;cursor:pointer;font-size:.88rem;font-weight:700;background:#fff;color:#e65100;font-family:inherit">&#127918; Build a Chain</button>
+  <button class="mode-btn" onclick="setMode(gameMode===1?0:1)" id="btnGame" title="Build a Chain" aria-label="Build a Chain" style="padding:7px 12px;border:2.5px solid #e65100;border-radius:12px;cursor:pointer;font-size:.78rem;font-weight:700;background:#fff;color:#e65100;font-family:inherit"><span id="btnGameIcon">&#127918;</span> <span class="mode-lbl" id="btnGameLbl">Build a Chain</span></button>
 </div>
 <div class="info-strip">
   <strong>10% Rule:</strong> Only about 10% of energy is passed on to the next level — the rest is lost as heat.
@@ -41,16 +38,13 @@
 
 <script>
 let gameMode=0;
-function setMode(m){ gameMode=m; document.getElementById('btnAnim').style.background=m===0?'#2e7d32':'#fff'; document.getElementById('btnAnim').style.color=m===0?'#fff':'#2e7d32'; document.getElementById('btnGame').style.background=m===1?'#e65100':'#fff'; document.getElementById('btnGame').style.color=m===1?'#fff':'#e65100'; if(m===1) resetChainGame(); }
-function printNotes(){
-  let h=`<html><head><title>Food Chains Notes</title><style>body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;font-size:14px}h1{border-bottom:3px solid #2e7d32;color:#2e7d32}h2{color:#388e3c;margin:18px 0 4px}p,li{line-height:1.7}ul{margin:0 0 8px 18px}@media print{body{margin:15px}}</style></head><body>
-  <h1>PSLE Science — Food Chains &amp; Energy Flow</h1>
-  <h2>Food Chain Basics</h2><ul><li>A food chain shows HOW energy flows from one organism to another through feeding</li><li>Always starts with a PRODUCER (green plant) that makes food using sunlight</li><li>Arrows show the direction of energy flow: Grass → Grasshopper → Frog → Eagle</li><li>Producer → Primary consumer → Secondary consumer → Tertiary consumer</li></ul>
-  <h2>The 10% Rule</h2><ul><li>Only about 10% of energy at one level is transferred to the next</li><li>90% is lost as heat, movement, waste (respiration)</li><li>This means energy pyramids narrow sharply at each trophic level</li><li>Example: 1000 J in grass → 100 J in grasshopper → 10 J in frog → 1 J in eagle</li></ul>
-  <h2>Trophic Levels</h2><ul><li>Level 1 — Producers: plants (grasses, trees, algae)</li><li>Level 2 — Primary consumers: herbivores (grasshoppers, zebra, wildebeest)</li><li>Level 3 — Secondary consumers: carnivores/omnivores (frogs, mongooses)</li><li>Level 4 — Tertiary consumers: apex predators (eagles, lions, leopards)</li></ul>
-  <h2>Botswana Food Chain Example</h2><p>Grass → Grasshopper → Frog → Eagle</p>
-  </body></html>`;
-  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+function setMode(m){
+  gameMode=m;
+  document.getElementById('btnGame').style.background=m===1?'#e65100':'#fff';
+  document.getElementById('btnGame').style.color=m===1?'#fff':'#e65100';
+  document.getElementById('btnGameIcon').innerHTML=m===1?'&#9654;':'&#127918;';
+  document.getElementById('btnGameLbl').textContent=m===1?'Back to Animation':'Build a Chain';
+  if(m===1) resetChainGame();
 }
 const CHAIN_ORGS=['Grass','Grasshopper','Frog','Eagle'];
 const CHAIN_EMOJI=['🌿','🦗','🐸','🦅'];

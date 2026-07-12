@@ -58,14 +58,13 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; Biology</a></div>
 <div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Cell Transport</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-d on" id="b0" onclick="setMode(0)">→ Diffusion</button>
-  <button class="btn btn-o"    id="b1" onclick="setMode(1)">💧 Osmosis</button>
-  <button class="btn btn-a"    id="b2" onclick="setMode(2)">⚡ Active Transport</button>
-  <button class="btn" id="b-prac" onclick="setCellTransPractice(!cellTransMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn btn-d on mode-btn" id="b0" onclick="setMode(0)" title="Diffusion" aria-label="Diffusion">→ <span class="mode-lbl">Diffusion</span></button>
+  <button class="btn btn-o mode-btn"    id="b1" onclick="setMode(1)" title="Osmosis" aria-label="Osmosis">💧 <span class="mode-lbl">Osmosis</span></button>
+  <button class="btn btn-a mode-btn"    id="b2" onclick="setMode(2)" title="Active Transport" aria-label="Active Transport">⚡ <span class="mode-lbl">Active Transport</span></button>
 </div>
 <script>
 let mode=0;
@@ -107,9 +106,6 @@ const INFO=[
    ex:'Mineral ions absorbed by root hair cells; glucose absorbed in gut.'},
 ];
 
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Cell Transport</h2><ul><li><b>Diffusion</b>: Movement from high to low concentration, no energy needed.</li><li><b>Osmosis</b>: Diffusion of water through a semi-permeable membrane from high to low water potential.</li><li><b>Active Transport</b>: Movement against gradient — requires ATP and carrier proteins.</li><li><b>Turgid</b>: Plant cell full of water. <b>Plasmolysed</b>: cytoplasm shrinks from wall.</li><li><b>Crenated</b>: Animal cell shrinks. <b>Lysis</b>: Animal cell bursts in hypotonic solution.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let cellTransMcq=false;
 const CELL_TRANS_MCQ=[
   {q:'Which process moves molecules from high to low concentration without energy?',opts:['Diffusion','Active transport','Osmosis','Endocytosis'],c:0,tip:'Diffusion is passive — no ATP needed.'},

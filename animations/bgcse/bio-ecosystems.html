@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Biology">&#8592; Biology</a></div>
 <div class="topic-header"><span class="label">BGCSE · Biology</span><h1>Ecosystems &amp; Nutrient Cycles</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">🕸 Food Web</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">♻️ Carbon Cycle</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">🌿 Nitrogen Cycle</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">📊 Energy Flow</button>
-  <button class="btn" id="b-prac" onclick="setEcoPractice(!ecoMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Food Web" aria-label="Food Web">🕸 <span class="mode-lbl">Food Web</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Carbon Cycle" aria-label="Carbon Cycle">♻️ <span class="mode-lbl">Carbon Cycle</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Nitrogen Cycle" aria-label="Nitrogen Cycle">🌿 <span class="mode-lbl">Nitrogen Cycle</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Energy Flow" aria-label="Energy Flow">📊 <span class="mode-lbl">Energy Flow</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Ecosystems</h2><ul><li><b>Producer</b>: Photosynthetic organisms (plants/algae) — first trophic level.</li><li><b>Energy transfer</b>: Only ~10% of energy passes from one trophic level to the next.</li><li><b>Carbon cycle</b>: Carbon returned via respiration, decomposition, combustion; fixed by photosynthesis.</li><li><b>Nitrogen fixation</b>: Bacteria convert N₂ gas into ammonia/nitrates that plants can use.</li><li><b>Decomposers</b>: Fungi and bacteria break down dead organic matter, recycling nutrients.</li><li><b>Denitrification</b>: Bacteria convert nitrates back to N₂ gas.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let ecoMcq=false;
 const ECO_MCQ=[
   {q:'What is the primary producer in a food chain?',opts:['A photosynthetic plant or algae','A herbivore','A carnivore','A decomposer'],c:0,tip:'Producers make their own food via photosynthesis — they are the first trophic level.'},

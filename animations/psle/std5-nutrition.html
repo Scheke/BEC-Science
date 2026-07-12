@@ -14,8 +14,7 @@
     .topic-header .label{background:#ffcc80;color:#bf360c;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:999px}
     .topic-header h1{font-size:1.25rem;font-weight:700}
     #sketch{margin-top:0;width:100%;border-radius:10px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.14);border:2px solid #ffe0b2}
-    .print-btn{margin-left:auto;background:#ffcc80;color:#bf360c;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
-    .print-btn:hover{background:#ffb74d}
+
     .controls{display:flex;justify-content:center;gap:10px;margin-top:10px}
     .btn{padding:7px 22px;border:none;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;transition:background .15s}
     .btn.anim{background:#e65100;color:#fff}.btn.anim:hover{background:#bf360c}
@@ -59,65 +58,19 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#primary/Standard%205">&#8592; All Topics</a></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#primary/Standard%205">&#8592; Standard 5</a></div>
 <div class="topic-header"><span class="label">PSLE · Standard 5 Science</span><h1>Nutrition &amp; Balanced Diet</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div class="controls">
-  <button class="btn anim" onclick="setMode(0)">&#9654; Animation</button>
-  <button class="btn practice" onclick="setMode(1)">&#127918; Fill the Plate</button>
+  <button class="btn practice mode-btn" onclick="setMode(gameMode===1?0:1)" id="btnMode" title="Fill the Plate" aria-label="Fill the Plate"><span id="btnModeIcon">&#127918;</span> <span class="mode-lbl" id="btnModeLbl">Fill the Plate</span></button>
 </div>
 <script>
 let gameMode=0;
-function setMode(m){ gameMode=m; if(m===1) resetPlateGame(); }
-function printNotes(){
-  let html='<html><head><title>Nutrition Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#e65100;border-bottom:2px solid #e65100;padding-bottom:8px}h2{color:#bf360c;margin-top:16px}ul{margin:4px 0 8px 20px}li{margin:2px 0}.tag{display:inline-block;background:#fff3e0;color:#e65100;border-radius:4px;padding:2px 8px;font-size:.85em}@media print{body{padding:10px}}    /* ── Mobile responsive ── */
-    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
-    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
-    @media(max-width:900px){
-      #sketch-wrap{transform-origin:top center}
-      body{padding:0 0 20px}
-    }
-    
-    @media(orientation:landscape)and(max-height:500px){
-      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
-      .topbar{width:100%}
-      .topic-header{width:100%}
-      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
-      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
-      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
-      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
-      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
-    }
-    
-    
-    }
-    
-    }    /* ── Auto-rotate for small phones in portrait ── */
-    @media(max-width:560px)and(orientation:portrait){
-      html,body{overflow:hidden}
-      body{
-        position:fixed;
-        width:100vh;
-        height:100vw;
-        top:calc(50% - 50vw);
-        left:calc(50% - 50vh);
-        transform:rotate(90deg);
-        transform-origin:center;
-        overflow:hidden;
-      }
-    }</style></head><body>
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>';
-  html+='<h1>Nutrition &amp; Balanced Diet — Study Notes</h1>';
-  NUTRIENTS.forEach(n=>{
-    html+=`<h2>${n.icon} ${n.name} (${n.portion})</h2>`;
-    html+=`<p>${n.func.replace(/\n/g,'<br>')}</p>`;
-    html+=`<p><span class="tag">Food sources:</span> ${n.food}</p>`;
-    html+=`<p><span class="tag">Deficiency:</span> ${n.defic}</p>`;
-  });
-  html+='<h2>Key Points</h2><ul><li>Macronutrients: Carbohydrates, Proteins, Fats (needed in large amounts)</li><li>Micronutrients: Vitamins and Minerals (needed in small amounts)</li><li>Water: drink 6–8 glasses per day; Fibre: aids digestion</li><li>A balanced diet has the RIGHT amounts of each nutrient</li></ul>';
-  html+='
-</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
+function setMode(m){
+  gameMode=m;
+  document.getElementById('btnModeIcon').innerHTML=m===1?'&#9654;':'&#127918;';
+  document.getElementById('btnModeLbl').textContent=m===1?'Back to Animation':'Fill the Plate';
+  if(m===1) resetPlateGame();
 }
 const PLATE_FOODS=[
   {name:'Rice',emoji:'🍚',cat:'carbs'},{name:'Bread',emoji:'🍞',cat:'carbs'},

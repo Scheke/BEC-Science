@@ -71,6 +71,15 @@
     '  .topic-header h1{font-size:1.02rem!important;line-height:1.25!important}',
     '  .topic-header .label{font-size:.64rem!important;padding:2px 8px!important;white-space:nowrap}',
     '}',
+
+    /* Big pill mode-toggle buttons (Animation / Practice) were oversized on phones —
+       collapse to compact icon-only buttons, icon still visible via title tooltip. */
+    '@media(max-width:480px){',
+    '  .mode-btn{width:40px!important;height:40px!important;padding:0!important;',
+    '    display:inline-flex!important;align-items:center;justify-content:center;',
+    '    font-size:1.05rem!important;border-radius:10px!important}',
+    '  .mode-btn .mode-lbl{display:none}',
+    '}',
   ].join('\n');
   document.head.appendChild(s);
 

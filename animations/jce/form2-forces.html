@@ -33,18 +33,18 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%202">&#8592; Form 2</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 2 Physics</span>
   <h1>Forces &amp; Motion — Newton's Laws</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-push" id="b-push" onclick="tog('push')">&#9654; Apply Force (F)</button>
-  <button class="btn btn-fric" id="b-fric" onclick="tog('fric')">&#9664; Add Friction (f)</button>
-  <button class="btn btn-grav" id="b-grav" onclick="tog('grav')">&#8595; Free Fall (no floor)</button>
-  <button class="btn btn-rst"  onclick="reset()">&#8635; Reset</button>
-  <button class="btn btn-push" id="b-prac-f" onclick="setForcePractice(!forceMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Newton's Quiz</button>
+  <button class="btn btn-push mode-btn" id="b-push" onclick="tog('push')" title="Apply Force (F)" aria-label="Apply Force (F)">&#9654; <span class="mode-lbl">Apply Force (F)</span></button>
+  <button class="btn btn-fric mode-btn" id="b-fric" onclick="tog('fric')" title="Add Friction (f)" aria-label="Add Friction (f)">&#9664; <span class="mode-lbl">Add Friction (f)</span></button>
+  <button class="btn btn-grav mode-btn" id="b-grav" onclick="tog('grav')" title="Free Fall (no floor)" aria-label="Free Fall (no floor)">&#8595; <span class="mode-lbl">Free Fall (no floor)</span></button>
+  <button class="btn btn-rst mode-btn"  onclick="reset()" title="Reset" aria-label="Reset">&#8635; <span class="mode-lbl">Reset</span></button>
+  <button class="btn btn-push mode-btn" id="b-prac-f" onclick="setForcePractice(!forceMcq)" style="border-color:#f9a825;color:#f9a825" title="Newton's Quiz" aria-label="Newton's Quiz">&#127918; <span class="mode-lbl">Newton's Quiz</span></button>
 </div>
 <div class="scenario-row">
   <button class="scen-btn" onclick="scenario(0)">&#9654; Newton&apos;s 1st Law (Inertia)</button>
@@ -59,15 +59,6 @@
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Forces Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#1976d2;margin-top:14px}p{margin:4px 0 8px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Forces &amp; Motion — Study Notes</h1><h2>Newton\'s Three Laws of Motion</h2>';
-  html+=SCENARIO_TEXT.map((t,i)=>`<p>${t.replace(/<[^>]+>/g,'')}</p>`).join('');
-  html+='<h2>Key Formulas</h2><ul><li>F = ma (Force = mass × acceleration)</li><li>W = mg (Weight = mass × gravitational field strength)</li><li>Net force = Applied force − Friction</li></ul>';
-  html+='<h2>Types of Forces</h2><ul><li>Friction: opposes relative motion between surfaces</li><li>Gravity: attractive force between masses (g ≈ 10 N/kg on Earth)</li><li>Normal force (N): perpendicular reaction from surface</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let forceMcq=false;
 const FORCE_MCQ=[
   {q:'Newton\'s 1st Law (Inertia) states that:',opts:['An object continues at rest or constant velocity unless a net force acts on it','F = ma','Every action has an equal and opposite reaction','Friction always stops motion'],c:0,tip:'Inertia means objects resist changes to their state of motion.'},

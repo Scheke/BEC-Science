@@ -56,22 +56,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; All Topics</a><button style="margin-left:auto;background:#a5d6a7;color:#1b5e20;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#senior/Physics">&#8592; Physics</a></div>
 <div class="topic-header"><span class="label">BGCSE · Physics</span><h1>Electricity &amp; Magnetism</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn on" id="b0" onclick="setTab(0)">🔋 Circuits</button>
-  <button class="btn"    id="b1" onclick="setTab(1)">📐 Ohm's Law</button>
-  <button class="btn"    id="b2" onclick="setTab(2)">⚡ Power & Energy</button>
-  <button class="btn"    id="b3" onclick="setTab(3)">🔄 Electromagnetism</button>
-  <button class="btn" id="b-prac" onclick="setElecPractice(!elecMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Practice Quiz</button>
+  <button class="btn on mode-btn" id="b0" onclick="setTab(0)" title="Circuits" aria-label="Circuits">🔋 <span class="mode-lbl">Circuits</span></button>
+  <button class="btn mode-btn"    id="b1" onclick="setTab(1)" title="Ohm's Law" aria-label="Ohm's Law">📐 <span class="mode-lbl">Ohm's Law</span></button>
+  <button class="btn mode-btn"    id="b2" onclick="setTab(2)" title="Power & Energy" aria-label="Power & Energy">⚡ <span class="mode-lbl">Power & Energy</span></button>
+  <button class="btn mode-btn"    id="b3" onclick="setTab(3)" title="Electromagnetism" aria-label="Electromagnetism">🔄 <span class="mode-lbl">Electromagnetism</span></button>
 </div>
 <script>
 let tab=0;
 function setTab(n){tab=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n));}
-function printNotes(){let h='<html><body style="font-family:Arial;padding:30px">
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div><h2>Electricity</h2><ul><li><b>Ohm\'s law</b>: V = IR (voltage = current × resistance). Ohm\'s unit: Ω.</li><li><b>Series circuit</b>: Same current throughout; voltages add; total R = R₁+R₂.</li><li><b>Parallel circuit</b>: Same voltage across each branch; currents add; 1/R = 1/R₁+1/R₂.</li><li><b>Power</b>: P = VI = I²R = V²/R. Unit: watt (W).</li><li><b>Energy</b>: E = Pt = VIt. Unit: joule (J) or kWh.</li><li><b>Fuse</b>: Melts when current exceeds rated value, protecting the circuit.</li></ul>
-</body></html>';let w=window.open();w.document.write(h);w.document.close();w.print();}
 let elecMcq=false;
 const ELEC_MCQ=[
   {q:'Ohm\'s law states that V = ?',opts:['IR (current × resistance)','I/R','I+R','I²R'],c:0,tip:'V = IR: voltage = current × resistance. Rearranges to I = V/R, R = V/I.'},

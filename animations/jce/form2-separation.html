@@ -23,27 +23,21 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%202">&#8592; Form 2</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 2 Chemistry</span>
   <h1>Separation Methods</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-tech on"  id="b0" onclick="setTech(0)">⊿ Filtration</button>
-  <button class="btn btn-tech"     id="b1" onclick="setTech(1)">💧 Distillation</button>
-  <button class="btn btn-tech"     id="b2" onclick="setTech(2)">🌈 Chromatography</button>
-  <button class="btn btn-tech"     id="b3" onclick="setTech(3)">💎 Crystallisation</button>
-  <button class="btn btn-tech"     id="b4" onclick="setSepPractice(!sepMcq)" style="border-color:#f9a825;color:#f9a825">🎮 Choose Method</button>
+  <button class="btn btn-tech on mode-btn"  id="b0" onclick="setTech(0)" title="Filtration" aria-label="Filtration">⊿ <span class="mode-lbl">Filtration</span></button>
+  <button class="btn btn-tech mode-btn"     id="b1" onclick="setTech(1)" title="Distillation" aria-label="Distillation">💧 <span class="mode-lbl">Distillation</span></button>
+  <button class="btn btn-tech mode-btn"     id="b2" onclick="setTech(2)" title="Chromatography" aria-label="Chromatography">🌈 <span class="mode-lbl">Chromatography</span></button>
+  <button class="btn btn-tech mode-btn"     id="b3" onclick="setTech(3)" title="Crystallisation" aria-label="Crystallisation">💎 <span class="mode-lbl">Crystallisation</span></button>
+  <button class="btn btn-tech mode-btn"     id="b4" onclick="setSepPractice(!sepMcq)" style="border-color:#f9a825;color:#f9a825" title="Choose Method" aria-label="Choose Method">🎮 <span class="mode-lbl">Choose Method</span></button>
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Separation Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#1976d2;margin-top:14px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}</style></head><body><h1>Separation Methods — Study Notes</h1>';
-  TECHS.forEach(t=>html+=`<h2>${t.name}</h2><p>${t.what}</p><ul>${t.steps.map(s=>`<li>${s}</li>`).join('')}</ul><p><strong>Used for:</strong> ${t.uses}</p><p><em>${t.key}</em></p>`);
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let sepMcq=false;
 const SEP_MCQ=[
   {q:'You want to separate SAND from WATER. Which method do you use?',opts:['Filtration','Distillation','Chromatography','Crystallisation'],c:0,tip:'Filtration separates insoluble solids from liquids using filter paper.'},

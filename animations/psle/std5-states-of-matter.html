@@ -12,8 +12,7 @@
     .topbar .logo { color:#fff; font-weight:800; font-size:1.1rem; }
     .topbar a { color:#a5d6a7; text-decoration:none; font-size:0.85rem; }
     .topbar a:hover { color:#fff; }
-    .print-btn{margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:5px 14px;border-radius:6px;cursor:pointer;font-size:.8rem;font-family:inherit}
-    .print-btn:hover{background:rgba(255,255,255,.25)}
+
     .btn-practice{border-color:#e65100 !important;color:#e65100;background:#fff;border:2.5px solid;border-radius:24px;padding:9px 20px;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s}
     .btn-practice:hover,.btn-practice.on{background:#e65100;color:#fff}
     .topic-header { width:100%; background:#2e7d32; color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; }
@@ -33,8 +32,8 @@
 <body>
 <div class="topbar">
   <span class="logo">BEC Animations</span>
-  <a href="../../index.html">&#8592; All Topics</a>
-  <button class="print-btn" onclick="printNotes()">&#128203; Print Notes</button>
+  <a href="../../index.html#primary/Standard%205">&#8592; Standard 5</a>
+  
 </div>
 <div class="topic-header">
   <span class="label">PSLE · Standard 5</span>
@@ -42,11 +41,10 @@
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-cool" onclick="setMode(0)">&#9654; Animation</button>
-  <button class="btn btn-cool" onclick="changeHeat(-1)">&#10052; Remove Heat</button>
+  <button class="btn btn-cool mode-btn" onclick="changeHeat(-1)" title="Remove Heat" aria-label="Remove Heat">&#10052; <span class="mode-lbl">Remove Heat</span></button>
   <span id="state-display">State: Solid — Temperature: Low</span>
-  <button class="btn btn-heat" onclick="changeHeat(1)">&#128293; Add Heat</button>
-  <button class="btn-practice" id="btnGame" onclick="setMode(1)">&#127918; Practice</button>
+  <button class="btn btn-heat mode-btn" onclick="changeHeat(1)" title="Add Heat" aria-label="Add Heat">&#128293; <span class="mode-lbl">Add Heat</span></button>
+  <button class="btn-practice" id="btnGame" onclick="setMode(gameMode===1?0:1)"><span id="btnGameIcon">&#127918;</span> <span id="btnGameLbl">Practice</span></button>
 </div>
 <div class="info-strip">
   <strong>Key idea:</strong> All matter is made of particles. The state of matter depends on how much energy (heat) the particles have.
@@ -55,15 +53,12 @@
 
 <script>
 let heatStage = 0, gameMode = 0;
-function setMode(m){ gameMode=m; document.getElementById('btnGame').classList.toggle('on',m===1); if(m===1) resetSortGame(); }
-function printNotes(){
-  let h=`<html><head><title>States of Matter Notes</title><style>body{font-family:Arial,sans-serif;max-width:680px;margin:36px auto;font-size:14px}h1{border-bottom:3px solid #2e7d32;color:#2e7d32}h2{color:#388e3c;margin:18px 0 4px}p,li{line-height:1.7}ul{margin:0 0 8px 18px}@media print{body{margin:15px}}</style></head><body>
-  <h1>PSLE Science — States of Matter</h1>
-  <h2>The Three States</h2><ul><li>Solid: fixed shape, fixed volume, particles vibrate in place, tightly packed</li><li>Liquid: no fixed shape (takes shape of container), fixed volume, particles slide past each other</li><li>Gas: no fixed shape, no fixed volume (fills any container), particles move randomly and fast</li></ul>
-  <h2>Changes of State</h2><ul><li>Melting: solid → liquid (heat added, reaches melting point)</li><li>Freezing: liquid → solid (heat removed)</li><li>Evaporation/Boiling: liquid → gas (heat added)</li><li>Condensation: gas → liquid (heat removed)</li><li>Sublimation: solid → gas directly (e.g., dry ice)</li></ul>
-  <h2>Key Idea</h2><p>All matter is made of particles. The state depends on how much energy the particles have. Adding heat increases particle energy and speeds up movement — causing state changes.</p>
-  </body></html>`;
-  const w=window.open('','_blank');w.document.write(h);w.document.close();w.print();
+function setMode(m){
+  gameMode=m;
+  document.getElementById('btnGame').classList.toggle('on',m===1);
+  document.getElementById('btnGameIcon').innerHTML=m===1?'&#9654;':'&#127918;';
+  document.getElementById('btnGameLbl').textContent=m===1?'Back to Animation':'Practice';
+  if(m===1) resetSortGame();
 }
 const SORT_ITEMS=[
   {name:'Ice cube',    state:'Solid',  emoji:'🧊'},{name:'Water',       state:'Liquid', emoji:'💧'},

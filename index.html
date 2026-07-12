@@ -322,6 +322,8 @@
       letter-spacing:-.5px;
     }
     .d-hero-p{font-size:.95rem;color:rgba(255,255,255,.8);line-height:1.5;font-weight:500}
+    .d-hero.d-hero-compact{padding:16px 24px}
+    .d-hero-h1.d-hero-h1-sm{font-size:1.05rem;margin-bottom:0}
     .d-hero-stats{display:flex;gap:12px;flex-shrink:0;flex-wrap:wrap}
     .d-hstat{
       background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.05));
@@ -461,7 +463,6 @@
         border-radius:14px;
         align-items:start;
       }
-      .acard-bookmark{top:10px;left:12px}
       .acard-crown{top:10px;right:12px}
       .acard-icon{
         grid-row:1/3;grid-column:1;
@@ -498,18 +499,6 @@
       background:transparent;color:#bbb;border-color:#ddd;
       cursor:not-allowed;opacity:.7;pointer-events:none;
     }
-    .acard-bookmark{
-      position:absolute;top:7px;left:10px;
-      background:none;border:none;cursor:pointer;
-      padding:2px;line-height:1;
-      color:#bbb;transition:color .2s,transform .15s;
-    }
-    .acard-bookmark:hover{color:#f9a825;transform:scale(1.15)}
-    .acard-bookmark.bookmarked{color:#f9a825}
-    .acard-bookmark svg{display:block;width:18px;height:18px}
-    .acard-bookmark .bm-filled{display:none}
-    .acard-bookmark.bookmarked .bm-outline{display:none}
-    .acard-bookmark.bookmarked .bm-filled{display:block}
     .grp-hidden{display:none}
     /* Crown badge on cards */
     .acard-crown{position:absolute;top:8px;right:10px;font-size:1.1rem;line-height:1;
@@ -615,7 +604,7 @@
       box-shadow:0 -4px 16px rgba(0,0,0,.08);
       z-index:500;
       display:none;
-      grid-template-columns:repeat(5,1fr);
+      grid-template-columns:repeat(4,1fr);
       align-items:stretch;
     }
     .mbn-btn{
@@ -651,6 +640,8 @@
       .d-hdr #d-rnd{display:none}
       /* Hide donate from header — it's in bottom nav */
       .d-hdr .d-rnd-donate{display:none}
+      /* Hide logout/sign-in icon from header — it's in the ☰ menu sidebar */
+      .d-hdr #auth-dash-btn{display:none}
       /* Show bottom nav */
       #mob-bottom-nav{display:grid}
       .mob-nav-spacer{display:block}
@@ -827,7 +818,6 @@
       <button class="mob-sb-btn" onclick="openRandom();closeMobSidebar()"><span class="mob-sb-btn-icon">🎲</span>Random Animation</button>
       <button class="mob-sb-btn" onclick="showLeaderboard(curLevel);closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
       <button class="mob-sb-btn" onclick="showCommunity();closeMobSidebar()"><span class="mob-sb-btn-icon">💬</span>Community</button>
-      <button class="mob-sb-btn" onclick="showBookmarksTab();closeMobSidebar()"><span class="mob-sb-btn-icon">🔖</span>My Saved</button>
       <button class="mob-sb-btn" onclick="showQuizHistory();closeMobSidebar()"><span class="mob-sb-btn-icon">📊</span>Quiz History</button>
     </div>
     <div class="mob-sb-section">
@@ -892,7 +882,7 @@
           <div style="font-size:.75rem;font-weight:800;color:#f9a825;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">🕐 Free Account — Today's Sessions <span style="font-weight:500;color:#6e7681;text-transform:none;letter-spacing:0">(resets at midnight)</span></div>
           <div style="font-size:.82rem;color:#8b949e;line-height:1.9">
             ✅ All 90+ animations unlocked<br>
-            ✅ XP &middot; Streaks &middot; Leaderboard &middot; Bookmarks<br>
+            ✅ XP &middot; Streaks &middot; Leaderboard<br>
             📽️ Animate / Study / Quiz &nbsp;<span id="fpl-cards" style="color:#e6edf3;font-weight:700"></span><br>
             📝 Practice Tests &nbsp;<span id="fpl-tests" style="color:#e6edf3;font-weight:700"></span><br>
             📋 Full Exams &nbsp;<span id="fpl-exams" style="color:#e6edf3;font-weight:700"></span>
@@ -922,25 +912,23 @@
     BEC Science Animations &mdash; Built with p5.js &mdash; Botswana Examinations Council Curriculum &mdash; <a href="https://scheke.com" target="_blank" style="color:#8b949e;text-decoration:none" onmouseover="this.style.color='#58a6ff'" onmouseout="this.style.color='#8b949e'">🌐 scheke.com</a>
   </footer>
 
-  <!-- Mobile bottom nav -->
-  <nav id="mob-bottom-nav">
-    <button class="mbn-btn active" id="mbn-home" onclick="mbnGo('home')">
-      <span class="mbn-icon">🏠</span><span class="mbn-lbl">Home</span>
-    </button>
-    <button class="mbn-btn" id="mbn-browse" onclick="mbnGo('browse')">
-      <span class="mbn-icon">📚</span><span class="mbn-lbl">Browse</span>
-    </button>
-    <button class="mbn-btn" id="mbn-saved" onclick="mbnGo('saved')">
-      <span class="mbn-icon">🔖</span><span class="mbn-lbl">Saved</span>
-    </button>
-    <button class="mbn-btn" id="mbn-progress" onclick="mbnGo('progress')">
-      <span class="mbn-icon">📊</span><span class="mbn-lbl">Progress</span>
-    </button>
-    <button class="mbn-btn" id="mbn-pricing" onclick="showPricing()">
-      <span class="mbn-icon">⭐</span><span class="mbn-lbl">Upgrade</span>
-    </button>
-  </nav>
 </div>
+
+<!-- Mobile bottom nav — sibling of all views (v-land/v-dash/v-pricing/etc.) so it stays visible everywhere -->
+<nav id="mob-bottom-nav">
+  <button class="mbn-btn active" id="mbn-home" onclick="mbnGo('home')">
+    <span class="mbn-icon">🏠</span><span class="mbn-lbl">Home</span>
+  </button>
+  <button class="mbn-btn" id="mbn-browse" onclick="mbnGo('browse')">
+    <span class="mbn-icon">📚</span><span class="mbn-lbl">Browse</span>
+  </button>
+  <button class="mbn-btn" id="mbn-progress" onclick="mbnGo('progress')">
+    <span class="mbn-icon">📊</span><span class="mbn-lbl">Progress</span>
+  </button>
+  <button class="mbn-btn" id="mbn-pricing" onclick="showPricing()">
+    <span class="mbn-icon">⭐</span><span class="mbn-lbl">Upgrade</span>
+  </button>
+</nav>
 
 
 <!-- ════════════ TOPIC SELECTOR MODAL ════════════ -->
@@ -1136,7 +1124,6 @@
     <button onclick="closePricing()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:8px 16px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.12)'">← Back</button>
     <div style="font-size:1rem;font-weight:900;color:#fff;flex:1">Premium Plans</div>
     <a href="https://scheke.com" target="_blank" style="color:rgba(255,255,255,.5);font-size:.78rem;text-decoration:none;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.15);transition:all .15s" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.35)'" onmouseout="this.style.color='rgba(255,255,255,.5)';this.style.borderColor='rgba(255,255,255,.15)'">🌐 scheke.com</a>
-    <button onclick="showDonateModal()" style="background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.4);color:#25d366;border-radius:10px;padding:7px 14px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit">💬 Pay via WhatsApp</button>
   </div>
 
   <!-- Hero text -->
@@ -1172,7 +1159,7 @@
         <li>✅ No daily limits — ever</li>
         <li>✅ All 3 levels (PSLE, JCE, BGCSE)</li>
         <li>✅ Progress tracking & leaderboard</li>
-        <li>✅ Bookmarks & achievements</li>
+        <li>✅ Badges & achievements</li>
         <li>✅ Future animations included free</li>
       </ul>
       <button class="prx-cta prx-cta-gold" onclick="showDonateModalPlan()">Get Lifetime Access — P200 ↗</button>
@@ -1181,7 +1168,7 @@
     <!-- Free tier info -->
     <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px 18px;text-align:center">
       <div style="font-size:.82rem;font-weight:700;color:#888;margin-bottom:6px">Free (Visitor)</div>
-      <div style="font-size:.78rem;color:#555;line-height:1.5">1 preview animation per level · No bookmarks, progress, or leaderboard<br>No sign-in needed — just browse</div>
+      <div style="font-size:.78rem;color:#555;line-height:1.5">1 preview animation per level · No progress or leaderboard tracking<br>No sign-in needed — just browse</div>
     </div>
 
     <!-- Payment note -->
@@ -1435,7 +1422,6 @@ function initAuth() {
       window._becUID = user.uid;
       if (typeof BEC !== 'undefined') {
         await BEC.loadFromCloud();
-        window._becBookmarks = BEC.getBookmarks();
       }
       // Check premium entitlement
       try {
@@ -1470,7 +1456,6 @@ function initAuth() {
     } else {
       currentUser = null;
       window._becUID = null;
-      window._becBookmarks = [];
     }
     updateAuthButtons();
     if (typeof renderGrid === 'function')
@@ -1711,7 +1696,6 @@ async function signOut() {
   await fbAuth.signOut();
   currentUser = null;
   window._becUID = null;
-  window._becBookmarks = [];
   closeAuthPage();
   updateAuthButtons();
   if (typeof renderGrid === 'function')
@@ -1730,16 +1714,9 @@ function mbnGo(tab) {
       document.getElementById('v-dash').classList.remove('hidden');
       openLevel(curLevel || 'primary');
     }
-  } else if (tab === 'saved') {
-    if (!isLoggedIn()) { showLockedFeaturePopup('🔖 Bookmarks', 'Save animations to find them instantly before exams. Sign in — it\'s free!'); return; }
-    if (document.getElementById('v-dash').classList.contains('hidden')) {
-      document.getElementById('v-land').classList.add('hidden');
-      document.getElementById('v-dash').classList.remove('hidden');
-    }
-    showBookmarksTab();
   } else if (tab === 'progress') {
-    if (!isLoggedIn()) { showLockedFeaturePopup('📊 Progress', 'Sign in to track your XP, streaks, and quiz history over time.'); return; }
-    showQuizHistory();
+    if (!isLoggedIn()) { showLockedFeaturePopup('📊 Progress', 'Sign in to track your XP, streaks, and achievements over time.'); return; }
+    if (typeof BEC !== 'undefined') BEC._showDetailedStats();
   }
 }
 
@@ -2340,6 +2317,9 @@ function renderCategoryPicker(level) {
   // Hero
   document.getElementById('d-hero-eyebrow').textContent = m.exam + ' · ' + m.grades;
   document.getElementById('d-hero-h1').textContent = m.name;
+  document.getElementById('d-hero-h1').classList.remove('d-hero-h1-sm');
+  document.getElementById('d-hero-p').style.display = '';
+  document.getElementById('d-hero').classList.remove('d-hero-compact');
   document.getElementById('d-hero-p').textContent = 'Choose a ' + catLabel.toLowerCase() + ' to start:';
   document.getElementById('d-hero-stats').innerHTML = '';
 
@@ -2410,11 +2390,17 @@ function renderDashboard(level, group) {
     document.getElementById('d-hero-eyebrow').innerHTML =
       `<span onclick="openLevel('${level}')" style="cursor:pointer;text-decoration:underline;opacity:.7">← Back to ${catLabel}</span>`;
     document.getElementById('d-hero-h1').textContent = group;
-    document.getElementById('d-hero-p').textContent = total + ' animation' + (total!==1?'s':'') + ' · ' + m.name;
+    document.getElementById('d-hero-h1').classList.add('d-hero-h1-sm');
+    document.getElementById('d-hero-p').textContent = '';
+    document.getElementById('d-hero-p').style.display = 'none';
+    document.getElementById('d-hero').classList.add('d-hero-compact');
     document.getElementById('d-hero-stats').innerHTML = '';
   } else {
     document.getElementById('d-hero-eyebrow').textContent = m.exam + ' · ' + m.grades;
     document.getElementById('d-hero-h1').textContent = m.name;
+    document.getElementById('d-hero-h1').classList.remove('d-hero-h1-sm');
+    document.getElementById('d-hero-p').style.display = '';
+    document.getElementById('d-hero').classList.remove('d-hero-compact');
 
     // Dynamic description based on level
     const levelDescription = {
@@ -2466,8 +2452,7 @@ function renderDashboard(level, group) {
   const nav = document.getElementById('d-nav');
   nav.innerHTML = m.subjects.map(s =>
     `<button class="d-nbtn ${s === curSubj ? 'on' : ''}" onclick="filterSubj('${s}')" style="padding:8px 16px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .2s;font-family:inherit">${s}</button>`
-  ).join('') +
-  `<button class="d-nbtn ${curSubj === 'Saved' ? 'on' : ''}" onclick="showBookmarksTab()" style="padding:8px 16px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .2s;font-family:inherit;margin-left:auto">🔖 My Saved</button>`;
+  ).join('');
 
   // Widgets
   renderWidgets(level, all);
@@ -2485,17 +2470,6 @@ function renderDashboard(level, group) {
 ══════════════════════════════════════════ */
 function renderWidgets(level, all) {
   const m = META[level];
-
-  // ── 1. Today's Spotlight ──────────────────
-  const dayIdx = (Math.floor(Date.now() / 86400000)) % all.length;
-  const spot   = all[dayIdx];
-  const spotHTML = `
-    <a class="wid-spot-card" href="${spot.url}" onclick="trackVisit('${spot.url}')">
-      <div class="wid-spot-icon">${spot.icon}</div>
-      <div class="wid-spot-title">${spot.title}</div>
-      <div class="wid-spot-sub">${spot.sub}</div>
-      <button class="wid-spot-btn" onclick="event.preventDefault();trackVisit('${spot.url}');location.href='${spot.url}'">Open Animation →</button>
-    </a>`;
 
   // ── 2. Your Progress ─────────────────────
   const visited  = getVisited(level);
@@ -2515,62 +2489,10 @@ function renderWidgets(level, all) {
     ${recentItems || '<div class="prog-empty">None yet — start exploring!</div>'}
   `;
 
-  // ── 3. Personalized Recommendations ──────
-  let recsHTML = '';
-  if (typeof BEC !== 'undefined') {
-    const notStarted = all.filter(it => {
-      const slug = it.url.replace('animations/','').replace('.html','');
-      return BEC.getCrown(slug) === 0 && isCardUnlocked(it.url);
-    }).slice(0, 3);
-    const readyForChallenge = all.filter(it => {
-      const slug = it.url.replace('animations/','').replace('.html','');
-      return BEC.getCrown(slug) === 1;
-    }).slice(0, 3);
-
-    let recsList = '';
-    if (notStarted.length > 0) {
-      recsList += '<div style="margin-bottom:12px"><div style="font-size:.75rem;font-weight:700;color:#f9a825;text-transform:uppercase;margin-bottom:6px;letter-spacing:.7px">📚 Get Started</div>';
-      notStarted.forEach(it => {
-        recsList += `<a href="${it.url}" onclick="trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${it.url.replace('animations/','').replace('.html','')}',1);BEC.addXP(5,'Opened animation')}" style="display:block;padding:8px;background:rgba(249,168,37,.08);border-left:3px solid #f9a825;color:#f9a825;text-decoration:none;border-radius:4px;font-size:.85rem;font-weight:600;margin-bottom:4px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">${it.icon} ${it.title}</a>`;
-      });
-      recsList += '</div>';
-    }
-    if (readyForChallenge.length > 0) {
-      recsList += '<div style="margin-bottom:12px"><div style="font-size:.75rem;font-weight:700;color:#4caf50;text-transform:uppercase;margin-bottom:6px;letter-spacing:.7px">🚀 Ready for Challenge?</div>';
-      readyForChallenge.forEach(it => {
-        const quizUrl = it.url.replace('.html', '-quiz.html');
-        recsList += `<a href="${quizUrl}" onclick="trackVisit('${it.url}')" style="display:block;padding:8px;background:rgba(76,175,80,.08);border-left:3px solid #4caf50;color:#4caf50;text-decoration:none;border-radius:4px;font-size:.85rem;font-weight:600;margin-bottom:4px;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">🧠 ${it.title} Quiz</a>`;
-      });
-      recsList += '</div>';
-    }
-    if (recsList) {
-      recsHTML = `
-      <div class="wid">
-        <div class="wid-hdr"><span class="wid-hdr-icon">💫</span>Recommended For You</div>
-        <div style="padding:12px 0">${recsList}</div>
-      </div>`;
-    }
-  }
-
-  // ── 4. Study Tips ─────────────────────────
-  const tipsHTML = m.tips.map(t => {
-    const [emoji,...rest] = t.split(' ');
-    return `<div class="tip-item"><span class="tip-emoji">${emoji}</span><span>${rest.join(' ')}</span></div>`;
-  }).join('');
-
   document.getElementById('d-widgets').innerHTML = `
-    <div class="wid">
-      <div class="wid-hdr"><span class="wid-hdr-icon">⭐</span>Today's Spotlight</div>
-      ${spotHTML}
-    </div>
     <div class="wid">
       <div class="wid-hdr"><span class="wid-hdr-icon">📊</span>Your Progress</div>
       ${progHTML}
-    </div>
-    ${recsHTML}
-    <div class="wid">
-      <div class="wid-hdr"><span class="wid-hdr-icon">💡</span>Study Tips</div>
-      ${tipsHTML}
     </div>
   `;
 }
@@ -2615,17 +2537,15 @@ function renderGrid(level, subj, query) {
           const animClick = isUnlocked
             ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
-          const bmCls = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
@@ -2673,17 +2593,15 @@ function renderGridFiltered(level, filteredData, query) {
           const animClick = isUnlocked
             ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
-          const bmCls2 = window._becBookmarks?.includes(it.url) ? 'bookmarked' : '';
           return `
           <div class="acard">
-            <button class="acard-bookmark ${bmCls2}" onclick="${isUnlocked ? `toggleBookmarkCard('${it.url}')` : `showUpgradePopup('${it.title}')`}" title="Bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
             <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
             <div class="acard-icon">${it.icon}</div>
             <div class="acard-title">${it.title}</div>
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
@@ -2707,74 +2625,6 @@ function filterSubj(subj) {
   curSubj = subj;
   document.querySelectorAll('.d-nbtn').forEach(b => b.classList.toggle('on', b.textContent === subj));
   renderGrid(curLevel, subj, dSearchQ);
-}
-
-function showBookmarksTab() {
-  if (!isLoggedIn()) { showLockedFeaturePopup('🔖 Bookmarks', 'Save animations to find them instantly before exams. Signing in is free!'); return; }
-  curSubj = 'Saved';
-  document.querySelectorAll('.d-nbtn').forEach(b => b.classList.toggle('on', b.textContent.includes('Saved')));
-  const bookmarks = BEC?.getBookmarks() || [];
-  if (!bookmarks.length) {
-    document.getElementById('d-grid').innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:40px 20px;color:#999">
-        <div style="font-size:2rem;margin-bottom:10px">🔖</div>
-        <div style="font-weight:700;color:#666;margin-bottom:8px">No saved animations yet</div>
-        <div style="font-size:.9rem">Click the 🔖 icon on any animation card to save it here.</div>
-      </div>`;
-    return;
-  }
-  // Find all bookmarked animations
-  let bookmarkedItems = [];
-  for (const level in ANIM) {
-    for (const g of ANIM[level]) {
-      bookmarkedItems.push(...g.items.filter(it => bookmarks.includes(it.url)).map(it => ({...it, group: g.group, level})));
-    }
-  }
-  // Render them
-  let html = '';
-  const groups = {};
-  bookmarkedItems.forEach(it => {
-    if (!groups[it.group]) groups[it.group] = [];
-    groups[it.group].push(it);
-  });
-  Object.entries(groups).forEach(([group, items]) => {
-    html += `
-      <div class="sec-div">
-        <span class="sec-div-label">${group}</span>
-        <div class="sec-div-line"></div>
-      </div>
-      <div class="card-grid">
-        ${items.map(it => {
-          const studyUrl = it.url.replace('.html', '-study.html');
-          const quizUrl  = it.url.replace('.html', '-quiz.html');
-          const slug     = it.url.replace('animations/','').replace('.html','');
-          const crownIcon = BEC ? BEC.crownHtml(BEC.getCrown(slug)) : '';
-          const isUnlocked = isCardUnlocked(it.url);
-          const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
-          const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
-          const quizUrl2  = it.url.replace('.html', '-quiz.html');
-          const studyUrl2 = it.url.replace('.html', '-study.html');
-          const animClick = isUnlocked
-            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
-            : `event.preventDefault();showUpgradePopup('${it.title}')`;
-          return `
-          <div class="acard">
-            <button class="acard-bookmark bookmarked" onclick="toggleBookmarkCard('${it.url}')" title="Remove bookmark"><svg class="bm-outline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><svg class="bm-filled" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
-            <span class="acard-crown" data-bec-crown="${slug}">${crownIcon}</span>
-            <div class="acard-icon">${it.icon}</div>
-            <div class="acard-title">${it.title}</div>
-            <div class="acard-sub">${it.sub}</div>
-            <div class="acard-btns">
-              <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl2 : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl2}','${it.title}'))return;trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl2 : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl2}','${it.title}'))return;trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
-  });
-  document.getElementById('d-grid').innerHTML = html;
-  document.getElementById('d-no-results').style.display = 'none';
 }
 
 /* ══════════════════════════════════════════
@@ -3011,25 +2861,8 @@ function renderLandingStats() {
 }
 
 /* ══════════════════════════════════════════
-   BOOKMARKS & LEADERBOARD
+   LEADERBOARD
 ══════════════════════════════════════════ */
-window._becBookmarks = [];
-
-function toggleBookmarkCard(url) {
-  if (!isLoggedIn()) { showLockedFeaturePopup('🔖 Bookmarks', 'Save animations to find them instantly before exams. Signing in is free!'); return; }
-  const isBookmarked = BEC.toggleBookmark(url);
-  window._becBookmarks = BEC.getBookmarks();
-  // Visual feedback
-  const cards = document.querySelectorAll('[onclick*="toggleBookmarkCard"]');
-  cards.forEach(c => {
-    if (c.getAttribute('onclick').includes(`'${url}'`)) {
-      c.classList.toggle('bookmarked', isBookmarked);
-      c.title = isBookmarked ? 'Remove bookmark' : 'Bookmark';
-    }
-  });
-  // If on Saved tab, refresh list so removed items disappear immediately
-  if (curSubj === 'Saved') showBookmarksTab();
-}
 
 function showQuizHistory() {
   if (!isLoggedIn()) { showLockedFeaturePopup('📊 Quiz History', 'Sign in to track your quiz scores and see how you improve over time.'); return; }
@@ -3132,6 +2965,14 @@ function showCommunity() {
   document.getElementById('v-pricing')?.classList.add('hidden');
   document.getElementById('v-community').classList.remove('hidden');
   window.scrollTo(0, 0);
+  // Default the "Ask" form's level dropdown to the student's current curriculum level
+  const qLevelSel = document.getElementById('comm-q-level');
+  if (qLevelSel && curLevel) qLevelSel.value = curLevel;
+  // Default to the student's current curriculum level so BGCSE students see BGCSE questions first
+  _commFilter = curLevel || 'all';
+  document.querySelectorAll('.comm-filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.filter === _commFilter)
+  );
   loadCommunityPosts(_commFilter);
 }
 

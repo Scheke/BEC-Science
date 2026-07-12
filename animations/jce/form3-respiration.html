@@ -25,28 +25,19 @@
   </style>
 </head>
 <body>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html">&#8592; All Topics</a><button style="margin-left:auto;background:#80deea;color:#004d40;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer" onclick="printNotes()">&#128438; Print Notes</button></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%203">&#8592; Form 3</a></div>
 <div class="topic-header">
   <span class="label">JCE · Form 3 Biology</span>
   <h1>Respiration &amp; Gas Exchange</h1>
 </div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-aero on" id="b-aero" onclick="setMode(true)">&#9679; Aerobic Respiration</button>
-  <button class="btn btn-ana" id="b-ana" onclick="setMode(false)">&#9679; Anaerobic Respiration</button>
-  <button class="btn btn-aero" id="b-prac-r" onclick="setRespPractice(!respMcq)" style="border-color:#f9a825;color:#f9a825">&#127918; Respiration Quiz</button>
+  <button class="btn btn-aero on mode-btn" id="b-aero" onclick="setMode(true)" title="Aerobic Respiration" aria-label="Aerobic Respiration">&#9679; <span class="mode-lbl">Aerobic Respiration</span></button>
+  <button class="btn btn-ana mode-btn" id="b-ana" onclick="setMode(false)" title="Anaerobic Respiration" aria-label="Anaerobic Respiration">&#9679; <span class="mode-lbl">Anaerobic Respiration</span></button>
+  <button class="btn btn-aero mode-btn" id="b-prac-r" onclick="setRespPractice(!respMcq)" style="border-color:#f9a825;color:#f9a825" title="Respiration Quiz" aria-label="Respiration Quiz">&#127918; <span class="mode-lbl">Respiration Quiz</span></button>
 </div>
 
 <script>
-function printNotes(){
-  let html='<html><head><title>Respiration Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#006064;border-bottom:2px solid #006064;padding-bottom:8px}h2{color:#00838f;margin-top:14px}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #ccc;padding:5px 8px;font-size:.85em}th{background:#006064;color:#fff}@media print{body{padding:10px}}</style></head><body>';
-  html+='<h1>Respiration &amp; Gas Exchange — Study Notes</h1>';
-  html+='<h2>Aerobic Respiration</h2><p><strong>Equation:</strong> Glucose + Oxygen → Carbon dioxide + Water + Energy (ATP)</p><p>C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 38 ATP</p><ul><li>Occurs in mitochondria</li><li>Releases large amounts of energy (38 ATP)</li><li>Requires oxygen</li></ul>';
-  html+='<h2>Anaerobic Respiration</h2><p><strong>In animals:</strong> Glucose → Lactic acid + Energy (2 ATP)</p><p><strong>In yeast:</strong> Glucose → Ethanol + CO₂ + Energy (2 ATP)</p><ul><li>Occurs in cytoplasm</li><li>Releases small amounts of energy (2 ATP)</li><li>Does NOT require oxygen</li><li>Lactic acid causes muscle fatigue</li></ul>';
-  html+='<h2>Gas Exchange (Alveoli)</h2><ul><li>O₂ diffuses from alveoli into blood capillaries</li><li>CO₂ diffuses from blood into alveoli (exhaled)</li><li>Alveoli have large surface area, thin walls, moist lining, good blood supply</li></ul>';
-  html+='</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let respMcq=false;
 const RESP_MCQ=[
   {q:'The equation for AEROBIC respiration is:',opts:['Glucose + O₂ → CO₂ + H₂O + Energy','Glucose → Lactic acid + Energy','Glucose → Ethanol + CO₂','CO₂ + H₂O → Glucose + O₂'],c:0,tip:'Aerobic respiration uses oxygen to completely oxidise glucose, releasing maximum energy.'},

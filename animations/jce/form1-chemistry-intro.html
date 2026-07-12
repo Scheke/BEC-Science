@@ -24,8 +24,7 @@
     .btn-app.on{background:#6a1b9a;color:#fff}
     .btn-prac{border-color:#f9a825;color:#f9a825;background:#fff}
     .btn-prac.on{background:#f9a825;color:#fff}
-    .print-btn{margin-left:auto;background:#90caf9;color:#0d47a1;border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.82rem;cursor:pointer}
-    .print-btn:hover{background:#64b5f6}
+
     /* ── Mobile responsive ── */
     #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
     #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
@@ -65,64 +64,18 @@
 </head>
 <body>
 <h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>
-<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%201">&#8592; All Topics</a></div>
+<div class="topbar"><span class="logo">BEC Animations</span><a href="../../index.html#junior/Form%201">&#8592; Form 1</a></div>
 <div class="topic-header"><span class="label">JCE · Form 1 Chemistry</span><h1>Introduction to Chemistry</h1></div>
 <div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
-  <button class="btn btn-app on" id="b0" onclick="setView(0)">🧪 Lab Apparatus</button>
-  <button class="btn btn-phys"   id="b1" onclick="setView(1)">🔄 Physical Changes</button>
-  <button class="btn btn-chem"   id="b2" onclick="setView(2)">🔥 Chemical Changes</button>
-  <button class="btn btn-prac"   id="b3" onclick="setView(3)">🎮 Match Apparatus</button>
+  <button class="btn btn-app on mode-btn" id="b0" onclick="setView(0)" title="Lab Apparatus" aria-label="Lab Apparatus">🧪 <span class="mode-lbl">Lab Apparatus</span></button>
+  <button class="btn btn-phys mode-btn"   id="b1" onclick="setView(1)" title="Physical Changes" aria-label="Physical Changes">🔄 <span class="mode-lbl">Physical Changes</span></button>
+  <button class="btn btn-chem mode-btn"   id="b2" onclick="setView(2)" title="Chemical Changes" aria-label="Chemical Changes">🔥 <span class="mode-lbl">Chemical Changes</span></button>
+  <button class="btn btn-prac mode-btn"   id="b3" onclick="setView(3)" title="Match Apparatus" aria-label="Match Apparatus">🎮 <span class="mode-lbl">Match Apparatus</span></button>
 </div>
 <script>
 let view=0;
 function setView(n){view=n;[0,1,2,3].forEach(i=>document.getElementById('b'+i).classList.toggle('on',i===n)); if(n===3) resetApparatusMatch();}
-function printNotes(){
-  let html='<html><head><title>Chemistry Intro Notes</title><style>body{font-family:Arial,sans-serif;padding:20px;max-width:700px;margin:0 auto}h1{color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:8px}h2{color:#0d47a1;margin-top:14px}p{margin:4px 0 10px}ul{margin:4px 0 10px 20px}li{margin:2px 0}@media print{body{padding:10px}}    /* ── Mobile responsive ── */
-    #sketch-wrap{width:100%;max-width:100vw;overflow:hidden;display:flex;justify-content:center;margin-top:14px}
-    #sketch-wrap canvas{max-width:100%!important;height:auto!important;display:block}
-    @media(max-width:900px){
-      #sketch-wrap{transform-origin:top center}
-      body{padding:0 0 20px}
-    }
-    
-    @media(orientation:landscape)and(max-height:500px){
-      body{flex-direction:row;flex-wrap:wrap;align-items:flex-start;height:100vh;overflow:hidden;padding:0}
-      .topbar{width:100%}
-      .topic-header{width:100%}
-      #sketch-wrap{flex:1;margin:0;height:calc(100vh - 90px)}
-      #sketch-wrap canvas{width:100%!important;height:100%!important;object-fit:contain}
-      #controls{flex-direction:column;width:140px;height:calc(100vh - 90px);margin:0;padding:12px 8px;gap:8px;justify-content:center;border-left:1px solid #ddd;background:#fff}
-      .btn{width:100%;padding:10px 8px;font-size:.78rem;text-align:center}
-      #step-lbl{width:100%;font-size:.72rem;padding:6px 8px;text-align:center}
-    }
-    
-    
-    }
-    
-    }    /* ── Auto-rotate for small phones in portrait ── */
-    @media(max-width:560px)and(orientation:portrait){
-      html,body{overflow:hidden}
-      body{
-        position:fixed;
-        width:100vh;
-        height:100vw;
-        top:calc(50% - 50vw);
-        left:calc(50% - 50vh);
-        transform:rotate(90deg);
-        transform-origin:center;
-        overflow:hidden;
-      }
-    }</style></head><body>
-<h2>Rotate Your Device</h2><p>Turn your phone sideways for the best animation experience.</p></div>';
-  html+='<h1>Introduction to Chemistry — Study Notes</h1><h2>Lab Apparatus</h2><ul>';
-  APPARATUS.forEach(a=>html+=`<li><strong>${a.name}:</strong> ${a.desc.replace(/\n/g,' ')}</li>`);
-  html+='</ul><h2>Physical vs Chemical Changes</h2><table border="1" style="border-collapse:collapse;width:100%"><tr><th>Physical Change</th><th>Chemical Change</th></tr><tr><td>No new substance formed</td><td>New substance formed</td></tr><tr><td>Usually reversible</td><td>Usually NOT reversible</td></tr></table>';
-  html+='<h2>Elements, Compounds and Mixtures</h2><ul><li><strong>Element:</strong> One type of atom. Cannot be broken down further.</li><li><strong>Compound:</strong> Two+ different elements chemically bonded.</li><li><strong>Mixture:</strong> Two+ substances NOT chemically bonded. Can be separated.</li></ul>';
-  html+='
-</body></html>';
-  let w=window.open('','_blank');w.document.write(html);w.document.close();w.print();
-}
 let amSel=-1, amMatched, amWrong, amShuffled;
 function resetApparatusMatch(){
   amShuffled=[...APPARATUS].sort(()=>Math.random()-0.5);
