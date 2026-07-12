@@ -549,6 +549,15 @@ const BEC = (() => {
     _refreshUI();
   }
 
+  /* XP for simply opening a topic (animation/study) — only every 2nd open counts,
+     so casually re-opening the same or new topics doesn't farm XP too fast. */
+  function addOpenXP(amount, reason) {
+    _load();
+    _s._openCount = (_s._openCount || 0) + 1;
+    _save();
+    if (_s._openCount % 2 === 0) addXP(amount, reason);
+  }
+
   /* Call this alongside addXP whenever an MCQ answer is correct */
   function recordCorrect() {
     _load();
@@ -809,8 +818,6 @@ const BEC = (() => {
   /* ── UI refresh ── */
   function _refreshUI() {
     renderStatsBar();
-    const hb = document.getElementById('bec-hearts-bar');
-    if (hb) hb.innerHTML = _heartsHtml();
     document.querySelectorAll('[data-bec-crown]').forEach(el => {
       el.textContent = _crownIcon(_s.crowns[el.dataset.becCrown] || 0);
     });
@@ -841,9 +848,6 @@ const BEC = (() => {
     bar.style.cssText = 'background:#fff;border-bottom:1px solid #e8e8e8;padding:8px 20px;font-family:system-ui,sans-serif;';
     bar.innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;height:32px;flex-wrap:nowrap">
-        <!-- Hearts -->
-        <div style="display:flex;gap:1px;align-items:center;flex-shrink:0" id="bec-hearts-bar">${_heartsHtml()}</div>
-
         <!-- Achievements badge count -->
         <button onclick="BEC._showProfile()" style="background:var(--c,#2e7d32);border:none;color:#fff;
           font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:6px;
@@ -893,7 +897,7 @@ const BEC = (() => {
       </div>
 
       <!-- Content -->
-      <div style="max-width:1000px;margin:0 auto;padding:30px 20px">
+      <div style="max-width:1000px;margin:0 auto;padding:30px 20px 90px">
 
         <!-- Level & XP -->
         <div style="background:#fff;border-radius:14px;padding:24px;margin-bottom:28px;box-shadow:0 2px 8px rgba(0,0,0,.05)">
@@ -920,10 +924,6 @@ const BEC = (() => {
             <div style="font-size:1.8rem;margin-bottom:8px">🔥</div>
             <div style="font-size:1.4rem;font-weight:800;color:var(--c,#2e7d32);margin-bottom:4px">${_s.streak}</div>
             <div style="font-size:.8rem;color:#999">Day Streak</div>
-          </div>
-          <div style="background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)">
-            <div style="font-size:1.4rem;margin-bottom:8px">${_heartsHtml()}</div>
-            <div style="font-size:.8rem;color:#999">Lives</div>
           </div>
           <div style="background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)">
             <div style="font-size:1.8rem;margin-bottom:8px">✅</div>
@@ -1050,7 +1050,7 @@ const BEC = (() => {
   _load();
 
   return {
-    addXP, recordCorrect, loseHeart, getHearts,
+    addXP, addOpenXP, recordCorrect, loseHeart, getHearts,
     setCrown, getCrown, getLevel, getNextLevel, getState, getSlug,
     markPerfectQuiz, recordChallengeScore,
     renderStatsBar, crownHtml, confetti,

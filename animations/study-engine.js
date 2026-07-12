@@ -484,7 +484,7 @@ class StudyEngine {
   // SPA path: everything already initialized by index.html
   if (window.BEC && window._becDB && window._becUID) {
     BEC.setCrown(BEC.getSlug(), 1);
-    BEC.addXP(5, 'Opened study');
+    BEC.addOpenXP(5, 'Opened study');
     return;
   }
 
@@ -532,7 +532,7 @@ class StudyEngine {
         window._becUID = user.uid;
         BEC.loadFromCloud().then(function() {
           BEC.setCrown(BEC.getSlug(), 1);
-          BEC.addXP(5, 'Opened study');
+          BEC.addOpenXP(5, 'Opened study');
         }).catch(function() {});
       }
     });

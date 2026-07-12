@@ -203,7 +203,6 @@
     .pc-stat-icon{font-size:1.4rem;line-height:1}
     .pc-stat-val{font-size:.88rem;font-weight:800;color:#fff}
     .pc-stat-lbl{font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.7px}
-    .pc-hearts{display:flex;gap:3px;margin-bottom:1px}
     .pc-badge-btn{
       background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.18);
       color:#fff;font-size:.82rem;font-weight:800;
@@ -602,7 +601,7 @@
       background:#fff;
       border-top:1px solid #e8e8e8;
       box-shadow:0 -4px 16px rgba(0,0,0,.08);
-      z-index:500;
+      z-index:9999;
       display:none;
       grid-template-columns:repeat(4,1fr);
       align-items:stretch;
@@ -1428,6 +1427,10 @@ function initAuth() {
         const entDoc = await window._becDB.collection('entitlements').doc(user.uid).get();
         if (entDoc.exists && entDoc.data()?.premium === true) currentUser.isPremium = true;
       } catch(e) {}
+      // Cache the resolved state so the next hard page load (e.g. returning from a
+      // standalone animation page) can render correctly before Firebase re-resolves.
+      if (!user.isAnonymous) _saveCachedAuth(currentUser);
+      else _clearCachedAuth();
       // Save profile snapshot for admin panel visibility
       window._becDB.collection('users').doc(user.uid).set({
         email:       user.email || '',
@@ -1456,6 +1459,7 @@ function initAuth() {
     } else {
       currentUser = null;
       window._becUID = null;
+      _clearCachedAuth();
     }
     updateAuthButtons();
     if (typeof renderGrid === 'function')
@@ -1696,6 +1700,7 @@ async function signOut() {
   await fbAuth.signOut();
   currentUser = null;
   window._becUID = null;
+  _clearCachedAuth();
   closeAuthPage();
   updateAuthButtons();
   if (typeof renderGrid === 'function')
@@ -2454,47 +2459,12 @@ function renderDashboard(level, group) {
     `<button class="d-nbtn ${s === curSubj ? 'on' : ''}" onclick="filterSubj('${s}')" style="padding:8px 16px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;transition:all .2s;font-family:inherit">${s}</button>`
   ).join('');
 
-  // Widgets
-  renderWidgets(level, all);
-
   // Grid — pass filtered data
   renderGridFiltered(level, filteredData, '');
 
   // Clear search inputs
   document.getElementById('d-srch2').value = '';
   document.getElementById('d-srch2-x').style.display = 'none';
-}
-
-/* ══════════════════════════════════════════
-   WIDGETS
-══════════════════════════════════════════ */
-function renderWidgets(level, all) {
-  const m = META[level];
-
-  // ── 2. Your Progress ─────────────────────
-  const visited  = getVisited(level);
-  const vCount   = visited.length;
-  const pct      = total => Math.round(vCount / total * 100);
-  const recentItems = visited.slice(0,3).map(url => {
-    const it = all.find(a => a.url === url);
-    return it ? `<a class="prog-recent-item" href="${it.url}" onclick="trackVisit('${it.url}')">`+
-      `<span class="prog-recent-icon">${it.icon}</span>${it.title}</a>` : '';
-  }).filter(Boolean).join('');
-  const progHTML = `
-    <div class="wid-prog-row">
-      <span class="wid-prog-nums">${vCount} <span class="wid-prog-of">/ ${all.length} opened</span></span>
-    </div>
-    <div class="prog-bar"><div class="prog-fill" style="width:${pct(all.length)}%"></div></div>
-    <div class="prog-recent-hdr">Recently visited</div>
-    ${recentItems || '<div class="prog-empty">None yet — start exploring!</div>'}
-  `;
-
-  document.getElementById('d-widgets').innerHTML = `
-    <div class="wid">
-      <div class="wid-hdr"><span class="wid-hdr-icon">📊</span>Your Progress</div>
-      ${progHTML}
-    </div>
-  `;
 }
 
 /* ══════════════════════════════════════════
@@ -2535,7 +2505,7 @@ function renderGrid(level, subj, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
@@ -2545,7 +2515,7 @@ function renderGrid(level, subj, query) {
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
@@ -2591,7 +2561,7 @@ function renderGridFiltered(level, filteredData, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened animation')}`
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
@@ -2601,7 +2571,7 @@ function renderGridFiltered(level, filteredData, query) {
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
@@ -2806,14 +2776,8 @@ function renderLandingStats() {
   const lv  = BEC.getLevel(s.xp);
   const nx  = BEC.getNextLevel(s.xp);
   const pct = nx ? Math.round((s.xp - lv.min) / (nx.min - lv.min) * 100) : 100;
-  const HMAX = 5;
-
   const earned   = BEC.BADGES.filter(b => s.badges.includes(b.id));
   const nextBdg  = BEC.BADGES.find(b => !s.badges.includes(b.id));
-
-  const heartsHtml = Array.from({length: HMAX}, (_, i) =>
-    `<span style="color:${i < (s.hearts ?? HMAX) ? '#ef9a9a' : 'rgba(255,255,255,.15)'};font-size:.95rem">♥</span>`
-  ).join('');
 
   const earnedIconsHtml = earned.slice(-5).map(b =>
     `<span title="${b.name}" style="font-size:1.2rem">${b.icon}</span>`
@@ -2837,12 +2801,7 @@ function renderLandingStats() {
           <span class="pc-stat-val">${s.streak}</span>
           <span class="pc-stat-lbl">streak</span>
         </div>
-        <div class="pc-stat-blk">
-          <div class="pc-hearts">${heartsHtml}</div>
-          <span class="pc-stat-val">${s.hearts ?? HMAX}/${HMAX}</span>
-          <span class="pc-stat-lbl">lives</span>
-        </div>
-        ${BEC?.canFreezeStreak() ? `<button onclick="freezeStreakUI()" style="padding:8px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s;font-family:inherit" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🛡️ ${s.xp} XP</button>` : ''}
+        ${BEC?.canFreezeStreak() ?`<button onclick="freezeStreakUI()" style="padding:8px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s;font-family:inherit" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">🛡️ ${s.xp} XP</button>` : ''}
         <button onclick="showQuizHistory()" class="pc-badge-btn" style="padding:8px 14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:6px;color:#fff;font-weight:700;font-size:.75rem;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
           <span style="display:block">📊 History</span>
         </button>
@@ -2950,30 +2909,8 @@ var _commFrom   = 'land';
 var _commFilter = 'all';
 
 function showCommunity() {
-  if (!isLoggedIn()) {
-    showLockedFeaturePopup('💬 Community', 'Sign in to ask questions and help other students — it\'s free!');
-    return;
-  }
-  const vDash = document.getElementById('v-dash');
-  const vLand = document.getElementById('v-land');
-  const vLb = document.getElementById('v-leaderboard');
-  if (vLb && !vLb.classList.contains('hidden')) { _commFrom = _lbFrom; }
-  else { _commFrom = (vDash && !vDash.classList.contains('hidden')) ? 'dash' : 'land'; }
-  vDash?.classList.add('hidden');
-  vLand?.classList.add('hidden');
-  vLb?.classList.add('hidden');
-  document.getElementById('v-pricing')?.classList.add('hidden');
-  document.getElementById('v-community').classList.remove('hidden');
-  window.scrollTo(0, 0);
-  // Default the "Ask" form's level dropdown to the student's current curriculum level
-  const qLevelSel = document.getElementById('comm-q-level');
-  if (qLevelSel && curLevel) qLevelSel.value = curLevel;
-  // Default to the student's current curriculum level so BGCSE students see BGCSE questions first
-  _commFilter = curLevel || 'all';
-  document.querySelectorAll('.comm-filter-btn').forEach(b =>
-    b.classList.toggle('active', b.dataset.filter === _commFilter)
-  );
-  loadCommunityPosts(_commFilter);
+  // Community is built but not yet launched — locked for all users until launch.
+  showComingSoonPopup('💬 Community');
 }
 
 function closeCommunity() {
@@ -3402,9 +3339,38 @@ async function loadLeaderboardTab(level) {
 }
 
 /* ══════════════════════════════════════════
+   AUTH CACHE — avoids the "flash of logged out / not premium" state on
+   every hard page load (returning from a standalone animation page forces
+   a full reload, and Firebase Auth resolution is async).
+   We optimistically trust the last-known state from localStorage on paint,
+   then the real onAuthStateChanged below silently reconciles it.
+══════════════════════════════════════════ */
+const AUTH_CACHE_KEY = 'bec_authCache';
+function _loadCachedAuth() {
+  try {
+    const data = JSON.parse(localStorage.getItem(AUTH_CACHE_KEY) || 'null');
+    return (data && data.uid) ? data : null;
+  } catch(e) { return null; }
+}
+function _saveCachedAuth(u) {
+  try { localStorage.setItem(AUTH_CACHE_KEY, JSON.stringify({ uid: u.uid, name: u.name, email: u.email, isPremium: !!u.isPremium })); } catch(e) {}
+}
+function _clearCachedAuth() {
+  try { localStorage.removeItem(AUTH_CACHE_KEY); } catch(e) {}
+}
+
+/* ══════════════════════════════════════════
    INIT — restore last level or show landing
 ══════════════════════════════════════════ */
 (function init() {
+  // Optimistic bootstrap from cache — must happen before the hash router below
+  // renders anything, so the very first paint already reflects last-known auth state.
+  const cachedAuth = _loadCachedAuth();
+  if (cachedAuth) {
+    currentUser = { name: cachedAuth.name, email: cachedAuth.email, uid: cachedAuth.uid, isAnonymous: false, isPremium: !!cachedAuth.isPremium };
+    window._becUID = cachedAuth.uid;
+  }
+
   function handleHash(h) {
     if (!h) {
       document.getElementById('v-dash').classList.add('hidden');
@@ -3465,6 +3431,35 @@ function showLockedFeaturePopup(featureName, reason) {
         style="width:100%;background:#f5f5f5;color:#666;border:none;border-radius:12px;
                padding:12px;font-size:.85rem;cursor:pointer;font-family:inherit">
         Continue as visitor
+      </button>
+    </div>`;
+
+  el.onclick = e => { if (e.target === el) el.remove(); };
+  document.body.appendChild(el);
+}
+
+// Locked "coming soon" popup — for features that are built but not yet launched
+function showComingSoonPopup(featureName) {
+  document.getElementById('locked-feature-popup')?.remove();
+
+  const el = document.createElement('div');
+  el.id = 'locked-feature-popup';
+  el.style.cssText = [
+    'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1200;',
+    'display:flex;align-items:center;justify-content:center;padding:20px;',
+    'animation:fadeIn .2s ease;',
+  ].join('');
+
+  el.innerHTML = `
+    <div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:340px;width:100%;
+                box-shadow:0 12px 40px rgba(0,0,0,.25);text-align:center;position:relative">
+      <div style="font-size:2.4rem;margin-bottom:10px">🚧</div>
+      <h3 style="margin:0 0 8px;font-size:1.15rem;font-weight:900;color:#111">${featureName} is coming soon</h3>
+      <p style="margin:0 0 20px;font-size:.88rem;color:#555;line-height:1.6">We're still putting the finishing touches on this. Check back soon!</p>
+      <button onclick="document.getElementById('locked-feature-popup')?.remove()"
+        style="width:100%;background:#2e7d32;color:#fff;border:none;border-radius:12px;
+               padding:14px;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit">
+        Got it
       </button>
     </div>`;
 
