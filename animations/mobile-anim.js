@@ -44,7 +44,7 @@
 
     /* Fullscreen toggle button */
     '#bec-fs-btn{',
-    '  position:fixed;top:8px;right:8px;z-index:950;',
+    '  position:fixed;bottom:16px;right:10px;z-index:950;',
     '  background:rgba(27,94,32,.9);color:#fff;border:none;',
     '  border-radius:10px;padding:8px 14px;font-size:.82rem;font-weight:700;',
     '  cursor:pointer;font-family:inherit;',
@@ -52,7 +52,25 @@
     '  display:none;',
     '}',
     '@media(max-width:820px){#bec-fs-btn{display:block}}',
-    '#bec-fs-btn.fs-active{background:rgba(198,40,40,.9);bottom:80px;top:auto}',
+    '#bec-fs-btn.fs-active{background:rgba(198,40,40,.9);bottom:80px}',
+
+    /* Controls row must wrap on small screens — no horizontal scrollbar */
+    '@media(max-width:820px){',
+    '  #controls,.controls{flex-wrap:wrap!important;justify-content:center!important;',
+    '    max-width:100%!important;width:auto!important;row-gap:8px;padding:0 8px}',
+    '}',
+
+    /* Header title was wrapping to 2 lines and eating vertical space on phones —
+       shrink title/label/topbar text so the header stays compact. */
+    '@media(max-width:480px){',
+    '  .topbar{padding:8px 14px!important;flex-wrap:wrap!important;row-gap:4px}',
+    '  .topbar .logo{font-size:.95rem!important}',
+    '  .topbar a{font-size:.78rem!important}',
+    '  .topbar .print-btn,.print-btn{font-size:.72rem!important;padding:5px 10px!important;margin-left:auto!important}',
+    '  .topic-header{padding:10px 14px!important;gap:8px!important}',
+    '  .topic-header h1{font-size:1.02rem!important;line-height:1.25!important}',
+    '  .topic-header .label{font-size:.64rem!important;padding:2px 8px!important;white-space:nowrap}',
+    '}',
   ].join('\n');
   document.head.appendChild(s);
 
@@ -66,29 +84,43 @@
     return _canvas;
   }
 
+  // Logical (CSS) canvas size. canvas.width/.height are the internal pixel
+  // buffer, which p5 multiplies by devicePixelRatio (2-3x on phones) — using
+  // those for layout math produces a canvas 2-3x too small on real devices.
+  function cssSize(canvas) {
+    var w = parseFloat(canvas.style.width);
+    var h = parseFloat(canvas.style.height);
+    var dpr = window.devicePixelRatio || 1;
+    if (!w || w <= 0) w = canvas.width / dpr;
+    if (!h || h <= 0) h = canvas.height / dpr;
+    return { w: w, h: h };
+  }
+
   function scaleNormal() {
     var canvas = getCanvas();
     var wrap = document.getElementById('sketch-wrap');
     if (!canvas || !wrap) return;
 
+    var size = cssSize(canvas);
+
     // The per-file CSS has height:auto!important which collapses canvas height to 0.
     // Use setProperty with 'important' priority — inline !important beats stylesheet !important.
-    canvas.style.setProperty('height', canvas.height + 'px', 'important');
+    canvas.style.setProperty('height', size.h + 'px', 'important');
     canvas.style.setProperty('max-width', 'none', 'important');
 
     var available = wrap.clientWidth || window.innerWidth;
-    if (canvas.width <= 0 || available <= 0) return;
+    if (size.w <= 0 || available <= 0) return;
 
-    if (canvas.width <= available) {
+    if (size.w <= available) {
       canvas.style.transform = '';
       canvas.style.transformOrigin = '';
       wrap.style.height = '';
       return;
     }
-    var scale = available / canvas.width;
+    var scale = available / size.w;
     canvas.style.transform = 'scale(' + scale + ')';
     canvas.style.transformOrigin = 'top left';
-    wrap.style.height = Math.ceil(canvas.height * scale) + 'px';
+    wrap.style.height = Math.ceil(size.h * scale) + 'px';
   }
 
   // Retry until p5 creates the canvas (p5 setup() runs asynchronously)
@@ -128,11 +160,12 @@
   function scaleFullscreen() {
     var canvas = getCanvas();
     if (!canvas) return;
+    var size = cssSize(canvas);
     var controlsH = fsControls.offsetHeight || 64;
     var availW = window.innerWidth;
     var availH = window.innerHeight - controlsH;
-    var sx = availW / canvas.width;
-    var sy = availH / canvas.height;
+    var sx = availW / size.w;
+    var sy = availH / size.h;
     var sc = Math.min(sx, sy);
     canvas.style.transform = 'scale(' + sc + ')';
     canvas.style.transformOrigin = 'center center';

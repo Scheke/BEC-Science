@@ -37,7 +37,7 @@
   <span class="label">JCE · Form 3 Biology</span>
   <h1>Human Circulatory System</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <span style="font-size:0.85rem;color:#555;font-weight:600;">Heart rate:</span>
   <button class="btn btn-slow" id="b-slow" onclick="setRate('slow')">&#9664;&#9664; Slow</button>
@@ -410,5 +410,6 @@ new p5(function(p) {
   p.mouseClicked=function(){ if(circMcq){ circMcqClick(p.mouseX,p.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>

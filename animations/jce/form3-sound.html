@@ -32,7 +32,7 @@
   <span class="label">JCE · Form 3 Physics</span>
   <h1>Sound Properties</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <div class="slider-group">
     <label>Frequency (Pitch):</label>
@@ -406,5 +406,6 @@ new p5(function(sk) {
   sk.mouseClicked=function(){ if(soundMcq){ soundMcqClick(sk.mouseX,sk.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>

@@ -151,6 +151,24 @@ class StudyEngine {
         #se-title { font-size: .88rem !important; }
         #se-body { font-size: .78rem !important; }
       }
+      /* Topbar: too many flex-shrink:0 controls crammed in one 44px row
+         crushed the title to a single letter + ellipsis on phones.
+         Reflow into two rows: back+title on top, nav controls below. */
+      @media (max-width: 560px) {
+        #se-topbar {
+          height: auto !important; min-height: 44px;
+          flex-wrap: wrap !important; row-gap: 6px; padding: 8px 10px !important;
+        }
+        #se-topbar .se-sep { display: none !important; }
+        #se-topbar .se-navlbl { display: none !important; }
+        #se-back { order: 1; font-size: .7rem !important; }
+        #se-title-txt { order: 2; flex: 1 1 auto !important; font-size: .78rem !important; }
+        #se-topbar .se-break { order: 3; flex-basis: 100%; height: 0; }
+        #se-badge { order: 4; }
+        #se-prev { order: 5; }
+        #se-next { order: 6; }
+        #se-next-topic { order: 7; }
+      }
     `;
     document.head.appendChild(style);
 
@@ -166,11 +184,11 @@ class StudyEngine {
           onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">
           ${this.O.backLabel}
         </a>
-        <span style="color:rgba(255,255,255,.3);font-size:.7rem;flex-shrink:0">|</span>
-        <span style="color:rgba(255,255,255,.75);font-size:.78rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${this.O.shortTitle}</span>
-        <span id="se-navlbl" style="
+        <span class="se-sep" style="color:rgba(255,255,255,.3);font-size:.7rem;flex-shrink:0">|</span>
+        <span id="se-title-txt" style="color:rgba(255,255,255,.75);font-size:.78rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0">${this.O.shortTitle}</span>
+        <span id="se-navlbl" class="se-navlbl" style="
           color:rgba(255,255,255,.5);font-size:.7rem;font-weight:600;flex-shrink:0"></span>
-        <div style="flex:1"></div>
+        <div class="se-break" style="flex:1"></div>
         <button id="se-prev" onclick="__se.prev()" style="
           padding:4px 10px;border-radius:5px;border:1px solid rgba(255,255,255,.3);
           background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);font-size:.7rem;

@@ -635,8 +635,9 @@
       .l-hdr{padding:12px 16px;flex-wrap:wrap;gap:10px}
       .l-logo{font-size:1.1rem}
       .l-badge{font-size:.7rem;padding:6px 12px}
-      .l-hdr-btns{margin-left:0;width:100%;gap:8px}
-      .l-hdr-btn{flex:1;font-size:.75rem;padding:8px 10px!important}
+      .l-hdr-btns{margin-left:0;width:100%;gap:8px;flex-wrap:wrap}
+      .l-hdr-btn{flex:1 1 calc(50% - 4px);font-size:.75rem;padding:8px 10px!important;text-align:center;white-space:nowrap}
+      .l-hdr-btns > *:last-child{flex-basis:100%}
     }
     @media(max-width:640px){
       /* Show hamburger, hide nav clutter in dashboard */
@@ -662,8 +663,8 @@
       .l-badge{display:none}
       .l-h1{font-size:clamp(1.5rem,3.5vw,2rem)}
       .l-sub{font-size:.9rem;padding:0 12px}
-      .l-hdr-btns{width:100%;gap:6px}
-      .l-hdr-btn{font-size:.65rem;padding:6px 10px!important}
+      .l-hdr-btns{width:100%;gap:6px;flex-wrap:wrap}
+      .l-hdr-btn{font-size:.68rem;padding:7px 8px!important}
       .acard{padding:12px}
     }
   </style>
@@ -889,8 +890,9 @@
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
         <div style="flex:1;min-width:220px">
           <div style="font-size:.75rem;font-weight:800;color:#f9a825;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">🕐 Free Account — Today's Sessions <span style="font-weight:500;color:#6e7681;text-transform:none;letter-spacing:0">(resets at midnight)</span></div>
-          <div style="font-size:.82rem;color:#8b949e;line-height:2">
-            ✅ All 90+ animations available &nbsp;·&nbsp; ✅ XP · Streaks · Leaderboard · Bookmarks<br>
+          <div style="font-size:.82rem;color:#8b949e;line-height:1.9">
+            ✅ All 90+ animations unlocked<br>
+            ✅ XP &middot; Streaks &middot; Leaderboard &middot; Bookmarks<br>
             📽️ Animate / Study / Quiz &nbsp;<span id="fpl-cards" style="color:#e6edf3;font-weight:700"></span><br>
             📝 Practice Tests &nbsp;<span id="fpl-tests" style="color:#e6edf3;font-weight:700"></span><br>
             📋 Full Exams &nbsp;<span id="fpl-exams" style="color:#e6edf3;font-weight:700"></span>
@@ -1815,7 +1817,7 @@ function updateAuthButtons() {
     } else if (!isPrem) {
       // Free signed-in user
       premBanner.classList.remove('hidden');
-      if (bannerSpan) bannerSpan.innerHTML = '🕐 <strong style="color:#f9a825">Free Account</strong> — 7 sessions · 3 tests · 1 exam/day (resets midnight) &nbsp;·&nbsp; <strong style="color:#fff">P200 one-time</strong> removes all limits';
+      if (bannerSpan) bannerSpan.innerHTML = '🕐 <strong style="color:#f9a825">Free Account</strong> — daily limits apply (resets midnight) &nbsp;·&nbsp; <strong style="color:#fff">P200</strong> removes them';
     } else {
       premBanner.classList.add('hidden');
     }

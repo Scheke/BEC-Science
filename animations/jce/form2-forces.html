@@ -38,7 +38,7 @@
   <span class="label">JCE · Form 2 Physics</span>
   <h1>Forces &amp; Motion — Newton's Laws</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <button class="btn btn-push" id="b-push" onclick="tog('push')">&#9654; Apply Force (F)</button>
   <button class="btn btn-fric" id="b-fric" onclick="tog('fric')">&#9664; Add Friction (f)</button>
@@ -398,5 +398,6 @@ new p5(function(p) {
   p.mouseClicked=function(){ if(forceMcq){ forceMcqClick(p.mouseX,p.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>

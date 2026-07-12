@@ -28,7 +28,7 @@
   <span class="label">JCE · Form 2 Chemistry</span>
   <h1>Separation Methods</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <button class="btn btn-tech on"  id="b0" onclick="setTech(0)">⊿ Filtration</button>
   <button class="btn btn-tech"     id="b1" onclick="setTech(1)">💧 Distillation</button>
@@ -592,5 +592,6 @@ new p5(function(sk) {
   sk.mouseClicked=function(){ if(sepMcq){ sepMcqClick(sk.mouseX,sk.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>

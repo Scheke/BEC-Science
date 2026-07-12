@@ -28,7 +28,7 @@
   <span class="label">JCE · Form 3 Physics</span>
   <h1>Energy Forms &amp; Transformations</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <button class="btn btn-s on" id="b0" onclick="setScene(0)">🔵 Pendulum</button>
   <button class="btn btn-s"    id="b1" onclick="setScene(1)">⚽ Bouncing Ball</button>
@@ -578,5 +578,6 @@ new p5(function(sk) {
   sk.mouseClicked=function(){ if(energyMcq){ energyMcqClick(sk.mouseX,sk.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>

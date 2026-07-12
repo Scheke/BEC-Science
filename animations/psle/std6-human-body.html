@@ -103,7 +103,6 @@ function setTab(n){
   if(n===4) resetGame();
   renderNotes(n);
 }
-renderNotes(0);
 
 const allBoxes=[
   [
@@ -131,6 +130,7 @@ const allBoxes=[
     {t:'Platelets & Plasma', b:['Platelets: cell fragments that trigger blood clotting at wounds','Clot seals the cut and prevents entry of pathogens','Plasma carries: glucose, amino acids, urea, hormones, antibodies','Plasma is ~90% water']},
   ],
 ];
+renderNotes(0);
 
 function printNotes(){
   const tabs=['Digestive System','Respiratory System','Circulatory System','Blood Components'];

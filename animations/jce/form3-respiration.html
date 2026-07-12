@@ -30,7 +30,7 @@
   <span class="label">JCE · Form 3 Biology</span>
   <h1>Respiration &amp; Gas Exchange</h1>
 </div>
-<div id="sketch"></div>
+<div id="sketch-wrap"><div id="sketch"></div></div>
 <div id="controls">
   <button class="btn btn-aero on" id="b-aero" onclick="setMode(true)">&#9679; Aerobic Respiration</button>
   <button class="btn btn-ana" id="b-ana" onclick="setMode(false)">&#9679; Anaerobic Respiration</button>
@@ -639,5 +639,6 @@ new p5(function(sk) {
   sk.mouseClicked=function(){ if(respMcq){ respMcqClick(sk.mouseX,sk.mouseY); return; } };
 });
 </script>
+<script src="../mobile-anim.js"></script>
 </body>
 </html>
