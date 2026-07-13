@@ -333,7 +333,6 @@ class StudyEngine {
     const game = this._gameFor(s);
     if (game && !this.gameActive) { this._launchMCQ(game); return; }
     if (this.cur < this.steps.length - 1) {
-      if (typeof BEC !== 'undefined') BEC.addXP(5, 'Study step');
       this._show(this.cur + 1);
     } else {
       // Completed all steps — silver crown + bonus XP

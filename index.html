@@ -646,6 +646,10 @@
       .mob-nav-spacer{display:block}
       /* Tighten dashboard body padding */
       .d-body{padding:12px 12px 24px}
+      /* Bottom nav is now a persistent fixed bar on every view (not just the dashboard) —
+         reserve space so each page's last content isn't hidden behind it. */
+      #v-land{padding-bottom:76px}
+      #v-community, #v-leaderboard{padding-bottom:76px}
     }
     @media(max-width:480px){
       .l-hdr{padding:10px 12px;gap:8px}
@@ -2515,7 +2519,7 @@ function renderGrid(level, subj, query) {
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1)}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
@@ -2571,7 +2575,7 @@ function renderGridFiltered(level, filteredData, query) {
             <div class="acard-sub">${it.sub}</div>
             <div class="acard-btns">
               <a class="${btnClass}" href="${isUnlocked ? it.url : '#'}" onclick="${animClick}">${btnText}</a>
-              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened study')}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
+              <a class="acard-btn ${isUnlocked ? 'acard-btn-study' : 'acard-btn-locked'}" href="${isUnlocked ? studyUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${studyUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1)}` : `event.preventDefault();showUpgradePopup('${it.title}')`}">📖 Study</a>
               <a class="acard-btn ${isUnlocked ? 'acard-btn-quiz' : 'acard-btn-locked'}" href="${isUnlocked ? quizUrl : '#'}" onclick="${isUnlocked ? `if(!tryCardNav(event,'${quizUrl}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}')` : `event.preventDefault();showUpgradePopup('${it.title}')`}">🧠 Quiz</a>
             </div>
           </div>`;
