@@ -1045,21 +1045,12 @@
       <button onclick="closeDonateModal()" style="background:none;border:none;color:#666;font-size:1.5rem;cursor:pointer;padding:0;line-height:1;margin-top:-2px">✕</button>
     </div>
 
-    <!-- Plan display (single plan) -->
-    <div style="background:rgba(249,168,37,.1);border:1.5px solid rgba(249,168,37,.5);border-radius:14px;padding:16px 18px;margin:18px 0 18px;display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="font-weight:900;font-size:1rem;color:#f9a825">🌟 Lifetime Unlock</div>
-        <div style="font-size:.78rem;color:#aaa;margin-top:3px">Unlock everything — forever. No daily limits.</div>
-        <div style="font-size:.68rem;background:#f9a825;color:#1a1000;border-radius:4px;padding:2px 8px;font-weight:800;display:inline-block;margin-top:6px">ONE-TIME PAYMENT</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;padding-left:12px">
-        <div style="font-weight:900;font-size:1.4rem;color:#f9a825">P200</div>
-        <div style="font-size:.72rem;color:#666;margin-top:2px">one-time · no monthly fees</div>
-      </div>
-    </div>
+    <!-- How to pay -->
+    <div style="margin:18px 0 10px;font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px">1 · CHOOSE HOW TO PAY</div>
+    <div id="dm-plan-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px"></div>
 
     <!-- Payment Method -->
-    <div style="margin:0 0 10px;font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px">1 · CHOOSE PAYMENT METHOD</div>
+    <div style="margin:0 0 10px;font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px">2 · CHOOSE PAYMENT METHOD</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
       <button class="dm-method on" id="dm-m-orange" onclick="dmSetMethod('orange')">
         <div style="font-size:1.6rem;margin-bottom:4px">🟠</div>
@@ -1076,16 +1067,13 @@
     </div>
 
     <!-- Summary card -->
-    <div id="dm-summary" style="background:#252540;border:1.5px solid #333;border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div id="dm-sum-title" style="font-weight:800;font-size:.92rem;color:#fff"></div>
-        <div id="dm-sum-sub" style="font-size:.78rem;color:#888;margin-top:3px"></div>
-      </div>
-      <div style="text-align:right">
-        <div id="dm-sum-pula" style="font-weight:900;font-size:1rem;color:#fff"></div>
-        <div id="dm-sum-usd" style="font-size:.75rem;color:#666;margin-top:2px"></div>
-      </div>
+    <div id="dm-summary" style="background:rgba(249,168,37,.08);border:1.5px solid rgba(249,168,37,.4);border-radius:14px;padding:16px 18px;margin-bottom:8px">
+      <div id="dm-sum-title" style="font-size:.68rem;font-weight:800;letter-spacing:1px;color:#f9a825;text-transform:uppercase;margin-bottom:6px"></div>
+      <div id="dm-sum-pula" style="font-size:1.5rem;font-weight:900;color:#f9a825;margin-bottom:4px"></div>
+      <div id="dm-sum-sub" style="font-size:.8rem;color:#aaa;line-height:1.4"></div>
+      <div id="dm-sum-usd" style="font-size:.72rem;color:#666;margin-top:6px"></div>
     </div>
+    <div id="dm-plan-note" style="display:none;font-size:.78rem;color:#f9a825;background:rgba(249,168,37,.1);border:1px solid rgba(249,168,37,.3);border-radius:10px;padding:10px 14px;margin-bottom:18px;line-height:1.5"></div>
 
     <!-- How it works -->
     <div style="font-size:.72rem;font-weight:800;color:#888;letter-spacing:1px;margin-bottom:10px">HOW IT WORKS</div>
@@ -1145,16 +1133,16 @@
   <div style="display:flex;flex-direction:column;gap:14px;max-width:500px;margin:0 auto;padding:0 16px 16px">
 
     <!-- Lifetime -->
-    <div class="prx-card prx-lifetime" onclick="showDonateModalPlan('lifetime')">
+    <div class="prx-card prx-lifetime" onclick="showDonateModalPlan('full')">
       <div class="prx-badge">BEST VALUE</div>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
         <div>
           <div class="prx-plan-name">🌟 Lifetime Unlock</div>
-          <div class="prx-plan-tagline">Pay once — use forever</div>
+          <div class="prx-plan-tagline">Use forever — pay in full or on a plan</div>
         </div>
         <div style="text-align:right">
           <div class="prx-price prx-price-gold">P200</div>
-          <div class="prx-price-sub">one-time · no monthly fees</div>
+          <div class="prx-price-sub">or P100/mo × 2</div>
         </div>
       </div>
       <ul class="prx-perks">
@@ -1165,7 +1153,7 @@
         <li>✅ Badges & achievements</li>
         <li>✅ Future animations included free</li>
       </ul>
-      <button class="prx-cta prx-cta-gold" onclick="showDonateModalPlan()">Get Lifetime Access — P200 ↗</button>
+      <button class="prx-cta prx-cta-gold" onclick="showDonateModalPlan()">Unlock Premium — P200 or P100/mo ↗</button>
     </div>
 
     <!-- Free tier info -->
@@ -1867,9 +1855,9 @@ function closePricing() {
     document.getElementById('v-land')?.classList.remove('hidden');
   }
 }
-function showDonateModalPlan() {
+function showDonateModalPlan(payId) {
   closePricing();
-  showDonateModal();
+  showDonateModal(payId || 'full');
 }
 
 function showUpgradePopup(title) {
@@ -1891,15 +1879,19 @@ function showUpgradePopup(title) {
 }
 
 // ── Payment Modal Logic ──────────────────────────────────────────────────────
-const DM_PLANS = [
-  { id:'lifetime', name:'🌟 Lifetime Unlock', desc:'Unlock everything — forever. No daily limits.', pula:'P200', badge:'lifetime', once:true },
+// Lifetime Unlock is the only product — these are two ways to PAY for the same thing.
+const DM_PAY_OPTIONS = [
+  { id:'full', icon:'💰', label:'Pay in full — P200', badge:'LIFETIME UNLOCK',
+    price:'P200', sub:'One-time payment · unlimited, forever', install:false },
+  { id:'plan', icon:'🗓️', label:'Payment plan — P100 × 2 months', badge:'PREMIUM · 2-MONTH PLAN',
+    price:'P100/month', sub:'2 monthly payments of P100 (P200 total) · unlimited sessions, forever', install:true },
 ];
 const DM_METHODS = {
   orange: { label:'Orange Money', step:'Tell us you want {PLAN} via Orange Money' },
   smega:  { label:'Smega',        step:'Tell us you want {PLAN} via Smega' },
   fnb:    { label:'FNB Pay2Cell', step:'Tell us you want {PLAN} via FNB Pay2Cell' },
 };
-let _dmPlan   = 'lifetime';
+let _dmPay    = 'full'; // 'full' | 'plan'
 let _dmMethod = 'orange';
 
 function dmSetMethod(m) {
@@ -1909,33 +1901,69 @@ function dmSetMethod(m) {
   dmUpdateSummary();
   dmUpdateWALink();
 }
+function dmGetPay() {
+  return DM_PAY_OPTIONS.find(p => p.id === _dmPay) || DM_PAY_OPTIONS[0];
+}
+function dmRenderPayOptions() {
+  const list = document.getElementById('dm-plan-list');
+  if (!list) return;
+  list.innerHTML = DM_PAY_OPTIONS.map(p => `
+    <button type="button" class="dm-plan ${!p.install ? 'lifetime' : ''} ${_dmPay === p.id ? 'on' : ''}" onclick="dmSetPay('${p.id}')">
+      <div class="dm-plan-radio"></div>
+      <div class="dm-plan-body">
+        <div class="dm-plan-name">${p.icon} ${p.label}</div>
+      </div>
+    </button>
+  `).join('');
+}
+function dmSetPay(id) {
+  _dmPay = id;
+  dmRenderPayOptions();
+  dmUpdateSummary();
+  dmUpdateWALink();
+}
 function dmUpdateSummary() {
   const m = DM_METHODS[_dmMethod];
-  if (!m) return;
-  document.getElementById('dm-sum-title').textContent = 'Lifetime Unlock';
-  document.getElementById('dm-sum-sub').textContent   = 'Unlock everything — forever. No daily limits.';
-  document.getElementById('dm-sum-pula').textContent  = 'P200';
-  document.getElementById('dm-sum-usd').textContent   = 'one-time · no monthly fees';
-  document.getElementById('dm-step2').textContent     = m.step.replace('{PLAN}', 'a Lifetime Unlock');
+  const p = dmGetPay();
+  if (!m || !p) return;
+  document.getElementById('dm-sum-title').textContent = p.badge;
+  document.getElementById('dm-sum-sub').textContent   = p.sub;
+  document.getElementById('dm-sum-pula').textContent  = p.price;
+  document.getElementById('dm-sum-usd').textContent   = p.install ? 'pay again in 30 days' : '';
+  document.getElementById('dm-step2').textContent     = m.step.replace('{PLAN}', p.install ? 'the Payment Plan (P100/mo)' : 'Lifetime Unlock (P200)');
+  // Extra note for installment plan — clarify unlock timing
+  const noteEl = document.getElementById('dm-plan-note');
+  if (noteEl) {
+    noteEl.style.display = p.install ? 'block' : 'none';
+    noteEl.textContent = p.install
+      ? 'Premium unlocks after your first P100 payment — the remaining month is expected on the same date next month.'
+      : '';
+  }
 }
 function dmUpdateWALink() {
   const m = DM_METHODS[_dmMethod];
-  if (!m) return;
+  const p = dmGetPay();
+  if (!m || !p) return;
   const userName = (currentUser && currentUser.name) ? currentUser.name : '';
   const userId   = (currentUser && currentUser.uid)  ? currentUser.uid  : '';
   const identity = userName || userId
     ? `\nName: ${userName || '—'}\nUser ID: ${userId || '—'}`
     : '';
+  const paymentLine = p.install
+    ? 'Payment plan: P100 now, then P100 next month (P200 total)'
+    : 'Pay in full: P200 one-time';
   const msg = encodeURIComponent(
-    `Hi! I'd like to pay for BEC Science Animations — Lifetime Unlock (P200 one-time) via ${m.label}.${identity}\nPlease send me the payment details.`
+    `Hi! I'd like to unlock BEC Science Animations Premium (Lifetime). ${paymentLine}. Payment method: ${m.label}.${identity}\nPlease send me the payment details.`
   );
   const btn = document.getElementById('dm-wa-btn');
   if (btn) btn.href = `https://wa.me/26775777413?text=${msg}`;
 }
 
-function showDonateModal() {
+function showDonateModal(payId) {
+  if (payId) _dmPay = payId;
   document.getElementById('donate-modal').classList.remove('hidden');
   _dmMethod = 'orange';
+  dmRenderPayOptions();
   dmUpdateSummary();
   dmUpdateWALink();
   ['orange','smega','fnb'].forEach(k =>
