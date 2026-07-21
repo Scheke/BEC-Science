@@ -438,6 +438,7 @@ const BEC = (() => {
   function _fresh() {
     return {
       xp: 0, streak: 0, lastStudyDate: null,
+      xpByLevel: { primary: 0, junior: 0, senior: 0 },
       hearts: HEART_MAX, lastHeartTime: Date.now(),
       crowns: {}, badges: [],
       totalCorrect: 0,
@@ -452,10 +453,20 @@ const BEC = (() => {
     };
   }
 
+  // Curriculum level from a topic slug ('psle/std5-nutrition' -> 'primary', etc.)
+  function _levelFromSlug(slug) {
+    if (!slug) return null;
+    if (slug.startsWith('psle/'))  return 'primary';
+    if (slug.startsWith('jce/'))   return 'junior';
+    if (slug.startsWith('bgcse/')) return 'senior';
+    return null;
+  }
+
   function _load() {
     // Sync load from memory; cloud load is async via loadFromCloud()
     if (!_s) _s = _fresh();
     if (_s.totalCorrect === undefined) _s.totalCorrect = 0;
+    if (!_s.xpByLevel) _s.xpByLevel = { primary: 0, junior: 0, senior: 0 };
     _refillHearts();
   }
 
@@ -536,10 +547,17 @@ const BEC = (() => {
      PUBLIC API
   ══════════════════════════════════════ */
 
-  function addXP(amount, reason) {
+  /* level is optional — on a topic page (animation/study/quiz) it's auto-derived
+     from the current URL via getSlug(), so call sites there don't need to pass it.
+     Only callers outside a topic page (e.g. the dashboard) must pass it explicitly. */
+  function addXP(amount, reason, level) {
     _load();
     const prevLv = getLevel(_s.xp);
     _s.xp += amount;
+    const lvl = level || _levelFromSlug(getSlug());
+    if (lvl && _s.xpByLevel && (lvl in _s.xpByLevel)) {
+      _s.xpByLevel[lvl] = (_s.xpByLevel[lvl] || 0) + amount;
+    }
     _touchStreak();
     _save();
     _showXPToast(amount, reason);
@@ -551,12 +569,14 @@ const BEC = (() => {
 
   /* XP for simply opening a topic (animation/study) — only every 2nd open counts,
      so casually re-opening the same or new topics doesn't farm XP too fast. */
-  function addOpenXP(amount, reason) {
+  function addOpenXP(amount, reason, level) {
     _load();
     _s._openCount = (_s._openCount || 0) + 1;
     _save();
-    if (_s._openCount % 2 === 0) addXP(amount, reason);
+    if (_s._openCount % 2 === 0) addXP(amount, reason, level);
   }
+
+  function getXPByLevel() { _load(); return { ..._s.xpByLevel }; }
 
   /* Call this alongside addXP whenever an MCQ answer is correct */
   function recordCorrect() {
@@ -918,6 +938,28 @@ const BEC = (() => {
           </div>
         </div>
 
+        <!-- XP by Curriculum -->
+        <div style="background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:28px;box-shadow:0 2px 8px rgba(0,0,0,.05)">
+          <div style="font-size:.85rem;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px">XP by Curriculum</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px">
+            <div style="text-align:center">
+              <div style="font-size:1.4rem;margin-bottom:2px">🏫</div>
+              <div style="font-size:1.2rem;font-weight:800;color:#1565c0">${(_s.xpByLevel && _s.xpByLevel.primary) || 0}</div>
+              <div style="font-size:.72rem;color:#999">PSLE XP</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:1.4rem;margin-bottom:2px">📚</div>
+              <div style="font-size:1.2rem;font-weight:800;color:#2e7d32">${(_s.xpByLevel && _s.xpByLevel.junior) || 0}</div>
+              <div style="font-size:.72rem;color:#999">JCE XP</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:1.4rem;margin-bottom:2px">🎓</div>
+              <div style="font-size:1.2rem;font-weight:800;color:#e65100">${(_s.xpByLevel && _s.xpByLevel.senior) || 0}</div>
+              <div style="font-size:.72rem;color:#999">BGCSE XP</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Stats Grid -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px">
           <div style="background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05)">
@@ -1050,7 +1092,7 @@ const BEC = (() => {
   _load();
 
   return {
-    addXP, addOpenXP, recordCorrect, loseHeart, getHearts,
+    addXP, addOpenXP, getXPByLevel, recordCorrect, loseHeart, getHearts,
     setCrown, getCrown, getLevel, getNextLevel, getState, getSlug,
     markPerfectQuiz, recordChallengeScore,
     renderStatsBar, crownHtml, confetti,

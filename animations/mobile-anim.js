@@ -75,7 +75,7 @@
     /* Big pill mode-toggle buttons (Animation / Practice) were oversized on phones —
        collapse to compact icon-only buttons, icon still visible via title tooltip. */
     '@media(max-width:480px){',
-    '  .mode-btn{width:40px!important;height:40px!important;padding:0!important;',
+    '  .mode-btn{width:44px!important;height:44px!important;padding:0!important;',
     '    display:inline-flex!important;align-items:center;justify-content:center;',
     '    font-size:1.05rem!important;border-radius:10px!important}',
     '  .mode-btn .mode-lbl{display:none}',

@@ -62,6 +62,21 @@
       color:rgba(255,255,255,.8);font-size:1.05rem;text-align:center;margin-bottom:10px;
       font-weight:500;animation:slideDown 1s ease-out .2s both;
     }
+    .l-trust{
+      color:#a5d6a7;font-size:.8rem;text-align:center;font-weight:600;margin:-4px 0 4px;
+      animation:slideDown 1.1s ease-out .3s both;
+    }
+    /* Returning visitors already know what this is — trim the marketing copy so the
+       level cards (the actual task) land higher on the screen. */
+    #v-land.returning .l-main{padding-top:16px;gap:6px}
+    #v-land.returning .l-eyebrow{display:none}
+    #v-land.returning .l-sub{display:none}
+    #v-land.returning .l-trust{display:none}
+    #v-land.returning .l-h1{font-size:clamp(1.3rem,3vw,1.7rem);margin-bottom:2px}
+    #v-land.returning .l-card-hint{display:none}
+    .l-card-hint{
+      color:rgba(255,255,255,.5);font-size:.78rem;text-align:center;margin-top:12px;
+    }
     @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
     @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
@@ -299,8 +314,9 @@
     .d-srch-x:hover{color:#fff}
     .d-rnd{
       background:rgba(255,255,255,.12);border:none;color:#fff;
-      font-size:1.1rem;padding:7px 10px;border-radius:8px;cursor:pointer;
+      font-size:1.1rem;min-width:40px;min-height:40px;padding:8px 10px;border-radius:10px;cursor:pointer;
       transition:background .15s;flex-shrink:0;
+      display:inline-flex;align-items:center;justify-content:center;
     }
     .d-rnd:hover{background:rgba(255,255,255,.25)}
 
@@ -592,6 +608,11 @@
       display:none;background:rgba(255,255,255,.15);border:none;color:#fff;
       font-size:1.3rem;cursor:pointer;padding:8px;border-radius:8px;line-height:1;
     }
+    #l-menu-btn{
+      display:none;background:rgba(255,255,255,.12);border:none;color:#fff;
+      font-size:1.3rem;cursor:pointer;padding:8px;border-radius:8px;line-height:1;
+      flex-shrink:0;
+    }
 
     /* ── Bottom Navigation Bar (mobile only) ── */
     #mob-bottom-nav{
@@ -630,6 +651,14 @@
     @media(max-width:640px){
       /* Show hamburger, hide nav clutter in dashboard */
       #mob-menu-btn{display:block}
+      /* Landing header: collapse Leaderboard/Community/Visit Us/Pricing into the
+         ☰ sidebar (which already has all of these) — keep only Sign In visible,
+         so the primary CTA isn't competing with 4 same-weight buttons. */
+      #l-menu-btn{display:block}
+      .l-hdr-secondary{display:none}
+      .l-hdr-btns{width:auto;flex:0 0 auto}
+      /* Sign In is now the only header button on mobile — give it a proper tap target */
+      .l-hdr-signin{padding:10px 18px!important;font-size:.82rem!important}
       .d-hdr .d-back{display:none}
       /* Keep levels toggle visible on mobile — just compact it */
       .d-hdr .d-lvdrop{display:flex;flex:1;max-width:160px}
@@ -671,13 +700,14 @@
 ════════════════════════════════════ -->
 <div id="v-land">
   <header class="l-hdr">
+    <button id="l-menu-btn" onclick="openMobSidebar()" title="Menu">☰</button>
     <div class="l-logo">BEC <span>Science</span> Animations</div>
     <div class="l-badge">41 animations • 123 study items • 50+ quizzes • 47+ badges</div>
     <div class="l-hdr-btns">
-      <button onclick="showLeaderboard()" class="l-hdr-btn" style="background:transparent;color:#2e7d32;border:1.5px solid #2e7d32">🏆 Leaderboard</button>
-      <button onclick="showCommunity()" class="l-hdr-btn" style="background:transparent;color:#58a6ff;border:1.5px solid rgba(88,166,255,.5)">💬 Community</button>
-      <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit">🌐 Visit Us</a>
-      <button onclick="showPricing()" class="l-hdr-btn" style="color:#f9a825;border:1.5px solid rgba(249,168,37,.5);background:rgba(249,168,37,.1);font-weight:800">⭐ Pricing</button>
+      <button onclick="showLeaderboard()" class="l-hdr-btn l-hdr-secondary" style="background:transparent;color:#2e7d32;border:1.5px solid #2e7d32">🏆 Leaderboard</button>
+      <button onclick="showCommunity()" class="l-hdr-btn l-hdr-secondary" style="background:transparent;color:#58a6ff;border:1.5px solid rgba(88,166,255,.5)">💬 Community <span style="font-size:.55rem;background:#f9a825;color:#1a1000;padding:1px 5px;border-radius:6px;font-weight:800;vertical-align:middle">SOON</span></button>
+      <a href="https://scheke.com" target="_blank" class="l-hdr-btn l-hdr-visit l-hdr-secondary">🌐 Visit Us</a>
+      <button onclick="showPricing()" class="l-hdr-btn l-hdr-secondary" style="color:#f9a825;border:1.5px solid rgba(249,168,37,.5);background:rgba(249,168,37,.1);font-weight:800">⭐ Pricing</button>
       <button id="auth-header-btn" class="l-hdr-btn l-hdr-signin">🔐 Sign In</button>
     </div>
   </header>
@@ -686,6 +716,7 @@
     <div class="l-eyebrow">✨ Botswana Examinations Council Curriculum</div>
     <h1 class="l-h1">Learn Science Like Never Before</h1>
     <p class="l-sub">Interactive animations, real-time quizzes, detailed study guides, and achievements. Everything you need to excel in your exams.</p>
+    <p class="l-trust">🇧🇼 Aligned with the official PSLE, JCE &amp; BGCSE syllabus</p>
 
     <!-- Continue Banner -->
     <div id="continue-banner" style="display:none;margin:20px 0;padding:16px;background:linear-gradient(90deg,#e8f5e9 0%,rgba(232,245,233,0.5) 100%);border-left:4px solid #2e7d32;border-radius:10px">
@@ -753,6 +784,7 @@
       </div>
 
     </div>
+    <p class="l-card-hint">👆 Tap your level — no sign-in needed to start browsing</p>
 
     <!-- Features/Highlights -->
     <div class="l-features">
@@ -820,7 +852,7 @@
       <div class="mob-sb-label">Tools</div>
       <button class="mob-sb-btn" onclick="openRandom();closeMobSidebar()"><span class="mob-sb-btn-icon">🎲</span>Random Animation</button>
       <button class="mob-sb-btn" onclick="showLeaderboard(curLevel);closeMobSidebar()"><span class="mob-sb-btn-icon">🏆</span>Leaderboard</button>
-      <button class="mob-sb-btn" onclick="showCommunity();closeMobSidebar()"><span class="mob-sb-btn-icon">💬</span>Community</button>
+      <button class="mob-sb-btn" onclick="showCommunity();closeMobSidebar()"><span class="mob-sb-btn-icon">💬</span>Community <span style="font-size:.55rem;background:#f9a825;color:#1a1000;padding:1px 5px;border-radius:6px;font-weight:800;margin-left:4px">SOON</span></button>
       <button class="mob-sb-btn" onclick="showQuizHistory();closeMobSidebar()"><span class="mob-sb-btn-icon">📊</span>Quiz History</button>
     </div>
     <div class="mob-sb-section">
@@ -846,7 +878,7 @@
     <nav class="d-nav" id="d-nav"></nav>
     <button class="d-rnd" id="d-rnd" onclick="openRandom()" title="Open a random animation">🎲</button>
     <button class="d-rnd" onclick="showLeaderboard(curLevel)" title="Leaderboard">🏆</button>
-    <button class="d-rnd" onclick="showCommunity()" title="Community Q&amp;A">💬</button>
+    <button class="d-rnd" onclick="showCommunity()" title="Community Q&amp;A — coming soon" style="position:relative">💬<span style="position:absolute;top:2px;right:2px;width:8px;height:8px;background:#f9a825;border-radius:50%;border:1.5px solid #fff"></span></button>
     <a href="https://scheke.com" target="_blank" class="d-rnd" title="Visit scheke.com" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:.85rem">🌐</a>
     <button class="d-rnd d-rnd-donate" onclick="showPricing()" title="Upgrade to Premium">⭐</button>
     <button id="auth-dash-btn" class="d-rnd" title="Sign in" style="font-size:.95rem">🔐</button>
@@ -1438,13 +1470,25 @@ function initAuth() {
         ['primary','junior','senior'].forEach(lv => {
           _visitedCache[lv] = new Set(ud['visited_' + lv] || []);
         });
+        const crowns = state.crowns || {};
+        const xpByLevel = state.xpByLevel || {};
         await window._becDB.collection('leaderboard').doc(user.uid).set({
           name:           currentUser.name,
           xp:             state.xp || 0,
+          primaryXP:      xpByLevel.primary || 0,
+          juniorXP:       xpByLevel.junior  || 0,
+          seniorXP:       xpByLevel.senior  || 0,
           streak:         state.streak || 0,
           primaryVisited: (ud.visited_primary || []).length,
           juniorVisited:  (ud.visited_junior  || []).length,
           seniorVisited:  (ud.visited_senior  || []).length,
+          // Learning score = sum of crown levels (1 opened, 2 studied, 3 quizzed 80%+)
+          // for topics in that curriculum — rewards depth (studying, quizzing well),
+          // not just how many animations were clicked open.
+          primaryScore:   _levelCrownScore(crowns, 'psle/'),
+          juniorScore:    _levelCrownScore(crowns, 'jce/'),
+          seniorScore:    _levelCrownScore(crowns, 'bgcse/'),
+          totalCorrect:   state.totalCorrect || 0,
           updatedAt:      new Date().toISOString(),
         }, { merge: true });
       } catch(e) {}
@@ -2537,7 +2581,7 @@ function renderGrid(level, subj, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation')}`
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;visitorInteraction();trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation','${level}')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
@@ -2593,7 +2637,7 @@ function renderGridFiltered(level, filteredData, query) {
           const btnClass = isUnlocked ? 'acard-btn acard-btn-anim' : 'acard-btn acard-btn-locked';
           const btnText  = isUnlocked ? '▶ Animate' : '🔒 Locked';
           const animClick = isUnlocked
-            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation')}`
+            ? `if(!tryCardNav(event,'${it.url}','${it.title}'))return;trackVisit('${it.url}');if(typeof BEC!=='undefined'){BEC.recordLastVisited('${it.url}');BEC.setCrown('${slug}',1);BEC.addOpenXP(5,'Opened animation','${level}')}`
             : `event.preventDefault();showUpgradePopup('${it.title}')`;
           return `
           <div class="acard">
@@ -2662,6 +2706,19 @@ function openRandom() {
 ══════════════════════════════════════════ */
 const _visitedCache = {};   // level → Set of URLs, in-memory fallback
 
+// Learning score for a curriculum level = sum of crown levels (1 opened, 2 studied,
+// 3 quizzed 80%+) across that level's topics. Rewards depth, not just click-throughs.
+function _levelCrownScore(crowns, prefix) {
+  let score = 0;
+  Object.keys(crowns || {}).forEach(slug => {
+    if (slug.startsWith(prefix)) score += (crowns[slug] || 0);
+  });
+  return score;
+}
+const _LB_PREFIX = { primary:'psle/', junior:'jce/', senior:'bgcse/' };
+const _LB_SCORE_FIELD = { primary:'primaryScore', junior:'juniorScore', senior:'seniorScore' };
+const _LB_XP_FIELD = { primary:'primaryXP', junior:'juniorXP', senior:'seniorXP' };
+
 function _userDocRef() {
   if (!window._becDB || !window._becUID) return null;
   return window._becDB.collection('users').doc(window._becUID);
@@ -2680,9 +2737,17 @@ async function trackVisit(url) {
     if (isNew && window._becDB && window._becUID) {
       const lbFieldMap = { primary:'primaryVisited', junior:'juniorVisited', senior:'seniorVisited' };
       const lbField = lbFieldMap[curLevel];
+      const scoreField = _LB_SCORE_FIELD[curLevel];
+      const xpField = _LB_XP_FIELD[curLevel];
+      const prefix = _LB_PREFIX[curLevel];
       if (lbField) {
+        const state = (typeof BEC !== 'undefined') ? BEC.getState() : {};
+        const update = { [lbField]: _visitedCache[curLevel].size, updatedAt: new Date().toISOString() };
+        if (scoreField && prefix) update[scoreField] = _levelCrownScore(state.crowns, prefix);
+        if (xpField && state.xpByLevel) update[xpField] = state.xpByLevel[curLevel] || 0;
+        if (typeof state.xp === 'number') update.xp = state.xp;
         window._becDB.collection('leaderboard').doc(window._becUID)
-          .set({ [lbField]: _visitedCache[curLevel].size, updatedAt: new Date().toISOString() }, { merge: true })
+          .set(update, { merge: true })
           .catch(() => {});
       }
     }
@@ -3281,9 +3346,9 @@ function closeLeaderboard() {
 async function loadLeaderboardTab(level) {
   _lbLevel = level;
   const LV = {
-    primary: { label:'🏫 PSLE',  field:'primaryVisited', unit:'animations opened', color:'#58a6ff' },
-    junior:  { label:'📚 JCE',   field:'juniorVisited',  unit:'animations opened', color:'#3fb950' },
-    senior:  { label:'🎓 BGCSE', field:'seniorVisited',  unit:'animations opened', color:'#f9a825' },
+    primary: { label:'🏫 PSLE',  field:'primaryScore', visitedField:'primaryVisited', xpField:'primaryXP', unit:'learning score', color:'#58a6ff' },
+    junior:  { label:'📚 JCE',   field:'juniorScore',  visitedField:'juniorVisited',  xpField:'juniorXP',  unit:'learning score', color:'#3fb950' },
+    senior:  { label:'🎓 BGCSE', field:'seniorScore',  visitedField:'seniorVisited',  xpField:'seniorXP',  unit:'learning score', color:'#f9a825' },
   };
   const meta = LV[level];
 
@@ -3298,7 +3363,7 @@ async function loadLeaderboardTab(level) {
   });
 
   const subtitle = document.getElementById('lb-subtitle');
-  if (subtitle) subtitle.textContent = `Ranked by ${meta.unit} in the ${meta.label.replace(/^[^ ]+ /,'')} curriculum`;
+  if (subtitle) subtitle.textContent = `Ranked by learning score (opening, studying & quizzing well) in ${meta.label.replace(/^[^ ]+ /,'')}`;
 
   const content = document.getElementById('lb-content');
   content.innerHTML = `<div style="text-align:center;padding:60px 0;color:#484f58">
@@ -3330,12 +3395,14 @@ async function loadLeaderboardTab(level) {
     snap.forEach(doc => {
       const d      = doc.data();
       const isSelf = doc.id === window._becUID;
-      const val    = d[meta.field] || 0;
+      const val      = d[meta.field] || 0;
+      const visited  = d[meta.visitedField] || 0;
+      const levelXP  = d[meta.xpField] || 0;
       const rankDisplay = medals[rank - 1]
         ? `<span style="font-size:1.5rem">${medals[rank-1]}</span>`
         : `<span style="font-size:1rem;font-weight:800;color:#484f58">${rank}</span>`;
-      const becLvl = (typeof BEC !== 'undefined' && BEC.LEVELS)
-        ? BEC.LEVELS[Math.min(Math.floor((d.xp || 0) / 200), BEC.LEVELS.length - 1)]
+      const becLvl = (typeof BEC !== 'undefined' && BEC.getLevel)
+        ? BEC.getLevel(d.xp || 0)
         : null;
       html += `
         <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;
@@ -3350,7 +3417,9 @@ async function loadLeaderboardTab(level) {
                         white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem">
               ${d.name || 'Student'}${isSelf ? ' <span style="font-size:.7rem;opacity:.7">(You)</span>' : ''}
             </div>
-            ${becLvl ? `<div style="font-size:.75rem;color:#484f58;margin-top:2px">${becLvl.icon} ${becLvl.name} · ${(d.xp||0).toLocaleString()} XP total</div>` : ''}
+            <div style="font-size:.75rem;color:#484f58;margin-top:2px">
+              ${becLvl ? `${becLvl.icon} ${becLvl.name} · ` : ''}${levelXP.toLocaleString()} XP here · ${visited} opened
+            </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-weight:800;color:${meta.color};font-size:1.1rem">${val}</div>
@@ -3403,6 +3472,15 @@ function _clearCachedAuth() {
     window._becUID = cachedAuth.uid;
   }
 
+  // Returning visitors already know what BEC is — trim the marketing hero copy
+  // so the level cards land higher on screen. First-time visitors see the full pitch.
+  const HAS_VISITED_KEY = 'bec_hasVisited';
+  if (localStorage.getItem(HAS_VISITED_KEY)) {
+    document.getElementById('v-land')?.classList.add('returning');
+  } else {
+    try { localStorage.setItem(HAS_VISITED_KEY, '1'); } catch(e) {}
+  }
+
   function handleHash(h) {
     if (!h) {
       document.getElementById('v-dash').classList.add('hidden');
@@ -3421,10 +3499,11 @@ function _clearCachedAuth() {
   const hash = location.hash.slice(1);
   if (hash) {
     handleHash(hash);
-  } else {
-    // Show sign-up page on first visit
-    showAuthModal();
   }
+  // No hash: #v-land is already visible by default (not class="hidden") — let visitors
+  // see the hero and level cards immediately. Sign-in is only prompted when they tap
+  // something that actually requires it (locked cards, community, progress, etc.
+  // already gate via showLockedFeaturePopup / isLoggedIn()).
 
   window.addEventListener('hashchange', () => handleHash(location.hash.slice(1)));
 
